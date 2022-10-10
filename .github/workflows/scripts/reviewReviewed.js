@@ -28,6 +28,7 @@ const messageAssignee = async ({ context }) => {
   const reviewer = context.payload.sender.login;
   const githubAssignees = context.payload.pull_request.assignees;
   const url = context.payload.review.html_url;
+  const title = context.payload.pull_request.title;
 
   // Connect to mongo
   mongoose.connect(process.env.MONGO_URI, {
@@ -47,7 +48,16 @@ const messageAssignee = async ({ context }) => {
           slackAssignees.map(assignee =>
             Bot.client.chat.postMessage({
               channel: assignee.value?.slackId,
-              text: `One of your pull requests has been APPROVED by ${reviewer}! <${url}|View Review> :shrek::thumbsup:`,
+              text: `${reviewer} has :discodog:APPROVED your PR <${url}|${title}>`
+            }),
+          ),
+        );
+      } else if (context.payload.review.state === 'changes_requested') {
+        await Promise.all(
+          slackAssignees.map(assignee =>
+            Bot.client.chat.postMessage({
+              channel: assignee.value?.slackId,
+              text: `${reviewer} has :ahhhhhhhhh:REQUESTED CHANGES for PR <${url}|${title}>`,
             }),
           ),
         );
@@ -56,7 +66,7 @@ const messageAssignee = async ({ context }) => {
           slackAssignees.map(assignee =>
             Bot.client.chat.postMessage({
               channel: assignee.value?.slackId,
-              text: `One of your pull requests has been REVIEWED by ${reviewer}! <${url}|View Review> :shrek:`,
+              text: `${reviewer} has :this-is-fine:REVIEWED your PR <${url}|${title}>`,
             }),
           ),
         );
