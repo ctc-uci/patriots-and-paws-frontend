@@ -1,5 +1,5 @@
 {
-  "name": "npo-frontend-template",
+  "name": "patriots-and-paws-frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -10,7 +10,7 @@
     "lint-staged": "^11.2.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
+    "react-scripts": "5.0.1",
     "web-vitals": "^1.0.1"
   },
   "optionalDependencies": {
@@ -63,7 +63,7 @@
     "@storybook/addon-essentials": "^6.3.12",
     "@storybook/addon-links": "^6.3.12",
     "@storybook/node-logger": "^6.3.12",
-    "@storybook/preset-create-react-app": "^3.2.0",
+    "@storybook/preset-create-react-app": "^4.1.2",
     "@storybook/react": "^6.3.12",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
