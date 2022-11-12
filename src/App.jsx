@@ -2,6 +2,7 @@ import { ChakraProvider, Button, Stack } from '@chakra-ui/react';
 import { PhoneIcon } from '@chakra-ui/icons';
 import React from 'react';
 import './App.css';
+import DonationForm from './components/DonationForm';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           Button
         </Button>
       </Stack>
+      <DonationForm />
     </ChakraProvider>
   );
 }
