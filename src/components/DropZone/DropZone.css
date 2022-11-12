@@ -1,0 +1,58 @@
+.dropzone-zone {
+  padding: 55px;
+  border-radius: 5px;
+  border-width: 2px;
+  border-style: solid;
+  height: 250px;
+  border-color: var(--color-light-gray);
+  background-color: var(--color-off-white);
+  color: var(--color-gray);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dropzone-accept {
+  border-color: var(--color-success);
+}
+
+.dropzone-reject {
+  border-color: var(--color-warning);
+}
+
+.dropzone-text {
+  color: var(--color-black);
+}
+
+.dropzone-support-text {
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.dropzone-icon {
+  margin: auto;
+  font-size: 30px;
+  color: var(--color-black);
+}
+
+.fileSelector {
+  border: none;
+  background-color: transparent;
+  color: var(--color-black);
+  text-decoration: underline;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.files-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.remove-uploaded-photo-button {
+  color: var(--color-gray) !important;
+}
+
+.file-item-span {
+  color: var(--color-gray);
+}
