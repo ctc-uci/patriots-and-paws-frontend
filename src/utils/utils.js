@@ -12,6 +12,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 // See auth_utils for AuthInterceptor
 const PNPBackend = axios.create({
   baseURL,
+  withCredentials: true,
 });
 
 // eslint-disable-next-line import/prefer-default-export
