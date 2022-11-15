@@ -40,7 +40,7 @@ function DonationForm() {
             <FormControl isInvalid={errors && errors.firstName} width="47%">
               <FormLabel>First</FormLabel>
               <Input {...register('firstName')} />
-              <FormErrorMessage>{errors && errors.firstName.message}</FormErrorMessage>
+              <FormErrorMessage>{errors.firstName && errors.firstName.message}</FormErrorMessage>
             </FormControl>
             <FormControl isInvalid={errors && errors.lastName} width="47%">
               <FormLabel>Last</FormLabel>
