@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import {
   FormLabel,
@@ -21,10 +22,10 @@ const schema = yup.object({
   email2: yup.string().email('Invalid email').required('Email required'),
 });
 
-function DonationForm({ setFormSubmitted }) {
+function DonationForm() {
   const {
     register,
-    control,
+    // control,
     handleSubmit,
     formState: { errors },
   } = useForm({
@@ -32,19 +33,19 @@ function DonationForm({ setFormSubmitted }) {
   });
   return (
     <div className="form-padding">
-      <form onSubmit={handleSubmit()}>
+      <form onSubmit={handleSubmit(data => console.log(data))}>
         <div className="field-section">
           <h1 className="title">Name</h1>
           <div className="form">
-            <FormControl isInvalid={errors?.firstName} width="47%">
+            <FormControl isInvalid={errors && errors.firstName} width="47%">
               <FormLabel>First</FormLabel>
-              <Input {...register('firstName')}/>
-              <FormErrorMessage>{errors.firstName?.message}</FormErrorMessage>
+              <Input {...register('firstName')} />
+              <FormErrorMessage>{errors && errors.firstName.message}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={errors?.lastName} width="47%">
+            <FormControl isInvalid={errors && errors.lastName} width="47%">
               <FormLabel>Last</FormLabel>
-              <Input {...register('lastName')}/>
-              <FormErrorMessage>{errors.lastName?.message}</FormErrorMessage>
+              <Input {...register('lastName')} />
+              <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
             </FormControl>
           </div>
         </div>
@@ -73,10 +74,10 @@ function DonationForm({ setFormSubmitted }) {
               </Select>
             </FormControl>
           </div>
-          <FormControl isInvalid={errors?.zipcode}l>
+          <FormControl isInvalid={errors && errors.zipcode} l>
             <FormLabel>ZIP Code</FormLabel>
-            <Input {...register('zipcode')}/>
-            <FormErrorMessage>{errors.zipcode?.message}</FormErrorMessage>
+            <Input {...register('zipcode')} />
+            <FormErrorMessage>{errors.zipcode && errors.zipcode.message}</FormErrorMessage>
           </FormControl>
         </div>
 
@@ -90,15 +91,15 @@ function DonationForm({ setFormSubmitted }) {
         <div className="field-section">
           <h1 className="title">Email</h1>
           <div className="form">
-            <FormControl isInvalid={errors?.email1} width="47%">
+            <FormControl isInvalid={errors && errors.email1} width="47%">
               <FormLabel>Enter Email </FormLabel>
-              <Input {...register('email1')}/>
-              <FormErrorMessage>{errors.email1?.message}</FormErrorMessage>
+              <Input {...register('email1')} />
+              <FormErrorMessage>{errors.email1 && errors.email1.message}</FormErrorMessage>
             </FormControl>
-            <FormControl isInvalid={errors?.email2} width="47%">
+            <FormControl isInvalid={errors && errors.email2} width="47%">
               <FormLabel>Confirm Email </FormLabel>
-              <Input {...register('email2')}/>
-              <FormErrorMessage>{errors.email2?.message}</FormErrorMessage>
+              <Input {...register('email2')} />
+              <FormErrorMessage>{errors.email2 && errors.email2.message}</FormErrorMessage>
             </FormControl>
           </div>
         </div>

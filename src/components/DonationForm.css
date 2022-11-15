@@ -1,18 +1,18 @@
 .title {
   font-weight: bold;
- }
+}
 
- .form {
+.form {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
- }
+}
 
- .form-padding {
+.form-padding {
   padding: 2vw;
- }
+}
 
- .field-section {
+.field-section {
   margin-bottom: 4vh;
- }
+}
