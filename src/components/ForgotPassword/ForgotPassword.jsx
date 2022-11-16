@@ -1,5 +1,17 @@
 import React, { useState } from 'react';
-import { sendPasswordReset } from '../../utils/auth_utils';
+import {
+  Flex,
+  Stack,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Heading,
+  Link,
+  Box,
+} from '@chakra-ui/react';
+import { sendPasswordReset } from '../../utils/AuthUtils';
+import styles from './ForgotPassword.module.css';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState();
@@ -19,22 +31,30 @@ const ForgotPassword = () => {
     }
   };
   return (
-    <div>
-      <h2>Send Reset Email</h2>
-      {errorMessage && <p>{errorMessage}</p>}
-      <form onSubmit={handleForgotPassword}>
-        <input
-          type="text"
-          value={email}
-          onChange={({ target }) => setEmail(target.value)}
-          placeholder="Email"
-        />
-        <br />
-        <button type="submit">Send Email</button>
-      </form>
-      {confirmationMessage && <p>{confirmationMessage}</p>}
-      <a href="/">Back to Login</a>
-    </div>
+    <Flex minH="100vh" align="center" justify="center">
+      <Stack>
+        <Heading className={styles['forgot-password-title']}>Send Reset Email</Heading>
+        {errorMessage && <Box>{errorMessage}</Box>}
+        <FormControl className={styles['forgot-password-form']} isRequired>
+          <FormLabel className={styles['forgot-password-label']}>Email</FormLabel>
+          <Input
+            type="text"
+            value={email}
+            onChange={({ target }) => setEmail(target.value)}
+            placeholder="Email"
+          />
+          <Button
+            colorScheme="blue"
+            className={styles['forgot-password-button']}
+            onClick={handleForgotPassword}
+          >
+            Send Email
+          </Button>
+        </FormControl>
+        {confirmationMessage && <Box>{confirmationMessage}</Box>}
+        <Link href="/login">Back to Login</Link>
+      </Stack>
+    </Flex>
   );
 };
 

@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { confirmNewPassword } from '../../utils/auth_utils';
+import {
+  Flex,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Heading,
+  Stack,
+  Box,
+  Link,
+} from '@chakra-ui/react';
+import { confirmNewPassword } from '../../utils/AuthUtils';
+import styles from './ResetPassword.module.css';
 
 const ResetPassword = ({ code }) => {
   const [password, setPassword] = useState();
@@ -22,33 +34,47 @@ const ResetPassword = ({ code }) => {
     }
   };
   return (
-    <div>
-      <h2>Reset Password</h2>
-      {errorMessage && <p>{errorMessage}</p>}
-      {!confirmationMessage && (
-        <form onSubmit={handleResetPassword}>
-          <input
-            type="password"
-            onChange={({ target }) => setPassword(target.value)}
-            placeholder="New Password"
-          />
-          <br />
-          <input
-            type="password"
-            onChange={({ target }) => setCheckPassword(target.value)}
-            placeholder="Re-enter Password"
-          />
-          <br />
-          <button type="submit">Reset Password</button>
-        </form>
-      )}
-      {confirmationMessage && (
-        <div>
-          <p>{confirmationMessage}</p>
-          <a href="/">Back to Login</a>
-        </div>
-      )}
-    </div>
+    <Flex minH="100vh" align="center" justify="center">
+      <Stack>
+        <Heading className={styles['reset-password-title']}>Reset Password</Heading>
+        {errorMessage && <Box>{errorMessage}</Box>}
+        {!confirmationMessage && (
+          <FormControl
+            isRequired
+            className={styles['reset-password-form']}
+            onSubmit={handleResetPassword}
+          >
+            <FormLabel className={styles['reset-password-label']}>New Password</FormLabel>
+            <Input
+              type="password"
+              onChange={({ target }) => setPassword(target.value)}
+              placeholder="New Password"
+              isRequired
+            />
+            <FormLabel className={styles['reset-password-label']}>Re-enter Password</FormLabel>
+            <Input
+              type="password"
+              onChange={({ target }) => setCheckPassword(target.value)}
+              placeholder="Re-enter Password"
+              isRequired
+            />
+            <Button
+              colorScheme="blue"
+              className={styles['reset-password-button']}
+              onClick={e => handleResetPassword(e)}
+            >
+              Reset Password
+            </Button>
+          </FormControl>
+        )}
+        {confirmationMessage && (
+          <Stack>
+            <Box>{confirmationMessage}</Box>
+            <Link href="/login">Back to Login</Link>
+          </Stack>
+        )}
+      </Stack>
+    </Flex>
   );
 };
 
