@@ -3,7 +3,7 @@ import { instanceOf } from 'prop-types';
 import { Flex, Button, Heading, Stack, Box } from '@chakra-ui/react';
 import { logout, useNavigate } from '../../utils/AuthUtils';
 import { Cookies, withCookies } from '../../utils/CookieUtils';
-import styles from './Loggingout.module.css';
+import styles from './Logout.module.css';
 
 const Logout = ({ cookies }) => {
   const navigate = useNavigate();

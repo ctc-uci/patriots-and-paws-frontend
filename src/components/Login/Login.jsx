@@ -10,7 +10,7 @@ import {
   Link,
   Stack,
 } from '@chakra-ui/react';
-import styles from './Loggingin.module.css';
+import styles from './Login.module.css';
 import { Cookies, withCookies } from '../../utils/CookieUtils';
 import { logInWithEmailAndPassword, useNavigate } from '../../utils/AuthUtils';
 
