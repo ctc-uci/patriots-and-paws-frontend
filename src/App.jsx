@@ -24,7 +24,7 @@ function App() {
             path="/"
             element={
               <ProtectedRoute
-                Component={<Dashboard />}
+                Component={Dashboard}
                 redirectPath="/login"
                 roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
               />
@@ -37,7 +37,7 @@ function App() {
             path="/logout"
             element={
               <ProtectedRoute
-                Component={<Logout />}
+                Component={Logout}
                 redirectPath="/login"
                 roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
               />

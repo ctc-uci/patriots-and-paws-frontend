@@ -31,10 +31,13 @@ const ProtectedRoute = ({ Component, redirectPath, roles, cookies }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(async () => {
-    const authenticated = await userIsAuthenticated(roles, cookies);
-    setIsAuthenticated(authenticated);
-    setIsLoading(false);
+  useEffect(() => {
+    const checkUserAuthentication = async () => {
+      const authenticated = await userIsAuthenticated(roles, cookies);
+      setIsAuthenticated(authenticated);
+      setIsLoading(false);
+    };
+    checkUserAuthentication();
   }, []);
   if (isLoading) {
     return <h1>LOADING...</h1>;
