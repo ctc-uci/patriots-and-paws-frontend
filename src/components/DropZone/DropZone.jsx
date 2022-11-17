@@ -8,7 +8,11 @@ import './DropZone.css';
 const DropZone = ({ setFiles }) => {
   const { getRootProps, getInputProps, isDragAccept, isDragReject, acceptedFiles } = useDropzone({
     noKeyboard: true,
-    accept: 'image/jpeg, image/jpg, image/png',
+    accept: {
+      'image/jpeg': ['.jpeg'],
+      'image/jpg': ['.jpg'],
+      'image/png': ['.png'],
+    },
     maxFiles: 1,
   });
   const [uploaded, setUploaded] = useState(false);
