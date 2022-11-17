@@ -4,6 +4,7 @@
 
 .register-form {
   margin: 5em;
+  max-width: 20em;
 }
 
 .register-form-label {
@@ -12,4 +13,8 @@
 
 .register-button {
   margin: 2em 0 0 0;
+}
+
+.error-box {
+  max-width: 20em;
 }

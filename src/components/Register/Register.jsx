@@ -15,9 +15,20 @@ const Register = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
+      // At least 1 lowercase, 1 uppercase, 1 symbol, 8 characters
+      const passwordRequirementsRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z@$!%*?&]{8,}$/;
+
+      if (!passwordRequirementsRegex.test(password)) {
+        throw new Error(
+          'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, and 1 symbol.',
+        );
+      }
+
       if (password !== checkPassword) {
         throw new Error("Passwords don't match");
       }
+
       await registerWithEmailAndPassword(email, password, role, navigate, '/');
     } catch (error) {
       setErrorMessage(error.message);
@@ -75,7 +86,7 @@ const Register = () => {
             Register
           </Button>
         </FormControl>
-        <Box>{errorMessage}</Box>
+        <Box className={styles['error-box']}>{errorMessage}</Box>
       </Stack>
     </Flex>
   );

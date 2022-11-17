@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 
 import ProtectedRoute from './utils/ProtectedRoute';
+import EmailAction from './components/EmailAction/EmailAction';
 import Register from './components/Register/Register';
 import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
@@ -43,6 +44,7 @@ function App() {
               />
             }
           />
+          <Route exact path="/email-action" element={<EmailAction redirectPath="/" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </Router>
