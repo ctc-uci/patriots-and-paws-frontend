@@ -22,9 +22,20 @@ const ResetPassword = ({ code }) => {
   const handleResetPassword = async e => {
     try {
       e.preventDefault();
+      // At least 1 lowercase, 1 uppercase, 1 symbol, 8 characters
+      const passwordRequirementsRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z@$!%*?&]{8,}$/;
+
+      if (!passwordRequirementsRegex.test(password)) {
+        throw new Error(
+          'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, and 1 symbol.',
+        );
+      }
+
       if (password !== checkPassword) {
         throw new Error("Passwords don't match");
       }
+
       await confirmNewPassword(code, password);
       setConfirmationMessage('Password changed. You can now sign in with your new password.');
       setErrorMessage('');
