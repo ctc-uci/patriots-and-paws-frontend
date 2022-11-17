@@ -12,7 +12,7 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import './DonationForm.css';
+import styles from './DonationForm.module.css';
 
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
@@ -32,16 +32,18 @@ function DonationForm() {
     resolver: yupResolver(schema),
   });
   return (
-    <div className="form-padding">
+    <div className={styles['form-padding']}>
+      {/* eslint-disable-next-line no-console */}
       <form onSubmit={handleSubmit(data => console.log(data))}>
-        <div className="field-section">
-          <h1 className="title">Name</h1>
-          <div className="form">
+        <div className={styles['field-section']}>
+          <h1 className={styles.title}>Name</h1>
+          <div className={styles.form}>
             <FormControl isInvalid={errors && errors.firstName} width="47%">
               <FormLabel>First</FormLabel>
               <Input {...register('firstName')} />
               <FormErrorMessage>{errors.firstName && errors.firstName.message}</FormErrorMessage>
             </FormControl>
+
             <FormControl isInvalid={errors && errors.lastName} width="47%">
               <FormLabel>Last</FormLabel>
               <Input {...register('lastName')} />
@@ -50,21 +52,25 @@ function DonationForm() {
           </div>
         </div>
 
-        <div className="field-section">
-          <h1 className="title">Address</h1>
+        <div className={styles['field-section']}>
+          <h1 className={styles.title}>Address</h1>
+
           <FormControl>
             <FormLabel>Street Address</FormLabel>
             <Input />
           </FormControl>
+
           <FormControl>
             <FormLabel>Address Line 2</FormLabel>
             <Input />
           </FormControl>
-          <div className="form">
+
+          <div className={styles.form}>
             <FormControl width="47%">
               <FormLabel>City </FormLabel>
               <Input />
             </FormControl>
+
             <FormControl width="47%">
               <FormLabel>State</FormLabel>
               <Select>
@@ -74,6 +80,7 @@ function DonationForm() {
               </Select>
             </FormControl>
           </div>
+
           <FormControl isInvalid={errors && errors.zipcode} l>
             <FormLabel>ZIP Code</FormLabel>
             <Input {...register('zipcode')} />
@@ -81,21 +88,22 @@ function DonationForm() {
           </FormControl>
         </div>
 
-        <div className="field-section">
-          <h1 className="title">Phone</h1>
+        <div className={styles['field-section']}>
+          <h1 className={styles.title}>Phone</h1>
           <InputGroup>
             <Input type="tel" />
           </InputGroup>
         </div>
 
-        <div className="field-section">
-          <h1 className="title">Email</h1>
-          <div className="form">
+        <div className={styles['field-section']}>
+          <h1 className={styles.title}>Email</h1>
+          <div className={styles.form}>
             <FormControl isInvalid={errors && errors.email1} width="47%">
               <FormLabel>Enter Email </FormLabel>
               <Input {...register('email1')} />
               <FormErrorMessage>{errors.email1 && errors.email1.message}</FormErrorMessage>
             </FormControl>
+
             <FormControl isInvalid={errors && errors.email2} width="47%">
               <FormLabel>Confirm Email </FormLabel>
               <Input {...register('email2')} />
@@ -104,16 +112,17 @@ function DonationForm() {
           </div>
         </div>
 
-        <div className="field-section">
-          <h1 className="title">Items to be Donated</h1>
+        <div className={styles['field-section']}>
+          <h1 className={styles.title}>Items to be Donated</h1>
           <Input />
         </div>
 
-        <div className="field-section">
-          <h1 className="title">Do you Have any Questions or Comments</h1>
+        <div className={styles['field-section']}>
+          <h1 className={styles.title}>Do you Have any Questions or Comments</h1>
           <Input />
         </div>
-        <Button type="submit">Submit</Button>
+
+        <Button type={styles.submit}>Submit</Button>
       </form>
     </div>
   );
