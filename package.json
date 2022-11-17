@@ -7,6 +7,7 @@
     "@chakra-ui/react": "^2.3.7",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@hookform/resolvers": "^2.9.10",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -17,8 +18,10 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-hook-form": "^7.39.3",
     "react-scripts": "5.0.1",
-    "web-vitals": "^1.0.1"
+    "web-vitals": "^1.0.1",
+    "yup": "^0.32.11"
   },
   "optionalDependencies": {
     "babel-loader": "8.1.0"
@@ -76,3 +79,4 @@
     "prettier": "^2.4.1"
   }
 }
+ 

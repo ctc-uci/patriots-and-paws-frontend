@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import './App.css';
 import DropZone from './components/DropZone/DropZone';
 import uploadImage from './util/furnitureUtils';
+import DonationForm from './components/DonationForm/DonationForm';
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -20,6 +21,7 @@ function App() {
       {images.map(e => (
         <Image key={e} src={e} />
       ))}
+      <DonationForm />
     </ChakraProvider>
   );
 }
