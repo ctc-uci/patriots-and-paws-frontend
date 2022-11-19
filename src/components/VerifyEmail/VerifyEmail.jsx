@@ -27,7 +27,9 @@ const VerifyEmail = ({ code }) => {
       {confirmationMessage && (
         <Stack>
           <Box>{confirmationMessage}</Box>
-          <Link href="/login">Back to Login</Link>
+          <Link href="/login" color="teal.500">
+            Back to Login
+          </Link>
         </Stack>
       )}
     </Flex>

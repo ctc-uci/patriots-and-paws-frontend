@@ -1,7 +1,3 @@
-.login-title {
-  margin: 1em 0 0 1em;
-}
-
 .login-form {
   margin: 5em;
   width: 20em;
@@ -12,10 +8,11 @@
 }
 
 .login-button {
-  margin: 2em 0 0 0;
+  margin: 1em 0 0 0;
   display: block;
 }
 
 .forgot-password-link {
+  margin-top: 1em;
   display: block;
 }

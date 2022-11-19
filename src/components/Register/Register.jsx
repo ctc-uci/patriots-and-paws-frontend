@@ -37,7 +37,7 @@ const Register = () => {
 
   return (
     <Flex minH="100vh" align="center" justify="center">
-      <Stack align="center">
+      <Stack>
         <Heading className={styles['register-title']}>Register</Heading>
         <FormControl isRequired className={styles['register-form']}>
           <FormLabel className={styles['register-form-label']}>Email</FormLabel>

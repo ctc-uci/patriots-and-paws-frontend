@@ -51,8 +51,12 @@ const ForgotPassword = () => {
             Send Email
           </Button>
         </FormControl>
-        {confirmationMessage && <Box>{confirmationMessage}</Box>}
-        <Link href="/login">Back to Login</Link>
+        {confirmationMessage && (
+          <Box className={styles['confirmation-msg']}>{confirmationMessage}</Box>
+        )}
+        <Link className={styles['login-link']} href="/login" color="teal.500">
+          Back to Login
+        </Link>
       </Stack>
     </Flex>
   );

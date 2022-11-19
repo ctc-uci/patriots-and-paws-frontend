@@ -46,7 +46,7 @@ const ResetPassword = ({ code }) => {
   };
   return (
     <Flex minH="100vh" align="center" justify="center">
-      <Stack>
+      <Stack align="center">
         <Heading className={styles['reset-password-title']}>Reset Password</Heading>
         {errorMessage && <Box>{errorMessage}</Box>}
         {!confirmationMessage && (
@@ -81,7 +81,9 @@ const ResetPassword = ({ code }) => {
         {confirmationMessage && (
           <Stack>
             <Box>{confirmationMessage}</Box>
-            <Link href="/login">Back to Login</Link>
+            <Link href="/login" color="teal.500">
+              Back to Login
+            </Link>
           </Stack>
         )}
       </Stack>
