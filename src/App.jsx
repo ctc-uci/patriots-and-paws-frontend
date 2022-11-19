@@ -1,6 +1,7 @@
 import { ChakraProvider, Button, Stack } from '@chakra-ui/react';
 import { PhoneIcon } from '@chakra-ui/icons';
 import React from 'react';
+import SendEmail from './components/SendEmail';
 import './App.css';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Button colorScheme="teal" size="lg">
           Button
         </Button>
+        <SendEmail />
       </Stack>
     </ChakraProvider>
   );
