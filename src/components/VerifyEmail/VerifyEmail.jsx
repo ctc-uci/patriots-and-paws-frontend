@@ -22,16 +22,18 @@ const VerifyEmail = ({ code }) => {
 
   return (
     <Flex minH="100vh" align="center" justify="center">
-      <Heading className={styles['verify-email-title']}>Verify Email</Heading>
-      {errorMessage && <p>{errorMessage}</p>}
-      {confirmationMessage && (
-        <Stack>
-          <Box>{confirmationMessage}</Box>
-          <Link href="/login" color="teal.500">
-            Back to Login
-          </Link>
-        </Stack>
-      )}
+      <Stack>
+        <Heading className={styles['verify-email-title']}>Verify Email</Heading>
+        {errorMessage && <Box>{errorMessage}</Box>}
+        {confirmationMessage && (
+          <Stack>
+            <Box>{confirmationMessage}</Box>
+            <Link href="/login" color="teal.500">
+              Back to Login
+            </Link>
+          </Stack>
+        )}
+      </Stack>
     </Flex>
   );
 };

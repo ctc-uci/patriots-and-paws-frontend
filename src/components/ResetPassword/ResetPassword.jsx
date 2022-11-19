@@ -48,7 +48,6 @@ const ResetPassword = ({ code }) => {
     <Flex minH="100vh" align="center" justify="center">
       <Stack align="center">
         <Heading className={styles['reset-password-title']}>Reset Password</Heading>
-        {errorMessage && <Box>{errorMessage}</Box>}
         {!confirmationMessage && (
           <FormControl
             isRequired
@@ -69,6 +68,7 @@ const ResetPassword = ({ code }) => {
               placeholder="Re-enter Password"
               isRequired
             />
+            {errorMessage && <Box className={styles['error-msg']}>{errorMessage}</Box>}
             <Button
               colorScheme="blue"
               className={styles['reset-password-button']}

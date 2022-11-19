@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { instanceOf } from 'prop-types';
 import { Flex, Button, Heading, Stack, Box } from '@chakra-ui/react';
 import { logout, useNavigate } from '../../utils/AuthUtils';
-import { Cookies, withCookies } from '../../utils/CookieUtils';
+import { Cookies, withCookies, clearCookies } from '../../utils/CookieUtils';
 import styles from './Logout.module.css';
 
 const Logout = ({ cookies }) => {
@@ -10,7 +10,8 @@ const Logout = ({ cookies }) => {
   const [errorMessage, setErrorMessage] = useState();
   const handleSubmit = async () => {
     try {
-      await logout('/', navigate, cookies);
+      clearCookies(cookies);
+      await logout('/login', navigate, cookies);
     } catch (err) {
       setErrorMessage(err.message);
     }
