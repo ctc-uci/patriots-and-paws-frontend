@@ -10,6 +10,7 @@ import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import Dashboard from './components/Dashboard/Dashboard';
+import SampleRoute from './components/SampleRoute/SampleRoute';
 
 import AUTH_ROLES from './utils/AuthConfig';
 
@@ -26,6 +27,17 @@ function App() {
             element={
               <ProtectedRoute
                 Component={Dashboard}
+                redirectPath="/login"
+                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/temp"
+            element={
+              <ProtectedRoute
+                Component={SampleRoute}
                 redirectPath="/login"
                 roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
               />
