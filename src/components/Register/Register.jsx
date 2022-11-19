@@ -1,15 +1,32 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flex, FormControl, FormLabel, Input, Button, Heading, Stack, Box } from '@chakra-ui/react';
+import {
+  Flex,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Heading,
+  Stack,
+  Box,
+  RadioGroup,
+  Radio,
+} from '@chakra-ui/react';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './Register.module.css';
+import AUTH_ROLES from '../../utils/AuthConfig';
+
+const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const Register = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
+  const [role, setRole] = useState(ADMIN_ROLE);
   const [errorMessage, setErrorMessage] = useState();
-  const [role, setRole] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async e => {
@@ -29,7 +46,9 @@ const Register = () => {
         throw new Error("Passwords don't match");
       }
 
-      await registerWithEmailAndPassword(email, password, role, navigate, '/');
+      const user = { firstName, lastName, email, phoneNumber, password, role };
+
+      await registerWithEmailAndPassword(user, navigate, '/login?signup=success');
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -40,6 +59,31 @@ const Register = () => {
       <Stack>
         <Heading className={styles['register-title']}>Register</Heading>
         <FormControl isRequired className={styles['register-form']}>
+          <FormLabel className={styles['register-form-label']}>First Name</FormLabel>
+          <Input
+            id="first-name"
+            placeholder="Enter first name"
+            value={firstName}
+            onChange={({ target }) => setFirstName(target.value)}
+            isRequired
+          />
+          <FormLabel className={styles['register-form-label']}>Last Name</FormLabel>
+          <Input
+            id="last-name"
+            placeholder="Enter last name"
+            value={lastName}
+            onChange={({ target }) => setLastName(target.value)}
+            isRequired
+          />
+          <FormLabel className={styles['register-form-label']}>Phone Number</FormLabel>
+          <Input
+            type="tel"
+            id="phone-number"
+            placeholder="Enter phone number"
+            value={phoneNumber}
+            onChange={({ target }) => setPhoneNumber(target.value)}
+            isRequired
+          />
           <FormLabel className={styles['register-form-label']}>Email</FormLabel>
           <Input
             type="email"
@@ -50,14 +94,17 @@ const Register = () => {
             isRequired
           />
           <FormLabel className={styles['register-form-label']}>Role</FormLabel>
-          <Input
-            type="text"
-            id="role"
-            placeholder="Enter role"
-            value={role}
-            onChange={({ target }) => setRole(target.value)}
-            isRequired
-          />
+          <RadioGroup
+            onChange={setRole}
+            className={styles['role-radio-group']}
+            defaultValue={ADMIN_ROLE}
+          >
+            <Stack direction="row">
+              <Radio value={SUPERADMIN_ROLE}>Superadmin</Radio>
+              <Radio value={ADMIN_ROLE}>Admin</Radio>
+              <Radio value={DRIVER_ROLE}>Driver</Radio>
+            </Stack>
+          </RadioGroup>
           <FormLabel className={styles['register-form-label']}>Password</FormLabel>
           <Input
             type="password"
