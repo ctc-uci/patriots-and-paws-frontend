@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { PropTypes, instanceOf } from 'prop-types';
+import { Spinner } from '@chakra-ui/react';
 import { withCookies, cookieKeys, Cookies, clearCookies } from './CookieUtils';
 import { refreshToken } from './AuthUtils';
 import { PNPBackend } from './utils';
@@ -40,7 +41,7 @@ const ProtectedRoute = ({ Component, redirectPath, roles, cookies }) => {
     checkUserAuthentication();
   }, []);
   if (isLoading) {
-    return <h1>LOADING...</h1>;
+    return <Spinner />;
   }
   if (isAuthenticated) {
     return <Component />;
