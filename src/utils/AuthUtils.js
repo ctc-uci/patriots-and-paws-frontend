@@ -4,9 +4,6 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   signOut,
-  GoogleAuthProvider,
-  signInWithPopup,
-  getAdditionalUserInfo,
   createUserWithEmailAndPassword,
   sendEmailVerification,
   sendPasswordResetEmail,
@@ -16,10 +13,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { cookieKeys, cookieConfig, clearCookies } from './CookieUtils';
 import { PNPBackend } from './utils';
-
-import AUTH_ROLES from './AuthConfig';
-
-const { USER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 // Using Firebase Web version 9
 const firebaseConfig = {
@@ -71,6 +64,14 @@ const getCurrentUser = authInstance =>
     );
   });
 
+// Get user from PNP DB using current user's id
+const getUserFromDB = async () => {
+  const {
+    data: { user },
+  } = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+  return user;
+};
+
 // Refreshes the current user's access token by making a request to Firebase
 const refreshToken = async () => {
   const currentUser = await getCurrentUser(auth);
@@ -84,78 +85,42 @@ const refreshToken = async () => {
     });
     // Sets the appropriate cookies after refreshing access token
     setCookie(cookieKeys.ACCESS_TOKEN, idToken, cookieConfig);
-    const user = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
-    setCookie(cookieKeys.ROLE, user.data.user.role, cookieConfig);
+    const {
+      data: {
+        user: { role },
+      },
+    } = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+    setCookie(cookieKeys.ROLE, role, cookieConfig);
     return idToken;
   }
   return null;
 };
 
 /**
- * Makes requests to add user to NPO DB. Deletes user if Firebase error
- * @param {string} email
- * @param {string} userId
- * @param {string} role
- * @param {bool} signUpWithGoogle true if user used Google provider to sign in
- * @param {string} password
+ * Makes requests to add user to PNP DB. Deletes user if Firebase error
+ * @param {object} user A user object with firstName, lastName, email, phoneNumber, password, and role properties
+ * @param {string} userId User ID from Firebase
  */
-const createUserInDB = async (email, userId, role, signUpWithGoogle, password = null) => {
+const createUserInDB = async (user, userId) => {
+  const { firstName, lastName, email, phoneNumber, password, role } = user;
   try {
-    if (signUpWithGoogle) {
-      await PNPBackend.post('/users/create', { email, userId, role, registered: false });
-    } else {
-      await PNPBackend.post('/users/create', { email, userId, role, registered: true });
-    }
+    await PNPBackend.post('/users/create', {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      role,
+      userId,
+    });
   } catch (err) {
     // Since this route is called after user is created in firebase, if this
     // route errors out, that means we have to discard the created firebase object
-    if (!signUpWithGoogle) {
-      await signInWithEmailAndPassword(auth, email, password);
-    }
+    await signInWithEmailAndPassword(auth, email, password);
+
     const userToBeTerminated = await auth.currentUser;
     userToBeTerminated.delete();
     throw new Error(err.message);
   }
-};
-
-/**
- * Signs a user in with Google using Firebase. Users are given USER_ROLE by default
- * @param {string} newUserRedirectPath path to redirect new users to after signing in with Google Provider for the first time
- * @param {string} defaultRedirectPath path to redirect users to after signing in with Google Provider
- * @param {hook} navigate An instance of the useNavigate hook from react-router-dom
- * @param {Cookies} cookies The user's cookies to populate
- * @returns A boolean indicating whether or not the user is new
- */
-const signInWithGoogle = async (newUserRedirectPath, defaultRedirectPath, navigate, cookies) => {
-  const provider = new GoogleAuthProvider();
-  const userCredential = await signInWithPopup(auth, provider);
-  const newUser = getAdditionalUserInfo(userCredential).isNewUser;
-  cookies.set(cookieKeys.ACCESS_TOKEN, auth.currentUser.accessToken, cookieConfig);
-  if (newUser) {
-    await createUserInDB(auth.currentUser.email, userCredential.user.uid, USER_ROLE, true);
-    cookies.set(cookieKeys.ROLE, USER_ROLE, cookieConfig);
-    navigate(newUserRedirectPath);
-  } else {
-    const user = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
-    cookies.set(cookieKeys.ROLE, user.data.user.role, cookieConfig);
-    if (!user.data.user.registered) {
-      navigate(newUserRedirectPath);
-    } else {
-      navigate(defaultRedirectPath);
-    }
-  }
-};
-
-/**
- * When a user signs in with Google for the first time, they will need to add additional info
- * This is called when the user submits the additional information which will lead to the flag
- * in the backend changed so that user is not new anymore
- * @param {string} redirectPath path to redirect user
- * @param {hook} navigate used to redirect the user after submitted
- */
-const finishGoogleLoginRegistration = async (redirectPath, navigate) => {
-  await PNPBackend.put(`/users/update/${auth.currentUser.uid}`);
-  navigate(redirectPath);
 };
 
 /**
@@ -174,8 +139,12 @@ const logInWithEmailAndPassword = async (email, password, redirectPath, navigate
     throw new Error('Please verify your email before logging in.');
   }
   cookies.set(cookieKeys.ACCESS_TOKEN, auth.currentUser.accessToken, cookieConfig);
-  const user = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
-  cookies.set(cookieKeys.ROLE, user.data.user.role, cookieConfig);
+  const {
+    data: {
+      user: { role },
+    },
+  } = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+  cookies.set(cookieKeys.ROLE, role, cookieConfig);
   navigate(redirectPath);
 };
 
@@ -192,27 +161,25 @@ const createUserInFirebase = async (email, password) => {
 
 /**
  * Creates a user (both in firebase and database)
- * @param {string} email
- * @param {string} password
- * @param {string} role
+ * @param {object} user A user object with firstName, lastName, email, phoneNumber, password, and role properties
  * @returns A UserCredential object from firebase
  */
-const createUser = async (email, password, role) => {
-  const user = await createUserInFirebase(email, password);
-  await createUserInDB(email, user.uid, role, false, password);
-  sendEmailVerification(user);
+const createUser = async user => {
+  const { email, password } = user;
+  const firebaseUser = await createUserInFirebase(email, password);
+  await createUserInDB(user, firebaseUser.uid);
+  sendEmailVerification(firebaseUser);
+  await auth.signOut();
 };
 
 /**
  * Registers a new user using the email provider
- * @param {string} email
- * @param {string} password
- * @param {string} role
+ * @param {object} user A user object with firstName, lastName, email, phoneNumber, password, and role properties
  * @param {hook} navigate An instance of the useNavigate hook from react-router-dom
  * @param {string} redirectPath path to redirect users once logged in
  */
-const registerWithEmailAndPassword = async (email, password, role, navigate, redirectPath) => {
-  await createUser(email, password, role);
+const registerWithEmailAndPassword = async (user, navigate, redirectPath) => {
+  await createUser(user);
   navigate(redirectPath);
 };
 
@@ -222,18 +189,6 @@ const registerWithEmailAndPassword = async (email, password, role, navigate, red
  */
 const sendPasswordReset = async email => {
   await sendPasswordResetEmail(auth, email);
-};
-
-/**
- * Sends password reset to new account created with stated email
- * @param {string} email The email to create an account with
- */
-const sendInviteLink = async (email, role) => {
-  // generate a random password (not going to be used as new account will reset password)
-  const randomPassword = Math.random().toString(36).slice(-8);
-  const user = await createUserInFirebase(email, randomPassword);
-  createUserInDB(email, user.uid, role, false, randomPassword);
-  sendPasswordReset(email);
 };
 
 /**
@@ -323,7 +278,6 @@ addAuthInterceptor(PNPBackend);
 export {
   auth,
   useNavigate,
-  signInWithGoogle,
   logInWithEmailAndPassword,
   registerWithEmailAndPassword,
   addAuthInterceptor,
@@ -331,8 +285,7 @@ export {
   logout,
   refreshToken,
   getCurrentUser,
-  sendInviteLink,
+  getUserFromDB,
   confirmNewPassword,
   confirmVerifyEmail,
-  finishGoogleLoginRegistration,
 };
