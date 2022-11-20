@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
+import React, { useState } from 'react';
 import {
   FormLabel,
   Input,
@@ -13,6 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
+import FurnitureField from '../FurnitureField/FurnitureField';
 
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
@@ -31,10 +32,39 @@ function DonationForm() {
   } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const [furnitureList, setFurnitureList] = useState([
+    { itemToBeDonated: 'Dressers', imageLink: '', description: '' },
+  ]);
+
+  const onAddFurnitureField = () => {
+    // setFurnitureList(furnitureList.concat(<FurnitureField />));
+    setFurnitureList(
+      furnitureList.concat({ itemToBeDonated: 'Dressers', imageLink: '', description: '' }),
+    );
+  };
+
+  const onDeleteFurnitureField = index => {
+    // setFurnitureList(furnitureList.concat(<FurnitureField />));
+    setFurnitureList(furnitureList.slice(0, index).concat(furnitureList.slice(index + 1)));
+  };
+
+  const setFurnitureSelection = (newSelection, index) => {
+    furnitureList.at(index).itemToBeDonated = newSelection;
+  };
+
+  const setImageLink = (newLink, index) => {
+    furnitureList.at(index).imageLink = newLink;
+  };
+
+  const setDescription = (newDescription, index) => {
+    furnitureList.at(index).description = newDescription;
+  };
+
   return (
     <div className={styles['form-padding']}>
       {/* eslint-disable-next-line no-console */}
-      <form onSubmit={handleSubmit(data => console.log(data))}>
+      <form onSubmit={handleSubmit(data => console.log(furnitureList.concat(data)))}>
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Name</h1>
           <div className={styles.form}>
@@ -57,23 +87,23 @@ function DonationForm() {
 
           <FormControl>
             <FormLabel>Street Address</FormLabel>
-            <Input />
+            <Input {...register('streetAddres')} />
           </FormControl>
 
           <FormControl>
             <FormLabel>Address Line 2</FormLabel>
-            <Input />
+            <Input {...register('streetAddres2')} />
           </FormControl>
 
           <div className={styles.form}>
             <FormControl width="47%">
               <FormLabel>City </FormLabel>
-              <Input />
+              <Input {...register('city')} />
             </FormControl>
 
             <FormControl width="47%">
               <FormLabel>State</FormLabel>
-              <Select>
+              <Select {...register('state')}>
                 <option>Alaska</option>
                 <option>California</option>
                 <option>Texas</option>
@@ -91,7 +121,7 @@ function DonationForm() {
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Phone</h1>
           <InputGroup>
-            <Input type="tel" />
+            <Input type="tel" {...register('phoneNumber')} />
           </InputGroup>
         </div>
 
@@ -113,16 +143,41 @@ function DonationForm() {
         </div>
 
         <div className={styles['field-section']}>
-          <h1 className={styles.title}>Items to be Donated</h1>
-          <Input />
+          <h1 className={styles.title}>Furniture Submissions</h1>
+          {/* First furniture field always required and will not have a delete */}
+          <FurnitureField
+            index={0}
+            onFurnitureChange={setFurnitureSelection}
+            onLinkChange={setImageLink}
+            onDescriptionChange={setDescription}
+          />
+
+          {furnitureList.slice(1).map((furniture, index) => {
+            return (
+              // eslint-disable-next-line react/no-array-index-key
+              <div key={index}>
+                <FurnitureField
+                  index={index + 1}
+                  onFurnitureChange={setFurnitureSelection}
+                  onLinkChange={setImageLink}
+                  onDescriptionChange={setDescription}
+                />
+                <Button onClick={() => onDeleteFurnitureField(index + 1)}>Delete</Button>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className={styles['field-section']}>
+          <Button onClick={onAddFurnitureField}>Add new furniture field</Button>
         </div>
 
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Do you Have any Questions or Comments</h1>
-          <Input />
+          <Input {...register('additional')} />
         </div>
 
-        <Button type={styles.submit}>Submit</Button>
+        <Button type="submit">Submit</Button>
       </form>
     </div>
   );
