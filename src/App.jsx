@@ -13,7 +13,7 @@ import RoutesPage from './pages/dashboard/Routes';
 import Donate from './pages/donation/Donate';
 import DonateStatus from './pages/donation/DonateStatus';
 
-// hardcoded values for rotue parameters
+// hardcoded values for the rotue parameters
 const driverOne = 1;
 const routeOne = 'down fifth avenue';
 
