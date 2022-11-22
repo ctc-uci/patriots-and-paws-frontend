@@ -7,10 +7,9 @@ import uploadImage from './util/furnitureUtils';
 import DonationForm from './components/DonationForm/DonationForm';
 
 import Dashboard from './pages/dashboard/Dashboard';
-import DonateEdit from './pages/dashboard/DonateEdit';
+import EditDonationForm from './pages/dashboard/EditDonationForm';
 import Drivers from './pages/dashboard/Drivers';
-import RoutesPage from './pages/dashboard/Routes';
-import Donate from './pages/donation/Donate';
+import DriverRoutes from './pages/dashboard/DriverRoutes';
 import DonateStatus from './pages/donation/DonateStatus';
 
 // hardcoded values for the rotue parameters
@@ -35,15 +34,15 @@ function App() {
           <Image key={e} src={e} />
         ))}
         <DonationForm />
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/donate/edit" element={<EditDonationForm />} />
+          <Route path="/drivers" driver={driverOne} element={<Drivers />} />
+          <Route path="/driver-routes" route={routeOne} element={<DriverRoutes />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/donate/status" element={<DonateStatus />} />
+        </Routes>
       </ChakraProvider>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/donate/edit" element={<DonateEdit />} />
-        <Route path="/drivers" driver={driverOne} element={<Drivers />} />
-        <Route path="/routes" route={routeOne} element={<RoutesPage />} />
-        <Route path="/donate" element={<Donate />} />
-        <Route path="/donate/status" element={<DonateStatus />} />
-      </Routes>
     </Router>
   );
 }
