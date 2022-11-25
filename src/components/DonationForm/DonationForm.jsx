@@ -10,7 +10,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
 import FurnitureField from '../FurnitureField/FurnitureField';
@@ -26,31 +26,37 @@ const schema = yup.object({
 function DonationForm() {
   const {
     register,
-    // control,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'furnitureField',
+  });
+
   const [furnitureList, setFurnitureList] = useState([
     { itemToBeDonated: 'Dressers', imageLink: '', description: '' },
   ]);
 
-  const onAddFurnitureField = () => {
-    // setFurnitureList(furnitureList.concat(<FurnitureField />));
-    setFurnitureList(
-      furnitureList.concat({ itemToBeDonated: 'Dressers', imageLink: '', description: '' }),
-    );
-  };
+  // const onAddFurnitureField = () => {
+  //   // setFurnitureList(furnitureList.concat(<FurnitureField />));
+  //   setFurnitureList(
+  //     furnitureList.concat({ itemToBeDonated: 'Dressers', imageLink: '', description: '' }),
+  //   );
+  // };
 
-  const onDeleteFurnitureField = index => {
-    // setFurnitureList(furnitureList.concat(<FurnitureField />));
-    setFurnitureList(furnitureList.slice(0, index).concat(furnitureList.slice(index + 1)));
-  };
+  // const onDeleteFurnitureField = index => {
+  //   // setFurnitureList(furnitureList.concat(<FurnitureField />));
+  //   setFurnitureList(furnitureList.slice(0, index).concat(furnitureList.slice(index + 1)));
+  // };
 
   const setFurnitureSelection = (newSelection, index) => {
     furnitureList.at(index).itemToBeDonated = newSelection;
+    setFurnitureList({ itemToBeDonated: 'Dressers', imageLink: '', description: '' });
   };
 
   const setImageLink = (newLink, index) => {
@@ -64,7 +70,7 @@ function DonationForm() {
   return (
     <div className={styles['form-padding']}>
       {/* eslint-disable-next-line no-console */}
-      <form onSubmit={handleSubmit(data => console.log(furnitureList.concat(data)))}>
+      <form onSubmit={handleSubmit()}>
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Name</h1>
           <div className={styles.form}>
@@ -152,7 +158,7 @@ function DonationForm() {
             onDescriptionChange={setDescription}
           />
 
-          {furnitureList.slice(1).map((furniture, index) => {
+          {/* {furnitureList.slice(1).map((furniture, index) => {
             return (
               // eslint-disable-next-line react/no-array-index-key
               <div key={index}>
@@ -165,11 +171,21 @@ function DonationForm() {
                 <Button onClick={() => onDeleteFurnitureField(index + 1)}>Delete</Button>
               </div>
             );
+          })} */}
+          {fields.map((furniture, index) => {
+            return (
+              // eslint-disable-next-line react/no-array-index-key
+              <div key={index}>
+                <h1>Furniture {index + 1}</h1>
+                <Input />
+                <Button onClick={() => remove(index)}>Delete</Button>
+              </div>
+            );
           })}
         </div>
 
         <div className={styles['field-section']}>
-          <Button onClick={onAddFurnitureField}>Add new furniture field</Button>
+          <Button onClick={() => append('Test')}>Add new furniture field</Button>
         </div>
 
         <div className={styles['field-section']}>
