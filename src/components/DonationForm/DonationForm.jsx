@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React from 'react';
 import {
   FormLabel,
   Input,
@@ -13,7 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
-import FurnitureField from '../FurnitureField/FurnitureField';
+// import FurnitureField from '../FurnitureField/FurnitureField';
 
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
@@ -38,39 +38,21 @@ function DonationForm() {
     name: 'furnitureField',
   });
 
-  const [furnitureList, setFurnitureList] = useState([
-    { itemToBeDonated: 'Dressers', imageLink: '', description: '' },
-  ]);
-
-  // const onAddFurnitureField = () => {
-  //   // setFurnitureList(furnitureList.concat(<FurnitureField />));
-  //   setFurnitureList(
-  //     furnitureList.concat({ itemToBeDonated: 'Dressers', imageLink: '', description: '' }),
-  //   );
-  // };
-
-  // const onDeleteFurnitureField = index => {
-  //   // setFurnitureList(furnitureList.concat(<FurnitureField />));
-  //   setFurnitureList(furnitureList.slice(0, index).concat(furnitureList.slice(index + 1)));
-  // };
-
-  const setFurnitureSelection = (newSelection, index) => {
-    furnitureList.at(index).itemToBeDonated = newSelection;
-    setFurnitureList({ itemToBeDonated: 'Dressers', imageLink: '', description: '' });
-  };
-
-  const setImageLink = (newLink, index) => {
-    furnitureList.at(index).imageLink = newLink;
-  };
-
-  const setDescription = (newDescription, index) => {
-    furnitureList.at(index).description = newDescription;
-  };
+  const furnitureOptions = [
+    'Dressers',
+    'Clean Housewares',
+    'Antiques',
+    'Art',
+    'Clean rugs',
+    'Home Decor items',
+    'Pet care items',
+    'Patio Furniture',
+  ];
 
   return (
     <div className={styles['form-padding']}>
       {/* eslint-disable-next-line no-console */}
-      <form onSubmit={handleSubmit()}>
+      <form onSubmit={handleSubmit(data => console.log(data))}>
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Name</h1>
           <div className={styles.form}>
@@ -150,34 +132,31 @@ function DonationForm() {
 
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Furniture Submissions</h1>
-          {/* First furniture field always required and will not have a delete */}
-          <FurnitureField
-            index={0}
-            onFurnitureChange={setFurnitureSelection}
-            onLinkChange={setImageLink}
-            onDescriptionChange={setDescription}
-          />
-
-          {/* {furnitureList.slice(1).map((furniture, index) => {
-            return (
-              // eslint-disable-next-line react/no-array-index-key
-              <div key={index}>
-                <FurnitureField
-                  index={index + 1}
-                  onFurnitureChange={setFurnitureSelection}
-                  onLinkChange={setImageLink}
-                  onDescriptionChange={setDescription}
-                />
-                <Button onClick={() => onDeleteFurnitureField(index + 1)}>Delete</Button>
-              </div>
-            );
-          })} */}
           {fields.map((furniture, index) => {
             return (
               // eslint-disable-next-line react/no-array-index-key
               <div key={index}>
-                <h1>Furniture {index + 1}</h1>
-                <Input />
+                <h1 className={styles.title}> Furniture {index + 1} </h1>
+                <div className={styles['field-spacing']}>
+                  <FormLabel>Items to be Donated</FormLabel>
+                  <Select
+                    defaultChecked="Dressers"
+                    {...register(`furnitureField.${index}.itemName`)}
+                  >
+                    {furnitureOptions.map((furnitureItem, i) => {
+                      // eslint-disable-next-line react/no-array-index-key
+                      return <option key={i}>{furnitureItem}</option>;
+                    })}
+                  </Select>
+                </div>
+                <div className={styles['field-spacing']}>
+                  <FormLabel>Furniture Image Link</FormLabel>
+                  <Input defaultValue="" {...register(`furnitureField.${index}.imageLink`)} />
+                </div>
+                <div className={styles['field-spacing']}>
+                  <FormLabel>Description</FormLabel>
+                  <Input defaultValue="" {...register(`furnitureField.${index}.description`)} />
+                </div>
                 <Button onClick={() => remove(index)}>Delete</Button>
               </div>
             );
@@ -185,7 +164,9 @@ function DonationForm() {
         </div>
 
         <div className={styles['field-section']}>
-          <Button onClick={() => append('Test')}>Add new furniture field</Button>
+          <Button onClick={() => append({ itemName: 'Dressers', imageLink: '', description: '' })}>
+            Add new furniture field
+          </Button>
         </div>
 
         <div className={styles['field-section']}>
