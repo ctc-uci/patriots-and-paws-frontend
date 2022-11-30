@@ -48,7 +48,7 @@ const messageAssignee = async ({ context }) => {
           slackAssignees.map(assignee =>
             Bot.client.chat.postMessage({
               channel: assignee.value?.slackId,
-              text: `${reviewer} has :discodog:APPROVED your PR <${url}|${title}>`,
+              text: `${reviewer} has :discodog:APPROVED your PR <${url}|${title}>`
             }),
           ),
         );
