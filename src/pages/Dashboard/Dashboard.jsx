@@ -15,7 +15,7 @@ const Dashboard = () => {
   return (
     <div>
       <h1>DASHBOARD</h1>
-      <p>Hello, {user.first_name}!</p>
+      <p>Hello, {user.firstName}!</p>
     </div>
   );
 };

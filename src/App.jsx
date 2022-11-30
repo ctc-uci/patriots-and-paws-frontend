@@ -5,11 +5,11 @@ import './App.css';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 import EmailAction from './components/EmailAction/EmailAction';
-import Register from './components/Register/Register';
+import CreateAccount from './components/CreateAccount/CreateAccount';
 import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
-import Dashboard from './components/Dashboard/Dashboard';
+import Dashboard from './pages/Dashboard/Dashboard';
 import SampleRoute from './components/SampleRoute/SampleRoute';
 
 import AUTH_ROLES from './utils/AuthConfig';
@@ -43,7 +43,17 @@ function App() {
               />
             }
           />
-          <Route exact path="/register" element={<Register />} />
+          <Route
+            exact
+            path="/register"
+            element={
+              <ProtectedRoute
+                Component={CreateAccount}
+                redirectPath="/login"
+                roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+              />
+            }
+          />
           <Route exact path="/login" element={<Login />} />
           <Route
             exact
@@ -56,7 +66,7 @@ function App() {
               />
             }
           />
-          <Route exact path="/email-action" element={<EmailAction redirectPath="/" />} />
+          <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </Router>
