@@ -2,23 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { PropTypes, instanceOf } from 'prop-types';
 import { Spinner } from '@chakra-ui/react';
-import { withCookies, cookieKeys, Cookies, clearCookies } from './CookieUtils';
-import { refreshToken } from './AuthUtils';
-import { PNPBackend } from './utils';
-
-const userIsAuthenticated = async (roles, cookies) => {
-  try {
-    const accessToken = await refreshToken(cookies);
-    if (!accessToken) {
-      return false;
-    }
-    const loggedIn = await PNPBackend.get(`/auth/verifyToken/${accessToken}`);
-    return roles.includes(cookies.get(cookieKeys.ROLE)) && loggedIn.status === 200;
-  } catch (err) {
-    clearCookies(cookies);
-    return false;
-  }
-};
+import { withCookies, Cookies } from './CookieUtils';
+import { userIsAuthenticated } from './AuthUtils';
 
 /**
  * Protects a route from unauthenticated users
@@ -34,7 +19,7 @@ const ProtectedRoute = ({ Component, redirectPath, roles, cookies }) => {
 
   useEffect(() => {
     const checkUserAuthentication = async () => {
-      const authenticated = await userIsAuthenticated(roles, cookies);
+      const authenticated = await userIsAuthenticated(cookies, roles);
       setIsAuthenticated(authenticated);
       setIsLoading(false);
     };

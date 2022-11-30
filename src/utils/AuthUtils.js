@@ -66,9 +66,8 @@ const getCurrentUser = authInstance =>
 
 // Get user from PNP DB using current user's id
 const getUserFromDB = async () => {
-  const {
-    data: { user },
-  } = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+  const res = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+  const user = res.data[0];
   return user;
 };
 
@@ -85,11 +84,8 @@ const refreshToken = async () => {
     });
     // Sets the appropriate cookies after refreshing access token
     setCookie(cookieKeys.ACCESS_TOKEN, idToken, cookieConfig);
-    const {
-      data: {
-        user: { role },
-      },
-    } = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+    const res = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+    const { role } = res.data[0];
     setCookie(cookieKeys.ROLE, role, cookieConfig);
     return idToken;
   }
@@ -99,18 +95,18 @@ const refreshToken = async () => {
 /**
  * Makes requests to add user to PNP DB. Deletes user if Firebase error
  * @param {object} user A user object with firstName, lastName, email, phoneNumber, password, and role properties
- * @param {string} userId User ID from Firebase
+ * @param {string} id User ID from Firebase
  */
-const createUserInDB = async (user, userId) => {
+const createUserInDB = async (user, id) => {
   const { firstName, lastName, email, phoneNumber, password, role } = user;
   try {
-    await PNPBackend.post('/users/create', {
+    await PNPBackend.post('/users', {
       firstName,
       lastName,
       email,
       phoneNumber,
       role,
-      userId,
+      id,
     });
   } catch (err) {
     // Since this route is called after user is created in firebase, if this
@@ -139,11 +135,8 @@ const logInWithEmailAndPassword = async (email, password, redirectPath, navigate
     throw new Error('Please verify your email before logging in.');
   }
   cookies.set(cookieKeys.ACCESS_TOKEN, auth.currentUser.accessToken, cookieConfig);
-  const {
-    data: {
-      user: { role },
-    },
-  } = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+  const res = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+  const { role } = res.data[0];
   cookies.set(cookieKeys.ROLE, role, cookieConfig);
   navigate(redirectPath);
 };
@@ -219,6 +212,21 @@ const logout = async (redirectPath, navigate, cookies) => {
   navigate(redirectPath);
 };
 
+// Checks if user is authenticated
+const userIsAuthenticated = async (cookies, roles = null) => {
+  try {
+    const accessToken = await refreshToken(cookies);
+    if (!accessToken) {
+      return false;
+    }
+    const loggedIn = await PNPBackend.get(`/auth/verifyToken/${accessToken}`);
+    return loggedIn.status === 200 && (!roles || roles.includes(cookies.get(cookieKeys.ROLE)));
+  } catch (err) {
+    clearCookies(cookies);
+    return false;
+  }
+};
+
 /**
  * Adds an axios interceptor for auth to given axiosInstance
  * @param {AxiosInstance} axiosInstance instance of axios to apply interceptor to
@@ -283,6 +291,7 @@ export {
   addAuthInterceptor,
   sendPasswordReset,
   logout,
+  userIsAuthenticated,
   refreshToken,
   getCurrentUser,
   getUserFromDB,

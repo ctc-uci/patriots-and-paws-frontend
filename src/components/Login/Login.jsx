@@ -16,23 +16,8 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import styles from './Login.module.css';
-import { Cookies, withCookies, clearCookies } from '../../utils/CookieUtils';
-import { logInWithEmailAndPassword, useNavigate, refreshToken } from '../../utils/AuthUtils';
-import { PNPBackend } from '../../utils/utils';
-
-const userIsAuthenticated = async cookies => {
-  try {
-    const accessToken = await refreshToken(cookies);
-    if (!accessToken) {
-      return false;
-    }
-    const loggedIn = await PNPBackend.get(`/auth/verifyToken/${accessToken}`);
-    return loggedIn.status === 200;
-  } catch (err) {
-    clearCookies(cookies);
-    return false;
-  }
-};
+import { Cookies, withCookies } from '../../utils/CookieUtils';
+import { logInWithEmailAndPassword, useNavigate, userIsAuthenticated } from '../../utils/AuthUtils';
 
 const Login = ({ cookies }) => {
   const navigate = useNavigate();
@@ -88,42 +73,38 @@ const Login = ({ cookies }) => {
         <Stack className={styles['login-stack']}>
           <Heading className={styles['login-title']}>Login</Heading>
           {errorMessage && <Box>{errorMessage}</Box>}
-          <FormControl className={styles['login-form']} isRequired>
-            <FormLabel className={styles['login-form-label']}>Email</FormLabel>
-            <Input
-              type="email"
-              id="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={({ target }) => setEmail(target.value)}
-              isRequired
-            />
-            <FormLabel className={styles['login-form-label']}>Password</FormLabel>
-            <Input
-              type="password"
-              id="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
-              isRequired
-            />
-            <Button
-              colorScheme="blue"
-              className={styles['login-button']}
-              onClick={e => {
-                handleSubmit(e);
-              }}
-            >
-              Sign in
-            </Button>
-            <Link
-              className={styles['forgot-password-link']}
-              href="/forgot-password"
-              color="teal.500"
-            >
-              Forgot Password
-            </Link>
-          </FormControl>
+          <form onSubmit={handleSubmit}>
+            <FormControl className={styles['login-form']} isRequired>
+              <FormLabel className={styles['login-form-label']}>Email</FormLabel>
+              <Input
+                type="email"
+                id="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={({ target }) => setEmail(target.value)}
+                isRequired
+              />
+              <FormLabel className={styles['login-form-label']}>Password</FormLabel>
+              <Input
+                type="password"
+                id="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={({ target }) => setPassword(target.value)}
+                isRequired
+              />
+              <Button colorScheme="blue" className={styles['login-button']} type="submit">
+                Sign in
+              </Button>
+              <Link
+                className={styles['forgot-password-link']}
+                href="/forgot-password"
+                color="teal.500"
+              >
+                Forgot Password
+              </Link>
+            </FormControl>
+          </form>
         </Stack>
       </Stack>
     </Flex>

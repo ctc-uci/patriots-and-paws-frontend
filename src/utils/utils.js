@@ -15,5 +15,14 @@ const PNPBackend = axios.create({
   withCredentials: true,
 });
 
+// Regular expression for password validation
+// Minimum 8 characters
+// - At least one lower case alphabetic
+// - At least one upper case alphabetic
+// - At least one number
+// - At least one special character
+const passwordRequirementsRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
 // eslint-disable-next-line import/prefer-default-export
-export { PNPBackend };
+export { PNPBackend, passwordRequirementsRegex };
