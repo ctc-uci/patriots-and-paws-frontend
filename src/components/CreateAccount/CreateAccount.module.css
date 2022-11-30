@@ -1,13 +1,12 @@
-.register-form {
-  margin: 5em;
+.create-account-form {
   max-width: 20em;
 }
 
-.register-form-label {
+.create-account-form-label {
   margin: 0.5em 0 0 0;
 }
 
-.register-button {
+.create-account-button {
   margin: 1em 0 0 0;
 }
 
