@@ -71,6 +71,13 @@ const getUserFromDB = async () => {
   return user;
 };
 
+// Get user role from PNP DB
+const getUserRole = async () => {
+  const res = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+  const { role } = res.data[0];
+  return role;
+};
+
 // Refreshes the current user's access token by making a request to Firebase
 const refreshToken = async () => {
   const currentUser = await getCurrentUser(auth);
@@ -295,6 +302,7 @@ export {
   refreshToken,
   getCurrentUser,
   getUserFromDB,
+  getUserRole,
   confirmNewPassword,
   confirmVerifyEmail,
 };

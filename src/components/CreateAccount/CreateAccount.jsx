@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import * as yup from 'yup';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Flex,
   FormControl,
@@ -21,30 +23,51 @@ import { passwordRequirementsRegex } from '../../utils/utils';
 const { ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const CreateAccount = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [password, setPassword] = useState('');
-  const [checkPassword, setCheckPassword] = useState('');
   const [role, setRole] = useState(ADMIN_ROLE);
+  const formSchema = yup.object({
+    firstName: yup.string().required('Please enter your first name'),
+    lastName: yup.string().required('Please enter your last name'),
+    phoneNumber: yup
+      .string()
+      .length(10, 'Please enter a ten digit phone number')
+      .matches(/^\d{10}$/)
+      .required('Please enter your phone number'),
+    email: yup.string().email().required('Please enter your email address'),
+    password: yup
+      .string()
+      .matches(
+        passwordRequirementsRegex,
+        'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
+      )
+      .required('Please enter your password'),
+    confirmPassword: yup.string().required('Please re-enter your password'),
+  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(formSchema),
+    delayError: 750,
+  });
+
   const [errorMessage, setErrorMessage] = useState();
   const navigate = useNavigate();
 
-  const handleSubmit = async e => {
-    e.preventDefault();
+  const onSubmit = async e => {
     try {
-      if (!passwordRequirementsRegex.test(password)) {
-        throw new Error(
-          'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, and 1 symbol.',
-        );
+      if (e.password !== e.confirmPassword) {
+        throw new Error('Passwords do not match');
       }
 
-      if (password !== checkPassword) {
-        throw new Error("Passwords don't match");
-      }
-
-      const user = { firstName, lastName, email, phoneNumber, password, role };
+      const user = {
+        firstName: e.firstName,
+        lastName: e.lastName,
+        email: e.email,
+        phoneNumber: e.phoneNumber,
+        password: e.password,
+        role,
+      };
 
       await registerWithEmailAndPassword(user, navigate, '/login?signup=success');
     } catch (error) {
@@ -52,46 +75,48 @@ const CreateAccount = () => {
     }
   };
 
+  /* eslint-disable react/jsx-props-no-spreading */
+
   return (
     <Flex minH="100vh" align="center" justify="center">
       <Stack>
         <Heading className={styles['create-account-title']}>Create Account</Heading>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl isRequired className={styles['create-account-form']}>
             <FormLabel className={styles['create-account-form-label']}>First Name</FormLabel>
             <Input
               id="first-name"
               placeholder="Enter first name"
-              value={firstName}
-              onChange={({ target }) => setFirstName(target.value)}
+              {...register('firstName')}
               isRequired
             />
+            <Box className={styles['error-box']}>{errors.firstName?.message}</Box>
             <FormLabel className={styles['create-account-form-label']}>Last Name</FormLabel>
             <Input
               id="last-name"
               placeholder="Enter last name"
-              value={lastName}
-              onChange={({ target }) => setLastName(target.value)}
+              {...register('lastName')}
               isRequired
             />
+            <Box className={styles['error-box']}>{errors.lastName?.message}</Box>
             <FormLabel className={styles['create-account-form-label']}>Phone Number</FormLabel>
             <Input
               type="tel"
               id="phone-number"
               placeholder="Enter phone number"
-              value={phoneNumber}
-              onChange={({ target }) => setPhoneNumber(target.value)}
+              {...register('phoneNumber')}
               isRequired
             />
+            <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
             <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
             <Input
               type="email"
               id="email"
               placeholder="Enter email"
-              value={email}
-              onChange={({ target }) => setEmail(target.value)}
+              {...register('email')}
               isRequired
             />
+            <Box className={styles['error-box']}>{errors.email?.message}</Box>
             <FormLabel className={styles['create-account-form-label']}>Role</FormLabel>
             <RadioGroup
               onChange={setRole}
@@ -108,17 +133,16 @@ const CreateAccount = () => {
               type="password"
               id="password"
               placeholder="Enter password"
-              value={password}
-              onChange={({ target }) => setPassword(target.value)}
+              {...register('password')}
               isRequired
             />
+            <Box className={styles['error-box']}>{errors.password?.message}</Box>
             <FormLabel className={styles['create-account-form-label']}>Re-enter Password</FormLabel>
             <Input
               type="password"
               id="check-password"
               placeholder="Re-enter password"
-              value={checkPassword}
-              onChange={({ target }) => setCheckPassword(target.value)}
+              {...register('confirmPassword')}
               isRequired
             />
             <Button colorScheme="blue" className={styles['create-account-button']} type="submit">

@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { confirmNewPassword } from '../../utils/AuthUtils';
 import styles from './ResetPassword.module.css';
+import { passwordRequirementsRegex } from '../../utils/utils';
 
 const ResetPassword = ({ code }) => {
   const [password, setPassword] = useState();
@@ -22,10 +23,6 @@ const ResetPassword = ({ code }) => {
   const handleResetPassword = async e => {
     try {
       e.preventDefault();
-      // At least 1 lowercase, 1 uppercase, 1 symbol, 8 characters
-      const passwordRequirementsRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z@$!%*?&]{8,}$/;
-
       if (!passwordRequirementsRegex.test(password)) {
         throw new Error(
           'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, and 1 symbol.',
@@ -46,9 +43,16 @@ const ResetPassword = ({ code }) => {
   };
   return (
     <Flex minH="100vh" align="center" justify="center">
-      <Stack align="center">
+      <Stack>
         <Heading className={styles['reset-password-title']}>Reset Password</Heading>
-        {!confirmationMessage && (
+        {confirmationMessage ? (
+          <Stack>
+            <Box>{confirmationMessage}</Box>
+            <Link href="/login" color="teal.500">
+              Back to Login
+            </Link>
+          </Stack>
+        ) : (
           <FormControl
             isRequired
             className={styles['reset-password-form']}
@@ -77,14 +81,6 @@ const ResetPassword = ({ code }) => {
               Reset Password
             </Button>
           </FormControl>
-        )}
-        {confirmationMessage && (
-          <Stack>
-            <Box>{confirmationMessage}</Box>
-            <Link href="/login" color="teal.500">
-              Back to Login
-            </Link>
-          </Stack>
         )}
       </Stack>
     </Flex>
