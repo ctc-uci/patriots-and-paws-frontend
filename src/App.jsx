@@ -39,7 +39,7 @@ function App() {
           <Route path="/donate/edit" element={<EditDonationForm />} />
           <Route path="/drivers" driver={driverOne} element={<Drivers />} />
           <Route path="/driver-routes" route={routeOne} element={<DriverRoutes />} />
-          <Route path="/donate" element={<Donate />} />
+          <Route path="/donate" element={<DonationForm />} />
           <Route path="/donate/status" element={<DonateStatus />} />
         </Routes>
       </ChakraProvider>
