@@ -1,7 +1,9 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 
-const Driver = driver => {
-  return <p>{driver} is the driver id</p>;
+const Driver = () => {
+  const { id } = useParams();
+  return <p>{id} is the driver id</p>;
 };
 
 export default Driver;

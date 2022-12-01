@@ -12,10 +12,6 @@ import Drivers from './pages/dashboard/Drivers';
 import DriverRoutes from './pages/dashboard/DriverRoutes';
 import DonateStatus from './pages/donation/DonateStatus';
 
-// hardcoded values for the rotue parameters
-const driverOne = 1;
-const routeOne = 'down fifth avenue';
-
 function App() {
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
@@ -37,8 +33,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/donate/edit" element={<EditDonationForm />} />
-          <Route path="/drivers" driver={driverOne} element={<Drivers />} />
-          <Route path="/driver-routes" route={routeOne} element={<DriverRoutes />} />
+          <Route path="/drivers:id" element={<Drivers />} />
+          <Route path="/driver-routes:id" element={<DriverRoutes />} />
           <Route path="/donate" element={<DonationForm />} />
           <Route path="/donate/status" element={<DonateStatus />} />
         </Routes>
