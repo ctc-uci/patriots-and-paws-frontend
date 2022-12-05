@@ -19,6 +19,7 @@
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
     "react-hook-form": "^7.39.3",
+    "react-router-dom": "^6.4.4",
     "react-scripts": "5.0.1",
     "web-vitals": "^1.0.1",
     "yup": "^0.32.11"
@@ -79,4 +80,3 @@
     "prettier": "^2.4.1"
   }
 }
- 
