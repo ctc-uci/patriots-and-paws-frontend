@@ -13,7 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
-// import FurnitureField from '../FurnitureField/FurnitureField';
+import FurnitureField from '../FurnitureField/FurnitureField';
 
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
@@ -33,21 +33,14 @@ function DonationForm() {
     resolver: yupResolver(schema),
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: furnitureFields,
+    append: appendFurniture,
+    remove: removeFurniture,
+  } = useFieldArray({
     control,
     name: 'furnitureField',
   });
-
-  const furnitureOptions = [
-    'Dressers',
-    'Clean Housewares',
-    'Antiques',
-    'Art',
-    'Clean rugs',
-    'Home Decor items',
-    'Pet care items',
-    'Patio Furniture',
-  ];
 
   return (
     <div className={styles['form-padding']}>
@@ -132,39 +125,26 @@ function DonationForm() {
 
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Furniture Submissions</h1>
-          {fields.map((furniture, index) => {
+          {furnitureFields.map((furniture, index) => {
             return (
               // eslint-disable-next-line react/no-array-index-key
               <div key={index}>
-                <h1 className={styles.title}> Furniture {index + 1} </h1>
-                <div className={styles['field-spacing']}>
-                  <FormLabel>Items to be Donated</FormLabel>
-                  <Select
-                    defaultChecked="Dressers"
-                    {...register(`furnitureField.${index}.itemName`)}
-                  >
-                    {furnitureOptions.map((furnitureItem, i) => {
-                      // eslint-disable-next-line react/no-array-index-key
-                      return <option key={i}>{furnitureItem}</option>;
-                    })}
-                  </Select>
-                </div>
-                <div className={styles['field-spacing']}>
-                  <FormLabel>Furniture Image Link</FormLabel>
-                  <Input defaultValue="" {...register(`furnitureField.${index}.imageLink`)} />
-                </div>
-                <div className={styles['field-spacing']}>
-                  <FormLabel>Description</FormLabel>
-                  <Input defaultValue="" {...register(`furnitureField.${index}.description`)} />
-                </div>
-                <Button onClick={() => remove(index)}>Delete</Button>
+                <FurnitureField
+                  index={index}
+                  register={register}
+                  removeFurniture={removeFurniture}
+                />
               </div>
             );
           })}
         </div>
 
         <div className={styles['field-section']}>
-          <Button onClick={() => append({ itemName: 'Dressers', imageLink: '', description: '' })}>
+          <Button
+            onClick={() =>
+              appendFurniture({ itemName: 'Dressers', imageLink: '', description: '' })
+            }
+          >
             Add new furniture field
           </Button>
         </div>
