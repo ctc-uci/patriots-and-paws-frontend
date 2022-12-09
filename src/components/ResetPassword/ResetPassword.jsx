@@ -19,8 +19,6 @@ import styles from './ResetPassword.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
 const ResetPassword = ({ code }) => {
-  // const [password, setPassword] = useState();
-  // const [checkPassword, setCheckPassword] = useState();
   const [errorMessage, setErrorMessage] = useState();
   const [confirmationMessage, setConfirmationMessage] = useState();
 
