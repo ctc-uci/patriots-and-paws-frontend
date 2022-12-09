@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -15,12 +15,12 @@ import {
   RadioGroup,
   Radio,
 } from '@chakra-ui/react';
-import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
+import { registerWithEmailAndPassword, getUserRole } from '../../utils/AuthUtils';
 import styles from './CreateAccount.module.css';
 import AUTH_ROLES from '../../utils/AuthConfig';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
-const { ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const CreateAccount = () => {
   const [role, setRole] = useState(ADMIN_ROLE);
@@ -52,7 +52,18 @@ const CreateAccount = () => {
   });
 
   const [errorMessage, setErrorMessage] = useState();
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkIsSuperAdmin = async () => {
+      const currentUserRole = await getUserRole();
+      if (currentUserRole === SUPERADMIN_ROLE) {
+        setIsSuperAdmin(true);
+      }
+    };
+    checkIsSuperAdmin();
+  }, []);
 
   const onSubmit = async e => {
     try {
@@ -70,8 +81,15 @@ const CreateAccount = () => {
       };
 
       await registerWithEmailAndPassword(user, navigate, '/login?signup=success');
-    } catch (error) {
-      setErrorMessage(error.message);
+    } catch (err) {
+      const errorCode = err.code;
+      const firebaseErrorMsg = err.message;
+
+      if (errorCode === 'auth/email-already-in-use') {
+        setErrorMessage('This email address is already associated with another account');
+      } else {
+        setErrorMessage(firebaseErrorMsg);
+      }
     }
   };
 
@@ -124,7 +142,7 @@ const CreateAccount = () => {
               defaultValue={ADMIN_ROLE}
             >
               <Stack direction="row">
-                <Radio value={ADMIN_ROLE}>Admin</Radio>
+                {isSuperAdmin && <Radio value={ADMIN_ROLE}>Admin</Radio>}
                 <Radio value={DRIVER_ROLE}>Driver</Radio>
               </Stack>
             </RadioGroup>

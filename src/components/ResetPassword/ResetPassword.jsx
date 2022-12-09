@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Flex,
   FormControl,
@@ -16,27 +19,44 @@ import styles from './ResetPassword.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
 const ResetPassword = ({ code }) => {
-  const [password, setPassword] = useState();
-  const [checkPassword, setCheckPassword] = useState();
+  // const [password, setPassword] = useState();
+  // const [checkPassword, setCheckPassword] = useState();
   const [errorMessage, setErrorMessage] = useState();
   const [confirmationMessage, setConfirmationMessage] = useState();
+
+  const formSchema = yup.object({
+    newPassword: yup
+      .string()
+      .matches(
+        passwordRequirementsRegex,
+        'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
+      )
+      .required('Please enter your new password'),
+    confirmNewPassword: yup
+      .string()
+      .required('Please confirm your password')
+      .oneOf([yup.ref('newPassword'), null], 'Passwords must both match'),
+  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(formSchema),
+    delayError: 750,
+  });
+
   const handleResetPassword = async e => {
     try {
-      e.preventDefault();
-      if (!passwordRequirementsRegex.test(password)) {
-        throw new Error(
-          'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, and 1 symbol.',
-        );
-      }
+      const { newPassword, confirmNewPassword: confirmPassword } = e;
 
-      if (password !== checkPassword) {
+      if (newPassword !== confirmPassword) {
         throw new Error("Passwords don't match");
       }
 
-      await confirmNewPassword(code, password);
+      await confirmNewPassword(code, newPassword);
       setConfirmationMessage('Password changed. You can now sign in with your new password.');
       setErrorMessage('');
-      setPassword('');
     } catch (err) {
       setErrorMessage(err.message);
     }
@@ -53,34 +73,34 @@ const ResetPassword = ({ code }) => {
             </Link>
           </Stack>
         ) : (
-          <FormControl
-            isRequired
-            className={styles['reset-password-form']}
-            onSubmit={handleResetPassword}
-          >
-            <FormLabel className={styles['reset-password-label']}>New Password</FormLabel>
-            <Input
-              type="password"
-              onChange={({ target }) => setPassword(target.value)}
-              placeholder="New Password"
+          <form onSubmit={handleSubmit(handleResetPassword)}>
+            <FormControl
               isRequired
-            />
-            <FormLabel className={styles['reset-password-label']}>Re-enter Password</FormLabel>
-            <Input
-              type="password"
-              onChange={({ target }) => setCheckPassword(target.value)}
-              placeholder="Re-enter Password"
-              isRequired
-            />
-            {errorMessage && <Box className={styles['error-msg']}>{errorMessage}</Box>}
-            <Button
-              colorScheme="blue"
-              className={styles['reset-password-button']}
-              onClick={e => handleResetPassword(e)}
+              className={styles['reset-password-form']}
+              onSubmit={handleResetPassword}
             >
-              Reset Password
-            </Button>
-          </FormControl>
+              <FormLabel className={styles['reset-password-label']}>New Password</FormLabel>
+              <Input
+                type="password"
+                placeholder="New Password"
+                {...register('newPassword')}
+                isRequired
+              />
+              <Box className={styles['error-box']}>{errors.newPassword?.message}</Box>
+              <FormLabel className={styles['reset-password-label']}>Re-enter Password</FormLabel>
+              <Input
+                type="password"
+                {...register('confirmNewPassword')}
+                placeholder="Re-enter Password"
+                isRequired
+              />
+              <Box className={styles['error-box']}>{errors.confirmNewPassword?.message}</Box>
+              {errorMessage && <Box className={styles['error-msg']}>{errorMessage}</Box>}
+              <Button colorScheme="blue" className={styles['reset-password-button']} type="submit">
+                Reset Password
+              </Button>
+            </FormControl>
+          </form>
         )}
       </Stack>
     </Flex>

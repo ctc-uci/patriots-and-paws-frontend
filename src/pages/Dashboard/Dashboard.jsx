@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { Flex, Heading, Stack, Text } from '@chakra-ui/react';
+import Logout from '../../components/Logout/Logout';
 import { getUserFromDB } from '../../utils/AuthUtils';
 
 const Dashboard = () => {
@@ -13,10 +15,13 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div>
-      <h1>DASHBOARD</h1>
-      <p>Hello, {user.firstName}!</p>
-    </div>
+    <Flex minH="100vh" align="center" justify="center">
+      <Stack align="center">
+        <Heading>DASHBOARD</Heading>
+        <Text>Hello, {user.firstName}!</Text>
+        <Logout />
+      </Stack>
+    </Flex>
   );
 };
 

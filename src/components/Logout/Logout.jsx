@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { instanceOf } from 'prop-types';
-import { Flex, Button, Heading, Stack, Box } from '@chakra-ui/react';
+import { Button, Box, Stack } from '@chakra-ui/react';
 import { logout, useNavigate } from '../../utils/AuthUtils';
 import { Cookies, withCookies } from '../../utils/CookieUtils';
 import styles from './Logout.module.css';
@@ -17,15 +17,12 @@ const Logout = ({ cookies }) => {
   };
 
   return (
-    <Flex minH="100vh" align="center" justify="center">
-      <Stack align="center">
-        <Heading>Logout</Heading>
-        {errorMessage && <Box>{errorMessage}</Box>}
-        <Button colorScheme="blue" className={styles['logout-button']} onClick={handleSubmit}>
-          Logout
-        </Button>
-      </Stack>
-    </Flex>
+    <Stack>
+      <Button className={styles['logout-button']} colorScheme="blue" onClick={handleSubmit}>
+        Logout
+      </Button>
+      {errorMessage && <Box>{errorMessage}</Box>}
+    </Stack>
   );
 };
 
