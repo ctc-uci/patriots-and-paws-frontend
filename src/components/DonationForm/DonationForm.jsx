@@ -125,18 +125,10 @@ function DonationForm() {
 
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Furniture Submissions</h1>
-          {furnitureFields.map((furniture, index) => {
-            return (
-              // eslint-disable-next-line react/no-array-index-key
-              <div key={index}>
-                <FurnitureField
-                  index={index}
-                  register={register}
-                  removeFurniture={removeFurniture}
-                />
-              </div>
-            );
-          })}
+          {furnitureFields.map((furniture, index) => (
+            // eslint-disable-next-line react/jsx-key
+            <FurnitureField index={index} register={register} removeFurniture={removeFurniture} />
+          ))}
         </div>
 
         <div className={styles['field-section']}>
