@@ -1,5 +1,6 @@
 .title {
   font-weight: bold;
+  font-size: larger;
 }
 
 .form {
@@ -15,4 +16,8 @@
 
 .field-section {
   margin-bottom: 4vh;
+}
+
+.field-spacing {
+  margin-bottom: 1vh;
 }

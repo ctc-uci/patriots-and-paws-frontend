@@ -10,9 +10,10 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
+import FurnitureField from '../FurnitureField/FurnitureField';
 
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
@@ -25,12 +26,22 @@ const schema = yup.object({
 function DonationForm() {
   const {
     register,
-    // control,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const {
+    fields: furnitureFields,
+    append: appendFurniture,
+    remove: removeFurniture,
+  } = useFieldArray({
+    control,
+    name: 'furnitureField',
+  });
+
   return (
     <div className={styles['form-padding']}>
       {/* eslint-disable-next-line no-console */}
@@ -57,23 +68,23 @@ function DonationForm() {
 
           <FormControl>
             <FormLabel>Street Address</FormLabel>
-            <Input />
+            <Input {...register('streetAddres')} />
           </FormControl>
 
           <FormControl>
             <FormLabel>Address Line 2</FormLabel>
-            <Input />
+            <Input {...register('streetAddres2')} />
           </FormControl>
 
           <div className={styles.form}>
             <FormControl width="47%">
               <FormLabel>City </FormLabel>
-              <Input />
+              <Input {...register('city')} />
             </FormControl>
 
             <FormControl width="47%">
               <FormLabel>State</FormLabel>
-              <Select>
+              <Select {...register('state')}>
                 <option>Alaska</option>
                 <option>California</option>
                 <option>Texas</option>
@@ -91,7 +102,7 @@ function DonationForm() {
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Phone</h1>
           <InputGroup>
-            <Input type="tel" />
+            <Input type="tel" {...register('phoneNumber')} />
           </InputGroup>
         </div>
 
@@ -113,16 +124,29 @@ function DonationForm() {
         </div>
 
         <div className={styles['field-section']}>
-          <h1 className={styles.title}>Items to be Donated</h1>
-          <Input />
+          <h1 className={styles.title}>Furniture Submissions</h1>
+          {furnitureFields.map((furniture, index) => (
+            // eslint-disable-next-line react/jsx-key
+            <FurnitureField index={index} register={register} removeFurniture={removeFurniture} />
+          ))}
+        </div>
+
+        <div className={styles['field-section']}>
+          <Button
+            onClick={() =>
+              appendFurniture({ itemName: 'Dressers', imageLink: '', description: '' })
+            }
+          >
+            Add new furniture field
+          </Button>
         </div>
 
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Do you Have any Questions or Comments</h1>
-          <Input />
+          <Input {...register('additional')} />
         </div>
 
-        <Button type={styles.submit}>Submit</Button>
+        <Button type="submit">Submit</Button>
       </form>
     </div>
   );
