@@ -15,7 +15,8 @@
     "lint-staged": "^11.2.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
+    "react-html-email": "^3.0.0",
+    "react-scripts": "^5.0.1",
     "web-vitals": "^1.0.1"
   },
   "optionalDependencies": {
@@ -68,8 +69,8 @@
     "@storybook/addon-essentials": "^6.3.12",
     "@storybook/addon-links": "^6.3.12",
     "@storybook/node-logger": "^6.3.12",
-    "@storybook/preset-create-react-app": "^4.1.2",
-    "@storybook/react": "^6.3.12",
+    "@storybook/preset-create-react-app": "^1.2.0",
+    "@storybook/react": "^6.1.21",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.2",

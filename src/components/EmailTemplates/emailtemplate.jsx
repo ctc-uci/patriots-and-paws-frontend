@@ -1,7 +1,7 @@
 import React from 'react';
-import { Email, Item, Span, A, renderEmail } from 'react-html-email';
+import { Email, Item, Span, A } from 'react-html-email';
 
-const emailHTML = renderEmail(
+const emailHTML = (
   <Email title="Hello World!">
     <Item align="center">
       <Span fontSize={20}>
@@ -9,7 +9,7 @@ const emailHTML = renderEmail(
         <A href="https://github.com/chromakode/react-html-email">react-html-email</A>.
       </Span>
     </Item>
-  </Email>,
+  </Email>
 );
 
 export default emailHTML;
