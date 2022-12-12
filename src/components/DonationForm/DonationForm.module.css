@@ -1,0 +1,23 @@
+.title {
+  font-weight: bold;
+  font-size: larger;
+}
+
+.form {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+
+.form-padding {
+  padding: 2vw;
+}
+
+.field-section {
+  margin-bottom: 4vh;
+}
+
+.field-spacing {
+  margin-bottom: 1vh;
+}
