@@ -11,12 +11,12 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 }
 
 // See auth_utils for AuthInterceptor
-export const PNPBackend = axios.create({
+const PNPBackend = axios.create({
   baseURL,
   headers: { 'Access-Control-Allow-Credentials': '*' },
 });
 
-export const sendEmail = async (newEmail, emailtemplate) => {
+const sendEmail = async (newEmail, emailtemplate) => {
   const response = await PNPBackend.post('/nodemailer/send', {
     email: newEmail,
     messageHtml: renderEmail(emailtemplate),
@@ -26,3 +26,5 @@ export const sendEmail = async (newEmail, emailtemplate) => {
     throw new Error('Oops, something went wrong. Try again');
   }
 };
+
+export { PNPBackend, sendEmail };
