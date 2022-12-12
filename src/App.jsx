@@ -11,6 +11,8 @@ import Drivers from './pages/dashboard/Drivers';
 import DriverRoutes from './pages/dashboard/DriverRoutes';
 import DonateStatus from './pages/donation/DonateStatus';
 
+import EmailSending from './components/EmailSending';
+
 function App() {
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
@@ -23,6 +25,7 @@ function App() {
   return (
     <Router>
       <ChakraProvider>
+        <EmailSending />
         <DropZone setFiles={setFiles} />
         <Button onClick={onSubmit}>Upload File</Button>
         {images.map(e => (

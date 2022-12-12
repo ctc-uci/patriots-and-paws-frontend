@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { renderEmail } from 'react-html-email';
 
 let baseURL = '';
 if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
@@ -15,5 +16,15 @@ const PNPBackend = axios.create({
   headers: { 'Access-Control-Allow-Credentials': '*' },
 });
 
-// eslint-disable-next-line import/prefer-default-export
-export { PNPBackend };
+const sendEmail = async (newEmail, emailtemplate) => {
+  const response = await PNPBackend.post('/nodemailer/send', {
+    email: newEmail,
+    messageHtml: renderEmail(emailtemplate),
+    subject: 'test!',
+  });
+  if (response.status !== 200) {
+    throw new Error('Oops, something went wrong. Try again');
+  }
+};
+
+export { PNPBackend, sendEmail };
