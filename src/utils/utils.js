@@ -13,8 +13,17 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
 // See auth_utils for AuthInterceptor
 const PNPBackend = axios.create({
   baseURL,
-  headers: { 'Access-Control-Allow-Credentials': '*' },
+  withCredentials: true,
 });
+
+// Regular expression for password validation
+// Minimum 8 characters
+// - At least one lower case alphabetic
+// - At least one upper case alphabetic
+// - At least one number
+// - At least one special character
+const passwordRequirementsRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 const sendEmail = async (newEmail, emailtemplate) => {
   const response = await PNPBackend.post('/nodemailer/send', {
@@ -26,5 +35,5 @@ const sendEmail = async (newEmail, emailtemplate) => {
     throw new Error('Oops, something went wrong. Try again');
   }
 };
-
-export { PNPBackend, sendEmail };
+// eslint-disable-next-line import/prefer-default-export
+export { PNPBackend, passwordRequirementsRegex, sendEmail };

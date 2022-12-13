@@ -1,7 +1,7 @@
 import React from 'react';
 import { Email, Item, Span, A } from 'react-html-email';
 
-const emailHTML = (
+const emailTemplate = (
   <Email title="Hello World!">
     <Item align="center">
       <Span fontSize={20}>
@@ -12,4 +12,4 @@ const emailHTML = (
   </Email>
 );
 
-export default emailHTML;
+export default emailTemplate;

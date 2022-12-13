@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import emailtemplate from './EmailTemplates/emailtemplate';
-import './EmailSending.module.css';
-import { sendEmail } from '../util/utils';
+import emailTemplate from './emailtemplate';
+import styles from './EmailSending.module.css';
+import { sendEmail } from '../../utils/utils';
 
 const SendEmail = () => {
   const [newEmail, setNewEmail] = useState();
@@ -12,7 +12,7 @@ const SendEmail = () => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    sendEmail(newEmail, emailtemplate);
+    sendEmail(newEmail, emailTemplate);
   };
 
   return (
@@ -20,7 +20,7 @@ const SendEmail = () => {
       <label htmlFor="emailInput">
         enter your email:
         <input
-          className="email-input"
+          className={styles['email-input']}
           id="emailInput"
           onChange={updateEmail}
           type="email"
