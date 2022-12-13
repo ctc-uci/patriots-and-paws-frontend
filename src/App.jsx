@@ -103,8 +103,8 @@ function App() {
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 
           <Route exact path="/donate/edit" element={<EditDonationForm />} />
-          <Route exact path="/drivers:id" element={<Drivers />} />
-          <Route exact path="/driver-routes:id" element={<DriverRoutes />} />
+          <Route exact path="/drivers/:id" element={<Drivers />} />
+          <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
           <Route exact path="/donate" element={<DonationForm />} />
           <Route exact path="/donate/status" element={<DonateStatus />} />
         </Routes>
