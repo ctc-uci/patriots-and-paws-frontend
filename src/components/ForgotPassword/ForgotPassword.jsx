@@ -17,7 +17,6 @@ import { sendPasswordReset } from '../../utils/AuthUtils';
 import styles from './ForgotPassword.module.css';
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState();
   const [confirmationMessage, setConfirmationMessage] = useState();
 
@@ -33,15 +32,14 @@ const ForgotPassword = () => {
     delayError: 750,
   });
 
-  const handleForgotPassword = async e => {
+  const handleForgotPassword = async data => {
     try {
-      e.preventDefault();
+      const { email } = data;
       await sendPasswordReset(email);
       setConfirmationMessage(
         'If the email entered is associated with an account, you should receive an email to reset your password shortly.',
       );
       setErrorMessage('');
-      setEmail('');
     } catch (err) {
       setErrorMessage(err.message);
     }

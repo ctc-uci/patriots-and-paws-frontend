@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { instanceOf } from 'prop-types';
+// import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -15,14 +16,15 @@ import {
   RadioGroup,
   Radio,
 } from '@chakra-ui/react';
-import { registerWithEmailAndPassword, getUserRole } from '../../utils/AuthUtils';
+import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
+import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './CreateAccount.module.css';
 import AUTH_ROLES from '../../utils/AuthConfig';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
-const CreateAccount = () => {
+const CreateAccount = ({ cookies }) => {
   const [role, setRole] = useState(ADMIN_ROLE);
   const formSchema = yup.object({
     firstName: yup.string().required('Please enter your first name'),
@@ -40,7 +42,10 @@ const CreateAccount = () => {
         'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
       )
       .required('Please enter your password'),
-    confirmPassword: yup.string().required('Please re-enter your password'),
+    confirmPassword: yup
+      .string()
+      .required('Please confirm your password')
+      .oneOf([yup.ref('password'), null], 'Passwords must both match'),
   });
   const {
     register,
@@ -53,34 +58,31 @@ const CreateAccount = () => {
 
   const [errorMessage, setErrorMessage] = useState();
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
-    const checkIsSuperAdmin = async () => {
-      const currentUserRole = await getUserRole();
-      if (currentUserRole === SUPERADMIN_ROLE) {
-        setIsSuperAdmin(true);
-      }
+    const checkIsSuperAdmin = () => {
+      const currentUserRole = cookies.get(cookieKeys.ROLE);
+      setIsSuperAdmin(currentUserRole === SUPERADMIN_ROLE);
     };
     checkIsSuperAdmin();
   }, []);
 
   const onSubmit = async e => {
     try {
-      if (e.password !== e.confirmPassword) {
-        throw new Error('Passwords do not match');
-      }
+      const { firstName, lastName, email, phoneNumber, password } = e;
 
       const user = {
-        firstName: e.firstName,
-        lastName: e.lastName,
-        email: e.email,
-        phoneNumber: e.phoneNumber,
-        password: e.password,
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        password,
         role,
       };
-
-      await registerWithEmailAndPassword(user, navigate, '/login?signup=success');
+      await registerWithEmailAndPassword(user);
+      setErrorMessage('User successfully created');
+      // await registerWithEmailAndPassword(user, navigate, '/login?signup=success');
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;
@@ -163,6 +165,7 @@ const CreateAccount = () => {
               {...register('confirmPassword')}
               isRequired
             />
+            <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
             <Button colorScheme="blue" className={styles['create-account-button']} type="submit">
               Create account
             </Button>
@@ -174,4 +177,8 @@ const CreateAccount = () => {
   );
 };
 
-export default CreateAccount;
+CreateAccount.propTypes = {
+  cookies: instanceOf(Cookies).isRequired,
+};
+
+export default withCookies(CreateAccount);

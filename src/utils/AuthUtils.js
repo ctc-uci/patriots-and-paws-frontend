@@ -178,9 +178,9 @@ const createUser = async user => {
  * @param {hook} navigate An instance of the useNavigate hook from react-router-dom
  * @param {string} redirectPath path to redirect users once logged in
  */
-const registerWithEmailAndPassword = async (user, navigate, redirectPath) => {
+const registerWithEmailAndPassword = async user => {
   await createUser(user);
-  navigate(redirectPath);
+  // navigate(redirectPath);
 };
 
 /**
@@ -194,7 +194,7 @@ const sendPasswordReset = async email => {
 /**
  * Completes the password reset process, given a confirmation code and new password
  * @param {string} code The confirmation code sent via email to the user
- * @param {string} newPassowrd The new password
+ * @param {string} newPassword The new password
  */
 const confirmNewPassword = async (code, newPassword) => {
   await confirmPasswordReset(auth, code, newPassword);
