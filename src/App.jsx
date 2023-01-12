@@ -9,6 +9,7 @@ import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import DonateStatus from './pages/donation/DonateStatus';
+import ManageStaff from './pages/ManageStaff/ManageStaff';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 import EmailAction from './components/EmailAction/EmailAction';
@@ -107,6 +108,7 @@ function App() {
           <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
           <Route exact path="/donate" element={<DonationForm />} />
           <Route exact path="/donate/status" element={<DonateStatus />} />
+          <Route exact path="/manage-staff" element={<ManageStaff />} />
         </Routes>
       </Router>
     </ChakraProvider>
