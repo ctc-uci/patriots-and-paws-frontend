@@ -14,20 +14,21 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
 import FurnitureField from '../FurnitureField/FurnitureField';
+import { sendEmail } from '../../utils/utils';
+import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
-  lastName: yup.string().required('Invalid first name'),
-  zipcode: yup.number().typeError('ZIP code must be a number'),
-  email1: yup.string().email('Invalid email').required('Email required'),
-  email2: yup.string().email('Invalid email').required('Email required'),
+  lastName: yup.string().required('Invalid last name'),
+  zipcode: yup.number().typeError('ZIP code must be a number').required(),
+  email1: yup.string().email('Invalid email').required('Email required').matches(),
+  email2: yup.string().email('Invalid email').required('Email required').matches(),
 });
 
 function DonationForm() {
   const {
     register,
     control,
-    handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -42,10 +43,17 @@ function DonationForm() {
     name: 'furnitureField',
   });
 
+  const handleSubmit = event => {
+    event.preventDefault();
+    console.log(event.target.email1.value);
+    console.log(event.target.zipcode.value);
+    sendEmail(event.target.email1.value, dconfirmemailtemplate);
+  };
+
   return (
     <div className={styles['form-padding']}>
       {/* eslint-disable-next-line no-console */}
-      <form onSubmit={handleSubmit(data => console.log(data))}>
+      <form onSubmit={handleSubmit}>
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Name</h1>
           <div className={styles.form}>
