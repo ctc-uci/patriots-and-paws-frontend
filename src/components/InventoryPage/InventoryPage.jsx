@@ -3,16 +3,16 @@ import {
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
   Flex,
   useDisclosure,
   Modal,
+  Text,
 } from '@chakra-ui/react';
+import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
 
@@ -38,11 +38,10 @@ const InventoryPage = () => {
   }
 
   return (
-    <TableContainer>
+    <TableContainer p="122px">
       <Table variant="simple">
-        <TableCaption>Donation Information</TableCaption>
         <Thead>
-          <Tr>
+          <Tr bg="#F7FAFC" height="40px">
             <Th>NAME</Th>
             <Th>DONATION ID</Th>
             <Th>STATUS</Th>
@@ -56,31 +55,42 @@ const InventoryPage = () => {
             </Modal>
 
             <Td>
-              <h1>name</h1>
-              <h1>email</h1>
+              <Text>Zoya Soy</Text>
+              <Text color="#718096">zsoy@uci.edu</Text>
             </Td>
-            <Td>#123</Td>
+            <Td>#3939483</Td>
             <Td>{makeStatus('rejected')}</Td>
+            <Td>January 10th, 2023</Td>
           </Tr>
-          <Tr>
-            <Td>feet</Td>
-            <Td>centimetres (cm)</Td>
-            <Td isNumeric>30.48</Td>
-            <Td isNumeric>30.48</Td>
+
+          <Tr onClick={onOpen}>
+            {/* <Modal isOpen={isOpen} onClose={onClose}>
+              <DonationModal onClose={onClose} />
+            </Modal> */}
+
+            <Td>
+              <Text>Zoya Soy</Text>
+              <Text color="#718096">zsoy@uci.edu</Text>
+            </Td>
+            <Td>#3939483</Td>
+            <Td>{makeStatus('rejected')}</Td>
+            <Td>January 10th, 2023</Td>
           </Tr>
-          <Tr>
-            <Td>yards</Td>
-            <Td>metres (m)</Td>
-            <Td isNumeric>0.91444</Td>
+
+          <Tr onClick={onOpen}>
+            {/* <Modal isOpen={isOpen} onClose={onClose}>
+              <DonationModal onClose={onClose} />
+            </Modal> */}
+
+            <Td>
+              <Text>Zoya Soy</Text>
+              <Text color="#718096">zsoy@uci.edu</Text>
+            </Td>
+            <Td>#3939483</Td>
+            <Td>{makeStatus('rejected')}</Td>
+            <Td>January 10th, 2023</Td>
           </Tr>
         </Tbody>
-        <Tfoot>
-          <Tr>
-            <Th>To convert</Th>
-            <Th>into</Th>
-            <Th isNumeric>multiply by</Th>
-          </Tr>
-        </Tfoot>
       </Table>
     </TableContainer>
   );
