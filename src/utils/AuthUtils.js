@@ -172,6 +172,21 @@ const createUser = async user => {
   await auth.signOut();
 };
 
+const updateUserInDB = async (user, id) => {
+  const { firstName, lastName, phoneNumber } = user;
+  try {
+    await PNPBackend.put(`/users/${id}`, { firstName, lastName, phoneNumber });
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+const updateFirebaseUser = async user => {
+  const { password, id } = user;
+  await getAuth().updateUser(id, { password });
+  await updateUserInDB(user, id);
+};
+
 /**
  * Registers a new user using the email provider
  * @param {object} user A user object with firstName, lastName, email, phoneNumber, password, and role properties
@@ -302,6 +317,8 @@ export {
   refreshToken,
   getCurrentUser,
   getUserFromDB,
+  updateUserInDB,
+  updateFirebaseUser,
   getUserRole,
   confirmNewPassword,
   confirmVerifyEmail,
