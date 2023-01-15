@@ -10,6 +10,9 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
+  ModalCloseButton,
+  LinkBox,
+  LinkOverlay,
 } from '@chakra-ui/react';
 import { StarIcon, HamburgerIcon } from '@chakra-ui/icons';
 import styles from './ManageStaff.css';
@@ -25,40 +28,47 @@ const ManageStaff = () => {
   const roles = ['Driver', 'Admin', 'Driver', 'Admin'];
 
   return (
-    <Flex className="side-panel">
-      <Flex className={styles['panel-title']} align="center">
-        <StarIcon />
-        <Text className="staff-title" ml={2}>
-          Staff
-        </Text>
-        <HamburgerIcon ml="240px" />
+    <Flex>
+      <Flex className="side-panel">
+        <Flex className={styles['panel-title']} align="center">
+          <StarIcon />
+          <Text className="staff-title">Staff</Text>
+          <HamburgerIcon ml={250} />
+        </Flex>
+        <Flex minH="100vh">
+          <List className="users">
+            {firstNames.map((name, index) => (
+              <LinkBox key={name}>
+                <LinkOverlay href="#">
+                  <ListItem key={name} mb={0} mt={0} border="1px" borderColor="gray.200">
+                    <Flex align="center" height="12vh" mr={20} ml={10}>
+                      <Image ml={5} boxSize="50px" src={profilePicture} mr="4vh" />
+                      <Flex className="driver-info">
+                        <Text className="driver-name">
+                          {name} {lastNames[index]}
+                        </Text>
+                        <Text className="role">{roles[index]}</Text>
+                      </Flex>
+                    </Flex>
+                  </ListItem>
+                </LinkOverlay>
+              </LinkBox>
+            ))}
+            <Button colorScheme="blue" className={styles['create-account-button']} onClick={onOpen}>
+              Create User
+            </Button>
+          </List>
+          <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalCloseButton />
+              <CreateAccount />
+            </ModalContent>
+          </Modal>
+        </Flex>
       </Flex>
-      <Flex minH="100vh">
-        <List className="panel">
-          {firstNames.map((name, index) => (
-            <ListItem key={name} mb={0} mt={0} border="1px" borderColor="gray.200">
-              <Flex align="center" height="12vh" mr={20} ml={10}>
-                <Image ml={5} boxSize="50px" src={profilePicture} mr="4vh" />
-                <Flex className="driver-info">
-                  <Text className="driver-name">
-                    {name} {lastNames[index]}
-                  </Text>
-                  <Text className="role">{roles[index]}</Text>
-                </Flex>
-              </Flex>
-            </ListItem>
-          ))}
-          <Button colorScheme="blue" className={styles['create-account-button']} onClick={onOpen}>
-            Create User
-          </Button>
-        </List>
+      <Flex m="auto">
         <DisplayedProfile />
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <CreateAccount />
-          </ModalContent>
-        </Modal>
       </Flex>
     </Flex>
   );

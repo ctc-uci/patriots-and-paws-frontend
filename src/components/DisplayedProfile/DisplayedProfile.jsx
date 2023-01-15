@@ -15,7 +15,7 @@ const DisplayedProfile = () => {
   const { role, firstName, lastName, email, phoneNumber } = testPerson;
 
   return (
-    <Flex minH="100vh" align="center" justify="center">
+    <Flex minH="100vh" align="center">
       <div className={styles.column}>
         <Image
           boxSize="150px"

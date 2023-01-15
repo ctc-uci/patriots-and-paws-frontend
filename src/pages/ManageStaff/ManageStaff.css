@@ -22,7 +22,7 @@
   color: gray;
 }
 
-.panel{
+.users{
   /* spacing: 0;  */
   align-items: center;
   margin-right: 40;
@@ -41,6 +41,7 @@
   font-weight: bold;
   font-size: 20px;
   align-items: center;
+  margin-left: 3;
 }
 
 .panel-title{
