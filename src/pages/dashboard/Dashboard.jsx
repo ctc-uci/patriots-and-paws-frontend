@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Heading, Stack, Text } from '@chakra-ui/react';
-import Logout from '../../components/Logout/Logout';
+import { Link } from 'react-router-dom';
+import { Flex, Heading, Stack, Text, Button } from '@chakra-ui/react';
 import { getUserFromDB } from '../../utils/AuthUtils';
 
 const Dashboard = () => {
@@ -19,7 +19,9 @@ const Dashboard = () => {
       <Stack align="center">
         <Heading>DASHBOARD</Heading>
         <Text>Hello, {user.firstName}!</Text>
-        <Logout />
+        <Button colorScheme="blue">
+          <Link to={`/users/${user.id}`}>User Profile</Link>
+        </Button>
       </Stack>
     </Flex>
   );
