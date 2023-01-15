@@ -19,7 +19,12 @@ import { passwordRequirementsRegex } from '../../utils/utils';
 import { getUserFromDB, updateFirebaseUser } from '../../utils/AuthUtils';
 
 const UserDetails = () => {
-  const [user, setUser] = useState({ firstName: '', lastName: '', email: '', phoneNumber: '' });
+  const [user, setUser] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+  });
   const [canEditForm, setCanEditForm] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -44,12 +49,8 @@ const UserDetails = () => {
       .matches(
         passwordRequirementsRegex,
         'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
-      )
-      .required('Please enter your password'),
-    confirmPassword: yup
-      .string()
-      .required('Please confirm your password')
-      .oneOf([yup.ref('password'), null], 'Passwords must both match'),
+      ),
+    confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must both match'),
   });
 
   const {
@@ -57,12 +58,9 @@ const UserDetails = () => {
     handleSubmit,
     reset,
     formState: { errors },
+    getValues,
   } = useForm({
-    defaultValues: {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      phoneNumber: user.phoneNumber,
-    },
+    defaultValues: async () => getUserFromDB(),
     resolver: yupResolver(formSchema),
     delayError: 750,
   });
@@ -84,6 +82,8 @@ const UserDetails = () => {
       firstName: user.firstName,
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
+      password: '',
+      confirmPassword: '',
     });
     setCanEditForm(false);
   };
@@ -104,6 +104,8 @@ const UserDetails = () => {
               isDisabled={!canEditForm}
             />
             <Box className={styles['error-box']}>{errors.firstName?.message}</Box>
+          </FormControl>
+          <FormControl isRequired>
             <FormLabel className={styles['user-details-form-label']}>Last Name</FormLabel>
             <Input
               id="last-name"
@@ -113,6 +115,8 @@ const UserDetails = () => {
               isDisabled={!canEditForm}
             />
             <Box className={styles['error-box']}>{errors.lastName?.message}</Box>
+          </FormControl>
+          <FormControl isRequired>
             <FormLabel className={styles['user-details-form-label']}>Phone Number</FormLabel>
             <Input
               type="tel"
@@ -123,62 +127,64 @@ const UserDetails = () => {
               isDisabled={!canEditForm}
             />
             <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
-            <FormLabel className={styles['user-details-form-label']}>Email</FormLabel>
-            <Input
-              type="email"
-              id="email"
-              placeholder="Enter email"
-              value={user.email}
-              {...register('email')}
-              isRequired
-              isDisabled
-            />
-            <Box className={styles['error-box']}>{errors.email?.message}</Box>
-            <FormLabel className={styles['user-details-form-label']}>Password</FormLabel>
+          </FormControl>
+          <FormLabel className={styles['user-details-form-label']}>Email</FormLabel>
+          <Input
+            type="email"
+            id="email"
+            placeholder="Enter email"
+            value={user.email}
+            {...register('email')}
+            isRequired
+            isDisabled
+          />
+          <Box className={styles['error-box']}>{errors.email?.message}</Box>
+          <FormControl isRequired={getValues('password')?.length > 0}>
+            <FormLabel className={styles['user-details-form-label']}>New Password</FormLabel>
             <Input
               type="password"
               id="password"
-              placeholder="Enter password"
+              placeholder="Enter new password"
               {...register('password')}
-              isRequired
+              isRequired={getValues('password')?.length > 0}
               isDisabled={!canEditForm}
             />
             <Box className={styles['error-box']}>{errors.password?.message}</Box>
-            <FormLabel className={styles['user-details-form-label']}>Re-enter Password</FormLabel>
+          </FormControl>
+          <FormControl isRequired={getValues('password')?.length > 0}>
+            <FormLabel className={styles['user-details-form-label']}>
+              Re-enter New Password
+            </FormLabel>
             <Input
               type="password"
               id="check-password"
-              placeholder="Re-enter password"
+              placeholder="Re-enter new password"
               {...register('confirmPassword')}
-              isRequired
+              isRequired={getValues('password')?.length > 0}
               isDisabled={!canEditForm}
             />
             <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
-            {canEditForm ? (
-              <HStack className={styles['button-stack']}>
-                <Button
-                  colorScheme="gray"
-                  className={styles['cancel-button']}
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
-                <Button colorScheme="blue" className={styles['save-button']} type="submit">
-                  Save
-                </Button>
-              </HStack>
-            ) : (
-              <Button
-                colorScheme="gray"
-                className={styles['edit-button']}
-                onClick={() => {
-                  setCanEditForm(true);
-                }}
-              >
-                Edit Profile
-              </Button>
-            )}
           </FormControl>
+          {canEditForm ? (
+            <HStack className={styles['button-stack']}>
+              <Button colorScheme="gray" className={styles['cancel-button']} onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button colorScheme="blue" className={styles['save-button']} type="submit">
+                Save
+              </Button>
+            </HStack>
+          ) : (
+            <Button
+              colorScheme="gray"
+              className={styles['edit-button']}
+              onClick={() => {
+                setCanEditForm(true);
+              }}
+            >
+              Edit Profile
+            </Button>
+          )}
         </form>
       </Stack>
     </Flex>
