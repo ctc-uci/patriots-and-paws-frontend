@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   ModalOverlay,
@@ -20,64 +20,75 @@ import {
 
 import './InventoryPage.module.css';
 
-const DonationModal = props => {
-  const { onClose } = { props };
+const DonationModal = () => {
+  // add back "Props" para
+  // const { OnClose } = { props };
+  const [canEditInfo, setCanEditInfo] = useState(false);
+
   return (
     <>
       <ModalOverlay />
       <ModalContent maxW="90%" minH="90%">
         <ModalHeader m={3}>
-          <Text fontSize={36}>Donation #123456789</Text>
+          {/* <Text fontSize={36}>{props.ele.id}</Text> */}
           <Text fontSize={16}>Submission Date: January 9th 2023</Text>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Flex flexDirection="row" m={3}>
-            <Box h={600} w="60%">
-              Basic Information
-              <Stack spacing={4}>
-                <InputGroup>
-                  <InputLeftAddon>Name</InputLeftAddon>
-                  <Input placeholder="name" />
-                </InputGroup>
+            <Box h={600} w="60%" m={10}>
+              <Text mb={10} fontSize="20px">
+                Basic Information
+              </Text>
+              <Stack spacing={3}>
+                <Stack spacing={3}>
+                  <InputGroup>
+                    <InputLeftAddon>Name</InputLeftAddon>
+                    <Input value="dang" isDisabled={!canEditInfo} />
+                  </InputGroup>
+                </Stack>
+                <Stack direction="row">
+                  <InputGroup>
+                    <InputLeftAddon>Email</InputLeftAddon>
+                    <Input placeholder="email" isDisabled={!canEditInfo} />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon>Phone Number</InputLeftAddon>
+                    <Input type="tel" placeholder="phone number" isDisabled={!canEditInfo} />
+                  </InputGroup>
+                </Stack>
+                <Text mb={15} mt={15} fontSize="20px">
+                  Address
+                </Text>
+                <Stack spacing={3} direction="row">
+                  <InputGroup>
+                    <InputLeftAddon>Street Address</InputLeftAddon>
+                    <Input placeholder="street" isDisabled={!canEditInfo} />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon>Unit</InputLeftAddon>
+                    <Input placeholder="unit" isDisabled={!canEditInfo} />
+                  </InputGroup>
+                </Stack>
+                <Stack spacing={3} direction="row">
+                  <InputGroup>
+                    <InputLeftAddon>City</InputLeftAddon>
+                    <Input placeholder="city" isDisabled={!canEditInfo} />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon>State</InputLeftAddon>
+                    <Input placeholder="state" isDisabled={!canEditInfo} />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon>Zip Code</InputLeftAddon>
+                    <Input placeholder="zip" isDisabled={!canEditInfo} />
+                  </InputGroup>
+                </Stack>
+                <Text m={3} fontSize="20px">
+                  Additional Comments
+                </Text>
+                <Input placeholder="Enter additional comments here" />
               </Stack>
-              <Stack spacing={8} direction="row">
-                <InputGroup>
-                  <InputLeftAddon>Email</InputLeftAddon>
-                  <Input placeholder="email" />
-                </InputGroup>
-                <InputGroup>
-                  <InputLeftAddon>Phone Number</InputLeftAddon>
-                  <Input type="tel" placeholder="phone number" />
-                </InputGroup>
-              </Stack>
-              Addresssssss
-              <Stack spacing={8} direction="row">
-                <InputGroup>
-                  <InputLeftAddon>Street Address</InputLeftAddon>
-                  <Input placeholder="street" />
-                </InputGroup>
-                <InputGroup>
-                  <InputLeftAddon>Unit</InputLeftAddon>
-                  <Input placeholder="unit" />
-                </InputGroup>
-              </Stack>
-              <Stack spacing={8} direction="row">
-                <InputGroup>
-                  <InputLeftAddon>City</InputLeftAddon>
-                  <Input placeholder="city" />
-                </InputGroup>
-                <InputGroup>
-                  <InputLeftAddon>State</InputLeftAddon>
-                  <Input placeholder="state" />
-                </InputGroup>
-                <InputGroup>
-                  <InputLeftAddon>Zip Code</InputLeftAddon>
-                  <Input placeholder="zip" />
-                </InputGroup>
-              </Stack>
-              Additional Comments
-              <Input placeholder="Enter additional comments here" />
             </Box>
             <Box h={600} w="40%">
               <Box>
@@ -125,9 +136,43 @@ const DonationModal = props => {
               Approve
             </Button>
           </Box>
-          <Button colorScheme="blue" mr={3} onClick={onClose}>
-            Edit Information
-          </Button>
+          <Box>
+            {!canEditInfo ? (
+              <Button
+                colorScheme="blue"
+                mr={3}
+                onClick={() => {
+                  setCanEditInfo(true);
+                }}
+              >
+                Edit Information
+              </Button>
+            ) : (
+              <>
+                <Button
+                  ml={3}
+                  colorScheme="gray"
+                  onClick={() => {
+                    setCanEditInfo(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button ml={3} colorScheme="blue">
+                  Save Changes
+                </Button>
+              </>
+            )}
+            {/* <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => {
+                setCanEditInfo(true);
+              }}
+            >
+              Edit Information
+            </Button> */}
+          </Box>
         </ModalFooter>
       </ModalContent>
     </>

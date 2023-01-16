@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   Thead,
@@ -7,7 +7,7 @@ import {
   Th,
   Td,
   TableContainer,
-  Flex,
+  Button,
   useDisclosure,
   Modal,
   Text,
@@ -15,27 +15,72 @@ import {
 import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
+import getDonationsFromDB from '../../utils/InventoryUntils';
 
 const InventoryPage = () => {
+  const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   function makeStatus(status) {
+    if (status === 'rejected') {
+      return (
+        <Button size="xs" colorScheme="red">
+          REJECTED
+        </Button>
+      );
+    }
+    if (status === 'approve') {
+      return (
+        <Button size="xs" colorScheme="green">
+          APPROVED
+        </Button>
+      );
+    }
+    if (status === 'flagged') {
+      return (
+        <Button size="xs" colorScheme="gray">
+          FLAGGED
+        </Button>
+      );
+    }
     return (
-      <Flex
-      // bg={
-      //   status === 'rejected'
-      //     ? 'red'
-      //     : status === 'flagged'
-      //     ? 'gray'
-      //     : status === 'approved'
-      //     ? 'green'
-      //     : 'white'
-      // }
-      >
+      <Button size="xs" colorScheme="gray">
         {status}
-      </Flex>
+      </Button>
     );
   }
+
+  function makeDate(dateDB) {
+    const d = new Date(dateDB);
+    return `${d.getUTCMonth()}/${d.getUTCDay()} `;
+  }
+
+  useEffect(() => {
+    const fetchDonationsFromDB = async () => {
+      const donationsFromDB = await getDonationsFromDB();
+      setUsers(donationsFromDB);
+      console.log(donationsFromDB);
+    };
+    fetchDonationsFromDB();
+  }, []);
+
+  const makeUserRows = users.map(ele => {
+    return (
+      <Tr onClick={onOpen} key={ele.id}>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <DonationModal ele={ele} onClose={onClose} />
+        </Modal>
+
+        <Td>
+          <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+          <Text color="#718096">{ele.email}</Text>
+        </Td>
+        <Td>#{ele.id}</Td>
+        <Td>{makeStatus(ele.status)}</Td>
+        <Td>{makeDate(ele.submittedDate)}</Td>
+      </Tr>
+    );
+  });
 
   return (
     <TableContainer p="122px">
@@ -48,49 +93,7 @@ const InventoryPage = () => {
             <Th>SUBMISSION DATE</Th>
           </Tr>
         </Thead>
-        <Tbody>
-          <Tr onClick={onOpen}>
-            <Modal isOpen={isOpen} onClose={onClose}>
-              <DonationModal onClose={onClose} />
-            </Modal>
-
-            <Td>
-              <Text>Zoya Soy</Text>
-              <Text color="#718096">zsoy@uci.edu</Text>
-            </Td>
-            <Td>#3939483</Td>
-            <Td>{makeStatus('rejected')}</Td>
-            <Td>January 10th, 2023</Td>
-          </Tr>
-
-          <Tr onClick={onOpen}>
-            {/* <Modal isOpen={isOpen} onClose={onClose}>
-              <DonationModal onClose={onClose} />
-            </Modal> */}
-
-            <Td>
-              <Text>Zoya Soy</Text>
-              <Text color="#718096">zsoy@uci.edu</Text>
-            </Td>
-            <Td>#3939483</Td>
-            <Td>{makeStatus('rejected')}</Td>
-            <Td>January 10th, 2023</Td>
-          </Tr>
-
-          <Tr onClick={onOpen}>
-            {/* <Modal isOpen={isOpen} onClose={onClose}>
-              <DonationModal onClose={onClose} />
-            </Modal> */}
-
-            <Td>
-              <Text>Zoya Soy</Text>
-              <Text color="#718096">zsoy@uci.edu</Text>
-            </Td>
-            <Td>#3939483</Td>
-            <Td>{makeStatus('rejected')}</Td>
-            <Td>January 10th, 2023</Td>
-          </Tr>
-        </Tbody>
+        <Tbody>{makeUserRows}</Tbody>
       </Table>
     </TableContainer>
   );
