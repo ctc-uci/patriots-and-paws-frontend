@@ -36,7 +36,7 @@ const UserDetails = () => {
     fetchUserFromDB();
   }, []);
 
-  const formSchema = yup.object({
+  const formSchema = yup.object().shape({
     firstName: yup.string().required('Please enter your first name'),
     lastName: yup.string().required('Please enter your last name'),
     phoneNumber: yup
@@ -49,7 +49,8 @@ const UserDetails = () => {
       .matches(
         passwordRequirementsRegex,
         'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
-      ),
+      )
+      .optional(),
     confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must both match'),
   });
 
@@ -71,6 +72,7 @@ const UserDetails = () => {
 
       const updatedUser = { firstName, lastName, phoneNumber, password };
       await updateFirebaseUser(updatedUser);
+      setCanEditForm(false);
     } catch (err) {
       const firebaseErrorMsg = err.message;
       setErrorMessage(firebaseErrorMsg);

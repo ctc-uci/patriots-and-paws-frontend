@@ -9,6 +9,7 @@ import {
   sendPasswordResetEmail,
   confirmPasswordReset,
   applyActionCode,
+  updatePassword,
 } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { cookieKeys, cookieConfig, clearCookies } from './CookieUtils';
@@ -173,18 +174,27 @@ const createUser = async user => {
 };
 
 const updateUserInDB = async (user, id) => {
-  const { firstName, lastName, phoneNumber } = user;
+  const { firstName, lastName, email, phoneNumber, role } = user;
   try {
-    await PNPBackend.put(`/users/${id}`, { firstName, lastName, phoneNumber });
+    await PNPBackend.put(`/users/${id}`, {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      role,
+      id,
+    });
   } catch (err) {
     throw new Error(err.message);
   }
 };
 
 const updateFirebaseUser = async user => {
-  const { password, id } = user;
-  await getAuth().updateUser(id, { password });
-  await updateUserInDB(user, id);
+  const { password } = user;
+  if (password) {
+    await updatePassword(auth.currentUser, password);
+  }
+  await updateUserInDB(user, auth.currentUser.uid);
 };
 
 /**
