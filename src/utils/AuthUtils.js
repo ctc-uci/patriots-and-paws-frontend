@@ -10,6 +10,8 @@ import {
   confirmPasswordReset,
   applyActionCode,
   updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
 } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { cookieKeys, cookieConfig, clearCookies } from './CookieUtils';
@@ -173,6 +175,7 @@ const createUser = async user => {
   await auth.signOut();
 };
 
+// Updates user information in PNP DB
 const updateUserInDB = async (user, id) => {
   const { firstName, lastName, email, phoneNumber, role } = user;
   try {
@@ -189,10 +192,16 @@ const updateUserInDB = async (user, id) => {
   }
 };
 
+/**
+ * Updates user password in Firebase after verifying that current password is correct
+ * so that the user stays logged in after a password change
+ */
 const updateFirebaseUser = async user => {
-  const { password } = user;
-  if (password) {
-    await updatePassword(auth.currentUser, password);
+  const { email, currentPassword, newPassword } = user;
+  if (currentPassword && newPassword) {
+    const credentials = EmailAuthProvider.credential(email, currentPassword);
+    await reauthenticateWithCredential(auth.currentUser, credentials);
+    await updatePassword(auth.currentUser, newPassword);
   }
   await updateUserInDB(user, auth.currentUser.uid);
 };
