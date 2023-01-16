@@ -44,14 +44,17 @@ const UserDetails = () => {
       .length(10, 'Please enter a ten digit phone number')
       .matches(/^\d{10}$/)
       .required('Please enter your phone number'),
-    password: yup
+    currentPassword: yup.string().optional(),
+    newPassword: yup
       .string()
       .matches(
         passwordRequirementsRegex,
         'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
       )
       .optional(),
-    confirmPassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must both match'),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('newPassword'), null], 'Passwords must both match'),
   });
 
   const {
@@ -68,14 +71,21 @@ const UserDetails = () => {
 
   const updateUserDetails = async e => {
     try {
-      const { firstName, lastName, phoneNumber, password } = e;
+      const { firstName, lastName, phoneNumber, email, currentPassword, newPassword } = e;
 
-      const updatedUser = { firstName, lastName, phoneNumber, password };
+      const updatedUser = { firstName, lastName, phoneNumber, email, currentPassword, newPassword };
       await updateFirebaseUser(updatedUser);
       setCanEditForm(false);
+      setErrorMessage('');
     } catch (err) {
+      const errorCode = err.code;
       const firebaseErrorMsg = err.message;
-      setErrorMessage(firebaseErrorMsg);
+
+      if (errorCode === 'auth/wrong-password') {
+        setErrorMessage('Current password is incorrect. Please try again.');
+      } else {
+        setErrorMessage(firebaseErrorMsg);
+      }
     }
   };
 
@@ -84,7 +94,8 @@ const UserDetails = () => {
       firstName: user.firstName,
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
-      password: '',
+      currenPassword: '',
+      newPassword: '',
       confirmPassword: '',
     });
     setCanEditForm(false);
@@ -141,28 +152,40 @@ const UserDetails = () => {
             isDisabled
           />
           <Box className={styles['error-box']}>{errors.email?.message}</Box>
-          <FormControl isRequired={getValues('password')?.length > 0}>
-            <FormLabel className={styles['user-details-form-label']}>New Password</FormLabel>
+          <FormControl isRequired={getValues('currentPassword')?.length > 0}>
+            <FormLabel className={styles['user-details-form-label']}>Current Password</FormLabel>
             <Input
               type="password"
-              id="password"
-              placeholder="Enter new password"
-              {...register('password')}
+              id="current-password"
+              placeholder="Enter current password"
+              {...register('currentPassword')}
               isRequired={getValues('password')?.length > 0}
               isDisabled={!canEditForm}
             />
             <Box className={styles['error-box']}>{errors.password?.message}</Box>
           </FormControl>
-          <FormControl isRequired={getValues('password')?.length > 0}>
+          <FormControl isRequired={getValues('newPassword')?.length > 0}>
+            <FormLabel className={styles['user-details-form-label']}>New Password</FormLabel>
+            <Input
+              type="password"
+              id="new-password"
+              placeholder="Enter new password"
+              {...register('newPassword')}
+              isRequired={getValues('newPassword')?.length > 0}
+              isDisabled={!canEditForm}
+            />
+            <Box className={styles['error-box']}>{errors.password?.message}</Box>
+          </FormControl>
+          <FormControl isRequired={getValues('newPassword')?.length > 0}>
             <FormLabel className={styles['user-details-form-label']}>
               Re-enter New Password
             </FormLabel>
             <Input
               type="password"
-              id="check-password"
+              id="confirm-password"
               placeholder="Re-enter new password"
               {...register('confirmPassword')}
-              isRequired={getValues('password')?.length > 0}
+              isRequired={getValues('newPassword')?.length > 0}
               isDisabled={!canEditForm}
             />
             <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
