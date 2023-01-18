@@ -58,3 +58,8 @@
   width: 20px
 
 }
+
+
+.entry {
+  display: inline-block;
+}
