@@ -1,14 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import {
-  FormLabel,
-  Input,
-  InputGroup,
-  Select,
-  FormControl,
-  FormErrorMessage,
-  Button,
-} from '@chakra-ui/react';
+import { FormLabel, Input, Select, FormControl, FormErrorMessage, Button } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as yup from 'yup';
@@ -20,13 +12,30 @@ import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
   lastName: yup.string().required('Invalid last name'),
-  zipcode: yup.number().typeError('ZIP code must be a number').required(),
-  email1: yup.string().email('Invalid email').required('Email required').matches(),
-  email2: yup.string().email('Invalid email').required('Email required').matches(),
+  phoneNumber: yup
+    .string()
+    .required('Phone number is required')
+    .matches(/[0-9]{3}-[0-9]{3}-[0-9]{4}/, 'Phone number must match xxx-xxx-xxxx format'),
+  zipcode: yup
+    .string()
+    .required('ZIP Code is required')
+    .matches(/^[0-9]+$/, 'ZIP Code must be a number')
+    .min(5, 'ZIP Code must be exactly 5 digits')
+    .max(5, 'ZIP Code must be exactly 5 digits'),
+  email1: yup.string().email('Invalid email').required('Email required'),
+  email2: yup
+    .string()
+    .required('Email required')
+    .test(
+      'matches-email1',
+      'Email fields do not match',
+      (value, ctx) => value === ctx.parent.email1,
+    ),
 });
 
 function DonationForm() {
   const {
+    handleSubmit,
     register,
     control,
     formState: { errors },
@@ -43,17 +52,10 @@ function DonationForm() {
     name: 'furnitureField',
   });
 
-  const handleSubmit = event => {
-    event.preventDefault();
-    console.log(event.target.email1.value);
-    console.log(event.target.zipcode.value);
-    sendEmail(event.target.email1.value, dconfirmemailtemplate);
-  };
-
   return (
     <div className={styles['form-padding']}>
       {/* eslint-disable-next-line no-console */}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(data => sendEmail(data.email1, dconfirmemailtemplate))}>
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Name</h1>
           <div className={styles.form}>
@@ -92,7 +94,11 @@ function DonationForm() {
 
             <FormControl width="47%">
               <FormLabel>State</FormLabel>
-              <Select {...register('state')}>
+              <Select
+                placeholder="Select state"
+                defaultChecked="Select state"
+                {...register('state')}
+              >
                 <option>Alaska</option>
                 <option>California</option>
                 <option>Texas</option>
@@ -109,9 +115,10 @@ function DonationForm() {
 
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Phone</h1>
-          <InputGroup>
+          <FormControl isInvalid={errors && errors.phoneNumber}>
             <Input type="tel" {...register('phoneNumber')} />
-          </InputGroup>
+            <FormErrorMessage>{errors.phoneNumber && errors.phoneNumber.message}</FormErrorMessage>
+          </FormControl>
         </div>
 
         <div className={styles['field-section']}>
@@ -140,13 +147,7 @@ function DonationForm() {
         </div>
 
         <div className={styles['field-section']}>
-          <Button
-            onClick={() =>
-              appendFurniture({ itemName: 'Dressers', imageLink: '', description: '' })
-            }
-          >
-            Add new furniture field
-          </Button>
+          <Button onClick={() => appendFurniture({})}>Add new furniture field</Button>
         </div>
 
         <div className={styles['field-section']}>
