@@ -1,7 +1,6 @@
 import React from 'react';
 // import { useNavigate } from 'react-router-dom';
-import { Flex, FormLabel, Input, Image } from '@chakra-ui/react';
-import profilePicture from '../../assets/profilePicture.png';
+import { Flex, FormLabel, Input } from '@chakra-ui/react';
 import styles from './DisplayedProfile.module.css';
 
 const DisplayedProfile = () => {
@@ -17,11 +16,6 @@ const DisplayedProfile = () => {
   return (
     <Flex minH="100vh" align="center">
       <div className={styles.column}>
-        <Image
-          boxSize="150px"
-          src={profilePicture}
-          style={{ alignSelf: 'center', margin: '30px' }}
-        />
         <Input value={role} style={{ width: '200px', alignSelf: 'center' }} isRequired />
         <div className={styles.row}>
           <div className={styles['label-info']}>
