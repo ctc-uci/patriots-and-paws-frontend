@@ -3,6 +3,12 @@
   flex-direction: column;
 }
 
+.admin-text{
+  font-size: 18px;
+  margin-left: 0;
+  size: "sm";
+}
+
 .driver-name{
   font-weight: bold;
   /* margin-left: 40px; */
@@ -59,7 +65,36 @@
 
 }
 
+.table-column-names {
+  background-color: rgb(240, 231, 231);
+}
 
-.entry {
-  display: inline-block;
+.row {
+  align-content: space-between;
+}
+
+.row-text {
+  font-family: "Inter";
+  font-size: 16px;
+  border: 1px;
+
+}
+
+.table-header {
+  font-family: "Inter";
+  font-size: 12px;
+  /* {.column-name {
+      color: black;
+      align-items: center;
+    }
+  } */
+}
+
+.leftContainer {
+  display: flex;
+}
+
+.rightContainer {
+  display: flex;
+  align-content: flex-end;
 }
