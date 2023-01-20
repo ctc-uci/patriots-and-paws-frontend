@@ -20,16 +20,19 @@ import getDonationsFromDB from '../../utils/InventoryUntils';
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  // const onOpen = true;
+  // const isOpen = false;
+  // const onClose = false;
 
   function makeStatus(status) {
-    if (status === 'rejected') {
+    if (status === 'denied') {
       return (
         <Button size="xs" colorScheme="red">
           REJECTED
         </Button>
       );
     }
-    if (status === 'approve') {
+    if (status === 'approved') {
       return (
         <Button size="xs" colorScheme="green">
           APPROVED
@@ -59,7 +62,7 @@ const InventoryPage = () => {
     const fetchDonationsFromDB = async () => {
       const donationsFromDB = await getDonationsFromDB();
       setUsers(donationsFromDB);
-      console.log(donationsFromDB);
+      // console.log(donationsFromDB);
     };
     fetchDonationsFromDB();
   }, []);
@@ -68,7 +71,7 @@ const InventoryPage = () => {
     return (
       <Tr onClick={onOpen} key={ele.id}>
         <Modal isOpen={isOpen} onClose={onClose}>
-          <DonationModal ele={ele} onClose={onClose} />
+          <DonationModal props={ele} onClose={onClose} />
         </Modal>
 
         <Td>
