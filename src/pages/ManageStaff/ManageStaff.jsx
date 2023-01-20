@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Flex,
   Text,
@@ -21,6 +21,11 @@ import {
   InputLeftElement,
   Input,
   TagCloseButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton,
 } from '@chakra-ui/react';
 import {
   DeleteIcon,
@@ -30,6 +35,7 @@ import {
   SearchIcon,
   SmallAddIcon,
 } from '@chakra-ui/icons';
+import { PNPBackend } from '../../utils/utils';
 import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import cardAccount from '../../assets/card-account-details.svg';
@@ -38,16 +44,12 @@ import menuIcon from '../../assets/Menu.svg';
 
 const ManageStaff = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [users, setUsers] = useState([]);
 
-  const names = ['Manny Jacinto', 'John Paul', 'Mary Ann', 'Lisa Walter'];
-  const emails = [
-    'ncarson@gmail.com',
-    'ncarson@gmail.com',
-    'ncarson@gmail.com',
-    'ncarson@gmail.com',
-  ];
-  const phones = ['818-293-9998', '818-293-9998', '818-293-9998', '818-293-9998'];
-  const roles = ['Driver', 'Admin', 'Driver', 'Admin'];
+  useEffect(async () => {
+    const { data } = await PNPBackend.get('/users');
+    setUsers(data);
+  }, []);
 
   return (
     <Flex className="column" direction="column" m={10}>
@@ -65,12 +67,28 @@ const ManageStaff = () => {
           </Tag>
         </Flex>
         <Flex>
-          <Image
-            src={menuIcon}
-            style={({ width: '40%' }, { height: '40%' }, { float: 'right' })}
-            mr={5}
-          />
-          <Button colorScheme="blue" className={styles['create-account-button']} onClick={onOpen}>
+          <Menu width="40%">
+            <MenuButton
+              as={IconButton}
+              aria-label="Options"
+              icon={
+                <Image
+                  src={menuIcon}
+                  style={({ width: '40%' }, { height: '40%' }, { float: 'right' })}
+                />
+              }
+            />
+            <MenuList>
+              <MenuItem>Admin</MenuItem>
+              <MenuItem>Driver</MenuItem>
+            </MenuList>
+          </Menu>
+          <Button
+            ml={5}
+            colorScheme="blue"
+            className={styles['create-account-button']}
+            onClick={onOpen}
+          >
             Add Staff <SmallAddIcon />
           </Button>
           <Modal isOpen={isOpen} onClose={onClose}>
@@ -114,13 +132,15 @@ const ManageStaff = () => {
             </Tr>
           </Thead>
           <Tbody className={styles['row-text']}>
-            {names.map((name, index) => (
+            {users.map(user => (
               <Tr key="{name}">
-                <Td>{name}</Td>
-                <Td>{emails[index]}</Td>
-                <Td>{phones[index]}</Td>
                 <Td>
-                  {roles[index] === 'Admin' ? (
+                  {user.firstName} {user.lastName}
+                </Td>
+                <Td>{user.email}</Td>
+                <Td>{user.phoneNumber}</Td>
+                <Td>
+                  {user.role === 'admin' ? (
                     <Tag size="sm" variant="solid" colorScheme="blue" font="Inter" fontSize="14px">
                       Admin
                     </Tag>
