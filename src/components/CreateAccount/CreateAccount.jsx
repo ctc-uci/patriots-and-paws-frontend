@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { instanceOf } from 'prop-types';
+import { PropTypes, instanceOf } from 'prop-types';
 // import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -16,6 +16,7 @@ import {
   RadioGroup,
   Radio,
 } from '@chakra-ui/react';
+// import { SmallAddIcon } from '@chakra-ui/icons';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './CreateAccount.module.css';
@@ -24,7 +25,7 @@ import { passwordRequirementsRegex } from '../../utils/utils';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
-const CreateAccount = ({ cookies }) => {
+const CreateAccount = ({ cookies, memberType }) => {
   const [role, setRole] = useState(ADMIN_ROLE);
   const formSchema = yup.object({
     firstName: yup.string().required('Please enter your first name'),
@@ -96,48 +97,64 @@ const CreateAccount = ({ cookies }) => {
   };
 
   /* eslint-disable react/jsx-props-no-spreading */
+  // const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Flex minH="100vh" align="center" justify="center">
+    <Flex m={5}>
       <Stack>
-        <Heading className={styles['create-account-title']}>Create Account</Heading>
+        <Heading className={styles['create-account-title']}>Add {memberType}</Heading>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormControl isRequired className={styles['create-account-form']}>
-            <FormLabel className={styles['create-account-form-label']}>First Name</FormLabel>
-            <Input
-              id="first-name"
-              placeholder="Enter first name"
-              {...register('firstName')}
-              isRequired
-            />
-            <Box className={styles['error-box']}>{errors.firstName?.message}</Box>
-            <FormLabel className={styles['create-account-form-label']}>Last Name</FormLabel>
-            <Input
-              id="last-name"
-              placeholder="Enter last name"
-              {...register('lastName')}
-              isRequired
-            />
-            <Box className={styles['error-box']}>{errors.lastName?.message}</Box>
-            <FormLabel className={styles['create-account-form-label']}>Phone Number</FormLabel>
-            <Input
-              type="tel"
-              id="phone-number"
-              placeholder="Enter phone number"
-              {...register('phoneNumber')}
-              isRequired
-            />
-            <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
-            <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
-            <Input
-              type="email"
-              id="email"
-              placeholder="Enter email"
-              {...register('email')}
-              isRequired
-            />
-            <Box className={styles['error-box']}>{errors.email?.message}</Box>
-            <FormLabel className={styles['create-account-form-label']}>Role</FormLabel>
+            <Flex>
+              <Flex direction="column" mr={8}>
+                <FormLabel className={styles['create-account-form-label']}>First Name</FormLabel>
+                <Input
+                  id="first-name"
+                  style={{ width: '240px' }}
+                  placeholder="Enter first name"
+                  {...register('firstName')}
+                  isRequired
+                />
+                <Box className={styles['error-box']}>{errors.firstName?.message}</Box>
+              </Flex>
+              <Flex direction="column">
+                <FormLabel className={styles['create-account-form-label']}>Last Name</FormLabel>
+                <Input
+                  id="last-name"
+                  style={{ width: '240px' }}
+                  placeholder="Enter last name"
+                  {...register('lastName')}
+                  isRequired
+                />
+                <Box className={styles['error-box']}>{errors.lastName?.message}</Box>
+              </Flex>
+            </Flex>
+            <Flex>
+              <Flex direction="column" mr={8}>
+                <FormLabel className={styles['create-account-form-label']}>Phone Number</FormLabel>
+                <Input
+                  type="tel"
+                  id="phone-number"
+                  style={{ width: '240px' }}
+                  placeholder="Enter phone number"
+                  {...register('phoneNumber')}
+                  isRequired
+                />
+                <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
+              </Flex>
+              <Flex direction="column">
+                <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
+                <Input
+                  type="email"
+                  id="email"
+                  style={{ width: '240px' }}
+                  placeholder="Enter email"
+                  {...register('email')}
+                  isRequired
+                />
+                <Box className={styles['error-box']}>{errors.email?.message}</Box>
+              </Flex>
+            </Flex>
             <RadioGroup
               onChange={setRole}
               className={styles['role-radio-group']}
@@ -148,27 +165,42 @@ const CreateAccount = ({ cookies }) => {
                 <Radio value={DRIVER_ROLE}>Driver</Radio>
               </Stack>
             </RadioGroup>
-            <FormLabel className={styles['create-account-form-label']}>Password</FormLabel>
-            <Input
-              type="password"
-              id="password"
-              placeholder="Enter password"
-              {...register('password')}
-              isRequired
-            />
-            <Box className={styles['error-box']}>{errors.password?.message}</Box>
-            <FormLabel className={styles['create-account-form-label']}>Re-enter Password</FormLabel>
-            <Input
-              type="password"
-              id="check-password"
-              placeholder="Re-enter password"
-              {...register('confirmPassword')}
-              isRequired
-            />
-            <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
-            <Button colorScheme="blue" className={styles['create-account-button']} type="submit">
-              Create account
-            </Button>
+            <Flex>
+              <Flex direction="column" mr={8}>
+                <FormLabel className={styles['create-account-form-label']}>Password</FormLabel>
+                <Input
+                  type="password"
+                  id="password"
+                  style={{ width: '240px' }}
+                  placeholder="Enter password"
+                  {...register('password')}
+                  isRequired
+                />
+                <Box className={styles['error-box']}>{errors.password?.message}</Box>
+              </Flex>
+              <Flex direction="column">
+                <FormLabel className={styles['create-account-form-label']}>
+                  Re-enter Password
+                </FormLabel>
+                <Input
+                  type="password"
+                  id="check-password"
+                  style={{ width: '240px' }}
+                  placeholder="Re-enter password"
+                  {...register('confirmPassword')}
+                  isRequired
+                />
+                <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
+              </Flex>
+            </Flex>
+            <Flex>
+              <Button colorScheme="gray" className={styles['create-account-button']} type="submit">
+                Cancel
+              </Button>
+              <Button colorScheme="blue" className={styles['create-account-button']} type="submit">
+                Add Driver
+              </Button>
+            </Flex>
           </FormControl>
         </form>
         <Box className={styles['error-box']}>{errorMessage}</Box>
@@ -179,6 +211,7 @@ const CreateAccount = ({ cookies }) => {
 
 CreateAccount.propTypes = {
   cookies: instanceOf(Cookies).isRequired,
+  memberType: PropTypes.string.isRequired,
 };
 
 export default withCookies(CreateAccount);

@@ -3,11 +3,11 @@
   flex-direction: column;
 }
 
-.admin-text{
+/* .admin-text{
   font-size: 18px;
   margin-left: 0;
   size: "sm";
-}
+} */
 
 .driver-name{
   font-weight: bold;
@@ -97,4 +97,8 @@
 .rightContainer {
   display: flex;
   align-content: flex-end;
+}
+
+.add-driver-modal {
+  width: 90vw;    /* Occupy the 90% of the screen width */
 }
