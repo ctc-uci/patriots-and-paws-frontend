@@ -7,4 +7,10 @@ const getDonationsFromDB = async () => {
   return donations;
 };
 
-export default getDonationsFromDB;
+const getPictureFromDB = async picturesId => {
+  const res = await PNPBackend.get(`/pictures/${picturesId}`);
+  const image = res.data;
+  return image;
+};
+
+export { getDonationsFromDB, getPictureFromDB };
