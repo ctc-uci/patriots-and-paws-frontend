@@ -43,8 +43,8 @@ const DriverNavbar = ({ cookies }) => {
 
   return (
     <Box bg="lightblue">
-      <LinkBox>
-        <HStack spacing="24px">
+      <HStack spacing="24px">
+        <LinkBox>
           <LinkOverlay href="https://www.patriotsandpaws.org/" isExternal>
             <Image
               boxSize="3rem"
@@ -52,41 +52,41 @@ const DriverNavbar = ({ cookies }) => {
               alt="Patriots and Paws logo, redirects to main page"
             />
           </LinkOverlay>
-          <Link as={NavLink} to="/">
-            Dashboard
-          </Link>
-          <Menu isOpen={isOpen}>
-            <MenuButton
-              as={Button}
-              variant="ghost"
-              mx={1}
-              py={[1, 2, 2]}
-              px={4}
-              borderRadius={5}
-              _hover={{ bg: 'white' }}
-              aria-label="User Dropdown"
-              fontWeight="normal"
-              onMouseEnter={onOpen}
-              onMouseLeave={onClose}
-            >
-              {user.firstName}
-              {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-            </MenuButton>
-            <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
-              <MenuItem>
-                <Link as={NavLink} to="/user:userid">
-                  Profile
-                </Link>
-              </MenuItem>
-              <MenuItem>
-                <Link as={NavLink} to="/login" onClick={handleSubmit}>
-                  Logout
-                </Link>
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        </HStack>
-      </LinkBox>
+        </LinkBox>
+        <Link as={NavLink} to="/">
+          Dashboard
+        </Link>
+        <Menu isOpen={isOpen}>
+          <MenuButton
+            as={Button}
+            variant="ghost"
+            mx={1}
+            py={[1, 2, 2]}
+            px={4}
+            borderRadius={5}
+            _hover={{ bg: 'white' }}
+            aria-label="User Dropdown"
+            fontWeight="normal"
+            onMouseEnter={onOpen}
+            onMouseLeave={onClose}
+          >
+            {user.firstName}
+            {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          </MenuButton>
+          <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
+            <MenuItem>
+              <Link as={NavLink} to="/user:userid">
+                Profile
+              </Link>
+            </MenuItem>
+            <MenuItem>
+              <Link as={NavLink} to="/login" onClick={handleSubmit}>
+                Logout
+              </Link>
+            </MenuItem>
+          </MenuList>
+        </Menu>
+      </HStack>
     </Box>
   );
 };
