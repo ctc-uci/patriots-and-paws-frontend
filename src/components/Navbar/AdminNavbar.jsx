@@ -13,13 +13,16 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  useDisclosure,
 } from '@chakra-ui/react';
+import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { logout, useNavigate, getUserFromDB } from '../../utils/AuthUtils';
 import { Cookies } from '../../utils/CookieUtils';
 import pnpLogo from './PNPlogo.png';
 
 const AdminNavbar = ({ cookies }) => {
   const [user, setUser] = useState({});
+  const { isOpen, onOpen, onClose } = useDisclosure();
   useEffect(() => {
     const fetchUserFromDB = async () => {
       const userFromDB = await getUserFromDB();
@@ -42,7 +45,7 @@ const AdminNavbar = ({ cookies }) => {
     <Box bg="lightblue">
       <LinkBox>
         <HStack spacing="24px">
-          <LinkOverlay href="https://www.patriotsandpaws.org/">
+          <LinkOverlay href="https://www.patriotsandpaws.org/" isExternal>
             <Image
               boxSize="3rem"
               src={pnpLogo}
@@ -61,9 +64,24 @@ const AdminNavbar = ({ cookies }) => {
           <Link as={NavLink} to="/drivers">
             Manage Staff
           </Link>
-          <Menu>
-            <MenuButton as={Button}>{user.firstName}</MenuButton>
-            <MenuList>
+          <Menu isOpen={isOpen}>
+            <MenuButton
+              as={Button}
+              variant="ghost"
+              mx={1}
+              py={[1, 2, 2]}
+              px={4}
+              borderRadius={5}
+              _hover={{ bg: 'white' }}
+              aria-label="User Dropdown"
+              fontWeight="normal"
+              onMouseEnter={onOpen}
+              onMouseLeave={onClose}
+            >
+              {user.firstName}
+              {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+            </MenuButton>
+            <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
               <MenuItem>
                 <Link as={NavLink} to="/user:userid">
                   Profile
