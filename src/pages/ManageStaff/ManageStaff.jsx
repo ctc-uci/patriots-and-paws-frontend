@@ -15,20 +15,13 @@ import {
   InputGroup,
   InputLeftElement,
   Input,
-  TagCloseButton,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   IconButton,
-  Modal,
-  ModalOverlay,
-  ModalCloseButton,
-  ModalContent,
-  Button,
-  useDisclosure,
 } from '@chakra-ui/react';
-import { EmailIcon, PhoneIcon, SearchIcon, SmallAddIcon } from '@chakra-ui/icons';
+import { EmailIcon, PhoneIcon, SearchIcon } from '@chakra-ui/icons';
 import { PNPBackend } from '../../utils/utils';
 import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
@@ -44,12 +37,13 @@ const { SUPERADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const ManageStaff = ({ cookies }) => {
   // const [role, setRole] = useState(ADMIN_ROLE);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const { isOpen, onOpen, onClose } = useDisclosure();
   const [users, setUsers] = useState([]);
   const [usersCopy, setUsersCopy] = useState([]);
   // Change below to false and driver
   const [isSuperAdmin, setIsSuperAdmin] = useState(true);
   const [userType, setUserType] = useState('Staff');
+  // const [addStaffOpen, setAddStaffOpen] = useState(false);
 
   useEffect(async () => {
     const checkIsSuperAdmin = () => {
@@ -64,6 +58,8 @@ const ManageStaff = ({ cookies }) => {
     const { data } = await PNPBackend.get('/users');
     if (isSuperAdmin) {
       setUsers(data);
+      // console.log(data);
+      // console.log(typeof data[0]);
     } else {
       setUsers(data.filter(d => d.role === 'driver'));
     }
@@ -88,8 +84,8 @@ const ManageStaff = ({ cookies }) => {
 
   return (
     <Flex className="column" direction="column" m={10}>
-      <Flex mb={10} justify="space-between">
-        <Flex>
+      <Flex mb={10} justify="space-between" verticalAlign="center">
+        <Flex verticalAlign="bottom">
           <InputGroup mr={5} width={300}>
             <InputLeftElement pointerEvents="none">
               <SearchIcon color="gray.300" />
@@ -100,15 +96,15 @@ const ManageStaff = ({ cookies }) => {
               <Input placeholder="Search Drivers" style={{ width: '300px' }} />
             )}
           </InputGroup>
-          {isSuperAdmin ? (
+          {/* {isSuperAdmin ? (
             <Tag variant="solid" colorScheme="blue" font="Inter" size="sm" fontSize={18} ml={0}>
               Admin
               <TagCloseButton />
             </Tag>
-          ) : null}
+          ) : null} */}
         </Flex>
-        <Flex>
-          {isSuperAdmin ? (
+        {isSuperAdmin ? (
+          <Flex vertical-align="center">
             <Menu w="20px">
               <MenuButton
                 as={IconButton}
@@ -121,23 +117,9 @@ const ManageStaff = ({ cookies }) => {
                 <MenuItem onClick={getDrivers}>Driver</MenuItem>
               </MenuList>
             </Menu>
-          ) : null}
-          <Button
-            ml={5}
-            colorScheme="blue"
-            className={styles['create-account-button']}
-            onClick={onOpen}
-          >
-            Add {userType} <SmallAddIcon />
-          </Button>
-          <Modal isOpen={isOpen} onClose={onClose} size="xl">
-            <ModalOverlay />
-            <ModalContent>
-              <ModalCloseButton />
-              <CreateAccount memberType={userType} />
-            </ModalContent>
-          </Modal>
-        </Flex>
+            <CreateAccount memberType={userType} />
+          </Flex>
+        ) : null}
       </Flex>
       <TableContainer border="1px" borderColor="gray.200">
         <Table variant="striped" colorScheme="gray">
@@ -200,7 +182,7 @@ const ManageStaff = ({ cookies }) => {
                   </Td>
                 ) : null}
                 <Td>
-                  <EditAccountModal mr={5} memberType={userType} />
+                  <EditAccountModal mr={5} memberType={userType} userProfile={user} />
                   {isSuperAdmin ? <DeleteAccountModal /> : null}
                 </Td>
               </Tr>
