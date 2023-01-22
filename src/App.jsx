@@ -43,7 +43,6 @@ function App() {
         {images.map(e => (
           <Image key={e} src={e} />
         ))}
-        );
       </>
     );
   };
