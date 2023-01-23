@@ -59,7 +59,7 @@ const AdminNavbar = ({ cookies }) => {
         <Link as={NavLink} to="/routes">
           Routes
         </Link>
-        <Link as={NavLink} to="/donate">
+        <Link as={NavLink} to="/donate/edit">
           Manage Donation Form
         </Link>
         <Link as={NavLink} to="/drivers">
