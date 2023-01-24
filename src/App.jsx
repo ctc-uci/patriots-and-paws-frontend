@@ -100,6 +100,17 @@ function App() {
               />
             }
           />
+          <Route
+            exact
+            path="/manage-staff"
+            element={
+              <ProtectedRoute
+                Component={ManageStaff}
+                redirectPath="/login"
+                roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+              />
+            }
+          />
           <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 
@@ -108,7 +119,6 @@ function App() {
           <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
           <Route exact path="/donate" element={<DonationForm />} />
           <Route exact path="/donate/status" element={<DonateStatus />} />
-          <Route exact path="/manage-staff" element={<ManageStaff />} />
         </Routes>
       </Router>
     </ChakraProvider>

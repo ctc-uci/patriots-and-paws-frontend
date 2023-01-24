@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { PropTypes, instanceOf } from 'prop-types';
-// import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { PropTypes } from 'prop-types';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,23 +15,25 @@ import {
   Modal,
   ModalContent,
   ModalOverlay,
+  ModalHeader,
+  ModalBody,
   ModalFooter,
   ModalCloseButton,
   useDisclosure,
   Select,
   IconButton,
+  InputLeftElement,
+  InputGroup,
 } from '@chakra-ui/react';
-import { EditIcon } from '@chakra-ui/icons';
-import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
+import { EditIcon, LockIcon } from '@chakra-ui/icons';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './EditAccountModal.module.css';
 import AUTH_ROLES from '../../utils/AuthConfig';
 import { passwordRequirementsRegex } from '../../utils/utils';
-// import { PNPBackend } from '../../utils/utils';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
-const EditAccountModal = ({ cookies, memberType, userProfile }) => {
+const EditAccountModal = ({ isSuperAdmin, memberType, userProfile }) => {
   const [role] = useState(ADMIN_ROLE);
   const formSchema = yup.object({
     firstName: yup.string().required('Please enter your first name'),
@@ -65,17 +66,6 @@ const EditAccountModal = ({ cookies, memberType, userProfile }) => {
   });
 
   const [errorMessage, setErrorMessage] = useState();
-  const [isSuperAdmin, setIsSuperAdmin] = useState(true);
-  // const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkIsSuperAdmin = () => {
-      const currentUserRole = cookies.get(cookieKeys.ROLE);
-      setIsSuperAdmin(currentUserRole === SUPERADMIN_ROLE);
-      setIsSuperAdmin(true);
-    };
-    checkIsSuperAdmin();
-  }, []);
 
   const onSubmit = async e => {
     try {
@@ -88,10 +78,7 @@ const EditAccountModal = ({ cookies, memberType, userProfile }) => {
         role,
       };
       await registerWithEmailAndPassword(user);
-      // await PNPBackend.put(`/users/${userProfile.id}`);
-      // implement put method here
       setErrorMessage('User successfully created');
-      // await registerWithEmailAndPassword(user, navigate, '/login?signup=success');
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;
@@ -105,24 +92,12 @@ const EditAccountModal = ({ cookies, memberType, userProfile }) => {
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // below is for edit modal
-  // const { isOpen: saveIsOpen, onOpen: saveOnOpen, onClose: saveOnClose } = useDisclosure();
+  const { isOpen: saveIsOpen, onOpen: saveOnOpen, onClose: saveOnClose } = useDisclosure();
 
-  // const closeModals = () => {
-  //   saveOnClose();
-  //   onClose();
-  // };
-
-  // const openSave = () => {
-  //   onClose();
-  //   saveIsOpen();
-  //   saveOnOpen();
-  // };
-
-  // const onEditClick = () => {
-  //   isOpen();
-  //   console.log(userProfile);
-  // };
+  const closeModals = () => {
+    saveOnClose();
+    onClose();
+  };
 
   return (
     <>
@@ -167,16 +142,21 @@ const EditAccountModal = ({ cookies, memberType, userProfile }) => {
                   <Flex>
                     <Flex direction="column" mr={8}>
                       <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
-                      <Input
-                        type="email"
-                        id="email"
-                        style={{ width: '240px' }}
-                        placeholder="Enter email"
-                        value={userProfile.email}
-                        {...register('email')}
-                        isRequired
-                        isReadOnly
-                      />
+                      <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                          <LockIcon color="black.300" />
+                        </InputLeftElement>
+                        <Input
+                          type="email"
+                          id="email"
+                          style={{ width: '240px' }}
+                          placeholder="Enter email"
+                          value={userProfile.email}
+                          {...register('email')}
+                          isRequired
+                          isReadOnly
+                        />
+                      </InputGroup>
                       <Box className={styles['error-box']}>{errors.email?.message}</Box>
                     </Flex>
                     <Flex direction="column">
@@ -201,15 +181,15 @@ const EditAccountModal = ({ cookies, memberType, userProfile }) => {
                         <Select style={{ width: '240px' }}>
                           {userProfile.role === 'admin' ? (
                             <>
-                              <option value="option1" selected>
+                              <option value="admin" selected>
                                 Admin
                               </option>
-                              <option value="option2">Driver</option>
+                              <option value="driver">Driver</option>
                             </>
                           ) : (
                             <>
-                              <option value="option1">Admin</option>
-                              <option value="option2" selected>
+                              <option value="admin">Admin</option>
+                              <option value="driver" selected>
                                 Driver
                               </option>
                             </>
@@ -230,11 +210,19 @@ const EditAccountModal = ({ cookies, memberType, userProfile }) => {
                 className={styles['create-account-button']}
                 type="submit"
                 mr={3}
-                onClick={onClose}
+                onClick={saveOnOpen}
               >
                 Cancel
               </Button>
-              {/* <Modal isOpen={saveIsOpen} onClose={saveOnClose}>
+              <Button
+                colorScheme="blue"
+                className={styles['create-account-button']}
+                type="submit"
+                onClick={onSubmit}
+              >
+                Save
+              </Button>
+              <Modal isOpen={saveIsOpen} onClose={saveOnClose}>
                 <ModalOverlay />
                 <ModalContent>
                   <ModalHeader>Save before exiting?</ModalHeader>
@@ -245,18 +233,12 @@ const EditAccountModal = ({ cookies, memberType, userProfile }) => {
                     <Button mr={3} onClick={closeModals}>
                       Exit
                     </Button>
-                    <Button colorScheme="blue">Save and Exit</Button>
+                    <Button colorScheme="blue" onClick={closeModals}>
+                      Save and Exit
+                    </Button>
                   </ModalFooter>
                 </ModalContent>
-              </Modal> */}
-              <Button
-                colorScheme="blue"
-                className={styles['create-account-button']}
-                type="submit"
-                onClick={onSubmit}
-              >
-                Save
-              </Button>
+              </Modal>
             </Flex>
           </ModalFooter>
         </ModalContent>
@@ -266,10 +248,16 @@ const EditAccountModal = ({ cookies, memberType, userProfile }) => {
 };
 
 EditAccountModal.propTypes = {
-  cookies: instanceOf(Cookies).isRequired,
+  isSuperAdmin: PropTypes.bool.isRequired,
   memberType: PropTypes.string.isRequired,
-  // eslint-disable-next-line react/forbid-prop-types
-  userProfile: PropTypes.object.isRequired,
+  userProfile: PropTypes.shape({
+    email: PropTypes.string,
+    firstName: PropTypes.string,
+    id: PropTypes.string,
+    lastName: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    role: PropTypes.string,
+  }).isRequired,
 };
 
-export default withCookies(EditAccountModal);
+export default EditAccountModal;

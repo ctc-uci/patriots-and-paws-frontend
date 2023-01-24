@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { PropTypes, instanceOf } from 'prop-types';
+import React, { useState } from 'react';
+import { PropTypes } from 'prop-types';
 // import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -22,16 +22,11 @@ import {
   Select,
 } from '@chakra-ui/react';
 import { SmallAddIcon } from '@chakra-ui/icons';
-import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './CreateAccount.module.css';
-import AUTH_ROLES from '../../utils/AuthConfig';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
-
-const CreateAccount = ({ cookies, memberType }) => {
-  const [role] = useState(ADMIN_ROLE);
+const CreateAccount = ({ isSuperAdmin, memberType, refreshData }) => {
   const formSchema = yup.object({
     firstName: yup.string().required('Please enter your first name'),
     lastName: yup.string().required('Please enter your last name'),
@@ -52,6 +47,7 @@ const CreateAccount = ({ cookies, memberType }) => {
       .string()
       .required('Please confirm your password')
       .oneOf([yup.ref('password'), null], 'Passwords must both match'),
+    role: yup.string().required('Please select a role'),
   });
   const {
     register,
@@ -63,21 +59,10 @@ const CreateAccount = ({ cookies, memberType }) => {
   });
 
   const [errorMessage, setErrorMessage] = useState();
-  const [isSuperAdmin, setIsSuperAdmin] = useState(true);
-  // const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkIsSuperAdmin = () => {
-      const currentUserRole = cookies.get(cookieKeys.ROLE);
-      setIsSuperAdmin(currentUserRole === SUPERADMIN_ROLE);
-      setIsSuperAdmin(true);
-    };
-    checkIsSuperAdmin();
-  }, []);
 
   const onSubmit = async e => {
     try {
-      const { firstName, lastName, email, phoneNumber, password } = e;
+      const { firstName, lastName, email, phoneNumber, password, role } = e;
 
       const user = {
         firstName,
@@ -89,6 +74,7 @@ const CreateAccount = ({ cookies, memberType }) => {
       };
       await registerWithEmailAndPassword(user);
       setErrorMessage('User successfully created');
+      refreshData();
       // await registerWithEmailAndPassword(user, navigate, '/login?signup=success');
     } catch (err) {
       const errorCode = err.code;
@@ -103,19 +89,6 @@ const CreateAccount = ({ cookies, memberType }) => {
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // below is for edit modal
-  // const { isOpen: saveIsOpen, onOpen: saveOnOpen, onClose: saveOnClose } = useDisclosure();
-
-  // const closeModals = () => {
-  //   saveOnClose();
-  //   onClose();
-  // };
-
-  // const openSave = () => {
-  //   onClose();
-  //   saveIsOpen();
-  //   saveOnOpen();
-  // };
 
   return (
     <>
@@ -135,7 +108,7 @@ const CreateAccount = ({ cookies, memberType }) => {
           <Flex m={5}>
             <Stack>
               <Heading className={styles['create-account-title']}>Add {memberType}</Heading>
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form>
                 <FormControl className={styles['create-account-form']}>
                   <Flex>
                     <Flex direction="column" mr={8}>
@@ -227,11 +200,11 @@ const CreateAccount = ({ cookies, memberType }) => {
                     <Flex>
                       <Flex direction="column">
                         <FormLabel className={styles['create-account-form-label']}>Role</FormLabel>
-                        <Select style={{ width: '240px' }}>
-                          <option value="option1" selected>
+                        <Select style={{ width: '240px' }} {...register('role')} isRequired>
+                          <option value="admin" selected>
                             Admin
                           </option>
-                          <option value="option2">Driver</option>
+                          <option value="driver">Driver</option>
                         </Select>
                       </Flex>
                     </Flex>
@@ -252,26 +225,11 @@ const CreateAccount = ({ cookies, memberType }) => {
               >
                 Cancel
               </Button>
-              {/* <Modal isOpen={saveIsOpen} onClose={saveOnClose}>
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>Save before exiting?</ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>Are you sure you want to exit without saving?</ModalBody>
-
-                  <ModalFooter>
-                    <Button mr={3} onClick={closeModals}>
-                      Exit
-                    </Button>
-                    <Button colorScheme="blue">Save and Exit</Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal> */}
               <Button
                 colorScheme="blue"
                 className={styles['create-account-button']}
                 type="submit"
-                onClick={onSubmit}
+                onClick={handleSubmit(onSubmit)}
               >
                 Add {memberType}
               </Button>
@@ -284,8 +242,9 @@ const CreateAccount = ({ cookies, memberType }) => {
 };
 
 CreateAccount.propTypes = {
-  cookies: instanceOf(Cookies).isRequired,
+  isSuperAdmin: PropTypes.bool.isRequired,
   memberType: PropTypes.string.isRequired,
+  refreshData: PropTypes.func.isRequired,
 };
 
-export default withCookies(CreateAccount);
+export default CreateAccount;

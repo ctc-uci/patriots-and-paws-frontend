@@ -1,6 +1,28 @@
+.table-header {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10;
+  justify-content: space-between;
+  vertical-align: center;
+}
+
+.search-bar {
+  width: '300px';
+}
+
 .test{
   display: flex;
   flex-direction: column;
+}
+
+.poop {
+  width: "20px";
+}
+
+.blah {
+  min-width: 0;
+  width: "100px";
+  background-color: rgb(223, 216, 216);
 }
 
 /* .admin-text{
@@ -97,8 +119,4 @@
 .rightContainer {
   display: flex;
   align-content: flex-end;
-}
-
-.add-driver-modal {
-  width: 90vw;    /* Occupy the 90% of the screen width */
 }
