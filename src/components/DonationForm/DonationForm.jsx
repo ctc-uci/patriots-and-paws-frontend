@@ -9,6 +9,10 @@ import FurnitureField from '../FurnitureField/FurnitureField';
 import { sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 
+const furnitureFieldSchema = {
+  itemName: yup.string().required('A Furniture Selection is Required'),
+};
+
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
   lastName: yup.string().required('Invalid last name'),
@@ -26,11 +30,11 @@ const schema = yup.object({
   email2: yup
     .string()
     .required('Email required')
-    .test(
-      'matches-email1',
-      'Email fields do not match',
-      (value, ctx) => value === ctx.parent.email1,
-    ),
+    .oneOf([yup.ref('email1'), null], 'Emails must both match'),
+  furnitureField: yup
+    .array()
+    .of(yup.object().shape(furnitureFieldSchema), 'A Furniture Selection is Required')
+    .min(1, 'Please donate a minimum of 1 furniture'),
 });
 
 function DonationForm() {
@@ -52,10 +56,13 @@ function DonationForm() {
     name: 'furnitureField',
   });
 
+  const onSubmit = data => {
+    sendEmail(data.email1, dconfirmemailtemplate);
+  };
+
   return (
     <div className={styles['form-padding']}>
-      {/* eslint-disable-next-line no-console */}
-      <form onSubmit={handleSubmit(data => sendEmail(data.email1, dconfirmemailtemplate))}>
+      <form onSubmit={handleSubmit(data => onSubmit(data))}>
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Name</h1>
           <div className={styles.form}>
@@ -106,7 +113,7 @@ function DonationForm() {
             </FormControl>
           </div>
 
-          <FormControl isInvalid={errors && errors.zipcode} l>
+          <FormControl isInvalid={errors && errors.zipcode}>
             <FormLabel>ZIP Code</FormLabel>
             <Input {...register('zipcode')} />
             <FormErrorMessage>{errors.zipcode && errors.zipcode.message}</FormErrorMessage>
@@ -140,10 +147,12 @@ function DonationForm() {
 
         <div className={styles['field-section']}>
           <h1 className={styles.title}>Furniture Submissions</h1>
-          {furnitureFields.map((furniture, index) => (
-            // eslint-disable-next-line react/jsx-key
-            <FurnitureField index={index} register={register} removeFurniture={removeFurniture} />
-          ))}
+          <FormControl isInvalid={errors && errors.furnitureField}>
+            {furnitureFields.map((furniture, index) => (
+              // eslint-disable-next-line react/jsx-key
+              <FurnitureField index={index} register={register} removeFurniture={removeFurniture} />
+            ))}
+          </FormControl>
         </div>
 
         <div className={styles['field-section']}>
