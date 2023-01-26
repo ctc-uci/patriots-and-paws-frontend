@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes, { instanceOf } from 'prop-types';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,9 +17,11 @@ import {
 
 import styles from './UserDetails.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
-import { getUserFromDB, updateFirebaseUser } from '../../utils/AuthUtils';
+import { getUserFromDB, updateFirebaseUser, logout, useNavigate } from '../../utils/AuthUtils';
+import { Cookies, withCookies, cookieKeys } from '../../utils/CookieUtils';
+import AUTH_ROLES from '../../utils/AuthConfig';
 
-const UserDetails = () => {
+const UserDetails = ({ userId, cookies }) => {
   const [user, setUser] = useState({
     firstName: '',
     lastName: '',
@@ -27,10 +30,23 @@ const UserDetails = () => {
   });
   const [canEditForm, setCanEditForm] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+
+  const { DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
   useEffect(() => {
     const fetchUserFromDB = async () => {
       const userFromDB = await getUserFromDB();
+
+      const currentUserRole = cookies.get(cookieKeys.ROLE);
+      if (currentUserRole === DRIVER_ROLE && userFromDB.id !== userId) {
+        try {
+          await logout('/login', navigate, cookies);
+        } catch (err) {
+          setErrorMessage(err.message);
+        }
+      }
+
       setUser(userFromDB);
     };
     fetchUserFromDB();
@@ -44,7 +60,6 @@ const UserDetails = () => {
       .length(10, 'Please enter a ten digit phone number')
       .matches(/^\d{10}$/)
       .required('Please enter your phone number'),
-    currentPassword: yup.string().optional(),
     newPassword: yup
       .string()
       .matches(
@@ -71,21 +86,15 @@ const UserDetails = () => {
 
   const updateUserDetails = async e => {
     try {
-      const { firstName, lastName, phoneNumber, email, currentPassword, newPassword } = e;
+      const { firstName, lastName, phoneNumber, email, newPassword } = e;
 
-      const updatedUser = { firstName, lastName, phoneNumber, email, currentPassword, newPassword };
+      const updatedUser = { firstName, lastName, phoneNumber, email, newPassword };
       await updateFirebaseUser(updatedUser);
       setCanEditForm(false);
       setErrorMessage('');
     } catch (err) {
-      const errorCode = err.code;
       const firebaseErrorMsg = err.message;
-
-      if (errorCode === 'auth/wrong-password') {
-        setErrorMessage('Current password is incorrect. Please try again.');
-      } else {
-        setErrorMessage(firebaseErrorMsg);
-      }
+      setErrorMessage(firebaseErrorMsg);
     }
   };
 
@@ -152,18 +161,6 @@ const UserDetails = () => {
             isDisabled
           />
           <Box className={styles['error-box']}>{errors.email?.message}</Box>
-          <FormControl isRequired={getValues('currentPassword')?.length > 0}>
-            <FormLabel className={styles['user-details-form-label']}>Current Password</FormLabel>
-            <Input
-              type="password"
-              id="current-password"
-              placeholder="Enter current password"
-              {...register('currentPassword')}
-              isRequired={getValues('password')?.length > 0}
-              isDisabled={!canEditForm}
-            />
-            <Box className={styles['error-box']}>{errors.password?.message}</Box>
-          </FormControl>
           <FormControl isRequired={getValues('newPassword')?.length > 0}>
             <FormLabel className={styles['user-details-form-label']}>New Password</FormLabel>
             <Input
@@ -216,4 +213,9 @@ const UserDetails = () => {
   );
 };
 
-export default UserDetails;
+UserDetails.propTypes = {
+  userId: PropTypes.string.isRequired,
+  cookies: instanceOf(Cookies).isRequired,
+};
+
+export default withCookies(UserDetails);
