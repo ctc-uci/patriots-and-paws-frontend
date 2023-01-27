@@ -26,28 +26,28 @@ import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './CreateAccount.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
-const CreateAccount = ({ isSuperAdmin, memberType, refreshData }) => {
+const CreateAccount = ({ isSuperAdmin, refreshData }) => {
   const formSchema = yup.object({
-    firstName: yup.string().required('Please enter your first name'),
-    lastName: yup.string().required('Please enter your last name'),
+    firstName: yup.string().required("Please enter the staff member's first name"),
+    lastName: yup.string().required("Please enter the staff member's last name"),
     phoneNumber: yup
       .string()
       .length(10, 'Please enter a ten digit phone number')
       .matches(/^\d{10}$/)
-      .required('Please enter your phone number'),
-    email: yup.string().email().required('Please enter your email address'),
+      .required("Please enter the staff member's phone number"),
+    email: yup.string().email().required("Please enter the staff member's email address"),
     password: yup
       .string()
       .matches(
         passwordRequirementsRegex,
         'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
       )
-      .required('Please enter your password'),
+      .required("Please enter the staff member's password"),
     confirmPassword: yup
       .string()
-      .required('Please confirm your password')
+      .required("Please confirm the staff member's password")
       .oneOf([yup.ref('password'), null], 'Passwords must both match'),
-    role: yup.string().required('Please select a role'),
+    role: yup.string().required("Please select the staff member's role"),
   });
   const {
     register,
@@ -75,7 +75,6 @@ const CreateAccount = ({ isSuperAdmin, memberType, refreshData }) => {
       await registerWithEmailAndPassword(user);
       setErrorMessage('User successfully created');
       refreshData();
-      // await registerWithEmailAndPassword(user, navigate, '/login?signup=success');
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;
@@ -99,7 +98,7 @@ const CreateAccount = ({ isSuperAdmin, memberType, refreshData }) => {
         className={styles['create-account-button']}
         onClick={onOpen}
       >
-        Add {memberType} <SmallAddIcon />
+        Add Staff <SmallAddIcon />
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
@@ -107,7 +106,7 @@ const CreateAccount = ({ isSuperAdmin, memberType, refreshData }) => {
           <ModalCloseButton />
           <Flex m={5}>
             <Stack>
-              <Heading className={styles['create-account-title']}>Add {memberType}</Heading>
+              <Heading className={styles['create-account-title']}>Add Staff</Heading>
               <form>
                 <FormControl className={styles['create-account-form']}>
                   <Flex>
@@ -231,7 +230,7 @@ const CreateAccount = ({ isSuperAdmin, memberType, refreshData }) => {
                 type="submit"
                 onClick={handleSubmit(onSubmit)}
               >
-                Add {memberType}
+                Add Staff
               </Button>
             </Flex>
           </ModalFooter>
@@ -243,7 +242,6 @@ const CreateAccount = ({ isSuperAdmin, memberType, refreshData }) => {
 
 CreateAccount.propTypes = {
   isSuperAdmin: PropTypes.bool.isRequired,
-  memberType: PropTypes.string.isRequired,
   refreshData: PropTypes.func.isRequired,
 };
 

@@ -20,7 +20,6 @@ import {
   ModalFooter,
   ModalCloseButton,
   useDisclosure,
-  Select,
   IconButton,
   InputLeftElement,
   InputGroup,
@@ -33,27 +32,27 @@ import { passwordRequirementsRegex } from '../../utils/utils';
 
 const { ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
-const EditAccountModal = ({ isSuperAdmin, memberType, userProfile }) => {
+const EditAccountModal = ({ staffProfile }) => {
   const [role] = useState(ADMIN_ROLE);
   const formSchema = yup.object({
-    firstName: yup.string().required('Please enter your first name'),
-    lastName: yup.string().required('Please enter your last name'),
+    firstName: yup.string().required("Please enter the staff member's first name"),
+    lastName: yup.string().required("Please enter the staff member's last name"),
     phoneNumber: yup
       .string()
       .length(10, 'Please enter a ten digit phone number')
       .matches(/^\d{10}$/)
-      .required('Please enter your phone number'),
-    email: yup.string().email().required('Please enter your email address'),
+      .required("Please enter the staff member's phone number"),
+    email: yup.string().email().required("Please enter the staff member's email address"),
     password: yup
       .string()
       .matches(
         passwordRequirementsRegex,
         'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
       )
-      .required('Please enter your password'),
+      .required("Please enter the staff member's password"),
     confirmPassword: yup
       .string()
-      .required('Please confirm your password')
+      .required("Please confirm the staff member's password")
       .oneOf([yup.ref('password'), null], 'Passwords must both match'),
   });
   const {
@@ -68,6 +67,7 @@ const EditAccountModal = ({ isSuperAdmin, memberType, userProfile }) => {
   const [errorMessage, setErrorMessage] = useState();
 
   const onSubmit = async e => {
+    // TODO: Edits should be done in the backend when a user edit's a profile
     try {
       const { firstName, lastName, email } = e;
 
@@ -108,7 +108,7 @@ const EditAccountModal = ({ isSuperAdmin, memberType, userProfile }) => {
           <ModalCloseButton />
           <Flex m={5}>
             <Stack>
-              <Heading className={styles['create-account-title']}>Edit {memberType}</Heading>
+              <Heading className={styles['create-account-title']}>Edit Staff</Heading>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl className={styles['create-account-form']}>
                   <Flex>
@@ -119,7 +119,7 @@ const EditAccountModal = ({ isSuperAdmin, memberType, userProfile }) => {
                       <Input
                         id="first-name"
                         style={{ width: '240px' }}
-                        defaultValue={userProfile.firstName}
+                        defaultValue={staffProfile.firstName}
                         {...register('firstName')}
                         isRequired
                       />
@@ -132,7 +132,7 @@ const EditAccountModal = ({ isSuperAdmin, memberType, userProfile }) => {
                       <Input
                         id="last-name"
                         style={{ width: '240px' }}
-                        defaultValue={userProfile.lastName}
+                        defaultValue={staffProfile.lastName}
                         {...register('lastName')}
                         isRequired
                       />
@@ -151,7 +151,7 @@ const EditAccountModal = ({ isSuperAdmin, memberType, userProfile }) => {
                           id="email"
                           style={{ width: '240px' }}
                           placeholder="Enter email"
-                          value={userProfile.email}
+                          value={staffProfile.email}
                           {...register('email')}
                           isRequired
                           isReadOnly
@@ -167,37 +167,13 @@ const EditAccountModal = ({ isSuperAdmin, memberType, userProfile }) => {
                         type="tel"
                         id="phone-number"
                         style={{ width: '240px' }}
-                        defaultValue={userProfile.phoneNumber}
+                        defaultValue={staffProfile.phoneNumber}
                         {...register('phoneNumber')}
                         isRequired
                       />
                       <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
                     </Flex>
                   </Flex>
-                  {isSuperAdmin ? (
-                    <Flex>
-                      <Flex direction="column">
-                        <FormLabel className={styles['create-account-form-label']}>Role</FormLabel>
-                        <Select style={{ width: '240px' }}>
-                          {userProfile.role === 'admin' ? (
-                            <>
-                              <option value="admin" selected>
-                                Admin
-                              </option>
-                              <option value="driver">Driver</option>
-                            </>
-                          ) : (
-                            <>
-                              <option value="admin">Admin</option>
-                              <option value="driver" selected>
-                                Driver
-                              </option>
-                            </>
-                          )}
-                        </Select>
-                      </Flex>
-                    </Flex>
-                  ) : null}
                 </FormControl>
               </form>
               <Box className={styles['error-box']}>{errorMessage}</Box>
@@ -248,9 +224,7 @@ const EditAccountModal = ({ isSuperAdmin, memberType, userProfile }) => {
 };
 
 EditAccountModal.propTypes = {
-  isSuperAdmin: PropTypes.bool.isRequired,
-  memberType: PropTypes.string.isRequired,
-  userProfile: PropTypes.shape({
+  staffProfile: PropTypes.shape({
     email: PropTypes.string,
     firstName: PropTypes.string,
     id: PropTypes.string,

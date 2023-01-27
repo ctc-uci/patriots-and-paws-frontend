@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { PNPBackend } from '../../utils/utils';
+import { getUserFromDB } from '../../utils/AuthUtils';
 import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import menuIcon from '../../assets/Menu.svg';
@@ -22,24 +23,27 @@ import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import AUTH_ROLES from '../../utils/AuthConfig';
 import UserTable from '../../components/UserTable/UserTable';
 
-const { SUPERADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const ManageStaff = ({ cookies }) => {
   const [users, setUsers] = useState([]);
   const [usersCopy, setUsersCopy] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const [userType, setUserType] = useState('Driver');
+  const [userId, setUserId] = useState([]);
 
   const refreshData = async () => {
+    await getUserFromDB().then(result => {
+      setUserId(result.id);
+    });
+    const currentUserRole = await cookies.get(cookieKeys.ROLE);
     const { data } = await PNPBackend.get('/users');
-    const currentUserRole = cookies.get(cookieKeys.ROLE);
+
     if (currentUserRole === SUPERADMIN_ROLE) {
       setIsSuperAdmin(true);
-      setUserType('Staff');
-      setUsers(data);
-      setUsersCopy(data);
+      setUsers(data.filter(user => user.id !== userId));
+      setUsersCopy(data.filter(user => user.id !== userId));
     } else {
-      const driverData = data.filter(d => d.role === 'driver');
+      const driverData = data.filter(d => d.role === DRIVER_ROLE);
       setUsers(driverData);
     }
   };
@@ -49,12 +53,14 @@ const ManageStaff = ({ cookies }) => {
   }, []);
 
   const getAdmins = () => {
-    const adminData = usersCopy.filter(user => user.role === 'admin' || user.role === 'superadmin');
+    const adminData = usersCopy.filter(
+      user => user.role === ADMIN_ROLE || user.role === SUPERADMIN_ROLE,
+    );
     setUsers(adminData);
   };
 
   const getDrivers = () => {
-    const driverData = usersCopy.filter(user => user.role === 'driver');
+    const driverData = usersCopy.filter(user => user.role === DRIVER_ROLE);
     setUsers(driverData);
   };
 
@@ -66,10 +72,7 @@ const ManageStaff = ({ cookies }) => {
             <InputLeftElement pointerEvents="none">
               <SearchIcon color="gray.300" />
             </InputLeftElement>
-            <Input
-              placeholder={isSuperAdmin ? 'Search Staff' : 'Search Drivers'}
-              className={styles['search-bar']}
-            />
+            <Input placeholder="Search Staff" className={styles['search-bar']} />
           </InputGroup>
         </Flex>
         {isSuperAdmin ? (
@@ -99,15 +102,11 @@ const ManageStaff = ({ cookies }) => {
                 </MenuList>
               </Flex>
             </Menu>
-            <CreateAccount
-              isSuperAdmin={isSuperAdmin}
-              memberType={userType}
-              refreshData={refreshData}
-            />
+            <CreateAccount isSuperAdmin={isSuperAdmin} refreshData={refreshData} />
           </Flex>
         ) : null}
       </Flex>
-      <UserTable isSuperAdmin={isSuperAdmin} memberType={userType} users={users} />
+      <UserTable isSuperAdmin={isSuperAdmin} users={users} />
     </Flex>
   );
 };

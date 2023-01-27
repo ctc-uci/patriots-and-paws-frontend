@@ -14,19 +14,17 @@ import {
   Td,
 } from '@chakra-ui/react';
 import { EmailIcon, PhoneIcon } from '@chakra-ui/icons';
+import { formatPhone } from '../../utils/utils';
 import styles from './UserTable.module.css';
 import EditAccountModal from '../EditAccountModal/EditAccountModal';
 import DeleteAccountModal from '../DeleteAccountModal/DeleteAccountModal';
 import peopleIcon from '../../assets/Bold.svg';
 import cardAccount from '../../assets/card-account-details.svg';
+import AUTH_ROLES from '../../utils/AuthConfig';
 
-const UserTable = ({ isSuperAdmin, memberType, users }) => {
-  const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
-  const formatPhone = value => {
-    return value.replace(phoneRegex, '$1-$2-$3');
-  };
-
+const UserTable = ({ isSuperAdmin, users }) => {
   return (
     <TableContainer border="1px" borderColor="gray.200">
       <Table variant="striped" colorScheme="gray">
@@ -71,7 +69,7 @@ const UserTable = ({ isSuperAdmin, memberType, users }) => {
               <Td>{formatPhone(user.phoneNumber)}</Td>
               {isSuperAdmin ? (
                 <Td>
-                  {user.role === 'admin' || user.role === 'superadmin' ? (
+                  {user.role === ADMIN_ROLE || user.role === SUPERADMIN_ROLE ? (
                     <Tag size="sm" variant="solid" colorScheme="blue" font="Inter" fontSize="14px">
                       Admin
                     </Tag>
@@ -83,12 +81,7 @@ const UserTable = ({ isSuperAdmin, memberType, users }) => {
                 </Td>
               ) : null}
               <Td>
-                <EditAccountModal
-                  mr={5}
-                  isSuperAdmin={isSuperAdmin}
-                  memberType={memberType}
-                  userProfile={user}
-                />
+                <EditAccountModal mr={5} isSuperAdmin={isSuperAdmin} staffProfile={user} />
                 {isSuperAdmin ? <DeleteAccountModal /> : null}
               </Td>
             </Tr>
@@ -101,7 +94,6 @@ const UserTable = ({ isSuperAdmin, memberType, users }) => {
 
 UserTable.propTypes = {
   isSuperAdmin: PropTypes.bool.isRequired,
-  memberType: PropTypes.string.isRequired,
   users: PropTypes.arrayOf(
     PropTypes.shape({
       email: PropTypes.string.isRequired,
