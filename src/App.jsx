@@ -1,5 +1,5 @@
 import { ChakraProvider, Button, Image } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
@@ -29,9 +29,12 @@ function App() {
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
 
+  useEffect(() => console.log(files), [files]);
+
   const onSubmit = async () => {
-    const url = await uploadImage(files[0]);
-    setImages(prev => [...prev, url]);
+    const urls = await Promise.all(files.map(async file => uploadImage(file)));
+    setImages(prev => [...prev, ...urls]);
+    setFiles([]);
   };
 
   const Playground = () => {
@@ -43,7 +46,16 @@ function App() {
         {images.map(e => (
           <Image key={e} src={e} />
         ))}
-        );
+        {files.map(({ preview }) => (
+          <img
+            key={preview}
+            alt="pic"
+            src={preview}
+            // onLoad={() => {
+            //   URL.revokeObjectURL(file.preview);
+            // }}
+          />
+        ))}
       </>
     );
   };
