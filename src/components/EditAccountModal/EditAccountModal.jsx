@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
-// import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -16,17 +15,25 @@ import {
   Modal,
   ModalContent,
   ModalOverlay,
+  ModalHeader,
+  ModalBody,
   ModalFooter,
   ModalCloseButton,
   useDisclosure,
-  Select,
+  IconButton,
+  InputLeftElement,
+  InputGroup,
 } from '@chakra-ui/react';
-import { SmallAddIcon } from '@chakra-ui/icons';
+import { EditIcon, LockIcon } from '@chakra-ui/icons';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
-import styles from './CreateAccount.module.css';
+import styles from './EditAccountModal.module.css';
+import AUTH_ROLES from '../../utils/AuthConfig';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
-const CreateAccount = ({ isSuperAdmin, refreshData }) => {
+const { ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
+
+const EditAccountModal = ({ staffProfile }) => {
+  const [role] = useState(ADMIN_ROLE);
   const formSchema = yup.object({
     firstName: yup.string().required("Please enter the staff member's first name"),
     lastName: yup.string().required("Please enter the staff member's last name"),
@@ -47,7 +54,6 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
       .string()
       .required("Please confirm the staff member's password")
       .oneOf([yup.ref('password'), null], 'Passwords must both match'),
-    role: yup.string().required("Please select the staff member's role"),
   });
   const {
     register,
@@ -61,20 +67,18 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
   const [errorMessage, setErrorMessage] = useState();
 
   const onSubmit = async e => {
+    // TODO: Edits should be done in the backend when a user edit's a profile
     try {
-      const { firstName, lastName, email, phoneNumber, password, role } = e;
+      const { firstName, lastName, email } = e;
 
       const user = {
         firstName,
         lastName,
         email,
-        phoneNumber,
-        password,
         role,
       };
       await registerWithEmailAndPassword(user);
       setErrorMessage('User successfully created');
-      refreshData();
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;
@@ -88,26 +92,24 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: saveIsOpen, onOpen: saveOnOpen, onClose: saveOnClose } = useDisclosure();
+
+  const closeModals = () => {
+    saveOnClose();
+    onClose();
+  };
 
   return (
     <>
-      <Button
-        ml={5}
-        mt={0}
-        colorScheme="blue"
-        className={styles['create-account-button']}
-        onClick={onOpen}
-      >
-        Add Staff <SmallAddIcon />
-      </Button>
+      <IconButton onClick={onOpen} icon={<EditIcon />} variant="ghost" />
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
           <Flex m={5}>
             <Stack>
-              <Heading className={styles['create-account-title']}>Add Staff</Heading>
-              <form>
+              <Heading className={styles['create-account-title']}>Edit Staff</Heading>
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl className={styles['create-account-form']}>
                   <Flex>
                     <Flex direction="column" mr={8}>
@@ -117,7 +119,7 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
                       <Input
                         id="first-name"
                         style={{ width: '240px' }}
-                        placeholder="Enter first name"
+                        defaultValue={staffProfile.firstName}
                         {...register('firstName')}
                         isRequired
                       />
@@ -130,7 +132,7 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
                       <Input
                         id="last-name"
                         style={{ width: '240px' }}
-                        placeholder="Enter last name"
+                        defaultValue={staffProfile.lastName}
                         {...register('lastName')}
                         isRequired
                       />
@@ -140,14 +142,21 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
                   <Flex>
                     <Flex direction="column" mr={8}>
                       <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
-                      <Input
-                        type="email"
-                        id="email"
-                        style={{ width: '240px' }}
-                        placeholder="Enter email"
-                        {...register('email')}
-                        isRequired
-                      />
+                      <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                          <LockIcon color="black.300" />
+                        </InputLeftElement>
+                        <Input
+                          type="email"
+                          id="email"
+                          style={{ width: '240px' }}
+                          placeholder="Enter email"
+                          value={staffProfile.email}
+                          {...register('email')}
+                          isRequired
+                          isReadOnly
+                        />
+                      </InputGroup>
                       <Box className={styles['error-box']}>{errors.email?.message}</Box>
                     </Flex>
                     <Flex direction="column">
@@ -158,56 +167,13 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
                         type="tel"
                         id="phone-number"
                         style={{ width: '240px' }}
-                        placeholder="Enter phone number"
+                        defaultValue={staffProfile.phoneNumber}
                         {...register('phoneNumber')}
                         isRequired
                       />
                       <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
                     </Flex>
                   </Flex>
-                  <Flex>
-                    <Flex direction="column" mr={8}>
-                      <FormLabel className={styles['create-account-form-label']}>
-                        Password
-                      </FormLabel>
-                      <Input
-                        type="password"
-                        id="password"
-                        style={{ width: '240px' }}
-                        placeholder="Enter password"
-                        {...register('password')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.password?.message}</Box>
-                    </Flex>
-                    <Flex direction="column">
-                      <FormLabel className={styles['create-account-form-label']}>
-                        Re-enter Password
-                      </FormLabel>
-                      <Input
-                        type="password"
-                        id="check-password"
-                        style={{ width: '240px' }}
-                        placeholder="Re-enter password"
-                        {...register('confirmPassword')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
-                    </Flex>
-                  </Flex>
-                  {isSuperAdmin ? (
-                    <Flex>
-                      <Flex direction="column">
-                        <FormLabel className={styles['create-account-form-label']}>Role</FormLabel>
-                        <Select style={{ width: '240px' }} {...register('role')} isRequired>
-                          <option value="admin" selected>
-                            Admin
-                          </option>
-                          <option value="driver">Driver</option>
-                        </Select>
-                      </Flex>
-                    </Flex>
-                  ) : null}
                 </FormControl>
               </form>
               <Box className={styles['error-box']}>{errorMessage}</Box>
@@ -220,7 +186,7 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
                 className={styles['create-account-button']}
                 type="submit"
                 mr={3}
-                onClick={onClose}
+                onClick={saveOnOpen}
               >
                 Cancel
               </Button>
@@ -228,10 +194,27 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
                 colorScheme="blue"
                 className={styles['create-account-button']}
                 type="submit"
-                onClick={handleSubmit(onSubmit)}
+                onClick={onSubmit}
               >
-                Add Staff
+                Save
               </Button>
+              <Modal isOpen={saveIsOpen} onClose={saveOnClose}>
+                <ModalOverlay />
+                <ModalContent>
+                  <ModalHeader>Save before exiting?</ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>Are you sure you want to exit without saving?</ModalBody>
+
+                  <ModalFooter>
+                    <Button mr={3} onClick={closeModals}>
+                      Exit
+                    </Button>
+                    <Button colorScheme="blue" onClick={closeModals}>
+                      Save and Exit
+                    </Button>
+                  </ModalFooter>
+                </ModalContent>
+              </Modal>
             </Flex>
           </ModalFooter>
         </ModalContent>
@@ -240,9 +223,15 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
   );
 };
 
-CreateAccount.propTypes = {
-  isSuperAdmin: PropTypes.bool.isRequired,
-  refreshData: PropTypes.func.isRequired,
+EditAccountModal.propTypes = {
+  staffProfile: PropTypes.shape({
+    email: PropTypes.string,
+    firstName: PropTypes.string,
+    id: PropTypes.string,
+    lastName: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    role: PropTypes.string,
+  }).isRequired,
 };
 
-export default CreateAccount;
+export default EditAccountModal;

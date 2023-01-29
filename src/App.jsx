@@ -10,6 +10,7 @@ import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import Donate from './pages/donation/Donate';
 import DonateStatus from './pages/donation/DonateStatus';
+import ManageStaff from './pages/ManageStaff/ManageStaff';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 import EmailAction from './components/EmailAction/EmailAction';
@@ -109,6 +110,17 @@ function App() {
                 Component={Logout}
                 redirectPath="/login"
                 roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/manage-staff"
+            element={
+              <ProtectedRoute
+                Component={ManageStaff}
+                redirectPath="/login"
+                roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
               />
             }
           />
