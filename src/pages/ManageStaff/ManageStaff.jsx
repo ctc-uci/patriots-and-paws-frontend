@@ -29,12 +29,10 @@ const ManageStaff = ({ cookies }) => {
   const [users, setUsers] = useState([]);
   const [usersCopy, setUsersCopy] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
-  const [userId, setUserId] = useState([]);
 
   const refreshData = async () => {
-    await getUserFromDB().then(result => {
-      setUserId(result.id);
-    });
+    const currentUser = await getUserFromDB();
+    const userId = currentUser.id;
     const currentUserRole = await cookies.get(cookieKeys.ROLE);
     const { data } = await PNPBackend.get('/users');
 
