@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Flex, Heading, Stack, Text, Button } from '@chakra-ui/react';
-import { getUserFromDB } from '../../utils/AuthUtils';
+import { getUserFromDB, getCurrentUserId } from '../../utils/AuthUtils';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
+  const currentUserId = getCurrentUserId();
 
   useEffect(() => {
     const fetchUserFromDB = async () => {
-      const userFromDB = await getUserFromDB();
+      const userFromDB = await getUserFromDB(currentUserId);
       setUser(userFromDB);
     };
     fetchUserFromDB();

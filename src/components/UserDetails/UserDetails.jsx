@@ -17,8 +17,15 @@ import {
 
 import styles from './UserDetails.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
-import { getUserFromDB, updateFirebaseUser, logout, useNavigate } from '../../utils/AuthUtils';
-import { Cookies, withCookies, cookieKeys } from '../../utils/CookieUtils';
+import {
+  getUserFromDB,
+  updateUser,
+  logout,
+  useNavigate,
+  getCurrentUserId,
+  getCurrentUserRole,
+} from '../../utils/AuthUtils';
+import { Cookies, withCookies } from '../../utils/CookieUtils';
 import AUTH_ROLES from '../../utils/AuthConfig';
 
 const UserDetails = ({ userId, cookies }) => {
@@ -32,21 +39,29 @@ const UserDetails = ({ userId, cookies }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  const { DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
+  const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
   useEffect(() => {
     const fetchUserFromDB = async () => {
-      const userFromDB = await getUserFromDB();
+      const userFromDB = await getUserFromDB(userId);
 
-      const currentUserRole = cookies.get(cookieKeys.ROLE);
-      if (currentUserRole === DRIVER_ROLE && userFromDB.id !== userId) {
-        try {
-          await logout('/login', navigate, cookies);
-        } catch (err) {
-          setErrorMessage(err.message);
+      const currentUserRole = getCurrentUserRole();
+      const currentUserId = getCurrentUserId();
+
+      // Drivers should only be able to access their own profile
+      if (currentUserId !== userId) {
+        if (
+          currentUserRole === DRIVER_ROLE ||
+          (currentUserRole === ADMIN_ROLE &&
+            [SUPERADMIN_ROLE, ADMIN_ROLE].includes(userFromDB.role))
+        ) {
+          try {
+            await logout('/login', navigate, cookies);
+          } catch (err) {
+            setErrorMessage(err.message);
+          }
         }
       }
-
       setUser(userFromDB);
     };
     fetchUserFromDB();
@@ -79,7 +94,7 @@ const UserDetails = ({ userId, cookies }) => {
     formState: { errors },
     getValues,
   } = useForm({
-    defaultValues: async () => getUserFromDB(),
+    defaultValues: async () => getUserFromDB(userId),
     resolver: yupResolver(formSchema),
     delayError: 750,
   });
@@ -89,7 +104,11 @@ const UserDetails = ({ userId, cookies }) => {
       const { firstName, lastName, phoneNumber, email, newPassword } = e;
 
       const updatedUser = { firstName, lastName, phoneNumber, email, newPassword };
-      await updateFirebaseUser(updatedUser);
+      await updateUser(updatedUser, userId);
+      reset({
+        newPassword: '',
+        confirmPassword: '',
+      });
       setCanEditForm(false);
       setErrorMessage('');
     } catch (err) {
@@ -103,7 +122,6 @@ const UserDetails = ({ userId, cookies }) => {
       firstName: user.firstName,
       lastName: user.lastName,
       phoneNumber: user.phoneNumber,
-      currenPassword: '',
       newPassword: '',
       confirmPassword: '',
     });

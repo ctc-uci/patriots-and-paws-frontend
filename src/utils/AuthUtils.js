@@ -9,9 +9,6 @@ import {
   sendPasswordResetEmail,
   confirmPasswordReset,
   applyActionCode,
-  updatePassword,
-  EmailAuthProvider,
-  reauthenticateWithCredential,
 } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { cookieKeys, cookieConfig, clearCookies } from './CookieUtils';
@@ -67,15 +64,20 @@ const getCurrentUser = authInstance =>
     );
   });
 
-// Get user from PNP DB using current user's id
-const getUserFromDB = async () => {
-  const res = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+// Get current user's id
+const getCurrentUserId = () => {
+  return auth.currentUser.uid;
+};
+
+// Get user from PNP DB using a user id
+const getUserFromDB = async id => {
+  const res = await PNPBackend.get(`/users/${id}`);
   const user = res.data[0];
   return user;
 };
 
-// Get user role from PNP DB
-const getUserRole = async () => {
+// Get current user's role from PNP DB
+const getCurrentUserRole = async () => {
   const res = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
   const { role } = res.data[0];
   return role;
@@ -176,8 +178,8 @@ const createUser = async user => {
 };
 
 // Updates user information in PNP DB
-const updateUserInDB = async (user, id) => {
-  const { firstName, lastName, email, phoneNumber, role } = user;
+const updateUser = async (user, id) => {
+  const { firstName, lastName, email, phoneNumber, role, newPassword } = user;
   try {
     await PNPBackend.put(`/users/${id}`, {
       firstName,
@@ -186,24 +188,11 @@ const updateUserInDB = async (user, id) => {
       phoneNumber,
       role,
       id,
+      newPassword,
     });
   } catch (err) {
     throw new Error(err.message);
   }
-};
-
-/**
- * Updates user password in Firebase after verifying that current password is correct
- * so that the user stays logged in after a password change
- */
-const updateFirebaseUser = async user => {
-  const { email, currentPassword, newPassword } = user;
-  if (currentPassword && newPassword) {
-    const credentials = EmailAuthProvider.credential(email, currentPassword);
-    await reauthenticateWithCredential(auth.currentUser, credentials);
-    await updatePassword(auth.currentUser, newPassword);
-  }
-  await updateUserInDB(user, auth.currentUser.uid);
 };
 
 /**
@@ -335,10 +324,10 @@ export {
   userIsAuthenticated,
   refreshToken,
   getCurrentUser,
+  getCurrentUserId,
   getUserFromDB,
-  updateUserInDB,
-  updateFirebaseUser,
-  getUserRole,
+  updateUser,
+  getCurrentUserRole,
   confirmNewPassword,
   confirmVerifyEmail,
 };
