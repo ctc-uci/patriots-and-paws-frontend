@@ -45,10 +45,9 @@ const UserDetails = ({ userId, cookies }) => {
     const fetchUserFromDB = async () => {
       const userFromDB = await getUserFromDB(userId);
 
-      const currentUserRole = getCurrentUserRole();
+      const currentUserRole = await getCurrentUserRole();
       const currentUserId = getCurrentUserId();
 
-      // Drivers should only be able to access their own profile
       if (currentUserId !== userId) {
         if (
           currentUserRole === DRIVER_ROLE ||
