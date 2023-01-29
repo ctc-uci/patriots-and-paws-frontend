@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Thead, Tbody, Tr, Th, TableContainer } from '@chakra-ui/react';
+import {
+  Table,
+  Thead,
+  Tbody,
+  Button,
+  Tr,
+  Td,
+  Th,
+  TableContainer,
+  useDisclosure,
+  Text,
+} from '@chakra-ui/react';
 import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
@@ -7,6 +18,47 @@ import { getDonationsFromDB } from '../../utils/InventoryUntils';
 
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [donationData, setDonationData] = useState({});
+
+  const handleRowClick = data => {
+    setDonationData(data);
+    onOpen();
+  };
+
+  function makeStatus(newStatus) {
+    if (newStatus === 'denied') {
+      return (
+        <Button size="xs" colorScheme="red">
+          REJECTED
+        </Button>
+      );
+    }
+    if (newStatus === 'approved') {
+      return (
+        <Button size="xs" colorScheme="green">
+          APPROVED
+        </Button>
+      );
+    }
+    if (newStatus === 'flagged') {
+      return (
+        <Button size="xs" colorScheme="gray">
+          FLAGGED
+        </Button>
+      );
+    }
+    return (
+      <Button size="xs" colorScheme="gray">
+        {newStatus}
+      </Button>
+    );
+  }
+
+  function makeDate(dateDB) {
+    const d = new Date(dateDB);
+    return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+  }
 
   useEffect(() => {
     const fetchDonationsFromDB = async () => {
@@ -18,7 +70,18 @@ const InventoryPage = () => {
   }, []);
 
   const makeUserRows = users.map(ele => {
-    return <DonationModal key={ele.id} props={ele} />;
+    return (
+      <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+        <Td>
+          <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+          <Text color="#718096">{ele.email}</Text>
+        </Td>
+        <Td>#{ele.id}</Td>
+        <Td>{makeStatus(ele.status)}</Td>
+        <Td>{makeDate(ele.submittedDate)}</Td>
+      </Tr>
+    );
+    // return <DonationModal key={ele.id} props={ele} />;
   });
 
   return (
@@ -33,6 +96,7 @@ const InventoryPage = () => {
           </Tr>
         </Thead>
         <Tbody>{makeUserRows}</Tbody>
+        <DonationModal data={donationData} onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
       </Table>
     </TableContainer>
   );

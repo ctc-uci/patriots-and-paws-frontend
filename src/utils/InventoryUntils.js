@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import { PNPBackend } from './utils';
 
 const getDonationsFromDB = async () => {
