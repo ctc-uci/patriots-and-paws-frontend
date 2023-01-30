@@ -8,6 +8,7 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  FormErrorMessage,
   Input,
   Button,
   Heading,
@@ -52,6 +53,7 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(formSchema),
@@ -59,6 +61,8 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
   });
 
   const [errorMessage, setErrorMessage] = useState();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onSubmit = async e => {
     try {
@@ -75,6 +79,7 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
       await registerWithEmailAndPassword(user);
       setErrorMessage('User successfully created');
       refreshData();
+      onClose();
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;
@@ -87,7 +92,10 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
     }
   };
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const resetFields = () => {
+    reset();
+    onClose();
+  };
 
   return (
     <>
@@ -100,7 +108,7 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
       >
         Add Staff <SmallAddIcon />
       </Button>
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <Modal isOpen={isOpen} onClose={resetFields} size="xl">
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
@@ -111,100 +119,125 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
                 <FormControl className={styles['create-account-form']}>
                   <Flex>
                     <Flex direction="column" mr={8}>
-                      <FormLabel className={styles['create-account-form-label']}>
-                        First Name
-                      </FormLabel>
-                      <Input
-                        id="first-name"
-                        style={{ width: '240px' }}
-                        placeholder="Enter first name"
-                        {...register('firstName')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.firstName?.message}</Box>
+                      <FormControl isInvalid={errors && errors.firstName}>
+                        <FormLabel className={styles['create-account-form-label']}>
+                          First Name
+                        </FormLabel>
+                        <Input
+                          id="add-staff"
+                          style={{ width: '240px' }}
+                          placeholder="Enter first name"
+                          {...register('firstName')}
+                          // isRequired
+                        />
+                        <FormErrorMessage>
+                          {errors.firstName && errors.firstName.message}
+                        </FormErrorMessage>
+                      </FormControl>
                     </Flex>
                     <Flex direction="column">
-                      <FormLabel className={styles['create-account-form-label']}>
-                        Last Name
-                      </FormLabel>
-                      <Input
-                        id="last-name"
-                        style={{ width: '240px' }}
-                        placeholder="Enter last name"
-                        {...register('lastName')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.lastName?.message}</Box>
+                      <FormControl isInvalid={errors && errors.lastName}>
+                        <FormLabel className={styles['create-account-form-label']}>
+                          Last Name
+                        </FormLabel>
+                        <Input
+                          id="last-name"
+                          style={{ width: '240px' }}
+                          placeholder="Enter last name"
+                          {...register('lastName')}
+                          isRequired
+                        />
+                        <FormErrorMessage>
+                          {errors.lastName && errors.lastName.message}
+                        </FormErrorMessage>
+                      </FormControl>
                     </Flex>
                   </Flex>
                   <Flex>
                     <Flex direction="column" mr={8}>
-                      <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
-                      <Input
-                        type="email"
-                        id="email"
-                        style={{ width: '240px' }}
-                        placeholder="Enter email"
-                        {...register('email')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.email?.message}</Box>
+                      <FormControl isInvalid={errors && errors.email}>
+                        <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
+                        <Input
+                          type="email"
+                          id="email"
+                          style={{ width: '240px' }}
+                          placeholder="Enter email"
+                          {...register('email')}
+                          isRequired
+                        />
+                        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+                      </FormControl>
                     </Flex>
                     <Flex direction="column">
-                      <FormLabel className={styles['create-account-form-label']}>
-                        Phone Number
-                      </FormLabel>
-                      <Input
-                        type="tel"
-                        id="phone-number"
-                        style={{ width: '240px' }}
-                        placeholder="Enter phone number"
-                        {...register('phoneNumber')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
+                      <FormControl isInvalid={errors && errors.phoneNumber}>
+                        <FormLabel className={styles['create-account-form-label']}>
+                          Phone Number
+                        </FormLabel>
+                        <Input
+                          type="tel"
+                          id="phone-number"
+                          style={{ width: '240px' }}
+                          placeholder="Enter phone number"
+                          {...register('phoneNumber')}
+                          isRequired
+                        />
+                        <FormErrorMessage>
+                          {errors.phoneNumber && errors.phoneNumber.message}
+                        </FormErrorMessage>
+                      </FormControl>
                     </Flex>
                   </Flex>
                   <Flex>
                     <Flex direction="column" mr={8}>
-                      <FormLabel className={styles['create-account-form-label']}>
-                        Password
-                      </FormLabel>
-                      <Input
-                        type="password"
-                        id="password"
-                        style={{ width: '240px' }}
-                        placeholder="Enter password"
-                        {...register('password')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.password?.message}</Box>
+                      <FormControl isInvalid={errors && errors.password}>
+                        <FormLabel className={styles['create-account-form-label']}>
+                          Password
+                        </FormLabel>
+                        <Input
+                          type="password"
+                          style={{ width: '240px' }}
+                          placeholder="Enter password"
+                          {...register('password')}
+                          isRequired
+                        />
+                        <FormErrorMessage>
+                          {errors.password && errors.password.message}
+                        </FormErrorMessage>
+                      </FormControl>
                     </Flex>
                     <Flex direction="column">
-                      <FormLabel className={styles['create-account-form-label']}>
-                        Re-enter Password
-                      </FormLabel>
-                      <Input
-                        type="password"
-                        id="check-password"
-                        style={{ width: '240px' }}
-                        placeholder="Re-enter password"
-                        {...register('confirmPassword')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
+                      <FormControl isInvalid={errors && errors.confirmPassword}>
+                        <FormLabel className={styles['create-account-form-label']}>
+                          Re-enter Password
+                        </FormLabel>
+                        <Input
+                          type="password"
+                          style={{ width: '240px' }}
+                          placeholder="Re-enter password"
+                          {...register('confirmPassword')}
+                          isRequired
+                        />
+                        <FormErrorMessage>
+                          {errors.confirmPassword && errors.confirmPassword.message}
+                        </FormErrorMessage>
+                      </FormControl>
                     </Flex>
                   </Flex>
                   {isSuperAdmin ? (
                     <Flex>
                       <Flex direction="column">
-                        <FormLabel className={styles['create-account-form-label']}>Role</FormLabel>
-                        <Select style={{ width: '240px' }} {...register('role')} isRequired>
-                          <option value="admin" selected>
-                            Admin
-                          </option>
-                          <option value="driver">Driver</option>
-                        </Select>
+                        <FormControl isInvalid={errors && errors.role}>
+                          <FormLabel className={styles['create-account-form-label']}>
+                            Role
+                          </FormLabel>
+                          <Select style={{ width: '240px' }} {...register('role')} isRequired>
+                            <option value="admin" selected>
+                              Admin
+                            </option>
+                            <option value="driver">Driver</option>
+                          </Select>
+                          <FormErrorMessage>{errors.role && errors.role.message}</FormErrorMessage>
+                        </FormControl>
                       </Flex>
                     </Flex>
                   ) : null}
@@ -220,7 +253,7 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
                 className={styles['create-account-button']}
                 type="submit"
                 mr={3}
-                onClick={onClose}
+                onClick={resetFields}
               >
                 Cancel
               </Button>
