@@ -80,6 +80,7 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
       setErrorMessage('User successfully created');
       refreshData();
       onClose();
+      reset();
     } catch (err) {
       const errorCode = err.code;
       const firebaseErrorMsg = err.message;
