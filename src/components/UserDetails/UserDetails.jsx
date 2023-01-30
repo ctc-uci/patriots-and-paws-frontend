@@ -23,9 +23,8 @@ import {
   logout,
   useNavigate,
   getCurrentUserId,
-  getCurrentUserRole,
 } from '../../utils/AuthUtils';
-import { Cookies, withCookies } from '../../utils/CookieUtils';
+import { Cookies, withCookies, cookieKeys } from '../../utils/CookieUtils';
 import AUTH_ROLES from '../../utils/AuthConfig';
 
 const UserDetails = ({ userId, cookies }) => {
@@ -45,7 +44,7 @@ const UserDetails = ({ userId, cookies }) => {
     const fetchUserFromDB = async () => {
       const userFromDB = await getUserFromDB(userId);
 
-      const currentUserRole = await getCurrentUserRole();
+      const currentUserRole = cookies.get(cookieKeys.ROLE);
       const currentUserId = getCurrentUserId();
 
       if (currentUserId !== userId) {
@@ -76,14 +75,15 @@ const UserDetails = ({ userId, cookies }) => {
       .required('Please enter your phone number'),
     newPassword: yup
       .string()
+      .nullable()
+      .transform(value => value || null)
       .matches(
         passwordRequirementsRegex,
         'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
-      )
-      .optional(),
+      ),
     confirmPassword: yup
       .string()
-      .oneOf([yup.ref('newPassword'), null], 'Passwords must both match'),
+      .oneOf([yup.ref('newPassword'), null, ''], 'Passwords must both match'),
   });
 
   const {
@@ -101,8 +101,11 @@ const UserDetails = ({ userId, cookies }) => {
   const updateUserDetails = async e => {
     try {
       const { firstName, lastName, phoneNumber, email, newPassword } = e;
+      const updatedUser = { firstName, lastName, phoneNumber, email };
+      if (newPassword) {
+        updatedUser.newPassword = newPassword;
+      }
 
-      const updatedUser = { firstName, lastName, phoneNumber, email, newPassword };
       await updateUser(updatedUser, userId);
       reset({
         newPassword: '',
@@ -188,7 +191,7 @@ const UserDetails = ({ userId, cookies }) => {
               isRequired={getValues('newPassword')?.length > 0}
               isDisabled={!canEditForm}
             />
-            <Box className={styles['error-box']}>{errors.password?.message}</Box>
+            <Box className={styles['error-box']}>{errors.newPassword?.message}</Box>
           </FormControl>
           <FormControl isRequired={getValues('newPassword')?.length > 0}>
             <FormLabel className={styles['user-details-form-label']}>
