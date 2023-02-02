@@ -4,7 +4,7 @@ import { instanceOf } from 'prop-types';
 import {
   Link,
   Image,
-  Box,
+  Flex,
   HStack,
   LinkBox,
   LinkOverlay,
@@ -17,18 +17,28 @@ import {
 } from '@chakra-ui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { logout, useNavigate, getUserFromDB } from '../../utils/AuthUtils';
-import { Cookies } from '../../utils/CookieUtils';
+import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import pnpLogo from './PNPlogo.png';
+import AUTH_ROLES from '../../utils/AuthConfig';
 
-const AdminNavbar = ({ cookies }) => {
+const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
+
+const Navbar = ({ cookies }) => {
   const [user, setUser] = useState({});
+  const [role, setRole] = useState('');
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   useEffect(() => {
+    const checkRole = () => {
+      const currentUserRole = cookies.get(cookieKeys.ROLE);
+      setRole(currentUserRole);
+    };
     const fetchUserFromDB = async () => {
       const userFromDB = await getUserFromDB();
       setUser(userFromDB);
     };
     fetchUserFromDB();
+    checkRole();
   }, []);
 
   const navigate = useNavigate();
@@ -40,9 +50,19 @@ const AdminNavbar = ({ cookies }) => {
       // setErrorMessage(err.message);
     }
   };
+  const userIDRoute = `/user/:${user.id}`;
 
   return (
-    <Box bg="lightblue">
+    <Flex
+      as="nav"
+      bgColor="lightblue"
+      align="center"
+      justify="space-between"
+      position="sticky"
+      zIndex="sticky"
+      top={0}
+      h="60px"
+    >
       <HStack spacing="24px">
         <LinkBox>
           <LinkOverlay href="https://www.patriotsandpaws.org/" isExternal>
@@ -53,18 +73,24 @@ const AdminNavbar = ({ cookies }) => {
             />
           </LinkOverlay>
         </LinkBox>
-        <Link as={NavLink} to="/">
-          Inventory
-        </Link>
-        <Link as={NavLink} to="/routes">
-          Routes
-        </Link>
-        <Link as={NavLink} to="/donate/edit">
-          Manage Donation Form
-        </Link>
-        <Link as={NavLink} to="/drivers">
-          Manage Staff
-        </Link>
+        {role === DRIVER_ROLE && (
+          <Link as={NavLink} to="/">
+            Routes
+          </Link>
+        )}
+        {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
+          <>
+            <Link as={NavLink} to="/">
+              Inventory
+            </Link>
+            <Link as={NavLink} to="/donate/edit">
+              Manage Donation Form
+            </Link>
+            <Link as={NavLink} to="/drivers">
+              Manage Staff
+            </Link>
+          </>
+        )}
         <Menu isOpen={isOpen}>
           <MenuButton
             as={Button}
@@ -84,7 +110,7 @@ const AdminNavbar = ({ cookies }) => {
           </MenuButton>
           <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
             <MenuItem>
-              <Link as={NavLink} to="/user:userid">
+              <Link as={NavLink} to={userIDRoute}>
                 Profile
               </Link>
             </MenuItem>
@@ -96,12 +122,12 @@ const AdminNavbar = ({ cookies }) => {
           </MenuList>
         </Menu>
       </HStack>
-    </Box>
+    </Flex>
   );
 };
 
-AdminNavbar.propTypes = {
+Navbar.propTypes = {
   cookies: instanceOf(Cookies).isRequired,
 };
 
-export default AdminNavbar;
+export default withCookies(Navbar);

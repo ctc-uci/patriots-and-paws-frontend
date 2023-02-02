@@ -17,6 +17,7 @@ import Login from './components/Login/Login';
 import Logout from './components/Logout/Logout';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import Dashboard from './pages/Dashboard/Dashboard';
+import Navbar from './components/Navbar/Navbar';
 
 import EmailSending from './components/EmailTemplates/EmailSending';
 import SampleRoute from './components/SampleRoute/SampleRoute';
@@ -50,6 +51,7 @@ function App() {
   return (
     <ChakraProvider>
       <Router>
+        <Navbar />
         <Routes>
           <Route exact path="/playground" element={<Playground />} />
 
