@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { PropTypes } from 'prop-types';
-// import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,8 +20,14 @@ import {
   ModalCloseButton,
   useDisclosure,
   Select,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  Text,
 } from '@chakra-ui/react';
-import { SmallAddIcon } from '@chakra-ui/icons';
+import { SmallAddIcon, InfoIcon } from '@chakra-ui/icons';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './CreateAccount.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
@@ -193,6 +198,32 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
                       <FormControl isInvalid={errors && errors.password}>
                         <FormLabel className={styles['create-account-form-label']}>
                           Password
+                          <Popover placement="top" arrowPadding={8}>
+                            <PopoverTrigger>
+                              <InfoIcon mb={0.5} ml={2} />
+                            </PopoverTrigger>
+                            <PopoverContent
+                              borderColor="black"
+                              bgColor="black"
+                              color="white"
+                              w={200}
+                            >
+                              <PopoverArrow borderColor="black" bgColor="black" />
+                              <PopoverBody w={200}>
+                                <Text textAlign="center" fontSize={16} fontWeight={400}>
+                                  Password must contain:
+                                </Text>
+                                <Text fontSize={16} fontWeight={400}>
+                                  <ul>
+                                    <li>8 characters</li>
+                                    <li>1 lowercase letter</li>
+                                    <li>1 uppercase letter</li>
+                                    <li>1 symbol</li>
+                                  </ul>
+                                </Text>
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
                         </FormLabel>
                         <Input
                           type="password"

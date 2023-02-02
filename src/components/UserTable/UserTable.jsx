@@ -82,7 +82,7 @@ const UserTable = ({ isSuperAdmin, users }) => {
               ) : null}
               <Td>
                 <EditAccountModal mr={5} isSuperAdmin={isSuperAdmin} staffProfile={user} />
-                {isSuperAdmin ? <DeleteAccountModal /> : null}
+                {isSuperAdmin ? <DeleteAccountModal staffProfile={user} /> : null}
               </Td>
             </Tr>
           ))}

@@ -13,3 +13,7 @@
 .error-box {
   max-width: 20em;
 }
+
+ul {
+  list-style-position: inside;
+}
