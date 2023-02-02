@@ -190,6 +190,7 @@ const UserDetails = ({ userId, cookies }) => {
               {...register('newPassword')}
               isRequired={getValues('newPassword')?.length > 0}
               isDisabled={!canEditForm}
+              autoComplete="new-password"
             />
             <Box className={styles['error-box']}>{errors.newPassword?.message}</Box>
           </FormControl>
@@ -204,6 +205,7 @@ const UserDetails = ({ userId, cookies }) => {
               {...register('confirmPassword')}
               isRequired={getValues('newPassword')?.length > 0}
               isDisabled={!canEditForm}
+              autoComplete="new-password"
             />
             <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
           </FormControl>
