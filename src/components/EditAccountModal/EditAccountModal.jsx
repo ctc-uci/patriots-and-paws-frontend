@@ -27,7 +27,7 @@ import {
 import { EditIcon, LockIcon } from '@chakra-ui/icons';
 // import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './EditAccountModal.module.css';
-import { PNPBackend, passwordRequirementsRegex } from '../../utils/utils';
+import { PNPBackend } from '../../utils/utils';
 
 const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
   let formSchema;
@@ -40,17 +40,16 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
         .length(10, 'Please enter a ten digit phone number')
         .matches(/^\d{10}$/)
         .required("Please enter the staff member's phone number"),
-      password: yup
-        .string()
-        .matches(
-          passwordRequirementsRegex,
-          'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
-        )
-        .required("Please enter the staff member's password"),
-      confirmPassword: yup
-        .string()
-        // .required("Please confirm the staff member's password")
-        .oneOf([yup.ref('password'), null], 'Passwords must both match'),
+      // password: yup
+      //   .string()
+      //   .matches(
+      //     passwordRequirementsRegex,
+      //     'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
+      //   ),
+      // confirmPassword: yup
+      //   .string()
+      //   // .required("Please confirm the staff member's password")
+      //   .oneOf([yup.ref('password'), null], 'Passwords must both match'),
     });
   } else {
     formSchema = yup.object({
