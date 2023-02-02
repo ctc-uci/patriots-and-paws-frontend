@@ -44,6 +44,16 @@ function App() {
         {images.map(e => (
           <Image key={e} src={e} />
         ))}
+        {files.map(({ preview }) => (
+          <img
+            key={preview}
+            alt="pic"
+            src={preview}
+            // onLoad={() => {
+            //   URL.revokeObjectURL(file.preview);
+            // }}
+          />
+        ))}
       </>
     );
   };
