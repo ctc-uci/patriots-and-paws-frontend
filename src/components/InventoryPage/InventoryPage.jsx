@@ -96,7 +96,13 @@ const InventoryPage = () => {
           </Tr>
         </Thead>
         <Tbody>{makeUserRows}</Tbody>
-        <DonationModal data={donationData} onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
+        <DonationModal
+          setUsers={setUsers}
+          data={donationData}
+          onClose={onClose}
+          onOpen={onOpen}
+          isOpen={isOpen}
+        />
       </Table>
     </TableContainer>
   );

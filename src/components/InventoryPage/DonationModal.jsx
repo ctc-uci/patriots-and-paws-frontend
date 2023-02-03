@@ -29,7 +29,7 @@ import * as yup from 'yup';
 import { PNPBackend } from '../../utils/utils';
 import './InventoryPage.module.css';
 
-const DonationModal = ({ data, onClose, isOpen }) => {
+const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   const {
     id,
     firstName,
@@ -92,6 +92,7 @@ const DonationModal = ({ data, onClose, isOpen }) => {
   };
 
   const updateDonation = async e => {
+    setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, ...e } : ele)));
     await PNPBackend.put(`/donations/${id}`, e);
   };
 
@@ -348,6 +349,7 @@ const DonationModal = ({ data, onClose, isOpen }) => {
 };
 
 DonationModal.propTypes = {
+  setUsers: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   isOpen: PropTypes.func.isRequired,
   data: PropTypes.shape({
