@@ -2,7 +2,6 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import {
   Button,
-  useDisclosure,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -10,14 +9,10 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  IconButton,
 } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
 import { PNPBackend } from '../../utils/utils';
 
-const DeleteAccountModal = ({ staffProfile }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
+const DeleteAccountModal = ({ staffProfile, isOpen, onClose }) => {
   const onSubmit = () => {
     try {
       PNPBackend.delete(`/users/${staffProfile.id}`);
@@ -33,8 +28,6 @@ const DeleteAccountModal = ({ staffProfile }) => {
 
   return (
     <>
-      <IconButton onClick={onOpen} icon={<DeleteIcon />} variant="ghost" />
-
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
@@ -68,6 +61,8 @@ DeleteAccountModal.propTypes = {
     phoneNumber: PropTypes.string,
     role: PropTypes.string,
   }).isRequired,
+  isOpen: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default DeleteAccountModal;

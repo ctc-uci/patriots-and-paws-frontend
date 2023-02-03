@@ -12,6 +12,7 @@ import {
   MenuItem,
   IconButton,
   MenuDivider,
+  Button,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { PNPBackend } from '../../utils/utils';
@@ -35,6 +36,7 @@ const ManageStaff = ({ cookies }) => {
     const userId = currentUser.id;
     const currentUserRole = await cookies.get(cookieKeys.ROLE);
     const { data } = await PNPBackend.get('/users');
+    console.log(data);
 
     if (currentUserRole === SUPERADMIN_ROLE) {
       setIsSuperAdmin(true);
@@ -49,6 +51,10 @@ const ManageStaff = ({ cookies }) => {
   useEffect(() => {
     refreshData();
   }, []);
+
+  const printUsers = () => {
+    console.log(users);
+  };
 
   const getAdmins = () => {
     const adminData = usersCopy.filter(
@@ -72,6 +78,7 @@ const ManageStaff = ({ cookies }) => {
             </InputLeftElement>
             <Input placeholder="Search Staff" className={styles['search-bar']} />
           </InputGroup>
+          <Button onClick={printUsers}>Get users</Button>
         </Flex>
         {isSuperAdmin ? (
           <Flex vertical-align="center">

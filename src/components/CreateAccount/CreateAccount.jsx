@@ -70,32 +70,47 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onSubmit = async e => {
-    try {
-      const { firstName, lastName, email, phoneNumber, password, role } = e;
+    const { firstName, lastName, email, phoneNumber, password, role } = e;
 
-      const user = {
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        password,
-        role,
-      };
-      await registerWithEmailAndPassword(user);
-      setErrorMessage('User successfully created');
-      refreshData();
-      onClose();
-      reset();
-    } catch (err) {
-      const errorCode = err.code;
-      const firebaseErrorMsg = err.message;
+    const user = {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      password,
+      role,
+    };
+    await registerWithEmailAndPassword(user);
+    setErrorMessage('User successfully created');
+    await refreshData();
+    onClose();
+    reset();
+    // try {
+    //   const { firstName, lastName, email, phoneNumber, password, role } = e;
 
-      if (errorCode === 'auth/email-already-in-use') {
-        setErrorMessage('This email address is already associated with another account');
-      } else {
-        setErrorMessage(firebaseErrorMsg);
-      }
-    }
+    //   const user = {
+    //     firstName,
+    //     lastName,
+    //     email,
+    //     phoneNumber,
+    //     password,
+    //     role,
+    //   };
+    //   await registerWithEmailAndPassword(user);
+    //   setErrorMessage('User successfully created');
+    //   await refreshData();
+    //   onClose();
+    //   reset();
+    // } catch (err) {
+    //   const errorCode = err.code;
+    //   const firebaseErrorMsg = err.message;
+
+    //   if (errorCode === 'auth/email-already-in-use') {
+    //     setErrorMessage('This email address is already associated with another account');
+    //   } else {
+    //     setErrorMessage(firebaseErrorMsg);
+    //   }
+    // }
   };
 
   const resetFields = () => {

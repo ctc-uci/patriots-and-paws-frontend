@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -20,16 +20,15 @@ import {
   ModalFooter,
   ModalCloseButton,
   useDisclosure,
-  IconButton,
   InputLeftElement,
   InputGroup,
 } from '@chakra-ui/react';
-import { EditIcon, LockIcon } from '@chakra-ui/icons';
+import { LockIcon } from '@chakra-ui/icons';
 // import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './EditAccountModal.module.css';
 import { PNPBackend } from '../../utils/utils';
 
-const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
+const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose }) => {
   let formSchema;
   if (isSuperAdmin) {
     formSchema = yup.object({
@@ -65,15 +64,18 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
+    defaultValues: data,
     resolver: yupResolver(formSchema),
     delayError: 750,
   });
 
   const [errorMessage, setErrorMessage] = useState();
+  const originalData = { ...data };
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: saveIsOpen, onOpen: saveOnOpen, onClose: saveOnClose } = useDisclosure();
 
   const closeModals = () => {
@@ -81,10 +83,22 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
     onClose();
   };
 
+  const cancel = () => {
+    reset(originalData);
+    saveOnClose();
+    onClose();
+  };
+
+  useEffect(() => {
+    // console.log(data);
+    reset(data);
+  }, [data]);
+
   const onSubmit = async e => {
     try {
       const { firstName, lastName, phoneNumber } = e;
-      PNPBackend.put(`/users/${staffProfile.id}`, {
+      // console.log(originalData);
+      PNPBackend.put(`/users/${data.id}`, {
         firstName,
         lastName,
         phoneNumber,
@@ -105,7 +119,6 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
 
   return (
     <>
-      <IconButton onClick={onOpen} icon={<EditIcon />} variant="ghost" />
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
@@ -125,7 +138,7 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
                       <Input
                         id="first-name"
                         style={{ width: '240px' }}
-                        defaultValue={staffProfile.firstName}
+                        // defaultValue={staffProfile.firstName}
                         {...register('firstName')}
                         isRequired
                       />
@@ -138,7 +151,7 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
                       <Input
                         id="last-name"
                         style={{ width: '240px' }}
-                        defaultValue={staffProfile.lastName}
+                        // defaultValue={staffProfile.lastName}
                         {...register('lastName')}
                         isRequired
                       />
@@ -157,7 +170,7 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
                           id="email"
                           style={{ width: '240px' }}
                           placeholder="Enter email"
-                          value={staffProfile.email}
+                          value={data.email}
                           isRequired
                           isReadOnly
                         />
@@ -172,7 +185,7 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
                         type="tel"
                         id="phone-number"
                         style={{ width: '240px' }}
-                        defaultValue={staffProfile.phoneNumber}
+                        // defaultValue={staffProfile.phoneNumber}
                         {...register('phoneNumber')}
                         isRequired
                       />
@@ -243,7 +256,7 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
                   <ModalBody>Are you sure you want to exit without saving?</ModalBody>
 
                   <ModalFooter>
-                    <Button mr={3} onClick={closeModals}>
+                    <Button mr={3} onClick={cancel}>
                       Exit
                     </Button>
                     <Button colorScheme="blue" onClick={closeModals}>
@@ -261,7 +274,7 @@ const EditAccountModal = ({ staffProfile, isSuperAdmin }) => {
 };
 
 EditAccountModal.propTypes = {
-  staffProfile: PropTypes.shape({
+  data: PropTypes.shape({
     email: PropTypes.string,
     firstName: PropTypes.string,
     id: PropTypes.string,
@@ -270,6 +283,8 @@ EditAccountModal.propTypes = {
     role: PropTypes.string,
   }).isRequired,
   isSuperAdmin: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.bool.isRequired,
 };
 
 export default EditAccountModal;
