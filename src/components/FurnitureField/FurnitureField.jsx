@@ -16,6 +16,13 @@ function FurnitureField({ index, register, removeFurniture }) {
     'Patio Furniture',
   ];
 
+  let deleteButton;
+  if (removeFurniture == null) {
+    deleteButton = null;
+  } else {
+    deleteButton = <Button onClick={() => removeFurniture(index)}>Delete</Button>;
+  }
+
   return (
     <div className={styles['field-section']}>
       <h1 className={styles.title}> Furniture {index + 1} </h1>
@@ -32,14 +39,18 @@ function FurnitureField({ index, register, removeFurniture }) {
           ))}
         </Select>
       </div>
-      <Button onClick={() => removeFurniture(index)}>Delete</Button>
+      {/* <Button onClick={() => removeFurniture(index)}>Delete</Button> */}
+      {deleteButton}
     </div>
   );
 }
 FurnitureField.propTypes = {
   index: PropTypes.number.isRequired,
   register: PropTypes.isRequired,
-  removeFurniture: PropTypes.isRequired,
+  removeFurniture: PropTypes.func,
+};
+FurnitureField.defaultProps = {
+  removeFurniture: null,
 };
 
 export default FurnitureField;

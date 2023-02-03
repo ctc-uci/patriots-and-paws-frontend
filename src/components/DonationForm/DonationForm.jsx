@@ -1,15 +1,33 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
-import { FormLabel, Input, Select, FormControl, FormErrorMessage, Button } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import {
+  Box,
+  FormLabel,
+  Input,
+  Select,
+  FormControl,
+  FormErrorMessage,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
-import FurnitureField from '../FurnitureField/FurnitureField';
+// import FurnitureField from '../FurnitureField/FurnitureField';
+import DropZone from '../DropZone/DropZone';
 import { sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
+import ImageDetails from '../ImageDetails/ImageDetails';
 
-const furnitureFieldSchema = {
+const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
 };
 
@@ -31,10 +49,7 @@ const schema = yup.object({
     .string()
     .required('Email required')
     .oneOf([yup.ref('email1'), null], 'Emails must both match'),
-  furnitureField: yup
-    .array()
-    .of(yup.object().shape(furnitureFieldSchema), 'A Furniture Selection is Required')
-    .min(1, 'Please donate a minimum of 1 furniture'),
+  Items: yup.array().of(yup.object().shape(itemFieldSchema), 'A Furniture Selection is Required'),
 });
 
 function DonationForm() {
@@ -47,25 +62,84 @@ function DonationForm() {
     resolver: yupResolver(schema),
   });
 
+  const [furnitureOptions, setFurnitureOptions] = useState([
+    'Dressers',
+    'Clean Housewares',
+    'Antiques',
+    'Art',
+    'Clean rugs',
+    'Home Decor items',
+    'Pet care items',
+    'Patio Furniture',
+  ]);
+
   const {
-    fields: furnitureFields,
-    append: appendFurniture,
-    remove: removeFurniture,
+    fields: DonatedFurnitureList,
+    append: appendDonatedFurniture,
+    remove: removeDonatedFurniture,
   } = useFieldArray({
     control,
-    name: 'furnitureField',
+    name: 'DonatedFurniture',
   });
 
-  const onSubmit = data => {
+  // const {
+  //   fields: imageDetailList,
+  //   append: appendImage,
+  //   remove: removeImage,
+  // } = useFieldArray({
+  //   control,
+  //   name: 'ImageDetail',
+  // });
+
+  // const {
+  //   fields: itemsList,
+  //   append: appendItem,
+  //   remove: removeItem,
+  // } = useFieldArray({
+  //   control,
+  //   name: 'Items',
+  // });
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [files, setFiles] = useState([]);
+  const [filesIntermediate, setFilesIntermediate] = useState([]);
+  // const [images, setImages] = useState([]);
+
+  const onSubmit = async data => {
+    const urls = await Promise.all(files.map(async file => uploadImage(file)));
     sendEmail(data.email1, dconfirmemailtemplate);
   };
 
+  const onOpenModal = e => {
+    setFilesIntermediate(files);
+    onOpen(e);
+  }
+
+  const onSave = e => {
+    setFiles(filesIntermediate);
+    onClose(e);
+  };
+
+  const onCancel = e => {
+    // helper function for closing the model
+    setFilesIntermediate(files);
+    onClose(e);
+  };
+
+  const onSelectFurniture = ev => {
+    setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
+    document.getElementById('furnitureSelect').value = 'default';
+    DonatedFurnitureList.appendDonatedFurniture({ name: ev.target.value, num: 1 });
+    console.log(DonatedFurnitureList);
+    console.log(furnitureOptions);
+  };
+
   return (
-    <div className={styles['form-padding']}>
+    <Box className={styles['form-padding']}>
       <form onSubmit={handleSubmit(data => onSubmit(data))}>
-        <div className={styles['field-section']}>
+        <Box className={styles['field-section']}>
           <h1 className={styles.title}>Name</h1>
-          <div className={styles.form}>
+          <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.firstName} width="47%">
               <FormLabel>First</FormLabel>
               <Input {...register('firstName')} />
@@ -77,10 +151,10 @@ function DonationForm() {
               <Input {...register('lastName')} />
               <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
             </FormControl>
-          </div>
-        </div>
+          </Box>
+        </Box>
 
-        <div className={styles['field-section']}>
+        <Box className={styles['field-section']}>
           <h1 className={styles.title}>Address</h1>
 
           <FormControl>
@@ -93,7 +167,7 @@ function DonationForm() {
             <Input {...register('streetAddres2')} />
           </FormControl>
 
-          <div className={styles.form}>
+          <Box className={styles.form}>
             <FormControl width="47%">
               <FormLabel>City </FormLabel>
               <Input {...register('city')} />
@@ -111,26 +185,26 @@ function DonationForm() {
                 <option>Texas</option>
               </Select>
             </FormControl>
-          </div>
+          </Box>
 
           <FormControl isInvalid={errors && errors.zipcode}>
             <FormLabel>ZIP Code</FormLabel>
             <Input {...register('zipcode')} />
             <FormErrorMessage>{errors.zipcode && errors.zipcode.message}</FormErrorMessage>
           </FormControl>
-        </div>
+        </Box>
 
-        <div className={styles['field-section']}>
+        <Box className={styles['field-section']}>
           <h1 className={styles.title}>Phone</h1>
           <FormControl isInvalid={errors && errors.phoneNumber}>
             <Input type="tel" {...register('phoneNumber')} />
             <FormErrorMessage>{errors.phoneNumber && errors.phoneNumber.message}</FormErrorMessage>
           </FormControl>
-        </div>
+        </Box>
 
-        <div className={styles['field-section']}>
+        <Box className={styles['field-section']}>
           <h1 className={styles.title}>Email</h1>
-          <div className={styles.form}>
+          <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.email1} width="47%">
               <FormLabel>Enter Email </FormLabel>
               <Input {...register('email1')} />
@@ -142,31 +216,83 @@ function DonationForm() {
               <Input {...register('email2')} />
               <FormErrorMessage>{errors.email2 && errors.email2.message}</FormErrorMessage>
             </FormControl>
-          </div>
-        </div>
+          </Box>
+        </Box>
 
-        <div className={styles['field-section']}>
+        {/* <Box className={styles['field-section']}>
           <h1 className={styles.title}>Furniture Submissions</h1>
-          <FormControl isInvalid={errors && errors.furnitureField}>
-            {furnitureFields.map((furniture, index) => (
-              // eslint-disable-next-line react/jsx-key
-              <FurnitureField index={index} register={register} removeFurniture={removeFurniture} />
-            ))}
+          <FormControl isInvalid={errors && errors.Item}>
+            {itemsList.map((furniture, index) => {
+              if (index === 0) {
+                // eslint-disable-next-line react/jsx-key
+                return <FurnitureField index={index} register={register} />;
+              }
+              return (
+                // eslint-disable-next-line react/jsx-key
+                <FurnitureField index={index} register={register} removeFurniture={removeItem} />
+              );
+            })}
           </FormControl>
-        </div>
+        </Box>
 
-        <div className={styles['field-section']}>
-          <Button onClick={() => appendFurniture({})}>Add new furniture field</Button>
-        </div>
+        <Box className={styles['field-section']}>
+          <Button onClick={() => appendItem({})}>Add new furniture field</Button>
+        </Box> */}
+        <Select
+          id="furnitureSelect"
+          placeholder="Select Furniture"
+          defaultValue="Select furniture"
+          onChange={ev => onSelectFurniture(ev)}
+        >
+          {furnitureOptions.map((furnitureItem, i) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <option key={i}>{furnitureItem}</option>
+          ))}
+        </Select>
 
-        <div className={styles['field-section']}>
+        <Box className={styles['field-section']}>
+          <h1 className={styles.title}>Images</h1>
+          <Button onClick={onOpenModal}>Upload Images</Button>
+
+          <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Images</ModalHeader>
+              <ModalCloseButton />
+              <ModalBody>
+                <DropZone setFiles={setFiles} />
+                {/* {imageDetailList} */}
+                {filesIntermediate.map(({ name, preview }, index) => {
+                  return (
+                    // eslint-disable-next-line react/jsx-key
+                    <ImageDetails
+                      index={index}
+                      name={name}
+                      preview={preview}
+                      setFilesIntermediate={setFilesIntermediate}
+                    />
+                  );
+                })}
+              </ModalBody>
+
+              <ModalFooter>
+                <Button mr={3} onClick={onCancel}>
+                  Cancel
+                </Button>
+                <Button onClick={onSave}>Save Images</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        </Box>
+
+        <Box className={styles['field-section']}>
           <h1 className={styles.title}>Do you Have any Questions or Comments</h1>
           <Input {...register('additional')} />
-        </div>
+        </Box>
 
         <Button type="submit">Submit</Button>
       </form>
-    </div>
+    </Box>
   );
 }
 
