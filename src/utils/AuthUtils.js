@@ -64,15 +64,20 @@ const getCurrentUser = authInstance =>
     );
   });
 
-// Get user from PNP DB using current user's id
-const getUserFromDB = async () => {
-  const res = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
+// Get current user's id
+const getCurrentUserId = () => {
+  return auth.currentUser.uid;
+};
+
+// Get user from PNP DB using a user id
+const getUserFromDB = async id => {
+  const res = await PNPBackend.get(`/users/${id}`);
   const user = res.data[0];
   return user;
 };
 
-// Get user role from PNP DB
-const getUserRole = async () => {
+// Get current user's role from PNP DB
+const getCurrentUserRole = async () => {
   const res = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
   const { role } = res.data[0];
   return role;
@@ -170,6 +175,24 @@ const createUser = async user => {
   await createUserInDB(user, firebaseUser.uid);
   sendEmailVerification(firebaseUser);
   await auth.signOut();
+};
+
+// Updates user information in PNP DB
+const updateUser = async (user, id) => {
+  const { firstName, lastName, email, phoneNumber, role, newPassword } = user;
+  try {
+    await PNPBackend.put(`/users/${id}`, {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      role,
+      id,
+      newPassword,
+    });
+  } catch (err) {
+    throw new Error(err.message);
+  }
 };
 
 /**
@@ -301,8 +324,10 @@ export {
   userIsAuthenticated,
   refreshToken,
   getCurrentUser,
+  getCurrentUserId,
   getUserFromDB,
-  getUserRole,
+  updateUser,
+  getCurrentUserRole,
   confirmNewPassword,
   confirmVerifyEmail,
 };
