@@ -82,7 +82,6 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   useEffect(() => {
     reset(data);
-    console.log(data);
   }, [data]);
 
   const updateDonationStatus = async newstatus => {

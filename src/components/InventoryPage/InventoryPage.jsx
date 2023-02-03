@@ -64,7 +64,6 @@ const InventoryPage = () => {
     const fetchDonationsFromDB = async () => {
       const donationsFromDB = await getDonationsFromDB();
       setUsers(donationsFromDB);
-      // console.log(donationsFromDB);
     };
     fetchDonationsFromDB();
   }, []);
