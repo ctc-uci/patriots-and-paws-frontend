@@ -30,18 +30,19 @@ import { PNPBackend } from '../../utils/utils';
 import './InventoryPage.module.css';
 
 const DonationModal = ({ data, onClose, isOpen }) => {
-  // const {
-  //   id,
-  //   firstName,
-  //   lastName,
-  //   email,
-  //   phoneNum,
-  //   addressStreet,
-  //   addressUnit,
-  //   addressZip,
-  //   addressCity,
-  //   notes,
-  // } = data;
+  const {
+    id,
+    firstName,
+    lastName,
+    email,
+    phoneNum,
+    addressStreet,
+    addressUnit,
+    addressZip,
+    addressCity,
+    notes,
+    submittedDate,
+  } = data;
 
   // const [image, setImage] = useState([]);
 
@@ -51,99 +52,47 @@ const DonationModal = ({ data, onClose, isOpen }) => {
   // }, []);
 
   const schema = yup.object().shape({
-    firstName: yup.string().required('Invalid fist name'),
-    lastName: yup.string().required('Invalid last name'),
+    firstName: yup.string().required('Invalid fist name').default(firstName),
+    lastName: yup.string().required('Invalid last name').default(lastName),
     addressZip: yup
       .string()
       .length(5, 'Invalid zip code')
       .matches(/^\d{5}$/)
+      .default(addressZip)
       .required('enter a zip'),
-    email: yup.string().email('Invalid email').required('enter your email'),
-    phoneNum: yup.number().typeError('Must be a number').required('Please enter a phone number'),
-    addressStreet: yup.string().required('Must be a valid street'),
-    addressUnit: yup.number().required('Must be a number'),
-    addressCity: yup.string().required('Must be a valid city'),
-    notes: yup.string(),
+    email: yup.string().email('Invalid email').required('enter your email').default(email),
+    phoneNum: yup
+      .number()
+      .typeError('Must be a number')
+      .required('Please enter a phone number')
+      .default(phoneNum),
+    addressStreet: yup.string().required('Must be a valid street').default(addressStreet),
+    addressUnit: yup.number().required('Must be a number').default(addressUnit),
+    addressCity: yup.string().required('Must be a valid city').default(addressCity),
+    notes: yup.string().default(notes),
   });
-
-  // const schema = yup.object().shape({
-  //   firstName: yup.string().required('Invalid fist name').default(firstName),
-  //   lastName: yup.string().required('Invalid last name').default(lastName),
-  //   addressZip: yup
-  //     .string()
-  //     .length(5, 'Invalid zip code')
-  //     .matches(/^\d{5}$/)
-  //     .default(addressZip)
-  //     .required('enter a zip'),
-  //   email: yup.string().email('Invalid email').required('enter your email').default(email),
-  //   phoneNum: yup
-  //     .number()
-  //     .typeError('Must be a number')
-  //     .required('Please enter a phone number')
-  //     .default(phoneNum),
-  //   addressStreet: yup.string().required('Must be a valid street').default(addressStreet),
-  //   addressUnit: yup.number().required('Must be a number').default(addressUnit),
-  //   addressCity: yup.string().required('Must be a valid city').default(addressCity),
-  //   notes: yup.string().default(notes),
-  // });
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({ defaultValues: data, resolver: yupResolver(schema) });
-
-  const [donationData, setDonationData] = useState({ ...data });
   const [canEditInfo, setCanEditInfo] = useState(false);
 
   useEffect(() => {
-    setDonationData(data);
+    reset(data);
     console.log(data);
   }, [data]);
 
-  const updateDonationStatus = async (donationId, newstatus) => {
-    await PNPBackend.put(`/donations/${donationId}`, {
+  const updateDonationStatus = async newstatus => {
+    await PNPBackend.put(`/donations/${id}`, {
       status: newstatus,
     });
   };
 
   const updateDonation = async e => {
-    console.log('test1');
-    // const {
-    //   newfirstName,
-    //   newemail,
-    //   newphoneNum,
-    //   newaddressStreet,
-    //   newaddressUnit,
-    //   newaddressZip,
-    //   newaddressCity,
-    //   newnotes,
-    // } = e;
-
-    console.log(e);
-    // await PNPBackend.put(`/donations/${donationData.id}`, {
-    //   firstName: newfirstName,
-    //   email: newemail,
-    //   phoneNum: newphoneNum,
-    //   addressStreet: newaddressStreet,
-    //   addressUnit: newaddressUnit,
-    //   addressZip: newaddressZip,
-    //   addressCity: newaddressCity,
-    //   notes: newnotes,
-    // });
-
-    // const donationD = {
-    //   firstName,
-    //   email,
-    //   phoneNum,
-    //   addressStreet,
-    //   addressUnit,
-    //   addressZip,
-    //   addressCity,
-    //   notes,
-    // };
-    // await PNPBackend.put(`/donations/${donationData.id}`, donationD);
-    console.log('test2');
+    await PNPBackend.put(`/donations/${id}`, e);
   };
 
   function makeDate(dateDB) {
@@ -155,8 +104,8 @@ const DonationModal = ({ data, onClose, isOpen }) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader m={3}>
-          <Text fontSize={36}>Donation #{donationData.id}</Text>
-          <Text fontSize={16}>Submission Date: {makeDate(donationData.submittedDate)}</Text>
+          <Text fontSize={36}>Donation #{id}</Text>
+          <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -171,10 +120,6 @@ const DonationModal = ({ data, onClose, isOpen }) => {
                     <InputGroup>
                       <InputLeftAddon>Name</InputLeftAddon>
                       <Input
-                        // defaultValue={donationData.firstName}
-                        // onChange={({ target }) => {
-                        //   setDonationData(prev => ({ ...prev, firstName: target.value }));
-                        // }}
                         placeholder="name"
                         {...register('firstName')}
                         isRequired
@@ -191,10 +136,6 @@ const DonationModal = ({ data, onClose, isOpen }) => {
                     <InputLeftAddon>Email</InputLeftAddon>
                     <Input
                       placeholder="email"
-                      // defaultValue={donationData.email}
-                      // onChange={({ target }) => {
-                      //   setDonationData(prev => ({ ...prev, email: target.value }));
-                      // }}
                       {...register('email')}
                       isRequired
                       isDisabled={!canEditInfo}
@@ -207,10 +148,6 @@ const DonationModal = ({ data, onClose, isOpen }) => {
                       <Input
                         type="tel"
                         placeholder="phone number"
-                        // defaultValue={donationData.phoneNum}
-                        // onChange={({ target }) => {
-                        //   setDonationData(prev => ({ ...prev, phoneNum: target.value }));
-                        // }}
                         {...register('phoneNum')}
                         isRequired
                         isDisabled={!canEditInfo}
@@ -229,10 +166,6 @@ const DonationModal = ({ data, onClose, isOpen }) => {
                     <InputLeftAddon>Street Address</InputLeftAddon>
                     <Input
                       placeholder="street"
-                      // defaultValue={donationData.addressStreet}
-                      // onChange={({ target }) => {
-                      //   setDonationData(prev => ({ ...prev, addressStreet: target.value }));
-                      // }}
                       {...register('addressStreet')}
                       isRequired
                       isDisabled={!canEditInfo}
@@ -245,10 +178,6 @@ const DonationModal = ({ data, onClose, isOpen }) => {
                     <InputLeftAddon>Unit</InputLeftAddon>
                     <Input
                       placeholder="unit"
-                      // defaultValue={donationData.addressUnit}
-                      // onChange={({ target }) => {
-                      //   setDonationData(prev => ({ ...prev, addressUnit: target.value }));
-                      // }}
                       {...register('addressUnit')}
                       isRequired
                       isDisabled={!canEditInfo}
@@ -263,10 +192,6 @@ const DonationModal = ({ data, onClose, isOpen }) => {
                     <InputLeftAddon>City</InputLeftAddon>
                     <Input
                       placeholder="city"
-                      // defaultValue={donationData.addressCity}
-                      // onChange={({ target }) => {
-                      //   setDonationData(prev => ({ ...prev, addressCity: target.value }));
-                      // }}
                       {...register('addressCity')}
                       isRequired
                       isDisabled={!canEditInfo}
@@ -285,10 +210,6 @@ const DonationModal = ({ data, onClose, isOpen }) => {
                     <FormControl isInvalid={errors && errors.addressZip}>
                       <Input
                         placeholder="zip"
-                        // defaultValue={donationData.addressZip}
-                        // onChange={({ target }) => {
-                        //   setDonationData(prev => ({ ...prev, addressZip: target.value }));
-                        // }}
                         {...register('addressZip')}
                         isRequired
                         isDisabled={!canEditInfo}
@@ -304,11 +225,7 @@ const DonationModal = ({ data, onClose, isOpen }) => {
                 </Text>
                 <Textarea
                   placeholder="Enter additional comments here"
-                  // defaultValue={donationData.notes}
                   {...register('notes')}
-                  // onChange={({ target }) => {
-                  //   setDonationData(prev => ({ ...prev, notes: target.value }));
-                  // }}
                   isDisabled={!canEditInfo}
                 />
               </Box>
@@ -366,7 +283,7 @@ const DonationModal = ({ data, onClose, isOpen }) => {
             <Button
               colorScheme="red"
               onClick={() => {
-                updateDonationStatus(donationData.id, 'denied');
+                updateDonationStatus('denied');
               }}
             >
               Reject
@@ -375,7 +292,7 @@ const DonationModal = ({ data, onClose, isOpen }) => {
               ml={3}
               colorScheme="gray"
               onClick={() => {
-                updateDonationStatus(donationData.id, 'flagged');
+                updateDonationStatus('flagged');
               }}
             >
               Flag
@@ -384,7 +301,7 @@ const DonationModal = ({ data, onClose, isOpen }) => {
               ml={3}
               colorScheme="green"
               onClick={() => {
-                updateDonationStatus(donationData.id, 'approved');
+                updateDonationStatus('approved');
               }}
             >
               Approve
@@ -416,11 +333,6 @@ const DonationModal = ({ data, onClose, isOpen }) => {
                 <Button
                   ml={3}
                   colorScheme="blue"
-                  // onClick={() => {
-                  //   updateDonation();
-                  //   setCanEditInfo(false);
-                  //   // handleSubmit(updateDonation);
-                  // }}
                   onClick={handleSubmit(updateDonation)}
                   type="submit"
                 >
