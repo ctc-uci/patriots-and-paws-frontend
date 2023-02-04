@@ -1,6 +1,6 @@
 import { ChakraProvider, Button, Image } from '@chakra-ui/react';
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
@@ -58,58 +58,66 @@ function App() {
     );
   };
 
+  const NavBarWrapper = () => (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
+
   return (
     <ChakraProvider>
       <Router>
-        <Navbar />
         <Routes>
           <Route exact path="/playground" element={<Playground />} />
 
-          <Route
-            exact
-            path="/"
-            element={
-              <ProtectedRoute
-                Component={Dashboard}
-                redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
-              />
-            }
-          />
-          <Route
-            exact
-            path="/temp"
-            element={
-              <ProtectedRoute
-                Component={SampleRoute}
-                redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
-              />
-            }
-          />
-          <Route
-            exact
-            path="/register"
-            element={
-              <ProtectedRoute
-                Component={CreateAccount}
-                redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
-              />
-            }
-          />
+          <Route element={<NavBarWrapper />}>
+            <Route
+              exact
+              path="/"
+              element={
+                <ProtectedRoute
+                  Component={Dashboard}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/temp"
+              element={
+                <ProtectedRoute
+                  Component={SampleRoute}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/register"
+              element={
+                <ProtectedRoute
+                  Component={CreateAccount}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/logout"
+              element={
+                <ProtectedRoute
+                  Component={Logout}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+                />
+              }
+            />
+          </Route>
           <Route exact path="/login" element={<Login />} />
-          <Route
-            exact
-            path="/logout"
-            element={
-              <ProtectedRoute
-                Component={Logout}
-                redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
-              />
-            }
-          />
           <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 

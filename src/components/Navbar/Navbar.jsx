@@ -37,7 +37,8 @@ const Navbar = ({ cookies }) => {
       const userFromDB = await getUserFromDB();
       setUser(userFromDB);
     };
-    fetchUserFromDB();
+    // FIXME
+    setTimeout(fetchUserFromDB, 600);
     checkRole();
   }, []);
 
@@ -50,7 +51,6 @@ const Navbar = ({ cookies }) => {
       // setErrorMessage(err.message);
     }
   };
-  const userIDRoute = `/user/:${user.id}`;
 
   return (
     <Flex
@@ -75,13 +75,16 @@ const Navbar = ({ cookies }) => {
         </LinkBox>
         {role === DRIVER_ROLE && (
           <Link as={NavLink} to="/">
-            Routes
+            Dashboard
           </Link>
         )}
         {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
           <>
             <Link as={NavLink} to="/">
               Inventory
+              <Link as={NavLink} to="/routes">
+                Routes
+              </Link>
             </Link>
             <Link as={NavLink} to="/donate/edit">
               Manage Donation Form
@@ -91,37 +94,40 @@ const Navbar = ({ cookies }) => {
             </Link>
           </>
         )}
-        <Menu isOpen={isOpen}>
-          <MenuButton
-            as={Button}
-            variant="ghost"
-            mx={1}
-            py={[1, 2, 2]}
-            px={4}
-            borderRadius={5}
-            _hover={{ bg: 'white' }}
-            aria-label="User Dropdown"
-            fontWeight="normal"
-            onMouseEnter={onOpen}
-            onMouseLeave={onClose}
-          >
-            {user.firstName}
-            {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-          </MenuButton>
-          <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
-            <MenuItem>
-              <Link as={NavLink} to={userIDRoute}>
-                Profile
-              </Link>
-            </MenuItem>
-            <MenuItem>
-              <Link as={NavLink} to="/login" onClick={handleSubmit}>
-                Logout
-              </Link>
-            </MenuItem>
-          </MenuList>
-        </Menu>
+        <Link as={NavLink} to={`/user/${user.id}`}>
+          Profile
+        </Link>
+        <Link as={NavLink} to="/login" onClick={handleSubmit}>
+          Logout
+        </Link>
       </HStack>
+      <Menu isOpen={isOpen} alignSelf="right">
+        <MenuButton
+          as={Button}
+          mx={1}
+          py={[1, 2, 2]}
+          px={4}
+          borderRadius={5}
+          _hover={{ bg: 'white' }}
+          aria-label="User Dropdown"
+          fontWeight="normal"
+          onMouseEnter={onOpen}
+          onMouseLeave={onClose}
+        >
+          {user.lastName && user.firstName && `${user.lastName}, ${user.firstName}`}
+          {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        </MenuButton>
+        <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
+          <MenuItem>
+            <Link as={NavLink} to="/user">
+              Profile
+            </Link>
+          </MenuItem>
+          <MenuItem>
+            <Button onClick={handleSubmit}>Logout</Button>
+          </MenuItem>
+        </MenuList>
+      </Menu>
     </Flex>
   );
 };
