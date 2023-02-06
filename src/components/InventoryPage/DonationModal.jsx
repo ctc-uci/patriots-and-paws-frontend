@@ -31,19 +31,8 @@ import { makeDate } from '../../utils/InventoryUtils';
 import './InventoryPage.module.css';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
-  const {
-    id,
-    // firstName,
-    // lastName,
-    // email,
-    // phoneNum,
-    // addressStreet,
-    // addressUnit,
-    // addressZip,
-    // addressCity,
-    // notes,
-    submittedDate,
-  } = data;
+  const dataCopy = data;
+  const { id, submittedDate } = data;
 
   // const [image, setImage] = useState([]);
 
@@ -52,7 +41,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   // setImage(result[0]);
   // }, []);
 
-  const schema = yup.object().shape({
+  const schema = yup.object({
     firstName: yup.string().required('Invalid fist name'),
     lastName: yup.string().required('Invalid last name'),
     addressZip: yup
@@ -81,6 +70,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   }, [data]);
 
   const updateDonationStatus = async newstatus => {
+    setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, status: newstatus } : ele)));
     await PNPBackend.put(`/donations/${id}`, {
       status: newstatus,
     });
@@ -88,6 +78,8 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   const updateDonation = async e => {
     setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, ...e } : ele)));
+    setCanEditInfo(false);
+    onClose();
     await PNPBackend.put(`/donations/${id}`, e);
   };
 
@@ -117,7 +109,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   Basic Information
                 </Text>
                 <Stack spacing={3}>
-                  <FormControl isInvalid={errors && errors.firstName}>
+                  <FormControl isInvalid={errors && errors.firstName} width="47%">
                     <InputGroup>
                       <InputLeftAddon>Name</InputLeftAddon>
                       <Input
@@ -127,7 +119,6 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                         isDisabled={!canEditInfo}
                       />
                     </InputGroup>
-                    <Box>{errors.firstName?.message}</Box>
                     <FormErrorMessage>
                       {errors.firstName && errors.firstName.message}
                     </FormErrorMessage>
@@ -322,17 +313,21 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               </Button>
             ) : (
               <>
-                <Button ml={3} colorScheme="gray" onClick={close}>
+                <Button
+                  ml={3}
+                  colorScheme="gray"
+                  onClick={() => {
+                    // close();
+                    setCanEditInfo(false);
+                    reset(dataCopy);
+                  }}
+                >
                   Cancel
                 </Button>
                 <Button
                   ml={3}
                   colorScheme="blue"
-                  onClick={() => {
-                    handleSubmit(updateDonation);
-                    setCanEditInfo(false);
-                    onClose();
-                  }}
+                  onClick={handleSubmit(updateDonation)}
                   type="submit"
                 >
                   Save Changes
