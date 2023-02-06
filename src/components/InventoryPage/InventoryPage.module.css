@@ -8,4 +8,5 @@ Tbody Tr {
 
 Tbody Tr:hover {
   background-color: #fed7d7;
+  cursor: pointer;
 }

@@ -27,20 +27,21 @@ import { PropTypes } from 'prop-types';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { PNPBackend } from '../../utils/utils';
+import { makeDate } from '../../utils/InventoryUtils';
 import './InventoryPage.module.css';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   const {
     id,
-    firstName,
-    lastName,
-    email,
-    phoneNum,
-    addressStreet,
-    addressUnit,
-    addressZip,
-    addressCity,
-    notes,
+    // firstName,
+    // lastName,
+    // email,
+    // phoneNum,
+    // addressStreet,
+    // addressUnit,
+    // addressZip,
+    // addressCity,
+    // notes,
     submittedDate,
   } = data;
 
@@ -52,24 +53,19 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   // }, []);
 
   const schema = yup.object().shape({
-    firstName: yup.string().required('Invalid fist name').default(firstName),
-    lastName: yup.string().required('Invalid last name').default(lastName),
+    firstName: yup.string().required('Invalid fist name'),
+    lastName: yup.string().required('Invalid last name'),
     addressZip: yup
       .string()
       .length(5, 'Invalid zip code')
       .matches(/^\d{5}$/)
-      .default(addressZip)
       .required('enter a zip'),
-    email: yup.string().email('Invalid email').required('enter your email').default(email),
-    phoneNum: yup
-      .number()
-      .typeError('Must be a number')
-      .required('Please enter a phone number')
-      .default(phoneNum),
-    addressStreet: yup.string().required('Must be a valid street').default(addressStreet),
-    addressUnit: yup.number().required('Must be a number').default(addressUnit),
-    addressCity: yup.string().required('Must be a valid city').default(addressCity),
-    notes: yup.string().default(notes),
+    email: yup.string().email('Invalid email').required('enter your email'),
+    phoneNum: yup.number().typeError('Must be a number').required('Please enter a phone number'),
+    addressStreet: yup.string(),
+    addressUnit: yup.string().required('Must be a number'),
+    addressCity: yup.string().required('Must be a valid city'),
+    notes: yup.string(),
   });
 
   const {
@@ -95,12 +91,17 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     await PNPBackend.put(`/donations/${id}`, e);
   };
 
-  function makeDate(dateDB) {
-    const d = new Date(dateDB);
-    return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-  }
+  const close = () => {
+    setCanEditInfo(false);
+    onClose();
+  };
+
+  // function makeDate(dateDB) {
+  //   const d = new Date(dateDB);
+  //   return `${d.getMonth() + 1} ${d.getDate()}, ${d.getFullYear()}`;
+  // }
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="full">
+    <Modal isOpen={isOpen} onClose={close} size="full">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader m={3}>
@@ -126,6 +127,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                         isDisabled={!canEditInfo}
                       />
                     </InputGroup>
+                    <Box>{errors.firstName?.message}</Box>
                     <FormErrorMessage>
                       {errors.firstName && errors.firstName.message}
                     </FormErrorMessage>
@@ -202,7 +204,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   </FormErrorMessage>
                   <InputGroup>
                     <InputLeftAddon>State</InputLeftAddon>
-                    <Input placeholder="state" isDisabled={!canEditInfo} />
+                    <Input placeholder="CA" isDisabled />
                   </InputGroup>
                   <FormErrorMessage>{errors.add && errors.state.message}</FormErrorMessage>
                   <InputGroup>
@@ -320,20 +322,17 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               </Button>
             ) : (
               <>
-                <Button
-                  ml={3}
-                  colorScheme="gray"
-                  onClick={() => {
-                    setCanEditInfo(false);
-                    // donationOnClose();
-                  }}
-                >
+                <Button ml={3} colorScheme="gray" onClick={close}>
                   Cancel
                 </Button>
                 <Button
                   ml={3}
                   colorScheme="blue"
-                  onClick={handleSubmit(updateDonation)}
+                  onClick={() => {
+                    handleSubmit(updateDonation);
+                    setCanEditInfo(false);
+                    onClose();
+                  }}
                   type="submit"
                 >
                   Save Changes
@@ -350,9 +349,9 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 DonationModal.propTypes = {
   setUsers: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
-  isOpen: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired,
   data: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     addressStreet: PropTypes.string.isRequired,
     addressUnit: PropTypes.string.isRequired,
     addressCity: PropTypes.string.isRequired,

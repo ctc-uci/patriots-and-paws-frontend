@@ -14,7 +14,7 @@ import {
 import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
-import { getDonationsFromDB } from '../../utils/InventoryUntils';
+import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
 
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
@@ -55,10 +55,10 @@ const InventoryPage = () => {
     );
   }
 
-  function makeDate(dateDB) {
-    const d = new Date(dateDB);
-    return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-  }
+  // function makeDate(dateDB) {
+  //   const d = new Date(dateDB);
+  //   return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+  // }
 
   useEffect(() => {
     const fetchDonationsFromDB = async () => {
@@ -84,26 +84,28 @@ const InventoryPage = () => {
   });
 
   return (
-    <TableContainer p="122px">
-      <Table variant="simple">
-        <Thead>
-          <Tr bg="#F7FAFC" height="40px">
-            <Th>NAME</Th>
-            <Th>DONATION ID</Th>
-            <Th>STATUS</Th>
-            <Th>SUBMISSION DATE</Th>
-          </Tr>
-        </Thead>
-        <Tbody>{makeUserRows}</Tbody>
-        <DonationModal
-          setUsers={setUsers}
-          data={donationData}
-          onClose={onClose}
-          onOpen={onOpen}
-          isOpen={isOpen}
-        />
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer p="122px">
+        <Table variant="simple">
+          <Thead>
+            <Tr bg="#F7FAFC" height="40px">
+              <Th>NAME</Th>
+              <Th>DONATION ID</Th>
+              <Th>STATUS</Th>
+              <Th>SUBMISSION DATE</Th>
+            </Tr>
+          </Thead>
+          <Tbody>{makeUserRows}</Tbody>
+        </Table>
+      </TableContainer>
+      <DonationModal
+        setUsers={setUsers}
+        data={donationData}
+        onClose={onClose}
+        onOpen={onOpen}
+        isOpen={isOpen}
+      />
+    </>
   );
 };
 
