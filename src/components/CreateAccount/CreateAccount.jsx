@@ -32,7 +32,7 @@ import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './CreateAccount.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
-const CreateAccount = ({ isSuperAdmin, refreshData }) => {
+const CreateAccount = ({ isSuperAdmin, users, setUsers }) => {
   const formSchema = yup.object({
     firstName: yup.string().required("Please enter the staff member's first name"),
     lastName: yup.string().required("Please enter the staff member's last name"),
@@ -66,6 +66,7 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
   });
 
   const [errorMessage, setErrorMessage] = useState();
+  // const [users, setUsers] = useState(users, setUsers);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -82,7 +83,8 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
     };
     await registerWithEmailAndPassword(user);
     setErrorMessage('User successfully created');
-    await refreshData();
+    users.push(user);
+    setUsers(users);
     onClose();
     reset();
     // try {
@@ -322,7 +324,17 @@ const CreateAccount = ({ isSuperAdmin, refreshData }) => {
 
 CreateAccount.propTypes = {
   isSuperAdmin: PropTypes.bool.isRequired,
-  refreshData: PropTypes.func.isRequired,
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      email: PropTypes.string.isRequired,
+      firstName: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      lastName: PropTypes.string.isRequired,
+      phoneNumber: PropTypes.string.isRequired,
+      role: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  setUsers: PropTypes.func.isRequired,
 };
 
 export default CreateAccount;

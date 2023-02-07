@@ -27,8 +27,8 @@ import UserTable from '../../components/UserTable/UserTable';
 const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const ManageStaff = ({ cookies }) => {
-  const [users, setUsers] = useState([]);
-  const [usersCopy, setUsersCopy] = useState([]);
+  const [displayedUsers, setDisplayedUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   const refreshData = async () => {
@@ -36,15 +36,15 @@ const ManageStaff = ({ cookies }) => {
     const userId = currentUser.id;
     const currentUserRole = await cookies.get(cookieKeys.ROLE);
     const { data } = await PNPBackend.get('/users');
-    console.log(data);
+    // console.log(data);
 
     if (currentUserRole === SUPERADMIN_ROLE) {
       setIsSuperAdmin(true);
-      setUsers(data.filter(user => user.id !== userId));
-      setUsersCopy(data.filter(user => user.id !== userId));
+      setDisplayedUsers(data.filter(user => user.id !== userId));
+      setAllUsers(data.filter(user => user.id !== userId));
     } else {
       const driverData = data.filter(d => d.role === DRIVER_ROLE);
-      setUsers(driverData);
+      setDisplayedUsers(driverData);
     }
   };
 
@@ -53,19 +53,19 @@ const ManageStaff = ({ cookies }) => {
   }, []);
 
   const printUsers = () => {
-    console.log(users);
+    // console.log(displayedUsers);
   };
 
   const getAdmins = () => {
-    const adminData = usersCopy.filter(
+    const adminData = allUsers.filter(
       user => user.role === ADMIN_ROLE || user.role === SUPERADMIN_ROLE,
     );
-    setUsers(adminData);
+    setDisplayedUsers(adminData);
   };
 
   const getDrivers = () => {
-    const driverData = usersCopy.filter(user => user.role === DRIVER_ROLE);
-    setUsers(driverData);
+    const driverData = allUsers.filter(user => user.role === DRIVER_ROLE);
+    setDisplayedUsers(driverData);
   };
 
   return (
@@ -107,11 +107,15 @@ const ManageStaff = ({ cookies }) => {
                 </MenuList>
               </Flex>
             </Menu>
-            <CreateAccount isSuperAdmin={isSuperAdmin} refreshData={refreshData} />
+            <CreateAccount
+              isSuperAdmin={isSuperAdmin}
+              users={allUsers}
+              setUsers={setDisplayedUsers}
+            />
           </Flex>
         ) : null}
       </Flex>
-      <UserTable isSuperAdmin={isSuperAdmin} users={users} />
+      <UserTable isSuperAdmin={isSuperAdmin} users={displayedUsers} setUsers={setDisplayedUsers} />
     </Flex>
   );
 };

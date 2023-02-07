@@ -12,12 +12,16 @@ import {
 } from '@chakra-ui/react';
 import { PNPBackend } from '../../utils/utils';
 
-const DeleteAccountModal = ({ staffProfile, isOpen, onClose }) => {
+const DeleteAccountModal = ({ staffProfile, isOpen, onClose, users, setUsers }) => {
   const onSubmit = () => {
     try {
       PNPBackend.delete(`/users/${staffProfile.id}`);
       onClose();
       // setErrorMessage('User successfully edited');
+      const usersCopy = users;
+      const index = usersCopy.indexOf(usersCopy.find(user => user.id === staffProfile.id));
+      delete usersCopy[index];
+      setUsers(usersCopy);
     } catch (err) {
       // const errorCode = err.code;
       // const firebaseErrorMsg = err.message;
@@ -63,6 +67,17 @@ DeleteAccountModal.propTypes = {
   }).isRequired,
   isOpen: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      email: PropTypes.string.isRequired,
+      firstName: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      lastName: PropTypes.string.isRequired,
+      phoneNumber: PropTypes.string.isRequired,
+      role: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  setUsers: PropTypes.func.isRequired,
 };
 
 export default DeleteAccountModal;

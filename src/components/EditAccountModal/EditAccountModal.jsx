@@ -28,7 +28,7 @@ import { LockIcon } from '@chakra-ui/icons';
 import styles from './EditAccountModal.module.css';
 import { PNPBackend } from '../../utils/utils';
 
-const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose }) => {
+const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers }) => {
   let formSchema;
   if (isSuperAdmin) {
     formSchema = yup.object({
@@ -104,6 +104,12 @@ const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose }) => {
         phoneNumber,
       });
       setErrorMessage('User successfully edited');
+      const usersCopy = users;
+      const index = usersCopy.indexOf(usersCopy.find(user => user.id === data.id));
+      usersCopy[index].firstName = firstName;
+      usersCopy[index].lastName = lastName;
+      usersCopy[index].phoneNumber = phoneNumber;
+      setUsers(usersCopy);
       closeModals();
     } catch (err) {
       const errorCode = err.code;
@@ -285,6 +291,17 @@ EditAccountModal.propTypes = {
   isSuperAdmin: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.bool.isRequired,
+  users: PropTypes.arrayOf(
+    PropTypes.shape({
+      email: PropTypes.string.isRequired,
+      firstName: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      lastName: PropTypes.string.isRequired,
+      phoneNumber: PropTypes.string.isRequired,
+      role: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  setUsers: PropTypes.func.isRequired,
 };
 
 export default EditAccountModal;
