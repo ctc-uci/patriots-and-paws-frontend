@@ -23,6 +23,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 
 import EmailSending from './components/EmailTemplates/EmailSending';
 import SampleRoute from './components/SampleRoute/SampleRoute';
+import InventoryPage from './components/InventoryPage/InventoryPage';
 
 import AUTH_ROLES from './utils/AuthConfig';
 
@@ -145,6 +146,7 @@ function App() {
           <Route exact path="/donate" element={<Donate />} />
           <Route exact path="/donate/form" element={<DonationForm />} />
           <Route exact path="/donate/status" element={<DonateStatus />} />
+          <Route exact path="/inventory" element={<InventoryPage />} />
         </Routes>
       </Router>
     </ChakraProvider>
