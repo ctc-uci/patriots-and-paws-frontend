@@ -18,7 +18,7 @@ const Logout = ({ cookies }) => {
 
   return (
     <Stack>
-      <Button className={styles['logout-button']} colorScheme="blue" onClick={handleSubmit}>
+      <Button className={styles['logout-button']} colorScheme="red" onClick={handleSubmit}>
         Logout
       </Button>
       {errorMessage && <Box>{errorMessage}</Box>}

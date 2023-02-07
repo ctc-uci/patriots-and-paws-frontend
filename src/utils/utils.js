@@ -35,5 +35,10 @@ const sendEmail = async (newEmail, emailtemplate) => {
     throw new Error('Oops, something went wrong. Try again');
   }
 };
+
+const formatPhone = value => {
+  const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+  return value.replace(phoneRegex, '$1-$2-$3');
+};
 // eslint-disable-next-line import/prefer-default-export
-export { PNPBackend, passwordRequirementsRegex, sendEmail };
+export { PNPBackend, passwordRequirementsRegex, sendEmail, formatPhone };
