@@ -1,0 +1,12 @@
+Td {
+  text-align: start;
+}
+
+Tbody Tr {
+  height: 80px;
+}
+
+Tbody Tr:hover {
+  background-color: #fed7d7;
+  cursor: pointer;
+}
