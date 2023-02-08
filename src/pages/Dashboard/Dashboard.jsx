@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Heading, Stack, Text } from '@chakra-ui/react';
-import Logout from '../../components/Logout/Logout';
-import { getUserFromDB } from '../../utils/AuthUtils';
+import { Link } from 'react-router-dom';
+import { Flex, Heading, Stack, Text, Button } from '@chakra-ui/react';
+import { getUserFromDB, getCurrentUser, auth } from '../../utils/AuthUtils';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
 
   useEffect(() => {
     const fetchUserFromDB = async () => {
-      const userFromDB = await getUserFromDB();
+      const { uid } = await getCurrentUser(auth);
+      const userFromDB = await getUserFromDB(uid);
       setUser(userFromDB);
     };
     fetchUserFromDB();
@@ -19,7 +20,9 @@ const Dashboard = () => {
       <Stack align="center">
         <Heading>DASHBOARD</Heading>
         <Text>Hello, {user.firstName}!</Text>
-        <Logout />
+        <Button colorScheme="blue">
+          <Link to={`/users/${user.id}`}>User Profile</Link>
+        </Button>
       </Stack>
     </Flex>
   );
