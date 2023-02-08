@@ -16,12 +16,12 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
-import { logout, useNavigate, getUserFromDB } from '../../utils/AuthUtils';
+import { logout, useNavigate, getUserFromDB, auth, getCurrentUser } from '../../utils/AuthUtils';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import pnpLogo from './PNPlogo.png';
 import AUTH_ROLES from '../../utils/AuthConfig';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const Navbar = ({ cookies }) => {
   const [user, setUser] = useState({});
@@ -34,11 +34,11 @@ const Navbar = ({ cookies }) => {
       setRole(currentUserRole);
     };
     const fetchUserFromDB = async () => {
-      const userFromDB = await getUserFromDB();
+      const { uid } = await getCurrentUser(auth);
+      const userFromDB = await getUserFromDB(uid);
       setUser(userFromDB);
     };
-    // FIXME
-    setTimeout(fetchUserFromDB, 600);
+    fetchUserFromDB();
     checkRole();
   }, []);
 
@@ -73,33 +73,21 @@ const Navbar = ({ cookies }) => {
             />
           </LinkOverlay>
         </LinkBox>
-        {role === DRIVER_ROLE && (
+        <>
           <Link as={NavLink} to="/">
             Dashboard
           </Link>
-        )}
-        {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
-          <>
-            <Link as={NavLink} to="/">
-              Inventory
-              <Link as={NavLink} to="/routes">
-                Routes
+          {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
+            <>
+              <Link as={NavLink} to="/donate/edit">
+                Manage Donation Form
               </Link>
-            </Link>
-            <Link as={NavLink} to="/donate/edit">
-              Manage Donation Form
-            </Link>
-            <Link as={NavLink} to="/drivers">
-              Manage Staff
-            </Link>
-          </>
-        )}
-        <Link as={NavLink} to={`/user/${user.id}`}>
-          Profile
-        </Link>
-        <Link as={NavLink} to="/login" onClick={handleSubmit}>
-          Logout
-        </Link>
+              <Link as={NavLink} to="/manage-staff">
+                Manage Staff
+              </Link>
+            </>
+          )}
+        </>
       </HStack>
       <Menu isOpen={isOpen} alignSelf="right">
         <MenuButton
@@ -118,14 +106,10 @@ const Navbar = ({ cookies }) => {
           {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
         </MenuButton>
         <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
-          <MenuItem>
-            <Link as={NavLink} to="/user">
-              Profile
-            </Link>
+          <MenuItem as={NavLink} to={`/users/${user.id}`}>
+            Profile
           </MenuItem>
-          <MenuItem>
-            <Button onClick={handleSubmit}>Logout</Button>
-          </MenuItem>
+          <MenuItem onClick={handleSubmit}>Logout</MenuItem>
         </MenuList>
       </Menu>
     </Flex>

@@ -1,6 +1,6 @@
 import { ChakraProvider, Button, Image, Card, CardBody, Text } from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
@@ -128,51 +128,51 @@ function App() {
                 />
               }
             />
+            <Route
+              exact
+              path="/users/:userId"
+              element={
+                <ProtectedRoute
+                  Component={UserProfile}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/logout"
+              element={
+                <ProtectedRoute
+                  Component={Logout}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/manage-staff"
+              element={
+                <ProtectedRoute
+                  Component={ManageStaff}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+                />
+              }
+            />
+            <Route exact path="/donate/edit" element={<EditDonationForm />} />
+            <Route exact path="/drivers/:id" element={<Drivers />} />
+            <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
+            <Route exact path="/inventory" element={<InventoryPage />} />
           </Route>
           <Route exact path="/login" element={<Login />} />
-          <Route
-            exact
-            path="/users/:userId"
-            element={
-              <ProtectedRoute
-                Component={UserProfile}
-                redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
-              />
-            }
-          />
-          <Route
-            exact
-            path="/logout"
-            element={
-              <ProtectedRoute
-                Component={Logout}
-                redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
-              />
-            }
-          />
-          <Route
-            exact
-            path="/manage-staff"
-            element={
-              <ProtectedRoute
-                Component={ManageStaff}
-                redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
-              />
-            }
-          />
           <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 
-          <Route exact path="/donate/edit" element={<EditDonationForm />} />
-          <Route exact path="/drivers/:id" element={<Drivers />} />
-          <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
           <Route exact path="/donate" element={<Donate />} />
-          <Route exact path="/donate/form" element={<DonationForm />} />
           <Route exact path="/donate/status" element={<DonateStatus />} />
-          <Route exact path="/inventory" element={<InventoryPage />} />
+          <Route exact path="/donate/form" element={<DonationForm />} />
         </Routes>
       </Router>
     </ChakraProvider>
