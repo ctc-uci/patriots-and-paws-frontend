@@ -24,9 +24,10 @@ import {
   InputGroup,
 } from '@chakra-ui/react';
 import { LockIcon } from '@chakra-ui/icons';
-// import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
+import { updateUser } from '../../utils/AuthUtils';
+import { passwordRequirementsRegex } from '../../utils/utils';
 import styles from './EditAccountModal.module.css';
-import { PNPBackend } from '../../utils/utils';
+// import { PNPBackend } from '../../utils/utils';
 
 const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers }) => {
   let formSchema;
@@ -39,16 +40,17 @@ const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers
         .length(10, 'Please enter a ten digit phone number')
         .matches(/^\d{10}$/)
         .required("Please enter the staff member's phone number"),
-      // password: yup
-      //   .string()
-      //   .matches(
-      //     passwordRequirementsRegex,
-      //     'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
-      //   ),
-      // confirmPassword: yup
-      //   .string()
-      //   // .required("Please confirm the staff member's password")
-      //   .oneOf([yup.ref('password'), null], 'Passwords must both match'),
+      newPassword: yup
+        .string()
+        .nullable()
+        .transform(value => value || null)
+        .matches(
+          passwordRequirementsRegex,
+          'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
+        ),
+      confirmPassword: yup
+        .string()
+        .oneOf([yup.ref('newPassword'), null, ''], 'Passwords must both match'),
     });
   } else {
     formSchema = yup.object({
@@ -58,7 +60,6 @@ const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers
         .string()
         .length(10, 'Please enter a ten digit phone number')
         .matches(/^\d{10}$/),
-      // .required("Please enter the staff member's phone number"),
     });
   }
   const {
@@ -96,30 +97,35 @@ const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers
 
   const onSubmit = async e => {
     try {
-      const { firstName, lastName, phoneNumber } = e;
+      const { firstName, lastName, phoneNumber, newPassword } = e;
       // console.log(originalData);
-      PNPBackend.put(`/users/${data.id}`, {
-        firstName,
-        lastName,
-        phoneNumber,
+      const updatedUser = { firstName, lastName, phoneNumber };
+      if (newPassword) {
+        updatedUser.newPassword = newPassword;
+      }
+
+      await updateUser(updatedUser, data.id);
+      reset({
+        newPassword: '',
+        confirmPassword: '',
       });
+      // PNPBackend.put(`/users/${data.id}`, {
+      //   firstName,
+      //   lastName,
+      //   phoneNumber,
+      // });
       setErrorMessage('User successfully edited');
       const usersCopy = users;
       const index = usersCopy.indexOf(usersCopy.find(user => user.id === data.id));
       usersCopy[index].firstName = firstName;
       usersCopy[index].lastName = lastName;
       usersCopy[index].phoneNumber = phoneNumber;
+
       setUsers(usersCopy);
       closeModals();
     } catch (err) {
-      const errorCode = err.code;
       const firebaseErrorMsg = err.message;
-
-      if (errorCode === 'auth/email-already-in-use') {
-        setErrorMessage('This email address is already associated with another account');
-      } else {
-        setErrorMessage(firebaseErrorMsg);
-      }
+      setErrorMessage(firebaseErrorMsg);
     }
   };
 
@@ -209,10 +215,10 @@ const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers
                           id="password"
                           style={{ width: '240px' }}
                           placeholder="Enter password"
-                          {...register('password')}
+                          {...register('newPassword')}
                           isRequired
                         />
-                        <Box className={styles['error-box']}>{errors.password?.message}</Box>
+                        <Box className={styles['error-box']}>{errors.newPassword?.message}</Box>
                       </Flex>
                       <Flex direction="column">
                         <FormLabel className={styles['create-account-form-label']}>
