@@ -1,12 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import TrackDonationCard from '../TrackDonationCard/TrackDonationCard';
 
-const DonorDashboard = () => {
+const DonorDashboard = ({ donationId }) => {
   return (
     <>
-      <h1>Donate Login</h1>
       <p>donor dashboard</p>
+      <TrackDonationCard donationId={donationId} />
     </>
   );
+};
+
+DonorDashboard.propTypes = {
+  donationId: PropTypes.number.isRequired,
 };
 
 export default DonorDashboard;
