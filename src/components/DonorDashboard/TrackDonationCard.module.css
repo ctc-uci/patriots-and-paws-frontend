@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+.statusBox {
+  border-width: 1px 1px 5px 1px;
+  border-color: #00000011;
+}
+
+.currStatus {
+  border-width: 1px 1px 5px 1px;
+  border-color: #00000011 #00000011 #3182ce #00000011;
+}
+
+.title {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  margin-bottom: 7px;
+}
+
+.description {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.container {
+  display: flex;
+}
+
+.container img {
+  align-self: center;
+  padding-bottom: 30px;
+  margin: 20px;
+}
+
+.container div {
+  margin-top: 20px;
+  margin-right: 20px;
+}
