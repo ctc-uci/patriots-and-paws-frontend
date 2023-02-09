@@ -15,6 +15,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
+import Fuse from 'fuse.js';
 import { PNPBackend } from '../../utils/utils';
 import { getCurrentUserId } from '../../utils/AuthUtils';
 import styles from './ManageStaff.css';
@@ -28,8 +29,40 @@ const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const ManageStaff = ({ cookies }) => {
   const [displayedUsers, setDisplayedUsers] = useState([]);
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [driverUsers, setDriverUsers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [currFilter, setCurrFilter] = useState('all');
+
+  const fuse = new Fuse(allUsers, {
+    keys: ['firstName', 'lastName', 'email'],
+  });
+
+  const adminFuse = new Fuse(adminUsers, {
+    keys: ['firstName', 'lastName', 'email'],
+  });
+
+  const driverFuse = new Fuse(driverUsers, { keys: ['firstName', 'lastName', 'email'] });
+
+  const search = async query => {
+    // console.log(query);
+    if (query.target.value === '') {
+      setDisplayedUsers(allUsers);
+    } else {
+      let result;
+      if (currFilter === 'all') {
+        result = fuse.search(query.target.value);
+      } else if (currFilter === 'admin') {
+        result = adminFuse.search(query.target.value);
+      } else {
+        result = driverFuse.search(query.target.value);
+      }
+
+      const filteredResults = result.map(user => user.item);
+      setDisplayedUsers(filteredResults);
+    }
+  };
 
   const refreshData = async () => {
     // const currentUser = await getUserFromDB();
@@ -42,8 +75,13 @@ const ManageStaff = ({ cookies }) => {
       setIsSuperAdmin(true);
       setDisplayedUsers(data.filter(user => user.id !== userId));
       setAllUsers(data.filter(user => user.id !== userId));
+      const driverData = data.filter(d => d.role === DRIVER_ROLE);
+      setDriverUsers(driverData);
+      const adminData = data.filter(d => d.role === ADMIN_ROLE);
+      setAdminUsers(adminData);
     } else {
       const driverData = data.filter(d => d.role === DRIVER_ROLE);
+      setDriverUsers(driverData);
       setDisplayedUsers(driverData);
     }
   };
@@ -57,15 +95,17 @@ const ManageStaff = ({ cookies }) => {
   };
 
   const getAdmins = () => {
-    const adminData = allUsers.filter(
-      user => user.role === ADMIN_ROLE || user.role === SUPERADMIN_ROLE,
-    );
-    setDisplayedUsers(adminData);
+    // const adminData = allUsers.filter(
+    //   user => user.role === ADMIN_ROLE || user.role === SUPERADMIN_ROLE,
+    // );
+    setCurrFilter('admin');
+    setDisplayedUsers(adminUsers);
   };
 
   const getDrivers = () => {
-    const driverData = allUsers.filter(user => user.role === DRIVER_ROLE);
-    setDisplayedUsers(driverData);
+    // const driverData = allUsers.filter(user => user.role === DRIVER_ROLE);
+    setCurrFilter('driver');
+    setDisplayedUsers(driverUsers);
   };
 
   return (
@@ -76,7 +116,7 @@ const ManageStaff = ({ cookies }) => {
             <InputLeftElement pointerEvents="none">
               <SearchIcon color="gray.300" />
             </InputLeftElement>
-            <Input placeholder="Search Staff" className={styles['search-bar']} />
+            <Input placeholder="Search Staff" className={styles['search-bar']} onChange={search} />
           </InputGroup>
           <Button onClick={printUsers}>Get users</Button>
         </Flex>
