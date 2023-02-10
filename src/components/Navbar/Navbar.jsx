@@ -79,7 +79,7 @@ const Navbar = ({ cookies }) => {
           </Link>
           {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
             <>
-              <Link as={NavLink} to="/donate/edit">
+              <Link as={NavLink} to="/manage-donation-form">
                 Manage Donation Form
               </Link>
               <Link as={NavLink} to="/manage-staff">
