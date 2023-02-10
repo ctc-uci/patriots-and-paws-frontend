@@ -1,3 +1,4 @@
+// import React, { useState, useEffect } from 'react';
 import React, { useState, useEffect } from 'react';
 
 import {
@@ -20,6 +21,7 @@ import {
   Modal,
   FormControl,
   FormErrorMessage,
+  useDisclosure,
 } from '@chakra-ui/react';
 
 import { useForm } from 'react-hook-form';
@@ -28,11 +30,26 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { PNPBackend } from '../../utils/utils';
 import { makeDate } from '../../utils/InventoryUtils';
+import ImageModal from './ImageModal';
 import './InventoryPage.module.css';
+import EmailModal from './EmailModal';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
-  const dataCopy = data;
-  const { id, submittedDate } = data;
+  // const dataCopy = data;
+  const { id, status, submittedDate } = data;
+
+  const [emailStatus, setEmailStatus] = useState('');
+  const {
+    isOpen: isOpenImageModal,
+    onOpen: onOpenImageModal,
+    onClose: onCloseImageModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isOpenEmailModal,
+    onOpen: OnOpenEmailModal,
+    onClose: onCloseEmailModal,
+  } = useDisclosure();
 
   // const [image, setImage] = useState([]);
 
@@ -63,7 +80,8 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     reset,
     formState: { errors },
   } = useForm({ defaultValues: data, resolver: yupResolver(schema) });
-  const [canEditInfo, setCanEditInfo] = useState(false);
+
+  // const [canEditInfo, setCanEditInfo] = useState(false);
 
   useEffect(() => {
     reset(data);
@@ -78,26 +96,61 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   const updateDonation = async e => {
     setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, ...e } : ele)));
-    setCanEditInfo(false);
+    // setCanEditInfo(false);
     onClose();
     await PNPBackend.put(`/donations/${id}`, e);
   };
 
   const close = () => {
-    setCanEditInfo(false);
+    // setCanEditInfo(false);
     onClose();
   };
 
-  // function makeDate(dateDB) {
-  //   const d = new Date(dateDB);
-  //   return `${d.getMonth() + 1} ${d.getDate()}, ${d.getFullYear()}`;
-  // }
   return (
     <Modal isOpen={isOpen} onClose={close} size="full">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader m={3}>
-          <Text fontSize={36}>Donation #{id}</Text>
+          <Flex>
+            <Text fontSize={36}>Donation #{id}</Text>
+            <Box>
+              {status === 'pending' ? (
+                <Button colorScheme="gray" m={5} ml={15} size="xs">
+                  Pending
+                </Button>
+              ) : (
+                ''
+              )}
+              {status === 'approved' && (
+                <Button size="xs" m={5} ml={15} colorScheme="green">
+                  Approved
+                </Button>
+              )}
+              {status === 'changes requested' && (
+                <Button size="xs" m={5} ml={15} colorScheme="blue">
+                  Changes Requested
+                </Button>
+              )}
+              {status === 'picked up' && (
+                <Button size="xs" m={5} ml={15} colorScheme="green">
+                  Picked Up
+                </Button>
+              )}
+              {status === 'scheduled' && (
+                <Button size="xs" m={5} ml={15} colorScheme="green">
+                  Scheduled
+                </Button>
+              )}
+              {status === 'archived' && (
+                <Button size="xs" m={5} ml={15} colorScheme="blue">
+                  Archived
+                </Button>
+              )}
+            </Box>
+            {/* <Button mt={5} ml={15} colorScheme="gray" size="xs">
+              {status}
+            </Button> */}
+          </Flex>
           <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
         </ModalHeader>
         <ModalCloseButton />
@@ -112,12 +165,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   <FormControl isInvalid={errors && errors.firstName} width="47%">
                     <InputGroup>
                       <InputLeftAddon>Name</InputLeftAddon>
-                      <Input
-                        placeholder="name"
-                        {...register('firstName')}
-                        isRequired
-                        isDisabled={!canEditInfo}
-                      />
+                      <Input placeholder="name" {...register('firstName')} isRequired isDisabled />
                     </InputGroup>
                     <FormErrorMessage>
                       {errors.firstName && errors.firstName.message}
@@ -127,12 +175,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                 <Stack direction="row" my={2}>
                   <InputGroup>
                     <InputLeftAddon>Email</InputLeftAddon>
-                    <Input
-                      placeholder="email"
-                      {...register('email')}
-                      isRequired
-                      isDisabled={!canEditInfo}
-                    />
+                    <Input placeholder="email" {...register('email')} isRequired isDisabled />
                   </InputGroup>
                   <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
                   <InputGroup>
@@ -143,7 +186,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                         placeholder="phone number"
                         {...register('phoneNum')}
                         isRequired
-                        isDisabled={!canEditInfo}
+                        isDisabled
                       />
                       <FormErrorMessage>
                         {errors.phoneNum && errors.phoneNum.message}
@@ -161,7 +204,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                       placeholder="street"
                       {...register('addressStreet')}
                       isRequired
-                      isDisabled={!canEditInfo}
+                      isDisabled
                     />
                   </InputGroup>
                   <FormErrorMessage>
@@ -169,12 +212,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   </FormErrorMessage>
                   <InputGroup>
                     <InputLeftAddon>Unit</InputLeftAddon>
-                    <Input
-                      placeholder="unit"
-                      {...register('addressUnit')}
-                      isRequired
-                      isDisabled={!canEditInfo}
-                    />
+                    <Input placeholder="unit" {...register('addressUnit')} isRequired isDisabled />
                   </InputGroup>
                   <FormErrorMessage>
                     {errors.addressUnit && errors.addressUnit.message}
@@ -183,12 +221,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                 <Stack spacing={3} direction="row" my={2}>
                   <InputGroup>
                     <InputLeftAddon>City</InputLeftAddon>
-                    <Input
-                      placeholder="city"
-                      {...register('addressCity')}
-                      isRequired
-                      isDisabled={!canEditInfo}
-                    />
+                    <Input placeholder="city" {...register('addressCity')} isRequired isDisabled />
                   </InputGroup>
                   <FormErrorMessage>
                     {errors.addressCity && errors.addressCity.message}
@@ -201,12 +234,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   <InputGroup>
                     <InputLeftAddon>Zip Code</InputLeftAddon>
                     <FormControl isInvalid={errors && errors.addressZip}>
-                      <Input
-                        placeholder="zip"
-                        {...register('addressZip')}
-                        isRequired
-                        isDisabled={!canEditInfo}
-                      />
+                      <Input placeholder="zip" {...register('addressZip')} isRequired isDisabled />
                       <FormErrorMessage>
                         {errors.addressZip && errors.addressZip.message}
                       </FormErrorMessage>
@@ -219,17 +247,22 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                 <Textarea
                   placeholder="Enter additional comments here"
                   {...register('notes')}
-                  isDisabled={!canEditInfo}
+                  isDisabled
                 />
               </Box>
 
-              <Box h={600} w="40%" m={5}>
+              <Box h={600} w="40%" m={5} onClick={onOpenImageModal}>
                 <Box>
                   <Text mb={5} fontSize="20px">
                     Images
                   </Text>
                   <Box h={300} w={395} bg="gray">
                     {/* {image ? image.imageUrl : 'no image provided'} */}
+                    <ImageModal
+                      isOpenImageModal={isOpenImageModal}
+                      onOpenImageModal={onOpenImageModal}
+                      onCloseImageModal={onCloseImageModal}
+                    />
                   </Box>
                 </Box>
 
@@ -239,29 +272,22 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   </Text>
                   <Stack>
                     <InputGroup>
-                      <Input value="Dining Table" />
-                      {/* isDisabled={true}  */}
+                      <Input value="Dining Table" isDisabled />
                       <InputRightAddon>2</InputRightAddon>
                     </InputGroup>
 
                     <InputGroup>
-                      <Input value="Dining Table" />
-                      {/* isDisabled={true}  */}
-
+                      <Input value="Dining Table" isDisabled />
                       <InputRightAddon>2</InputRightAddon>
                     </InputGroup>
 
                     <InputGroup>
-                      <Input value="Dining Table" />
-                      {/* isDisabled={true}  */}
-
+                      <Input value="Dining Table" isDisabled />
                       <InputRightAddon>2</InputRightAddon>
                     </InputGroup>
 
                     <InputGroup>
-                      <Input value="Dining Table" />
-                      {/* isDisabled={true}  */}
-
+                      <Input value="Dining Table" isDisabled />
                       <InputRightAddon>2</InputRightAddon>
                     </InputGroup>
                   </Stack>
@@ -273,69 +299,58 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
         <ModalFooter justifyContent="space-between">
           <Box>
-            <Button
-              colorScheme="red"
-              onClick={() => {
-                updateDonationStatus('denied');
-              }}
-            >
-              Reject
-            </Button>
-            <Button
-              ml={3}
-              colorScheme="gray"
-              onClick={() => {
-                updateDonationStatus('flagged');
-              }}
-            >
-              Flag
-            </Button>
-            <Button
-              ml={3}
-              colorScheme="green"
-              onClick={() => {
-                updateDonationStatus('approved');
-              }}
-            >
-              Approve
-            </Button>
-          </Box>
-          <Box>
-            {!canEditInfo ? (
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={() => {
-                  setCanEditInfo(true);
-                }}
-              >
-                Edit Information
-              </Button>
-            ) : (
+            {status === 'pending' || status === 'changes requested' ? (
               <>
                 <Button
-                  ml={3}
-                  colorScheme="gray"
+                  colorScheme="red"
+                  isDisabled={status === 'changes requested'}
                   onClick={() => {
-                    // close();
-                    setCanEditInfo(false);
-                    reset(dataCopy);
+                    OnOpenEmailModal();
+                    setEmailStatus('request changes');
                   }}
                 >
-                  Cancel
+                  Request Changes
                 </Button>
                 <Button
                   ml={3}
-                  colorScheme="blue"
-                  onClick={handleSubmit(updateDonation)}
-                  type="submit"
+                  colorScheme="green"
+                  onClick={() => {
+                    OnOpenEmailModal();
+                    setEmailStatus('approve');
+                  }}
                 >
-                  Save Changes
+                  Approve
                 </Button>
               </>
+            ) : (
+              ''
+            )}
+            {status === 'scheduled' && (
+              <Button
+                ml={3}
+                colorScheme="red"
+                onClick={() => {
+                  OnOpenEmailModal();
+                  setEmailStatus('cancel pickup');
+                }}
+              >
+                Cancel Pickup
+              </Button>
             )}
           </Box>
+          <Box>
+            <Button ml={3} colorScheme="gray" onClick={handleSubmit(updateDonation)} type="submit">
+              Navigate to Address
+            </Button>
+          </Box>
         </ModalFooter>
+        <EmailModal
+          isOpenEmailModal={isOpenEmailModal}
+          OnOpenEmailModal={onOpenImageModal}
+          onCloseEmailModal={onCloseEmailModal}
+          status={emailStatus}
+          updateDonationStatus={updateDonationStatus}
+        />
       </ModalContent>
     </Modal>
   );
@@ -346,6 +361,7 @@ DonationModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   data: PropTypes.shape({
+    status: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     addressStreet: PropTypes.string.isRequired,
     addressUnit: PropTypes.string.isRequired,

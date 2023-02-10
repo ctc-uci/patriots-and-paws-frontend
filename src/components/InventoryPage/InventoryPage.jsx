@@ -30,21 +30,49 @@ const InventoryPage = () => {
     if (newStatus === 'denied') {
       return (
         <Button size="xs" colorScheme="red">
-          REJECTED
+          Rejected
         </Button>
       );
     }
     if (newStatus === 'approved') {
       return (
         <Button size="xs" colorScheme="green">
-          APPROVED
+          Approved
         </Button>
       );
     }
     if (newStatus === 'flagged') {
       return (
         <Button size="xs" colorScheme="gray">
-          FLAGGED
+          Flagged
+        </Button>
+      );
+    }
+    if (newStatus === 'pending') {
+      return (
+        <Button size="xs" colorScheme="gray">
+          Pending
+        </Button>
+      );
+    }
+    if (newStatus === 'scheduled') {
+      return (
+        <Button size="xs" colorScheme="green">
+          Scheduled
+        </Button>
+      );
+    }
+    if (newStatus === 'changes requested') {
+      return (
+        <Button size="xs" colorScheme="blue">
+          Changes Requested
+        </Button>
+      );
+    }
+    if (newStatus === 'archived') {
+      return (
+        <Button size="xs" colorScheme="blue">
+          Archived
         </Button>
       );
     }
