@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
 .statusBox {
-  border-width: 1px 1px 5px 1px;
+  border-width: 1px 1px 4px 1px;
   border-color: #00000011;
 }
 
 .currStatus {
-  border-width: 1px 1px 5px 1px;
+  border-width: 1px 1px 4px 1px;
   border-color: #00000011 #00000011 #3182ce #00000011;
 }
 
