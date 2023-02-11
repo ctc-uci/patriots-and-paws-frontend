@@ -12,6 +12,7 @@ import Donate from './pages/donation/Donate';
 import DonateStatus from './pages/donation/DonateStatus';
 import UserProfile from './pages/UserProfile/UserProfile';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
+import RoutesPage from './pages/RoutesPage/RoutesPage';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 import EmailAction from './components/EmailAction/EmailAction';
@@ -133,6 +134,17 @@ function App() {
                 Component={ManageStaff}
                 redirectPath="/login"
                 roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/routes"
+            element={
+              <ProtectedRoute
+                Component={RoutesPage}
+                redirectPath="/login"
+                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
               />
             }
           />

@@ -40,5 +40,9 @@ const formatPhone = value => {
   const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
   return value.replace(phoneRegex, '$1-$2-$3');
 };
+
+const calendarConfigs = {
+  dateFormat: 'MM-dd-yyyy',
+};
 // eslint-disable-next-line import/prefer-default-export
-export { PNPBackend, passwordRequirementsRegex, sendEmail, formatPhone };
+export { PNPBackend, passwordRequirementsRegex, sendEmail, formatPhone, calendarConfigs };
