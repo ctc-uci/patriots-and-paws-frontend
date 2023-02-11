@@ -4,12 +4,14 @@ import AUTH_ROLES from './AuthConfig';
 const { DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const getAllRoutes = async () => {
-  const routes = await PNPBackend.get(`/routes/`);
+  const res = await PNPBackend.get(`/routes/`);
+  const routes = res.data;
   return routes;
 };
 
 const getRoute = async routeId => {
-  const routes = await PNPBackend.get(`/routes/${routeId}`);
+  const res = await PNPBackend.get(`/routes/${routeId}`);
+  const routes = res.data[0];
   return routes;
 };
 
