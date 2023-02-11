@@ -162,23 +162,23 @@ function App() {
                 />
               }
             />
+            <Route
+              exact
+              path="/routes"
+              element={
+                <ProtectedRoute
+                  Component={RoutesPage}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+                />
+              }
+            />
             <Route exact path="/donate/edit" element={<EditDonationForm />} />
             <Route exact path="/drivers/:id" element={<Drivers />} />
             <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
             <Route exact path="/inventory" element={<InventoryPage />} />
           </Route>
           <Route exact path="/login" element={<Login />} />
-          <Route
-            exact
-            path="/routes"
-            element={
-              <ProtectedRoute
-                Component={RoutesPage}
-                redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
-              />
-            }
-          />
 
           <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
