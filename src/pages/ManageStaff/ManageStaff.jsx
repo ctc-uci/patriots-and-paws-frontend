@@ -34,11 +34,6 @@ const ManageStaff = ({ cookies }) => {
   const [driverUsers, setDriverUsers] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [currFilter, setCurrFilter] = useState('all');
-  // const adminFuse = new Fuse(adminUsers, {
-  //   keys: ['firstName', 'lastName', 'email'],
-  // });
-
-  // const driverFuse = new Fuse(driverUsers, { keys: ['firstName', 'lastName', 'email'] });
 
   const refreshData = async () => {
     // const currentUser = await getUserFromDB();
@@ -58,7 +53,6 @@ const ManageStaff = ({ cookies }) => {
       setAdminUsers(adminData);
       setDisplayedUsers(data.filter(user => user.id !== userId));
     } else {
-      // update to be like above
       const driverData = data.filter(d => d.role === DRIVER_ROLE);
       setDriverUsers(driverData);
       setDisplayedUsers(driverData);
@@ -73,12 +67,11 @@ const ManageStaff = ({ cookies }) => {
     keys: ['firstName', 'lastName', 'email'],
   });
 
-  const updateDisplay = filter => {
-    setCurrFilter(filter);
-    if (filter === 'all') {
+  const updateDisplay = () => {
+    if (currFilter === 'all') {
       setDisplayedUsers(allUsers);
       fuse.setCollection(allUsers);
-    } else if (filter === 'admin') {
+    } else if (currFilter === 'admin') {
       setDisplayedUsers(adminUsers);
       fuse.setCollection(adminUsers);
     } else {
@@ -112,19 +105,13 @@ const ManageStaff = ({ cookies }) => {
   };
 
   const getAdmins = async () => {
-    // const adminData = allUsers.filter(
-    //   user => user.role === ADMIN_ROLE || user.role === SUPERADMIN_ROLE,
-    // );
-    // setCurrFilter('admin');
-    updateDisplay('admin');
-    // setDisplayedUsers(adminUsers);
+    await setCurrFilter('admin');
+    updateDisplay();
   };
 
-  const getDrivers = () => {
-    // const driverData = allUsers.filter(user => user.role === DRIVER_ROLE);
-    // setCurrFilter('driver');
-    updateDisplay('driver');
-    // setDisplayedUsers(driverUsers);
+  const getDrivers = async () => {
+    await setCurrFilter('driver');
+    updateDisplay();
   };
 
   return (
@@ -172,7 +159,6 @@ const ManageStaff = ({ cookies }) => {
               setDriverUsers={setDriverUsers}
               setAdminUsers={setAdminUsers}
               updateDisplay={updateDisplay}
-              currFilter={currFilter}
             />
           </Flex>
         ) : null}

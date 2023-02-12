@@ -38,7 +38,6 @@ const CreateAccount = ({
   setDriverUsers,
   setAdminUsers,
   updateDisplay,
-  currFilter,
 }) => {
   const formSchema = yup.object({
     firstName: yup.string().required("Please enter the staff member's first name"),
@@ -99,7 +98,7 @@ const CreateAccount = ({
     }
     onClose();
     reset();
-    updateDisplay(currFilter);
+    updateDisplay();
     // try {
     //   const { firstName, lastName, email, phoneNumber, password, role } = e;
 
@@ -341,7 +340,6 @@ CreateAccount.propTypes = {
   setDriverUsers: PropTypes.func.isRequired,
   setAdminUsers: PropTypes.func.isRequired,
   updateDisplay: PropTypes.func.isRequired,
-  currFilter: PropTypes.string.isRequired,
 };
 
 export default CreateAccount;
