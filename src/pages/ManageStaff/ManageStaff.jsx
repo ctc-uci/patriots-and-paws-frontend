@@ -29,40 +29,16 @@ const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const ManageStaff = ({ cookies }) => {
   const [displayedUsers, setDisplayedUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [adminUsers, setAdminUsers] = useState([]);
   const [driverUsers, setDriverUsers] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [currFilter, setCurrFilter] = useState('all');
+  // const adminFuse = new Fuse(adminUsers, {
+  //   keys: ['firstName', 'lastName', 'email'],
+  // });
 
-  const fuse = new Fuse(allUsers, {
-    keys: ['firstName', 'lastName', 'email'],
-  });
-
-  const adminFuse = new Fuse(adminUsers, {
-    keys: ['firstName', 'lastName', 'email'],
-  });
-
-  const driverFuse = new Fuse(driverUsers, { keys: ['firstName', 'lastName', 'email'] });
-
-  const search = async query => {
-    // console.log(query);
-    if (query.target.value === '') {
-      setDisplayedUsers(allUsers);
-    } else {
-      let result;
-      if (currFilter === 'all') {
-        result = fuse.search(query.target.value);
-      } else if (currFilter === 'admin') {
-        result = adminFuse.search(query.target.value);
-      } else {
-        result = driverFuse.search(query.target.value);
-      }
-
-      const filteredResults = result.map(user => user.item);
-      setDisplayedUsers(filteredResults);
-    }
-  };
+  // const driverFuse = new Fuse(driverUsers, { keys: ['firstName', 'lastName', 'email'] });
 
   const refreshData = async () => {
     // const currentUser = await getUserFromDB();
@@ -73,13 +49,16 @@ const ManageStaff = ({ cookies }) => {
 
     if (currentUserRole === SUPERADMIN_ROLE) {
       setIsSuperAdmin(true);
-      setDisplayedUsers(data.filter(user => user.id !== userId));
       setAllUsers(data.filter(user => user.id !== userId));
       const driverData = data.filter(d => d.role === DRIVER_ROLE);
       setDriverUsers(driverData);
-      const adminData = data.filter(d => d.role === ADMIN_ROLE);
+      const adminData = data.filter(
+        d => (d.role === ADMIN_ROLE || d.role === SUPERADMIN_ROLE) && d.id !== userId,
+      );
       setAdminUsers(adminData);
+      setDisplayedUsers(data.filter(user => user.id !== userId));
     } else {
+      // update to be like above
       const driverData = data.filter(d => d.role === DRIVER_ROLE);
       setDriverUsers(driverData);
       setDisplayedUsers(driverData);
@@ -90,22 +69,62 @@ const ManageStaff = ({ cookies }) => {
     refreshData();
   }, []);
 
+  const fuse = new Fuse(allUsers, {
+    keys: ['firstName', 'lastName', 'email'],
+  });
+
+  const updateDisplay = filter => {
+    setCurrFilter(filter);
+    if (filter === 'all') {
+      setDisplayedUsers(allUsers);
+      fuse.setCollection(allUsers);
+    } else if (filter === 'admin') {
+      setDisplayedUsers(adminUsers);
+      fuse.setCollection(adminUsers);
+    } else {
+      setDisplayedUsers(driverUsers);
+      fuse.setCollection(driverUsers);
+    }
+  };
+
+  const search = async query => {
+    if (query.target.value === '') {
+      updateDisplay(currFilter);
+    } else {
+      if (currFilter === 'admin') {
+        fuse.setCollection(adminUsers);
+      } else if (currFilter === 'driver') {
+        fuse.setCollection(driverUsers);
+      } else {
+        fuse.setCollection(allUsers);
+      }
+      const result = fuse.search(query.target.value);
+      const filteredResults = result.map(user => user.item);
+      setDisplayedUsers(filteredResults);
+    }
+  };
+
   const printUsers = () => {
+    // console.log(displayedUsers);
+    // console.log(driverUsers);
+    // console.log(adminUsers);
     // console.log(displayedUsers);
   };
 
-  const getAdmins = () => {
+  const getAdmins = async () => {
     // const adminData = allUsers.filter(
     //   user => user.role === ADMIN_ROLE || user.role === SUPERADMIN_ROLE,
     // );
-    setCurrFilter('admin');
-    setDisplayedUsers(adminUsers);
+    // setCurrFilter('admin');
+    updateDisplay('admin');
+    // setDisplayedUsers(adminUsers);
   };
 
   const getDrivers = () => {
     // const driverData = allUsers.filter(user => user.role === DRIVER_ROLE);
-    setCurrFilter('driver');
-    setDisplayedUsers(driverUsers);
+    // setCurrFilter('driver');
+    updateDisplay('driver');
+    // setDisplayedUsers(driverUsers);
   };
 
   return (
@@ -149,8 +168,11 @@ const ManageStaff = ({ cookies }) => {
             </Menu>
             <CreateAccount
               isSuperAdmin={isSuperAdmin}
-              users={allUsers}
-              setUsers={setDisplayedUsers}
+              setAllUsers={setAllUsers}
+              setDriverUsers={setDriverUsers}
+              setAdminUsers={setAdminUsers}
+              updateDisplay={updateDisplay}
+              currFilter={currFilter}
             />
           </Flex>
         ) : null}
