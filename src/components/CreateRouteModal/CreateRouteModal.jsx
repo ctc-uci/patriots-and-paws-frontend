@@ -26,7 +26,7 @@ import { calendarConfigs } from '../../utils/utils';
 import { createRoute, getDrivers } from '../../utils/RouteUtils';
 import styles from './CreateRouteModal.module.css';
 
-const CreateRouteModal = ({ routeDate, isOpen, onClose }) => {
+const CreateRouteModal = ({ routeDate, isOpen, onClose, handleCalendarAddEvent }) => {
   const [date, setDate] = useState({});
   const [drivers, setDrivers] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
@@ -69,8 +69,8 @@ const CreateRouteModal = ({ routeDate, isOpen, onClose }) => {
         date: dateString,
       };
 
-      await createRoute(route);
-
+      const res = await createRoute(route);
+      handleCalendarAddEvent(res.id, res.name);
       onClose();
     } catch (err) {
       setErrorMessage(err.message);
@@ -154,6 +154,7 @@ CreateRouteModal.propTypes = {
   routeDate: PropTypes.object,
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
+  handleCalendarAddEvent: PropTypes.func,
 }.isRequired;
 
 export default CreateRouteModal;

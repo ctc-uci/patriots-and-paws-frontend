@@ -5,24 +5,23 @@ const { DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
 const getAllRoutes = async () => {
   const res = await PNPBackend.get(`/routes/`);
-  const routes = res.data;
-  return routes;
+  return res.data;
 };
 
 const getRoute = async routeId => {
   const res = await PNPBackend.get(`/routes/${routeId}`);
-  const routes = res.data[0];
-  return routes;
+  return res.data[0];
 };
 
 const createRoute = async route => {
   const { driverId, name, date } = route;
   try {
-    await PNPBackend.post('/routes/', {
+    const res = await PNPBackend.post('/routes/', {
       driverId,
       name,
       date,
     });
+    return res.data[0];
   } catch (err) {
     throw new Error(err.message);
   }
