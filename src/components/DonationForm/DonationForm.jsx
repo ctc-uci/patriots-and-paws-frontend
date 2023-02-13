@@ -73,19 +73,20 @@ function DonationForm() {
     'Patio Furniture',
   ]);
 
-  const {
-    fields: DonatedFurnitureList,
-    append: appendDonatedFurniture,
-    remove: removeDonatedFurniture,
-  } = useFieldArray({
-    control,
-    name: 'DonatedFurniture',
-  });
+  // const {
+  //   fields: DonatedFurnitureList,
+  //   append: appendDonation,
+  //   // remove: removeFurniture,
+  // } = useFieldArray({
+  //   control,
+  //   name: 'DonatedFurniture',
+  // });
 
   // const {
-  //   fields: imageDetailList,
-  //   append: appendImage,
-  //   remove: removeImage,
+  //   fields: filesIntermediateList,
+  //   replace: replaceFiles,
+  //   append: appendFile,
+  //   remove: removeFile,
   // } = useFieldArray({
   //   control,
   //   name: 'ImageDetail',
@@ -103,35 +104,82 @@ function DonationForm() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [files, setFiles] = useState([]);
   const [filesIntermediate, setFilesIntermediate] = useState([]);
+  const [descriptions, setDescriptions] = useState([]);
+  const [descriptionsIntermediate, setDescriptionsIntermediate] = useState([]);
   // const [images, setImages] = useState([]);
 
+  const removeIntermediateFile = index => {
+    // console.log(index);
+    setFilesIntermediate(
+      filesIntermediate.filter(item => filesIntermediate.indexOf(item) !== index),
+    );
+    // console.log(filesIntermediate);
+  };
+
+  const removeIntermediateDescription = index => {
+    setDescriptionsIntermediate(
+      descriptionsIntermediate.filter(item => descriptionsIntermediate.indexOf(item) !== index),
+    );
+  };
+
+  const updateIntermediateDescription = (index, newDescription) => {
+    // console.log(newDescription);
+    console.log(descriptionsIntermediate.slice(0, index));
+    console.log(descriptionsIntermediate.slice(0, index) + [newDescription]);
+    if (index > descriptionsIntermediate.length) {
+      setDescriptionsIntermediate(descriptionsIntermediate + [newDescription]);
+    }
+    if (descriptionsIntermediate.length === 0 || descriptionsIntermediate.length === 1) {
+      console.log('Empty!');
+      setDescriptionsIntermediate([newDescription]);
+      // descriptionsIntermediate.concat([newDescription]);
+      console.log('Now: ', descriptionsIntermediate);
+    }
+    // if (descriptionsIntermediate.length === 1) {
+    //   descriptionsIntermediate
+    // }
+    if (descriptionsIntermediate.length > 1) {
+      setDescriptionsIntermediate(
+        descriptionsIntermediate.slice(0, index) + [newDescription],
+        +descriptionsIntermediate.slice(index + 1),
+      );
+    }
+    console.log(descriptionsIntermediate);
+  };
+
   const onSubmit = async data => {
-    const urls = await Promise.all(files.map(async file => uploadImage(file)));
+    // const urls = await Promise.all(files.map(async file => uploadImage(file)));
     sendEmail(data.email1, dconfirmemailtemplate);
   };
 
   const onOpenModal = e => {
     setFilesIntermediate(files);
+    setDescriptionsIntermediate(descriptions);
     onOpen(e);
-  }
+  };
 
   const onSave = e => {
     setFiles(filesIntermediate);
+    setDescriptions(descriptionsIntermediate);
+    console.log(descriptions);
     onClose(e);
   };
 
   const onCancel = e => {
     // helper function for closing the model
     setFilesIntermediate(files);
+    setDescriptionsIntermediate(descriptions);
     onClose(e);
   };
 
-  const onSelectFurniture = ev => {
+  const onSelectFurniture = (ev) => {
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
-    document.getElementById('furnitureSelect').value = 'default';
-    DonatedFurnitureList.appendDonatedFurniture({ name: ev.target.value, num: 1 });
-    console.log(DonatedFurnitureList);
-    console.log(furnitureOptions);
+    // document.getElementById('furnitureSelect').value = 'default';
+    appendDonation({ name: ev.target.value, num: 1 });
+    // console.log(DonatedFurnitureList);
+    // console.log(furnitureOptions);
+    // console.log(self);
+    // removeDonation({}); // for eslint error purposes
   };
 
   return (
@@ -240,8 +288,7 @@ function DonationForm() {
         </Box> */}
         <Select
           id="furnitureSelect"
-          placeholder="Select Furniture"
-          defaultValue="Select furniture"
+          defaultValue="Select Furniture"
           onChange={ev => onSelectFurniture(ev)}
         >
           {furnitureOptions.map((furnitureItem, i) => (
@@ -260,7 +307,7 @@ function DonationForm() {
               <ModalHeader>Images</ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <DropZone setFiles={setFiles} />
+                <DropZone setFiles={setFilesIntermediate} />
                 {/* {imageDetailList} */}
                 {filesIntermediate.map(({ name, preview }, index) => {
                   return (
@@ -269,7 +316,10 @@ function DonationForm() {
                       index={index}
                       name={name}
                       preview={preview}
-                      setFilesIntermediate={setFilesIntermediate}
+                      // register={register}
+                      removeImage={removeIntermediateFile}
+                      removeDescription={removeIntermediateDescription}
+                      updateDescription={updateIntermediateDescription}
                     />
                   );
                 })}
