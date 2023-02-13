@@ -28,9 +28,9 @@ const createRoute = async route => {
 };
 
 const updateRoute = async route => {
-  const { routeId, driverId, name, date } = route;
+  const { id, driverId, name, date } = route;
   try {
-    await PNPBackend.put(`/routes/${routeId}`, {
+    await PNPBackend.put(`/routes/${id}`, {
       driverId,
       name,
       date,

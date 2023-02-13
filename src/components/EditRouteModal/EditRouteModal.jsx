@@ -18,17 +18,25 @@ import {
   ModalBody,
   ModalFooter,
   Heading,
+  FormControl,
+  FormLabel,
+  Select,
 } from '@chakra-ui/react';
 import { Reorder } from 'framer-motion';
-import { getDonations, updateDonation } from '../../utils/RouteUtils';
+import { updateDonation, getDrivers, getRoute, updateRoute } from '../../utils/RouteUtils';
 
 const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
+  const [assignedDriverId, setAssignedDriverId] = useState('');
+  const [route, setRoute] = useState({});
   const [donations, setDonations] = useState([]);
+  const [drivers, setDrivers] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
 
   const fetchDonations = async () => {
-    const donationsFromDB = await getDonations(routeId);
-    setDonations(donationsFromDB);
+    const routeFromDB = await getRoute(routeId);
+    setRoute(routeFromDB);
+    setAssignedDriverId(routeFromDB.driverId);
+    setDonations(routeFromDB.donations);
   };
 
   useEffect(() => {
@@ -37,6 +45,14 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
     }
   }, [routeId]);
 
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      const driversFromDB = await getDrivers();
+      setDrivers(driversFromDB);
+    };
+    fetchDrivers();
+  }, []);
+
   // create red circle icon
   const CircleIcon = props => (
     <Icon viewBox="0 0 200 200" {...props}>
@@ -44,31 +60,45 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
     </Icon>
   );
 
+  const convertDate = date => {
+    const formattedDate = new Date(date).toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'UTC',
+    });
+    return formattedDate;
+  };
+
+  const handleDriverChange = e => {
+    setAssignedDriverId(e.target.value);
+  };
+
+  const clearState = () => {
+    setAssignedDriverId('');
+    setDonations([]);
+    setErrorMessage('');
+  };
+
   const handleSave = async () => {
     try {
+      const updatedRoute = Object.assign(route, { driverId: assignedDriverId });
+      await updateRoute(updatedRoute);
+
       const updatedDonations = donations.map((donation, index) =>
         Object.assign(donation, { orderNum: index + 1 }),
       );
       const updateDonationPromises = updatedDonations.map(donation => updateDonation(donation));
       await Promise.all(updateDonationPromises);
+      clearState();
       onClose();
     } catch (err) {
       setErrorMessage(err.message);
     }
   };
 
-  const convertDate = date => {
-    const formattedDate = new Date(date).toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-    });
-    return formattedDate;
-  };
-
   const handleCancel = () => {
-    setDonations([]);
-    setErrorMessage('');
+    clearState();
     onClose();
   };
 
@@ -133,6 +163,16 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
                 </ListItem>
               ))}
             </List>
+            <FormControl isRequired>
+              <FormLabel paddingTop={6}>Assigned Driver</FormLabel>
+              <Select value={assignedDriverId} onChange={handleDriverChange}>
+                {drivers.map(driver => (
+                  <option key={driver.id} value={driver.id}>
+                    {driver.firstName} {driver.lastName}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
           </Stack>
           <Box>{errorMessage}</Box>
         </ModalBody>

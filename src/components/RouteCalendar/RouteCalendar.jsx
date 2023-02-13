@@ -50,6 +50,9 @@ const RouteCalendar = () => {
         start: new Date(route.date).toISOString().replace(/T.*$/, ''),
         allDay: true,
       }));
+      setCurrentEvents(eventsList);
+      // prevents duplication of events on calendar upon hot reloading during dev
+      calendarRef.current.getApi().removeAllEventSources();
       calendarRef.current.getApi().addEventSource(eventsList);
     };
     fetchAllRoutes();
@@ -63,7 +66,7 @@ const RouteCalendar = () => {
   /* eslint no-underscore-dangle: 0 */
   const handleEventClick = e => {
     setSelectedRouteId(e.event._def.publicId);
-    setSelectedEventDate(e.event._instance.range.end);
+    setSelectedEventDate(e.event._instance.range.start);
     editRouteOnOpen();
   };
 
