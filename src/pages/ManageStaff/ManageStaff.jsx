@@ -35,6 +35,23 @@ const ManageStaff = ({ cookies }) => {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [currFilter, setCurrFilter] = useState('all');
 
+  const fuse = new Fuse(allUsers, {
+    keys: ['firstName', 'lastName', 'email'],
+  });
+
+  const updateDisplay = () => {
+    if (currFilter === 'all') {
+      setDisplayedUsers(allUsers);
+      fuse.setCollection(allUsers);
+    } else if (currFilter === 'admin') {
+      setDisplayedUsers(adminUsers);
+      fuse.setCollection(adminUsers);
+    } else {
+      setDisplayedUsers(driverUsers);
+      fuse.setCollection(driverUsers);
+    }
+  };
+
   const refreshData = async () => {
     // const currentUser = await getUserFromDB();
     const userId = getCurrentUserId();
@@ -63,23 +80,6 @@ const ManageStaff = ({ cookies }) => {
     refreshData();
   }, []);
 
-  const fuse = new Fuse(allUsers, {
-    keys: ['firstName', 'lastName', 'email'],
-  });
-
-  const updateDisplay = () => {
-    if (currFilter === 'all') {
-      setDisplayedUsers(allUsers);
-      fuse.setCollection(allUsers);
-    } else if (currFilter === 'admin') {
-      setDisplayedUsers(adminUsers);
-      fuse.setCollection(adminUsers);
-    } else {
-      setDisplayedUsers(driverUsers);
-      fuse.setCollection(driverUsers);
-    }
-  };
-
   const search = async query => {
     if (query.target.value === '') {
       updateDisplay(currFilter);
@@ -104,15 +104,30 @@ const ManageStaff = ({ cookies }) => {
     // console.log(displayedUsers);
   };
 
-  const getAdmins = async () => {
-    await setCurrFilter('admin');
+  useEffect(() => {
     updateDisplay();
-  };
+  });
 
-  const getDrivers = async () => {
-    await setCurrFilter('driver');
-    updateDisplay();
-  };
+  // const getAdmins = async () => {
+  //   // useEffect(() => {
+  //   //   setCurrFilter('admin');
+  //   //   updateDisplay();
+  //   // }, []);
+  //   // useEffect(() => {
+  //   //   setCurrFilter('admin');
+  //   //   return () => {
+  //   //     updateDisplay();
+  //   //   };
+  //   //   // Correct! Runs once after render with empty array
+  //   // }, []);
+  //   // await setCurrFilter('admin');
+  //   // updateDisplay();
+  // };
+
+  // const getDrivers = async () => {
+  //   await setCurrFilter('driver');
+  //   updateDisplay();
+  // };
 
   return (
     <Flex direction="column" m={10}>
@@ -143,11 +158,22 @@ const ManageStaff = ({ cookies }) => {
                   height="80px"
                   bgColor="rgb(246, 246, 246)"
                 >
-                  <MenuItem onClick={getAdmins} fontSize={15} minH={0} height="30px" mt={0}>
+                  <MenuItem
+                    onClick={() => setCurrFilter('admin')}
+                    fontSize={15}
+                    minH={0}
+                    height="30px"
+                    mt={0}
+                  >
                     Admin
                   </MenuItem>
                   <MenuDivider borderColor="gray" mb={1} mt={1} />
-                  <MenuItem onClick={getDrivers} fontSize={15} minH={0} height="30px">
+                  <MenuItem
+                    onClick={() => setCurrFilter('driver')}
+                    fontSize={15}
+                    minH={0}
+                    height="30px"
+                  >
                     Driver
                   </MenuItem>
                 </MenuList>
