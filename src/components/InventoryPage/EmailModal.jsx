@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Box,
@@ -11,48 +11,102 @@ import {
   ModalCloseButton,
   Text,
   Textarea,
+  useDisclosure,
 } from '@chakra-ui/react';
 
-// import { Email, Item, Span, A } from 'react-html-email';
+import { Email, Item, Span } from 'react-html-email';
 
 import { PropTypes } from 'prop-types';
-// import { sendEmail } from '../../utils/utils';
+import { sendEmail } from '../../utils/utils';
 
-function EmailModal({ isOpenEmailModal, onCloseEmailModal, status, updateDonationStatus }) {
-  // const [newEmail, setNewEmail] = useState();
-  // const [emailTemp, setEmailTemp] = useState('');
+function CancelModal({ isOpenCancelModal, onCloseCancelModal, onCloseEmailModal }) {
+  return (
+    <>
+      <Modal isOpen={isOpenCancelModal} onClose={onCloseCancelModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Are you sure you want to cancel?</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Button colorScheme="red" mr={3} onClick={onCloseCancelModal}>
+              Exit
+            </Button>
+            <Button
+              colorScheme="green"
+              mr={3}
+              onClick={() => {
+                onCloseEmailModal();
+                onCloseCancelModal();
+              }}
+            >
+              Send Email
+            </Button>
+          </ModalBody>
 
-  // function updateEmail(event) {
-  //   setNewEmail(event.target.value);
-  // }
+          {/* <ModalFooter>
+            <Button colorScheme='blue' mr={3} onClick={onClose}>
+              Close
+            </Button>
+            <Button variant='ghost'>Secondary Action</Button>
+          </ModalFooter> */}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+}
 
-  // const handleSubmit = event => {
-  //   event.preventDefault();
-  //   sendEmail(newEmail, emailTemplate);
-  // };
+function EmailModal({
+  isOpenEmailModal,
+  onCloseEmailModal,
+  status,
+  updateDonationStatus,
+  email,
+  setCurrentStatus,
+}) {
+  const {
+    isOpen: isOpenCancelModal,
+    onOpen: OnOpenCancelModal,
+    onClose: onCloseCancelModal,
+  } = useDisclosure();
 
-  // const emailTemplate = (
-  //   <Email title={status}>
-  //     <Item align="center">
-  //       <Span fontSize={20}>
-  //         This is an example email made with:
-  //         <A href="https://github.com/chromakode/react-html-email">react-html-email</A>.
-  //       </Span>
-  //     </Item>
-  //   </Email>
-  // );
+  const [newMessage, setNewMessage] = useState();
+  const [emailTemp, setEmailTemp] = useState('');
 
-  // useEffect(() => {
-  //   if (status === 'scheduled') {
-  //     setEmailTemp(
-  //       'Dear Patriots and Paws Donor, We have scheduled your donation pickup for\n February 8th, 2023. Please navigate to the Donation Dashboard using this link in\n order to accept or reschedule your pickup. If you have any questions or\n concerns, email patriotsandpaws@gmail.com.',
-  //     );
-  //   } else if (status === 'request changes') {
-  //     setEmailTemp(
-  //       'Dear Patriots and Paws Donor, We have requested changes to your donation form due to reasons listed before. We have listed the items that we don’t accept below. Please remove these items from your donation form so that we can proceed with the donation pickup. Feel free to email us at patriotsandpaws@gmail.com or call us at [pnp number] for more information or assistance.',
-  //     );
-  //   }
-  // }, []);
+  function updateMessage(event) {
+    setNewMessage(event.target.value);
+  }
+
+  const emailTemplate = (
+    <Email title={status}>
+      <Item align="center">
+        <Span fontSize={15}>
+          <p>{emailTemp}</p>
+          <p>{newMessage}</p>
+        </Span>
+      </Item>
+    </Email>
+  );
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    sendEmail(email, emailTemplate);
+  };
+
+  useEffect(() => {
+    if (status === 'cancel pickup') {
+      setEmailTemp(
+        'Unfortunately, we have CANCELLED your pickup for this day. You can either reschedule your pickup or cancel it altogether. Please provide this information through the Donation Dashboard at this link.',
+      );
+    } else if (status === 'request changes') {
+      setEmailTemp(
+        'Dear Patriots and Paws Donor, We have requested changes to your donation form due to reasons listed before. We have listed the items that we don’t accept below. Please remove these items from your donation form so that we can proceed with the donation pickup. Feel free to email us at patriotsandpaws@gmail.com or call us at [pnp number] for more information or assistance.',
+      );
+    } else if (status === 'approve') {
+      setEmailTemp(
+        'Thank you for filling out the Donation form! We have approved your donation and are working on scheduling a pickup day. Once a pickup day has been picked on our side, you will get an email to approve or reject the scheduled day. Once again, thank you for supporting our veterans!',
+      );
+    }
+  }, [status]);
 
   return (
     <>
@@ -99,7 +153,15 @@ function EmailModal({ isOpenEmailModal, onCloseEmailModal, status, updateDonatio
                   </Text>
                 </Box>
                 <Box mr={20} ml={20} mt={2} mb={20} bg="#EDF1F8">
-                  <Textarea bg="white" size="lg" placeholder="Write message here" />
+                  <Textarea
+                    onChange={e => {
+                      updateMessage(e);
+                    }}
+                    bg="white"
+                    size="lg"
+                    placeholder="Write message here"
+                    on
+                  />
                 </Box>
                 <br />
               </Box>
@@ -124,7 +186,14 @@ function EmailModal({ isOpenEmailModal, onCloseEmailModal, status, updateDonatio
                   </Text>
                 </Box>
                 <Box mr={20} ml={20} mt={2} mb={20} bg="#EDF1F8">
-                  <Textarea bg="white" size="lg" placeholder="Write message here" />
+                  <Textarea
+                    onChange={e => {
+                      updateMessage(e);
+                    }}
+                    bg="white"
+                    size="lg"
+                    placeholder="Write message here"
+                  />
                 </Box>
                 <br />
               </Box>
@@ -146,7 +215,14 @@ function EmailModal({ isOpenEmailModal, onCloseEmailModal, status, updateDonatio
                   </Text>
                 </Box>
                 <Box mr={20} ml={20} mt={2} mb={20} bg="#EDF1F8">
-                  <Textarea bg="white" size="lg" placeholder="Write message here" />
+                  <Textarea
+                    onChange={e => {
+                      updateMessage(e);
+                    }}
+                    bg="white"
+                    size="lg"
+                    placeholder="Write message here"
+                  />
                 </Box>
                 <br />
               </Box>
@@ -167,19 +243,41 @@ function EmailModal({ isOpenEmailModal, onCloseEmailModal, status, updateDonatio
                   </Text>
                 </Box>
                 <Box mr={20} ml={20} mt={2} mb={20} bg="#EDF1F8">
-                  <Textarea bg="white" size="lg" placeholder="Write message here" />
+                  <Textarea
+                    onChange={e => {
+                      updateMessage(e);
+                    }}
+                    bg="white"
+                    size="lg"
+                    placeholder="Write message here"
+                  />
                 </Box>
                 <br />
               </Box>
             </ModalBody>
           )}
           <ModalFooter>
-            <Button variant="ghost">Cancel</Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                OnOpenCancelModal();
+              }}
+            >
+              Cancel
+            </Button>
+            <CancelModal
+              isOpenCancelModal={isOpenCancelModal}
+              onCloseEmailModal={onCloseEmailModal}
+              onCloseCancelModal={onCloseCancelModal}
+            />
             {status === 'cancel pickup' ? (
               <Button
                 colorScheme="red"
-                onClick={() => {
+                onClick={e => {
+                  handleSubmit(e);
                   updateDonationStatus('approved');
+                  setCurrentStatus('approved');
+                  onCloseEmailModal();
                 }}
               >
                 Send Cancellation Email
@@ -190,8 +288,11 @@ function EmailModal({ isOpenEmailModal, onCloseEmailModal, status, updateDonatio
             {(status === 'request changes' || status === 'scheduled') && (
               <Button
                 colorScheme="blue"
-                onClick={() => {
+                onClick={e => {
+                  handleSubmit(e);
                   updateDonationStatus('changes requested');
+                  setCurrentStatus('changes requested');
+                  onCloseEmailModal();
                 }}
               >
                 Send Email
@@ -200,8 +301,11 @@ function EmailModal({ isOpenEmailModal, onCloseEmailModal, status, updateDonatio
             {status === 'approve' && (
               <Button
                 colorScheme="green"
-                onClick={() => {
+                onClick={e => {
+                  handleSubmit(e);
                   updateDonationStatus('approved');
+                  setCurrentStatus('approved');
+                  onCloseEmailModal();
                 }}
               >
                 Send Approval Email
@@ -219,6 +323,14 @@ EmailModal.propTypes = {
   status: PropTypes.string.isRequired,
   onCloseEmailModal: PropTypes.func.isRequired,
   isOpenEmailModal: PropTypes.bool.isRequired,
+  email: PropTypes.string.isRequired,
+  setCurrentStatus: PropTypes.func.isRequired,
+};
+
+CancelModal.propTypes = {
+  isOpenCancelModal: PropTypes.bool.isRequired,
+  onCloseCancelModal: PropTypes.func.isRequired,
+  onCloseEmailModal: PropTypes.func.isRequired,
 };
 
 export default EmailModal;

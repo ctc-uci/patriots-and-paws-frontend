@@ -22,6 +22,7 @@ import {
   FormControl,
   FormErrorMessage,
   useDisclosure,
+  Link,
 } from '@chakra-ui/react';
 
 import { useForm } from 'react-hook-form';
@@ -36,9 +37,11 @@ import EmailModal from './EmailModal';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   // const dataCopy = data;
-  const { id, status, submittedDate } = data;
+  const { id, status, submittedDate, addressStreet, addressUnit, addressCity, addressZip, email } =
+    data;
 
   const [emailStatus, setEmailStatus] = useState('');
+  const [currentStatus, setCurrentStatus] = useState(status);
   const {
     isOpen: isOpenImageModal,
     onOpen: onOpenImageModal,
@@ -76,7 +79,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   const {
     register,
-    handleSubmit,
+    // handleSubmit,
     reset,
     formState: { errors },
   } = useForm({ defaultValues: data, resolver: yupResolver(schema) });
@@ -94,17 +97,19 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     });
   };
 
-  const updateDonation = async e => {
-    setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, ...e } : ele)));
-    // setCanEditInfo(false);
-    onClose();
-    await PNPBackend.put(`/donations/${id}`, e);
-  };
+  // const updateDonation = async e => {
+  //   setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, ...e } : ele)));
+  //   // setCanEditInfo(false);
+  //   onClose();
+  //   await PNPBackend.put(`/donations/${id}`, e);
+  // };
 
   const close = () => {
     // setCanEditInfo(false);
     onClose();
   };
+
+  const googleMap = `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`;
 
   return (
     <Modal isOpen={isOpen} onClose={close} size="full">
@@ -114,34 +119,34 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
           <Flex>
             <Text fontSize={36}>Donation #{id}</Text>
             <Box>
-              {status === 'pending' ? (
+              {currentStatus === 'pending' ? (
                 <Button colorScheme="gray" m={5} ml={15} size="xs">
                   Pending
                 </Button>
               ) : (
                 ''
               )}
-              {status === 'approved' && (
+              {currentStatus === 'approved' && (
                 <Button size="xs" m={5} ml={15} colorScheme="green">
                   Approved
                 </Button>
               )}
-              {status === 'changes requested' && (
+              {currentStatus === 'changes requested' && (
                 <Button size="xs" m={5} ml={15} colorScheme="blue">
                   Changes Requested
                 </Button>
               )}
-              {status === 'picked up' && (
+              {currentStatus === 'picked up' && (
                 <Button size="xs" m={5} ml={15} colorScheme="green">
                   Picked Up
                 </Button>
               )}
-              {status === 'scheduled' && (
+              {currentStatus === 'scheduled' && (
                 <Button size="xs" m={5} ml={15} colorScheme="green">
                   Scheduled
                 </Button>
               )}
-              {status === 'archived' && (
+              {currentStatus === 'archived' && (
                 <Button size="xs" m={5} ml={15} colorScheme="blue">
                   Archived
                 </Button>
@@ -339,8 +344,11 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
             )}
           </Box>
           <Box>
-            <Button ml={3} colorScheme="gray" onClick={handleSubmit(updateDonation)} type="submit">
-              Navigate to Address
+            <Button ml={3} colorScheme="gray" type="submit">
+              <Link href={googleMap} isExternal>
+                Navigate to Address
+              </Link>
+              {/* <a href="https://www.google.com/maps">Navigate to Address</a> */}
             </Button>
           </Box>
         </ModalFooter>
@@ -350,6 +358,8 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
           onCloseEmailModal={onCloseEmailModal}
           status={emailStatus}
           updateDonationStatus={updateDonationStatus}
+          email={email}
+          setCurrentStatus={setCurrentStatus}
         />
       </ModalContent>
     </Modal>
