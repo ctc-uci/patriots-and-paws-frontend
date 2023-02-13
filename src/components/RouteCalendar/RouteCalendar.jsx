@@ -18,13 +18,28 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import CreateRouteModal from '../CreateRouteModal/CreateRouteModal';
 import { getAllRoutes } from '../../utils/RouteUtils';
+import EditRouteModal from '../EditRouteModal/EditRouteModal';
 
 const RouteCalendar = () => {
   const [currentEvents, setCurrentEvents] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
+  const [selectedEventDate, setSelectedEventDate] = useState();
+  const [selectedRouteId, setSelectedRouteId] = useState();
   const calendarRef = useRef(null);
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // for CreateRouteModal
+  const {
+    isOpen: createRouteIsOpen,
+    onOpen: createRouteOnOpen,
+    onClose: createRouteOnClose,
+  } = useDisclosure();
+
+  // for EditRouteModal
+  const {
+    isOpen: editRouteIsOpen,
+    onOpen: editRouteOnOpen,
+    onClose: editRouteOnClose,
+  } = useDisclosure();
 
   useEffect(() => {
     const fetchAllRoutes = async () => {
@@ -35,15 +50,26 @@ const RouteCalendar = () => {
         start: new Date(route.date).toISOString().replace(/T.*$/, ''),
         allDay: true,
       }));
-      setCurrentEvents(eventsList);
       calendarRef.current.getApi().addEventSource(eventsList);
     };
     fetchAllRoutes();
   }, []);
 
   const handleDateSelect = e => {
-    setSelectedDate(e);
-    onOpen();
+    setSelectedCalendarDate(e);
+    createRouteOnOpen();
+  };
+
+  /* eslint no-underscore-dangle: 0 */
+  const handleEventClick = e => {
+    setSelectedRouteId(e.event._def.publicId);
+    setSelectedEventDate(e.event._instance.range.end);
+    editRouteOnOpen();
+  };
+
+  const handleEditRouteOnClose = () => {
+    setSelectedRouteId('');
+    editRouteOnClose();
   };
 
   const handleCalendarAddEvent = (eventId, eventName) => {
@@ -51,7 +77,7 @@ const RouteCalendar = () => {
       view: { calendar },
       startStr,
       allDay,
-    } = selectedDate;
+    } = selectedCalendarDate;
 
     calendar.unselect();
 
@@ -83,10 +109,16 @@ const RouteCalendar = () => {
 
   return (
     <Flex p={5} height="90vh">
+      <EditRouteModal
+        routeId={selectedRouteId}
+        routeDate={selectedEventDate}
+        isOpen={editRouteIsOpen}
+        onClose={handleEditRouteOnClose}
+      />
       <CreateRouteModal
-        routeDate={selectedDate.start}
-        isOpen={isOpen}
-        onClose={onClose}
+        routeDate={selectedCalendarDate.start}
+        isOpen={createRouteIsOpen}
+        onClose={createRouteOnClose}
         handleCalendarAddEvent={handleCalendarAddEvent}
       />
       {renderSidebar}
@@ -96,7 +128,12 @@ const RouteCalendar = () => {
           backgroundColor: 'white',
         }}
       >
-        <Button leftIcon={<AddIcon />} onClick={onOpen} colorScheme="blue">
+        <Button
+          leftIcon={<AddIcon boxSize={3} />}
+          onClick={createRouteOnOpen}
+          colorScheme="blue"
+          marginBottom={1}
+        >
           Create Route
         </Button>
         <FullCalendar
@@ -112,7 +149,7 @@ const RouteCalendar = () => {
           selectable
           dayMaxEvents
           select={handleDateSelect}
-          eventClick={({ event }) => event.remove()}
+          eventClick={handleEventClick}
           eventsSet={events => {
             setCurrentEvents(events);
           }}

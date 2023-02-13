@@ -88,65 +88,63 @@ const CreateRouteModal = ({ routeDate, isOpen, onClose, handleCalendarAddEvent }
   };
 
   return (
-    <>
-      <Modal isOpen={isOpen} onClose={handleCancel}>
-        <ModalOverlay />
-        <ModalContent className={styles['route-modal-container']}>
-          <ModalHeader>
-            <Heading>Create Route</Heading>
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <form>
-              <FormControl isRequired>
-                <FormLabel className={styles['route-modal-form-label']}>Route Name</FormLabel>
-                <Input
-                  id="route-name"
-                  placeholder="Name"
-                  className={styles['route-modal-input']}
-                  {...register('routeName')}
-                  isRequired
-                />
-                <Box className={styles['error-box']}>{errors.routeName?.message}</Box>
-                <FormLabel className={styles['route-modal-form-label']}>Assigned Driver</FormLabel>
-                <Select
-                  placeholder="Select Driver"
-                  {...register('assignedDriver')}
-                  className={styles['route-modal-input']}
-                >
-                  {drivers.map(driver => (
-                    <option key={driver.id} value={driver.id}>
-                      {driver.firstName} {driver.lastName}
-                    </option>
-                  ))}
-                </Select>
-                <Box className={styles['error-box']}>{errors.assignedDriver?.message}</Box>
-                <FormLabel className={styles['route-modal-form-label']}>Date</FormLabel>
-              </FormControl>
-              <SingleDatepicker
-                name="date-input"
-                date={date}
-                onDateChange={setDate}
-                configs={calendarConfigs}
+    <Modal isOpen={isOpen} onClose={handleCancel} scrollBehavior="outside">
+      <ModalOverlay />
+      <ModalContent className={styles['route-modal-container']}>
+        <ModalHeader>
+          <Heading>Create Route</Heading>
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <form>
+            <FormControl isRequired>
+              <FormLabel className={styles['route-modal-form-label']}>Route Name</FormLabel>
+              <Input
+                id="route-name"
+                placeholder="Name"
                 className={styles['route-modal-input']}
+                {...register('routeName')}
+                isRequired
               />
-            </form>
-            <Box className={styles['error-box']}>{errorMessage}</Box>
-          </ModalBody>
+              <Box className={styles['error-box']}>{errors.routeName?.message}</Box>
+              <FormLabel className={styles['route-modal-form-label']}>Assigned Driver</FormLabel>
+              <Select
+                placeholder="Select Driver"
+                {...register('assignedDriver')}
+                className={styles['route-modal-input']}
+              >
+                {drivers.map(driver => (
+                  <option key={driver.id} value={driver.id}>
+                    {driver.firstName} {driver.lastName}
+                  </option>
+                ))}
+              </Select>
+              <Box className={styles['error-box']}>{errors.assignedDriver?.message}</Box>
+              <FormLabel className={styles['route-modal-form-label']}>Date</FormLabel>
+            </FormControl>
+            <SingleDatepicker
+              name="date-input"
+              date={date}
+              onDateChange={setDate}
+              configs={calendarConfigs}
+              className={styles['route-modal-input']}
+            />
+          </form>
+          <Box className={styles['error-box']}>{errorMessage}</Box>
+        </ModalBody>
 
-          <ModalFooter>
-            <HStack justifyContent="center" alignItems="center" width="100%" spacing={5}>
-              <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button colorScheme="blue" type="submit" onClick={handleSubmit(onSubmit)}>
-                Add
-              </Button>
-            </HStack>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
-    </>
+        <ModalFooter>
+          <HStack justifyContent="center" alignItems="center" width="100%" spacing={5}>
+            <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button colorScheme="blue" type="submit" onClick={handleSubmit(onSubmit)}>
+              Add
+            </Button>
+          </HStack>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 
