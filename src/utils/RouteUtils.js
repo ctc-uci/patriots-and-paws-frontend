@@ -46,4 +46,53 @@ const getDrivers = async () => {
   return drivers;
 };
 
-export { getAllRoutes, getRoute, createRoute, updateRoute, getDrivers };
+const getDonations = async routeId => {
+  const res = await getRoute(routeId);
+  return res.donations;
+};
+
+const updateDonation = async donation => {
+  const {
+    id,
+    routeId,
+    orderNum,
+    status,
+    addressStreet,
+    addressUnit,
+    addressCity,
+    addressZip,
+    firstName,
+    lastName,
+    email,
+    phoneNum,
+    notes,
+  } = donation;
+  try {
+    await PNPBackend.put(`/donations/${id}`, {
+      routeId,
+      orderNum,
+      status,
+      addressStreet,
+      addressUnit,
+      addressCity,
+      addressZip,
+      firstName,
+      lastName,
+      email,
+      phoneNum,
+      notes,
+    });
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+export {
+  getAllRoutes,
+  getRoute,
+  createRoute,
+  updateRoute,
+  getDrivers,
+  getDonations,
+  updateDonation,
+};
