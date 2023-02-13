@@ -1,0 +1,23 @@
+.formContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.formContent {
+  width: 30vw;
+}
+
+.info {
+  margin-top: -7px;
+  margin-bottom: 50px;
+}
+
+.link {
+  text-decoration: underline;
+  color: #3182ce;
+}
+
+.formInput {
+  margin-bottom: 40px;
+}
