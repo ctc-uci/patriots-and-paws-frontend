@@ -27,7 +27,7 @@ import { createRoute, getDrivers } from '../../utils/RouteUtils';
 import styles from './CreateRouteModal.module.css';
 
 const CreateRouteModal = ({ routeDate, isOpen, onClose, handleCalendarAddEvent }) => {
-  const [date, setDate] = useState({});
+  const [date, setDate] = useState(new Date());
   const [drivers, setDrivers] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
 
@@ -40,7 +40,9 @@ const CreateRouteModal = ({ routeDate, isOpen, onClose, handleCalendarAddEvent }
   }, []);
 
   useEffect(() => {
-    setDate(routeDate);
+    if (routeDate) {
+      setDate(routeDate);
+    }
   }, [routeDate]);
 
   const formSchema = yup.object({
@@ -58,6 +60,16 @@ const CreateRouteModal = ({ routeDate, isOpen, onClose, handleCalendarAddEvent }
     delayError: 750,
   });
 
+  const clearState = () => {
+    reset({
+      assignedDriver: null,
+      routeName: '',
+    });
+
+    setDate(new Date());
+    setErrorMessage('');
+  };
+
   const onSubmit = async e => {
     try {
       const { assignedDriver, routeName } = e;
@@ -70,7 +82,8 @@ const CreateRouteModal = ({ routeDate, isOpen, onClose, handleCalendarAddEvent }
       };
 
       const res = await createRoute(route);
-      handleCalendarAddEvent(res.id, res.name);
+      handleCalendarAddEvent(res.id, res.name, date);
+      clearState();
       onClose();
     } catch (err) {
       setErrorMessage(err.message);
@@ -78,12 +91,7 @@ const CreateRouteModal = ({ routeDate, isOpen, onClose, handleCalendarAddEvent }
   };
 
   const handleCancel = () => {
-    reset({
-      assignedDriver: null,
-      routeName: '',
-    });
-
-    setDate(new Date());
+    clearState();
     onClose();
   };
 

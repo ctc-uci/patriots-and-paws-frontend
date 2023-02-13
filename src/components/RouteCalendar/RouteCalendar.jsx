@@ -75,20 +75,14 @@ const RouteCalendar = () => {
     editRouteOnClose();
   };
 
-  const handleCalendarAddEvent = (eventId, eventName) => {
-    const {
-      view: { calendar },
-      startStr,
-      allDay,
-    } = selectedCalendarDate;
-
+  const handleCalendarAddEvent = (eventId, eventName, startDate) => {
+    const calendar = calendarRef.current.getApi();
     calendar.unselect();
-
     calendar.addEvent({
       id: eventId,
       title: eventName,
-      start: startStr,
-      allDay,
+      start: startDate, // "2023-02-15"
+      allDay: true,
     });
   };
 
