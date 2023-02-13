@@ -31,20 +31,6 @@ const CreateRouteModal = ({ routeDate, isOpen, onClose, handleCalendarAddEvent }
   const [drivers, setDrivers] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
 
-  useEffect(() => {
-    const fetchDrivers = async () => {
-      const driversFromDB = await getDrivers();
-      setDrivers(driversFromDB);
-    };
-    fetchDrivers();
-  }, []);
-
-  useEffect(() => {
-    if (routeDate) {
-      setDate(routeDate);
-    }
-  }, [routeDate]);
-
   const formSchema = yup.object({
     routeName: yup.string().required('Please enter a name for the route'),
     assignedDriver: yup.string().required('Please select a driver for this route'),
@@ -59,6 +45,20 @@ const CreateRouteModal = ({ routeDate, isOpen, onClose, handleCalendarAddEvent }
     resolver: yupResolver(formSchema),
     delayError: 750,
   });
+
+  useEffect(() => {
+    const fetchDrivers = async () => {
+      const driversFromDB = await getDrivers();
+      setDrivers(driversFromDB);
+    };
+    fetchDrivers();
+  }, []);
+
+  useEffect(() => {
+    if (routeDate) {
+      setDate(routeDate);
+    }
+  }, [routeDate]);
 
   const clearState = () => {
     reset({

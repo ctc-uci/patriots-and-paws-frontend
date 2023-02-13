@@ -60,6 +60,7 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
     </Icon>
   );
 
+  // convert date to 'Weekday, Month Day' format
   const convertDate = date => {
     const formattedDate = new Date(date).toLocaleDateString('en-US', {
       weekday: 'long',
@@ -68,6 +69,23 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
       timeZone: 'UTC',
     });
     return formattedDate;
+  };
+
+  // create address string from address components
+  const formatAddress = ({ addressStreet, addressUnit, addressCity, addressZip }) => {
+    const addressArray = [addressStreet, addressUnit, addressCity, `CA ${addressZip}`].filter(
+      Boolean,
+    );
+    return addressArray.join(', ');
+  };
+
+  // creates Google Maps URL for address and opens it in new window
+  const handleNavigateToAddress = donation => {
+    const address = formatAddress(donation);
+    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      address,
+    )}`;
+    window.open(googleMapsUrl, '_blank');
   };
 
   const handleDriverChange = e => {
@@ -88,8 +106,11 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
       const updatedDonations = donations.map((donation, index) =>
         Object.assign(donation, { orderNum: index + 1 }),
       );
+
+      // update donations in parallel
       const updateDonationPromises = updatedDonations.map(donation => updateDonation(donation));
       await Promise.all(updateDonationPromises);
+
       clearState();
       onClose();
     } catch (err) {
@@ -103,20 +124,21 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleCancel} scrollBehavior="outside">
+    <Modal size="xl" isOpen={isOpen} onClose={handleCancel} scrollBehavior="outside">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <Heading paddingLeft={2} paddingTop={2}>
+          <Heading paddingLeft={5} paddingTop={5}>
             Route #{routeId}
           </Heading>
-          <Text paddingLeft={2} fontSize="md" fontWeight="normal">
+          <Text paddingLeft={5} fontSize="md" fontWeight="normal">
             {convertDate(routeDate)}
           </Text>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Stack p={2}>
+          <Stack p={5}>
+            {donations.length === 0 && <Text fontWeight="bold">No pickups scheduled.</Text>}
             <List
               style={{ borderLeft: '1px solid black' }}
               as={Reorder.Group}
@@ -152,8 +174,11 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
                       fontSize={16}
                       width="500px"
                     >
-                      <Flex justifyContent="space-between">
+                      <Flex justifyContent="space-between" alignItems="center">
                         <Text>Donation #{donation.id}</Text>
+                        <Button onClick={() => handleNavigateToAddress(donation)}>
+                          Navigate to Address
+                        </Button>
                         <Text>
                           {donation.firstName} {donation.lastName}
                         </Text>
@@ -177,7 +202,13 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
           <Box>{errorMessage}</Box>
         </ModalBody>
         <ModalFooter>
-          <HStack justifyContent="center" alignItems="center" width="100%" spacing={5}>
+          <HStack
+            justifyContent="center"
+            alignItems="center"
+            width="100%"
+            spacing={5}
+            paddingBottom={5}
+          >
             <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
