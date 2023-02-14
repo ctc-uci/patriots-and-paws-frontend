@@ -46,6 +46,7 @@ const ManageStaff = ({ cookies }) => {
     } else if (currFilter === 'admin') {
       setDisplayedUsers(adminUsers);
       fuse.setCollection(adminUsers);
+      // console.log(fuse);
     } else {
       setDisplayedUsers(driverUsers);
       fuse.setCollection(driverUsers);
@@ -81,19 +82,22 @@ const ManageStaff = ({ cookies }) => {
   }, []);
 
   const search = async query => {
+    // console.log(query);
     if (query.target.value === '') {
-      updateDisplay(currFilter);
+      updateDisplay();
     } else {
-      if (currFilter === 'admin') {
-        fuse.setCollection(adminUsers);
-      } else if (currFilter === 'driver') {
-        fuse.setCollection(driverUsers);
-      } else {
+      if (currFilter === 'all') {
         fuse.setCollection(allUsers);
+      } else if (currFilter === 'admin') {
+        fuse.setCollection(adminUsers);
+      } else {
+        fuse.setCollection(driverUsers);
       }
       const result = fuse.search(query.target.value);
+      // console.log(result);
       const filteredResults = result.map(user => user.item);
       setDisplayedUsers(filteredResults);
+      // console.log(displayedUsers);
     }
   };
 
@@ -106,7 +110,7 @@ const ManageStaff = ({ cookies }) => {
 
   useEffect(() => {
     updateDisplay();
-  });
+  }, [currFilter]);
 
   // const getAdmins = async () => {
   //   // useEffect(() => {
