@@ -26,7 +26,14 @@ import AUTH_ROLES from '../../utils/AuthConfig';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
-const UserTable = ({ isSuperAdmin, users, setUsers }) => {
+const UserTable = ({
+  isSuperAdmin,
+  users,
+  setAllUsers,
+  setDriverUsers,
+  setAdminUsers,
+  updateDisplay,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: deleteIsOpen, onOpen: deleteOnOpen, onClose: deleteOnClose } = useDisclosure();
   const [editUserData, setEditUserData] = useState([]);
@@ -124,16 +131,19 @@ const UserTable = ({ isSuperAdmin, users, setUsers }) => {
         data={editUserData}
         onClose={onClose}
         isOpen={isOpen}
-        users={users}
-        setUsers={setUsers}
+        setUsers={setAllUsers}
+        setAdminUsers={setAdminUsers}
+        setDriverUsers={setDriverUsers}
+        updateDisplay={updateDisplay}
       />
       {isSuperAdmin ? (
         <DeleteAccountModal
           staffProfile={deleteUserData}
           onClose={deleteOnClose}
           isOpen={deleteIsOpen}
-          users={users}
-          setUsers={setUsers}
+          setAllUsers={setAllUsers}
+          setAdminUsers={setAdminUsers}
+          setDriverUsers={setDriverUsers}
         />
       ) : null}
     </>
@@ -152,7 +162,10 @@ UserTable.propTypes = {
       role: PropTypes.string.isRequired,
     }),
   ).isRequired,
-  setUsers: PropTypes.func.isRequired,
+  setAllUsers: PropTypes.func.isRequired,
+  setDriverUsers: PropTypes.func.isRequired,
+  setAdminUsers: PropTypes.func.isRequired,
+  updateDisplay: PropTypes.func.isRequired,
 };
 
 export default UserTable;

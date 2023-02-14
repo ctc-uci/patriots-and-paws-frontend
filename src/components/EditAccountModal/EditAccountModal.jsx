@@ -27,9 +27,16 @@ import { LockIcon } from '@chakra-ui/icons';
 import { updateUser } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 import styles from './EditAccountModal.module.css';
-// import { PNPBackend } from '../../utils/utils';
 
-const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers }) => {
+const EditAccountModal = ({
+  data,
+  isSuperAdmin,
+  isOpen,
+  onClose,
+  setUsers,
+  setAdminUsers,
+  setDriverUsers,
+}) => {
   let formSchema;
   if (isSuperAdmin) {
     formSchema = yup.object({
@@ -76,7 +83,6 @@ const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers
   const [errorMessage, setErrorMessage] = useState();
   const originalData = { ...data };
 
-  // const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: saveIsOpen, onOpen: saveOnOpen, onClose: saveOnClose } = useDisclosure();
 
   const closeModals = () => {
@@ -91,14 +97,12 @@ const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers
   };
 
   useEffect(() => {
-    // console.log(data);
     reset(data);
   }, [data]);
 
   const onSubmit = async e => {
     try {
       const { firstName, lastName, phoneNumber, newPassword } = e;
-      // console.log(originalData);
       const updatedUser = { firstName, lastName, phoneNumber };
       if (newPassword) {
         updatedUser.newPassword = newPassword;
@@ -109,19 +113,17 @@ const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers
         newPassword: '',
         confirmPassword: '',
       });
-      // PNPBackend.put(`/users/${data.id}`, {
-      //   firstName,
-      //   lastName,
-      //   phoneNumber,
-      // });
       setErrorMessage('User successfully edited');
-      const usersCopy = users;
-      const index = usersCopy.indexOf(usersCopy.find(user => user.id === data.id));
-      usersCopy[index].firstName = firstName;
-      usersCopy[index].lastName = lastName;
-      usersCopy[index].phoneNumber = phoneNumber;
-
-      setUsers(usersCopy);
+      setUsers(prev => prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)));
+      if (data.role === 'admin') {
+        setAdminUsers(prev =>
+          prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
+        );
+      } else {
+        setDriverUsers(prev =>
+          prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
+        );
+      }
       closeModals();
     } catch (err) {
       const firebaseErrorMsg = err.message;
@@ -286,6 +288,16 @@ const EditAccountModal = ({ data, isSuperAdmin, isOpen, onClose, users, setUsers
 };
 
 EditAccountModal.propTypes = {
+  // data: PropTypes.arrayOf(
+  //   PropTypes.shape({
+  //     email: PropTypes.string,
+  //     firstName: PropTypes.string,
+  //     id: PropTypes.string,
+  //     lastName: PropTypes.string,
+  //     phoneNumber: PropTypes.string,
+  //     role: PropTypes.string,
+  //   }),
+  // ).isRequired,
   data: PropTypes.shape({
     email: PropTypes.string,
     firstName: PropTypes.string,
@@ -296,18 +308,10 @@ EditAccountModal.propTypes = {
   }).isRequired,
   isSuperAdmin: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
-  onClose: PropTypes.bool.isRequired,
-  users: PropTypes.arrayOf(
-    PropTypes.shape({
-      email: PropTypes.string.isRequired,
-      firstName: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
-      lastName: PropTypes.string.isRequired,
-      phoneNumber: PropTypes.string.isRequired,
-      role: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
+  onClose: PropTypes.func.isRequired,
   setUsers: PropTypes.func.isRequired,
+  setAdminUsers: PropTypes.func.isRequired,
+  setDriverUsers: PropTypes.func.isRequired,
 };
 
 export default EditAccountModal;

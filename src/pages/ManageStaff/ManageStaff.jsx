@@ -97,7 +97,6 @@ const ManageStaff = ({ cookies }) => {
       // console.log(result);
       const filteredResults = result.map(user => user.item);
       setDisplayedUsers(filteredResults);
-      // console.log(displayedUsers);
     }
   };
 
@@ -110,28 +109,11 @@ const ManageStaff = ({ cookies }) => {
 
   useEffect(() => {
     updateDisplay();
-  }, [currFilter]);
+  }, [currFilter, allUsers, driverUsers, adminUsers]);
 
-  // const getAdmins = async () => {
-  //   // useEffect(() => {
-  //   //   setCurrFilter('admin');
-  //   //   updateDisplay();
-  //   // }, []);
-  //   // useEffect(() => {
-  //   //   setCurrFilter('admin');
-  //   //   return () => {
-  //   //     updateDisplay();
-  //   //   };
-  //   //   // Correct! Runs once after render with empty array
-  //   // }, []);
-  //   // await setCurrFilter('admin');
-  //   // updateDisplay();
-  // };
-
-  // const getDrivers = async () => {
-  //   await setCurrFilter('driver');
+  // useEffect(() => {
   //   updateDisplay();
-  // };
+  // }, [allUsers, driverUsers, adminUsers, displayedUsers]);
 
   return (
     <Flex direction="column" m={10}>
@@ -193,7 +175,14 @@ const ManageStaff = ({ cookies }) => {
           </Flex>
         ) : null}
       </Flex>
-      <UserTable isSuperAdmin={isSuperAdmin} users={displayedUsers} setUsers={setDisplayedUsers} />
+      <UserTable
+        isSuperAdmin={isSuperAdmin}
+        users={displayedUsers}
+        setAllUsers={setAllUsers}
+        setDriverUsers={setDriverUsers}
+        setAdminUsers={setAdminUsers}
+        updateDisplay={updateDisplay}
+      />
     </Flex>
   );
 };

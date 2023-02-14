@@ -12,17 +12,27 @@ import {
 } from '@chakra-ui/react';
 import { PNPBackend } from '../../utils/utils';
 
-const DeleteAccountModal = ({ staffProfile, isOpen, onClose, users, setUsers }) => {
+const DeleteAccountModal = ({
+  staffProfile,
+  isOpen,
+  onClose,
+  setAllUsers,
+  setAdminUsers,
+  setDriverUsers,
+}) => {
   const onSubmit = () => {
     try {
       PNPBackend.delete(`/users/${staffProfile.id}`);
       onClose();
       // setErrorMessage('User successfully edited');
-      const usersCopy = users;
-      const index = usersCopy.indexOf(usersCopy.find(user => user.id === staffProfile.id));
-      delete usersCopy[index];
-      setUsers(usersCopy);
+      // const usersCopy = users;
+      // const index = usersCopy.indexOf(usersCopy.find(user => user.id === staffProfile.id));
+      // delete usersCopy[index];
+      // setUsers(usersCopy);
     } catch (err) {
+      setAllUsers([]);
+      setAdminUsers([]);
+      setDriverUsers([]);
       // const errorCode = err.code;
       // const firebaseErrorMsg = err.message;
       // eslint-disable-next-line no-console
@@ -57,27 +67,21 @@ const DeleteAccountModal = ({ staffProfile, isOpen, onClose, users, setUsers }) 
 };
 
 DeleteAccountModal.propTypes = {
-  staffProfile: PropTypes.shape({
-    email: PropTypes.string,
-    firstName: PropTypes.string,
-    id: PropTypes.string,
-    lastName: PropTypes.string,
-    phoneNumber: PropTypes.string,
-    role: PropTypes.string,
-  }).isRequired,
-  isOpen: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
-  users: PropTypes.arrayOf(
+  staffProfile: PropTypes.arrayOf(
     PropTypes.shape({
-      email: PropTypes.string.isRequired,
-      firstName: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
-      lastName: PropTypes.string.isRequired,
-      phoneNumber: PropTypes.string.isRequired,
-      role: PropTypes.string.isRequired,
+      email: PropTypes.string,
+      firstName: PropTypes.string,
+      id: PropTypes.string,
+      lastName: PropTypes.string,
+      phoneNumber: PropTypes.string,
+      role: PropTypes.string,
     }),
   ).isRequired,
-  setUsers: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  setAllUsers: PropTypes.func.isRequired,
+  setAdminUsers: PropTypes.func.isRequired,
+  setDriverUsers: PropTypes.func.isRequired,
 };
 
 export default DeleteAccountModal;
