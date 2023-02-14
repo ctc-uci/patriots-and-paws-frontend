@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
-import uploadImage from './utils/furnitureUtils';
+import uploadImage from './utils/FurnitureUtils';
 import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
@@ -12,6 +12,7 @@ import Donate from './pages/donation/Donate';
 import DonateStatus from './pages/donation/DonateStatus';
 import UserProfile from './pages/UserProfile/UserProfile';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
+import ManageDonationForm from './pages/ManageDonationForm/ManageDonationForm';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 import EmailAction from './components/EmailAction/EmailAction';
@@ -156,6 +157,17 @@ function App() {
               element={
                 <ProtectedRoute
                   Component={ManageStaff}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+                />
+              }
+            />
+            <Route
+              exact
+              path="/manage-donation-form"
+              element={
+                <ProtectedRoute
+                  Component={ManageDonationForm}
                   redirectPath="/login"
                   roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
                 />
