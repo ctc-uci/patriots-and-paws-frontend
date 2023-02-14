@@ -25,8 +25,8 @@ const getDonationsFromDB = async () => {
   return donations;
 };
 
-const getPictureFromDB = async picturesId => {
-  const res = await PNPBackend.get(`/pictures/${picturesId}`);
+const getPictureFromDB = async donationId => {
+  const res = await PNPBackend.get(`/pictures/donation/${donationId}`);
   const image = res.data;
   return image;
 };

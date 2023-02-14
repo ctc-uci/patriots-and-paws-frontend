@@ -7,11 +7,11 @@ import {
   ModalCloseButton,
   Textarea,
   Modal,
-  Box,
+  Image,
 } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 
-const ImageModal = ({ isOpenImageModal, onCloseImageModal }) => {
+const ImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
   return (
     <>
       <Modal isOpen={isOpenImageModal} onClose={onCloseImageModal} size="full">
@@ -19,7 +19,7 @@ const ImageModal = ({ isOpenImageModal, onCloseImageModal }) => {
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
-            <Box h={500} w="35%" bg="gray" my={50} mx="auto" />
+            <Image h={500} w="35%" my={50} mx="auto" src={image} />
             <Textarea placeholder="Image description" isDisabled />
           </ModalBody>
         </ModalContent>
@@ -31,5 +31,6 @@ const ImageModal = ({ isOpenImageModal, onCloseImageModal }) => {
 ImageModal.propTypes = {
   isOpenImageModal: PropTypes.bool.isRequired,
   onCloseImageModal: PropTypes.func.isRequired,
+  image: PropTypes.string.isRequired,
 };
 export default ImageModal;
