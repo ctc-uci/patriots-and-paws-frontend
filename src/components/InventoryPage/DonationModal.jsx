@@ -79,6 +79,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
       setImages(result);
     }
     getImages();
+    setCurrentStatus(status);
   }, [data]);
 
   const updateDonationStatus = async newstatus => {
@@ -255,11 +256,11 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
         <ModalFooter justifyContent="space-between">
           <Box>
-            {status === 'pending' || status === 'changes requested' ? (
+            {currentStatus === 'pending' || currentStatus === 'changes requested' ? (
               <>
                 <Button
                   colorScheme="red"
-                  isDisabled={status === 'changes requested'}
+                  isDisabled={currentStatus === 'changes requested'}
                   onClick={() => {
                     OnOpenEmailModal();
                     setEmailStatus('request changes');
@@ -281,7 +282,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
             ) : (
               ''
             )}
-            {status === 'scheduled' && (
+            {currentStatus === 'scheduled' && (
               <Button
                 ml={3}
                 colorScheme="red"
