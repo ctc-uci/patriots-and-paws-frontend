@@ -16,9 +16,19 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  // Card,
+  Tag,
+  TagCloseButton,
+  TagLabel,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, useFieldArray } from 'react-hook-form';
+// import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
 // import FurnitureField from '../FurnitureField/FurnitureField';
@@ -56,13 +66,14 @@ function DonationForm() {
   const {
     handleSubmit,
     register,
-    control,
+    // control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
   const [furnitureOptions, setFurnitureOptions] = useState([
+    // 'Select Furniture',
     'Dressers',
     'Clean Housewares',
     'Antiques',
@@ -73,10 +84,14 @@ function DonationForm() {
     'Patio Furniture',
   ]);
 
+  const [DonatedFurnitureList, setDonatedFurniture] = useState([]);
+
+  const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
+
   // const {
   //   fields: DonatedFurnitureList,
   //   append: appendDonation,
-  //   // remove: removeFurniture,
+  //   remove: removeFurniture,
   // } = useFieldArray({
   //   control,
   //   name: 'DonatedFurniture',
@@ -172,14 +187,27 @@ function DonationForm() {
     onClose(e);
   };
 
-  const onSelectFurniture = (ev) => {
+  const addDonation = ev => {
+    // appendDonation({ name: ev.target.value, num: 1 });
+    setDonatedFurniture([...DonatedFurnitureList, { name: ev.target.value, num: 1 }]);
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
-    // document.getElementById('furnitureSelect').value = 'default';
-    appendDonation({ name: ev.target.value, num: 1 });
-    // console.log(DonatedFurnitureList);
-    // console.log(furnitureOptions);
-    // console.log(self);
-    // removeDonation({}); // for eslint error purposes
+  };
+
+  const removeDonation = removedName => {
+    console.log(removedName);
+    setFurnitureOptions([...furnitureOptions, removedName]);
+    setDonatedFurniture(prev => prev.filter(e => e.name !== removedName));
+    // removeFurniture({ name: removedName });
+  };
+
+  const onSelectFurniture = async ev => {
+    await addDonation(ev);
+    setSelectedFurnitureValue('Select Furniture');
+  };
+
+  const changeDonation = (furnitureName, ev) => {
+    const furniture = DonatedFurnitureList.find(e => e.name === furnitureName);
+    furniture.num = +ev;
   };
 
   return (
@@ -287,8 +315,8 @@ function DonationForm() {
           <Button onClick={() => appendItem({})}>Add new furniture field</Button>
         </Box> */}
         <Select
-          id="furnitureSelect"
-          defaultValue="Select Furniture"
+          placeholder="Select Furniture"
+          value={selectedFurnitureValue}
           onChange={ev => onSelectFurniture(ev)}
         >
           {furnitureOptions.map((furnitureItem, i) => (
@@ -296,6 +324,25 @@ function DonationForm() {
             <option key={i}>{furnitureItem}</option>
           ))}
         </Select>
+
+        {DonatedFurnitureList.map((donatedFurniture, i) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <Tag key={i}>
+            <TagLabel>{donatedFurniture.name}</TagLabel>
+            <NumberInput
+              defaultValue={1}
+              onChange={ev => changeDonation(donatedFurniture.name, ev)}
+              min={1}
+            >
+              <NumberInputField />
+              <NumberInputStepper>
+                <NumberIncrementStepper />
+                <NumberDecrementStepper />
+              </NumberInputStepper>
+            </NumberInput>
+            <TagCloseButton onClick={() => removeDonation(donatedFurniture.name)} />
+          </Tag>
+        ))}
 
         <Box className={styles['field-section']}>
           <h1 className={styles.title}>Images</h1>
