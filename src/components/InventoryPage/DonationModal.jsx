@@ -1,4 +1,3 @@
-// import React, { useState, useEffect } from 'react';
 import React, { useState, useEffect } from 'react';
 
 import {
@@ -19,17 +18,12 @@ import {
   InputGroup,
   Textarea,
   Modal,
-  FormControl,
-  FormErrorMessage,
   useDisclosure,
   Link,
   Image,
 } from '@chakra-ui/react';
 
-import { useForm } from 'react-hook-form';
 import { PropTypes } from 'prop-types';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { PNPBackend } from '../../utils/utils';
 import { makeDate, getPictureFromDB } from '../../utils/InventoryUtils';
 import ImageModal from './ImageModal';
@@ -39,8 +33,19 @@ import EmailModal from './EmailModal';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   // const dataCopy = data;
-  const { id, status, submittedDate, addressStreet, addressUnit, addressCity, addressZip, email } =
-    data;
+  const {
+    id,
+    status,
+    firstName,
+    submittedDate,
+    addressStreet,
+    addressUnit,
+    addressCity,
+    addressZip,
+    email,
+    phoneNum,
+    notes,
+  } = data;
 
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
@@ -60,29 +65,6 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   // useEffect(() => {}, []);
 
-  const schema = yup.object({
-    firstName: yup.string().required('Invalid fist name'),
-    lastName: yup.string().required('Invalid last name'),
-    addressZip: yup
-      .string()
-      .length(5, 'Invalid zip code')
-      .matches(/^\d{5}$/)
-      .required('enter a zip'),
-    email: yup.string().email('Invalid email').required('enter your email'),
-    phoneNum: yup.number().typeError('Must be a number').required('Please enter a phone number'),
-    addressStreet: yup.string(),
-    addressUnit: yup.string().required('Must be a number'),
-    addressCity: yup.string().required('Must be a valid city'),
-    notes: yup.string(),
-  });
-
-  const {
-    register,
-    // handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({ defaultValues: data, resolver: yupResolver(schema) });
-
   // const [canEditInfo, setCanEditInfo] = useState(false);
 
   // const getImage = async () => {
@@ -93,7 +75,6 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   useEffect(() => {
     async function getImages() {
-      reset(data);
       const result = await getPictureFromDB(id);
       setImages(result);
     }
@@ -107,21 +88,13 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     });
   };
 
-  // const updateDonation = async e => {
-  //   setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, ...e } : ele)));
-  //   // setCanEditInfo(false);
-  //   onClose();
-  //   await PNPBackend.put(`/donations/${id}`, e);
-  // };
-
-  const close = () => {
-    // setCanEditInfo(false);
-    onClose();
-  };
-  const googleMap = `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`;
+  const googleMap =
+    addressUnit !== ''
+      ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
+      : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
 
   return (
-    <Modal isOpen={isOpen} onClose={close} size="full">
+    <Modal isOpen={isOpen} onClose={onClose} size="full">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader m={3}>
@@ -169,149 +142,115 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <form>
-            <Flex flexDirection="row" m={3}>
-              <Box h={600} w="60%" m={5}>
+          <Flex flexDirection="row" m={3}>
+            <Box h={600} w="60%" m={5}>
+              <Text mb={5} fontSize="20px">
+                Basic Information
+              </Text>
+              <Stack spacing={3}>
+                <InputGroup>
+                  <InputLeftAddon>Name</InputLeftAddon>
+                  <Input placeholder="name" defaultValue={firstName} isRequired isDisabled />
+                </InputGroup>
+              </Stack>
+              <Stack direction="row" my={2}>
+                <InputGroup>
+                  <InputLeftAddon>Email</InputLeftAddon>
+                  <Input placeholder="email" defaultValue={email} isRequired isDisabled />
+                </InputGroup>
+                <InputGroup>
+                  <InputLeftAddon>Phone Number</InputLeftAddon>
+                  <Input
+                    type="tel"
+                    placeholder="phone number"
+                    defaultValue={phoneNum}
+                    isRequired
+                    isDisabled
+                  />
+                </InputGroup>
+              </Stack>
+              <Text mt="60px" mb={5} fontSize="20px">
+                Address
+              </Text>
+              <Stack spacing={3} direction="row">
+                <InputGroup>
+                  <InputLeftAddon>Street Address</InputLeftAddon>
+                  <Input placeholder="street" defaultValue={addressStreet} isRequired isDisabled />
+                </InputGroup>
+                <InputGroup>
+                  <InputLeftAddon>Unit</InputLeftAddon>
+                  <Input placeholder="unit" defaultValue={addressUnit} isRequired isDisabled />
+                </InputGroup>
+              </Stack>
+              <Stack spacing={3} direction="row" my={2}>
+                <InputGroup>
+                  <InputLeftAddon>City</InputLeftAddon>
+                  <Input placeholder="city" defaultValue={addressCity} isRequired isDisabled />
+                </InputGroup>
+                <InputGroup>
+                  <InputLeftAddon>State</InputLeftAddon>
+                  <Input placeholder="CA" isDisabled />
+                </InputGroup>
+                <InputGroup>
+                  <InputLeftAddon>Zip Code</InputLeftAddon>
+                </InputGroup>
+              </Stack>
+              <Text mt="60px" mb={5} fontSize="20px">
+                Additional Comments
+              </Text>
+              <Textarea
+                placeholder="Enter additional comments here"
+                defaultValues={notes}
+                isDisabled
+              />
+            </Box>
+
+            <Box h={600} w="40%" m={5} onClick={onOpenImageModal}>
+              <Box>
                 <Text mb={5} fontSize="20px">
-                  Basic Information
+                  Images
                 </Text>
-                <Stack spacing={3}>
-                  <FormControl isInvalid={errors && errors.firstName} width="47%">
-                    <InputGroup>
-                      <InputLeftAddon>Name</InputLeftAddon>
-                      <Input placeholder="name" {...register('firstName')} isRequired isDisabled />
-                    </InputGroup>
-                    <FormErrorMessage>
-                      {errors.firstName && errors.firstName.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                </Stack>
-                <Stack direction="row" my={2}>
-                  <InputGroup>
-                    <InputLeftAddon>Email</InputLeftAddon>
-                    <Input placeholder="email" {...register('email')} isRequired isDisabled />
-                  </InputGroup>
-                  <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
-                  <InputGroup>
-                    <InputLeftAddon>Phone Number</InputLeftAddon>
-                    <FormControl isInvalid={errors && errors.phoneNum}>
-                      <Input
-                        type="tel"
-                        placeholder="phone number"
-                        {...register('phoneNum')}
-                        isRequired
-                        isDisabled
-                      />
-                      <FormErrorMessage>
-                        {errors.phoneNum && errors.phoneNum.message}
-                      </FormErrorMessage>
-                    </FormControl>
-                  </InputGroup>
-                </Stack>
-                <Text mt="60px" mb={5} fontSize="20px">
-                  Address
-                </Text>
-                <Stack spacing={3} direction="row">
-                  <InputGroup>
-                    <InputLeftAddon>Street Address</InputLeftAddon>
-                    <Input
-                      placeholder="street"
-                      {...register('addressStreet')}
-                      isRequired
-                      isDisabled
-                    />
-                  </InputGroup>
-                  <FormErrorMessage>
-                    {errors.addressStreet && errors.addressStreet.message}
-                  </FormErrorMessage>
-                  <InputGroup>
-                    <InputLeftAddon>Unit</InputLeftAddon>
-                    <Input placeholder="unit" {...register('addressUnit')} isRequired isDisabled />
-                  </InputGroup>
-                  <FormErrorMessage>
-                    {errors.addressUnit && errors.addressUnit.message}
-                  </FormErrorMessage>
-                </Stack>
-                <Stack spacing={3} direction="row" my={2}>
-                  <InputGroup>
-                    <InputLeftAddon>City</InputLeftAddon>
-                    <Input placeholder="city" {...register('addressCity')} isRequired isDisabled />
-                  </InputGroup>
-                  <FormErrorMessage>
-                    {errors.addressCity && errors.addressCity.message}
-                  </FormErrorMessage>
-                  <InputGroup>
-                    <InputLeftAddon>State</InputLeftAddon>
-                    <Input placeholder="CA" isDisabled />
-                  </InputGroup>
-                  <FormErrorMessage>{errors.add && errors.state.message}</FormErrorMessage>
-                  <InputGroup>
-                    <InputLeftAddon>Zip Code</InputLeftAddon>
-                    <FormControl isInvalid={errors && errors.addressZip}>
-                      <Input placeholder="zip" {...register('addressZip')} isRequired isDisabled />
-                      <FormErrorMessage>
-                        {errors.addressZip && errors.addressZip.message}
-                      </FormErrorMessage>
-                    </FormControl>
-                  </InputGroup>
-                </Stack>
-                <Text mt="60px" mb={5} fontSize="20px">
-                  Additional Comments
-                </Text>
-                <Textarea
-                  placeholder="Enter additional comments here"
-                  {...register('notes')}
-                  isDisabled
+                {images.length > 0 && images.length < 4 ? (
+                  <Image h={300} w={395} alt="test" src={images[0].imageUrl} />
+                ) : (
+                  <Box h={300} w={395} bg="gray" />
+                )}
+                <ImageModal
+                  isOpenImageModal={isOpenImageModal}
+                  onOpenImageModal={onOpenImageModal}
+                  onCloseImageModal={onCloseImageModal}
+                  image={images.length > 0 && images.length < 4 && images[0].imageUrl}
                 />
               </Box>
 
-              <Box h={600} w="40%" m={5} onClick={onOpenImageModal}>
-                <Box>
-                  <Text mb={5} fontSize="20px">
-                    Images
-                  </Text>
-                  {images.length > 0 && images.length < 4 ? (
-                    <Image h={300} w={395} alt="test" src={images[0].imageUrl} />
-                  ) : (
-                    <Box h={300} w={395} bg="gray" />
-                  )}
-                  <ImageModal
-                    isOpenImageModal={isOpenImageModal}
-                    onOpenImageModal={onOpenImageModal}
-                    onCloseImageModal={onCloseImageModal}
-                    image={images.length > 0 && images.length < 4 && images[0].imageUrl}
-                  />
-                </Box>
+              <Box h={400} w="70%">
+                <Text mt="45px" mb={5} fontSize="20px">
+                  Furniture Items
+                </Text>
+                <Stack>
+                  <InputGroup>
+                    <Input value="Dining Table" isDisabled />
+                    <InputRightAddon>2</InputRightAddon>
+                  </InputGroup>
 
-                <Box h={400} w="70%">
-                  <Text mt="45px" mb={5} fontSize="20px">
-                    Furniture Items
-                  </Text>
-                  <Stack>
-                    <InputGroup>
-                      <Input value="Dining Table" isDisabled />
-                      <InputRightAddon>2</InputRightAddon>
-                    </InputGroup>
+                  <InputGroup>
+                    <Input value="Dining Table" isDisabled />
+                    <InputRightAddon>2</InputRightAddon>
+                  </InputGroup>
 
-                    <InputGroup>
-                      <Input value="Dining Table" isDisabled />
-                      <InputRightAddon>2</InputRightAddon>
-                    </InputGroup>
+                  <InputGroup>
+                    <Input value="Dining Table" isDisabled />
+                    <InputRightAddon>2</InputRightAddon>
+                  </InputGroup>
 
-                    <InputGroup>
-                      <Input value="Dining Table" isDisabled />
-                      <InputRightAddon>2</InputRightAddon>
-                    </InputGroup>
-
-                    <InputGroup>
-                      <Input value="Dining Table" isDisabled />
-                      <InputRightAddon>2</InputRightAddon>
-                    </InputGroup>
-                  </Stack>
-                </Box>
+                  <InputGroup>
+                    <Input value="Dining Table" isDisabled />
+                    <InputRightAddon>2</InputRightAddon>
+                  </InputGroup>
+                </Stack>
               </Box>
-            </Flex>
-          </form>
+            </Box>
+          </Flex>
         </ModalBody>
 
         <ModalFooter justifyContent="space-between">
@@ -360,7 +299,6 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               <Link href={googleMap} isExternal>
                 Navigate to Address
               </Link>
-              {/* <a href="https://www.google.com/maps">Navigate to Address</a> */}
             </Button>
           </Box>
         </ModalFooter>

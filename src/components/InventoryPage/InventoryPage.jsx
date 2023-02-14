@@ -3,13 +3,13 @@ import {
   Table,
   Thead,
   Tbody,
-  Button,
   Tr,
   Td,
   Th,
   TableContainer,
   useDisclosure,
   Text,
+  Tag,
 } from '@chakra-ui/react';
 import './InventoryPage.module.css';
 
@@ -27,59 +27,21 @@ const InventoryPage = () => {
   };
 
   function makeStatus(newStatus) {
-    if (newStatus === 'denied') {
-      return (
-        <Button size="xs" colorScheme="red">
-          Rejected
-        </Button>
-      );
-    }
-    if (newStatus === 'approved') {
-      return (
-        <Button size="xs" colorScheme="green">
-          Approved
-        </Button>
-      );
-    }
-    if (newStatus === 'flagged') {
-      return (
-        <Button size="xs" colorScheme="gray">
-          Flagged
-        </Button>
-      );
-    }
-    if (newStatus === 'pending') {
-      return (
-        <Button size="xs" colorScheme="gray">
-          Pending
-        </Button>
-      );
-    }
-    if (newStatus === 'scheduled') {
-      return (
-        <Button size="xs" colorScheme="green">
-          Scheduled
-        </Button>
-      );
-    }
-    if (newStatus === 'changes requested') {
-      return (
-        <Button size="xs" colorScheme="blue">
-          Changes Requested
-        </Button>
-      );
-    }
-    if (newStatus === 'archived') {
-      return (
-        <Button size="xs" colorScheme="blue">
-          Archived
-        </Button>
-      );
+    let color = 'gray';
+
+    if (newStatus === 'rejected') {
+      color = 'red';
+    } else if (newStatus === 'approved' || newStatus === 'scheduled') {
+      color = 'green';
+    } else if (newStatus === 'flagged' || newStatus === 'pending') {
+      color = 'gray';
+    } else if (newStatus === 'changes requested' || newStatus === 'archived') {
+      color = 'blue';
     }
     return (
-      <Button size="xs" colorScheme="gray">
-        {newStatus}
-      </Button>
+      <Tag size="lg" colorScheme={color}>
+        {newStatus[0].toUpperCase() + newStatus.slice(1)}
+      </Tag>
     );
   }
 
