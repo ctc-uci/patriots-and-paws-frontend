@@ -27,8 +27,8 @@ import {
   NumberDecrementStepper,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-// import { useForm, useFieldArray } from 'react-hook-form';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
+// import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
 // import FurnitureField from '../FurnitureField/FurnitureField';
@@ -66,7 +66,7 @@ function DonationForm() {
   const {
     handleSubmit,
     register,
-    // control,
+    control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -121,22 +121,15 @@ function DonationForm() {
   const [files, setFiles] = useState([]);
   const [filesIntermediate, setFilesIntermediate] = useState([]);
   const [descriptions, setDescriptions] = useState([]);
-  // const [descriptionsIntermediate, setDescriptionsIntermediate] = useState([]);
-  // const [images, setImages] = useState([]);
 
   const removeIntermediateFile = index => {
-    // console.log(index);
     setFilesIntermediate(
       filesIntermediate.filter(item => filesIntermediate.indexOf(item) !== index),
     );
-    // console.log(filesIntermediate);
   };
 
   const removeIntermediateDescription = index => {
     removeDescription(index);
-    // setDescriptionsIntermediate(
-    //   descriptionsIntermediate.filter(item => descriptionsIntermediate.indexOf(item) !== index),
-    // );
   };
 
   const getDescription = index => {
@@ -144,12 +137,6 @@ function DonationForm() {
     if (descObj) {
       return Object.values(descObj).slice(0, -1).join('');
     }
-    // console.log(Object.values(descObj));
-    // let desc;
-    // function concatToDesc(item) {
-    //   desc += item;
-    // }
-    // descObj.forEach(concatToDesc);
     return '';
   };
 
@@ -158,7 +145,6 @@ function DonationForm() {
       appendDescription('');
     }
     updateDescription(index, newDescription);
-    // console.log(descriptionsIntermediateList);
   };
 
   const onSubmit = async data => {
