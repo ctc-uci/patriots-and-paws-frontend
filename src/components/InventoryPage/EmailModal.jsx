@@ -85,7 +85,7 @@ function EmailModal({
 
   const handleSubmit = event => {
     event.preventDefault();
-    sendEmail(email, emailTemplate);
+    sendEmail(makeModalContent.makeModalHeader, email, emailTemplate);
   };
 
   useEffect(() => {
