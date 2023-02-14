@@ -23,6 +23,7 @@ import {
   FormErrorMessage,
   useDisclosure,
   Link,
+  Image,
 } from '@chakra-ui/react';
 
 import { useForm } from 'react-hook-form';
@@ -30,10 +31,11 @@ import { PropTypes } from 'prop-types';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { PNPBackend } from '../../utils/utils';
-import { makeDate } from '../../utils/InventoryUtils';
+import { makeDate, getPictureFromDB } from '../../utils/InventoryUtils';
 import ImageModal from './ImageModal';
 import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
+// import { getPictureFromDB } from '../../utils/InventoryUtils';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   // const dataCopy = data;
@@ -54,12 +56,9 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     onClose: onCloseEmailModal,
   } = useDisclosure();
 
-  // const [image, setImage] = useState([]);
+  const [images, setImages] = useState([]);
 
-  // useEffect(async () => {
-  // const result = await getPictureFromDB(id);
-  // setImage(result[0]);
-  // }, []);
+  // useEffect(() => {}, []);
 
   const schema = yup.object({
     firstName: yup.string().required('Invalid fist name'),
@@ -86,8 +85,19 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   // const [canEditInfo, setCanEditInfo] = useState(false);
 
+  // const getImage = async () => {
+  //   const result = await getPictureFromDB(id);
+  //   setImage(result[0]);
+  //   console.log(image);
+  // };
+
   useEffect(() => {
-    reset(data);
+    async function getImages() {
+      reset(data);
+      const result = await getPictureFromDB(id);
+      setImages(result);
+    }
+    getImages();
   }, [data]);
 
   const updateDonationStatus = async newstatus => {
@@ -108,7 +118,6 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     // setCanEditInfo(false);
     onClose();
   };
-
   const googleMap = `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`;
 
   return (
@@ -261,14 +270,17 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   <Text mb={5} fontSize="20px">
                     Images
                   </Text>
-                  <Box h={300} w={395} bg="gray">
-                    {/* {image ? image.imageUrl : 'no image provided'} */}
-                    <ImageModal
-                      isOpenImageModal={isOpenImageModal}
-                      onOpenImageModal={onOpenImageModal}
-                      onCloseImageModal={onCloseImageModal}
-                    />
-                  </Box>
+                  {images.length > 0 && images.length < 4 ? (
+                    <Image h={300} w={395} alt="test" src={images[0].imageUrl} />
+                  ) : (
+                    <Box h={300} w={395} bg="gray" />
+                  )}
+                  <ImageModal
+                    isOpenImageModal={isOpenImageModal}
+                    onOpenImageModal={onOpenImageModal}
+                    onCloseImageModal={onCloseImageModal}
+                    image={images.length > 0 && images.length < 4 && images[0].imageUrl}
+                  />
                 </Box>
 
                 <Box h={400} w="70%">
@@ -372,7 +384,7 @@ DonationModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   data: PropTypes.shape({
     status: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
     addressStreet: PropTypes.string.isRequired,
     addressUnit: PropTypes.string.isRequired,
     addressCity: PropTypes.string.isRequired,
