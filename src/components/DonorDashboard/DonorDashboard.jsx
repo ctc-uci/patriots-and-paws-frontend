@@ -1,42 +1,73 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, GridItem, Box } from '@chakra-ui/react';
+import { Grid, GridItem, Box, Text, Link } from '@chakra-ui/react';
+import { getDonationStatus } from '../../utils/donorUtils';
 import TrackDonationCard from './TrackDonationCard';
-import styles from './DonorDashboard.module.css';
 
 const DonorDashboard = ({ donationId }) => {
+  const [stage, setStage] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const donationStatus = await getDonationStatus(donationId);
+      const donationStage = {
+        archieved: 4,
+        scheduled: 3,
+        approved: 2,
+        scheduling: 2,
+        pending: 1,
+        'changes requested': 1,
+      };
+      setStage(donationStage[donationStatus]);
+    };
+    fetchData();
+  }, [donationId]);
+
   return (
-    <div className={styles.background}>
-      <Grid templateColumns="repeat(3, 1fr)" gap={10} className={styles.content}>
+    <Box bg="#edf1f9">
+      <Grid templateColumns="repeat(3, 1fr)" gap={10} p="20px 40px 40px 40px">
         <GridItem colSpan={2}>
-          <h1 className={styles.title}>My Forms</h1>
+          <Text fontSize="30px" fontWeight="700" mb="20px">
+            My Forms
+          </Text>
           <Box bg="white" w="100%" h="500" p={4} />
         </GridItem>
         <GridItem colSpan={1}>
-          <h1 className={styles.title}>Pick Up</h1>
+          <Text fontSize="30px" fontWeight="700" mb="20px">
+            Pick Up
+          </Text>
           <Box bg="white" w="100%" h="500" p={4} />
         </GridItem>
         <GridItem colSpan={3}>
-          <h1 className={styles.title}>Track your donation</h1>
-          <TrackDonationCard donationId={donationId} />
+          <Text fontSize="30px" fontWeight="700" mb="20px">
+            Track your donation
+          </Text>
+          <TrackDonationCard stage={stage} />
         </GridItem>
       </Grid>
+
       <footer>
-        <Grid templateColumns="repeat(9, 1fr)" className={styles.footerContent}>
-          <GridItem colSpan={4} className={styles.links}>
-            <a href="https://www.patriotsandpaws.org/our-story/">About Us</a>
-            <a href="https://www.patriotsandpaws.org/wanted/">Volunteer</a>
-            <a href="https://www.patriotsandpaws.org/asked-questions/">FAQ</a>
-            <a href="https://www.patriotsandpaws.org/donors">Donors & Supporters</a>
+        <Grid templateColumns="repeat(12, 1fr)" p="20px" fontSize="15px" fontWeight="500">
+          <GridItem colSpan={1}>
+            <Link href="https://www.patriotsandpaws.org/our-story/">About Us</Link>
           </GridItem>
           <GridItem colSpan={1}>
-            <a href="https://www.patriotsandpaws.org/" className={styles.pnp}>
+            <Link href="https://www.patriotsandpaws.org/wanted/">Volunteer</Link>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <Link href="https://www.patriotsandpaws.org/asked-questions/">FAQ</Link>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <Link href="https://www.patriotsandpaws.org/donors">Donors & Supporters</Link>
+          </GridItem>
+          <GridItem colSpan={2} textAlign="center">
+            <Link href="https://www.patriotsandpaws.org/" color="red.500" fontSize="20px">
               Patriots & Paws
-            </a>
+            </Link>
           </GridItem>
         </Grid>
       </footer>
-    </div>
+    </Box>
   );
 };
 

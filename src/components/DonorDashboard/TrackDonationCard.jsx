@@ -1,32 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid, GridItem } from '@chakra-ui/react';
-import { getDonationStatus } from '../../utils/donorUtils';
 import styles from './TrackDonationCard.module.css';
 import checkMark from './checkMark.png';
 import circle from './circle.png';
 
-const TrackDonationCard = ({ donationId }) => {
-  // const [status, setStatus] = useState('');
-  const [stage, setStage] = useState(0);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const donationStatus = await getDonationStatus(donationId);
-      // setStatus(donationStatus);
-
-      if (donationStatus === 'archieved') {
-        setStage(4);
-      } else if (donationStatus === 'scheduled') {
-        setStage(3);
-      } else if (donationStatus === 'approved' || donationStatus === 'scheduling') {
-        setStage(2);
-      } else {
-        setStage(1);
-      }
-    };
-    fetchData();
-  }, [donationId]);
+const TrackDonationCard = ({ stage }) => {
   return (
     <>
       <Grid templateColumns="repeat(4, 1fr)" gap={0}>
@@ -99,7 +78,7 @@ const TrackDonationCard = ({ donationId }) => {
 };
 
 TrackDonationCard.propTypes = {
-  donationId: PropTypes.string.isRequired,
+  stage: PropTypes.number.isRequired,
 };
 
 export default TrackDonationCard;
