@@ -88,15 +88,6 @@ function DonationForm() {
 
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
-  // const {
-  //   fields: DonatedFurnitureList,
-  //   append: appendDonation,
-  //   remove: removeFurniture,
-  // } = useFieldArray({
-  //   control,
-  //   name: 'DonatedFurniture',
-  // });
-
   const {
     fields: descriptionsIntermediateList,
     update: updateDescription,
@@ -107,15 +98,6 @@ function DonationForm() {
     control,
     name: 'ImageDetail',
   });
-
-  // const {
-  //   fields: itemsList,
-  //   append: appendItem,
-  //   remove: removeItem,
-  // } = useFieldArray({
-  //   control,
-  //   name: 'Items',
-  // });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [files, setFiles] = useState([]);

@@ -6,22 +6,13 @@ function ImageDetails({
   index,
   name,
   preview,
-  // register,
   defaultDescription,
   removeImage,
   removeDescription,
   updateDescription,
 }) {
-  // let currentDescription;
-  // const changeDescription = e => {
-  //   updateDescription(index, e.target.value);
-  //   // updateDescription(index, e.target.value);
-  // };
-  const [currentDescription, setCurrentDescription] = useState();
-  // setFilesIntermediate(prev => {
-  //     prev[i].description = '';
-  //     return prev;
-  // })
+  const [currentDescription, setCurrentDescription] = useState(defaultDescription);
+
   return (
     <Box>
       <p>{name}</p>
@@ -41,11 +32,9 @@ function ImageDetails({
       />
       <Input
         placeholder="Add description"
-        // {...register(`descriptionsIntermediateList.${index}.description`)}
-        defaultValue={defaultDescription}
         onChange={ev => {
           setCurrentDescription(ev.target.value);
-          updateDescription(index, currentDescription);
+          updateDescription(index, ev.target.value);
         }}
         value={currentDescription}
       />
@@ -58,16 +47,9 @@ ImageDetails.propTypes = {
   name: PropTypes.isRequired,
   preview: PropTypes.isRequired,
   defaultDescription: PropTypes.isRequired,
-  // register: PropTypes.isRequired,
-  removeImage: PropTypes.func,
-  removeDescription: PropTypes.func,
-  updateDescription: PropTypes.func,
-};
-
-ImageDetails.defaultProps = {
-  removeImage: null,
-  removeDescription: null,
-  updateDescription: null,
+  removeImage: PropTypes.func.isRequired,
+  removeDescription: PropTypes.func.isRequired,
+  updateDescription: PropTypes.func.isRequired,
 };
 
 export default ImageDetails;
