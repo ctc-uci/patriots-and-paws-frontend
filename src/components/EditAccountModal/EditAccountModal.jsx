@@ -152,7 +152,6 @@ const EditAccountModal = ({
                       <Input
                         id="first-name"
                         style={{ width: '240px' }}
-                        // defaultValue={staffProfile.firstName}
                         {...register('firstName')}
                         isRequired
                       />
@@ -165,7 +164,6 @@ const EditAccountModal = ({
                       <Input
                         id="last-name"
                         style={{ width: '240px' }}
-                        // defaultValue={staffProfile.lastName}
                         {...register('lastName')}
                         isRequired
                       />
@@ -199,7 +197,6 @@ const EditAccountModal = ({
                         type="tel"
                         id="phone-number"
                         style={{ width: '240px' }}
-                        // defaultValue={staffProfile.phoneNumber}
                         {...register('phoneNumber')}
                         isRequired
                       />

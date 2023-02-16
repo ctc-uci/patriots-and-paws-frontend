@@ -12,7 +12,9 @@ import {
   MenuItem,
   IconButton,
   MenuDivider,
-  Button,
+  Tag,
+  TagCloseButton,
+  TagLabel,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import Fuse from 'fuse.js';
@@ -46,7 +48,6 @@ const ManageStaff = ({ cookies }) => {
     } else if (currFilter === 'admin') {
       setDisplayedUsers(adminUsers);
       fuse.setCollection(adminUsers);
-      // console.log(fuse);
     } else {
       setDisplayedUsers(driverUsers);
       fuse.setCollection(driverUsers);
@@ -54,11 +55,9 @@ const ManageStaff = ({ cookies }) => {
   };
 
   const refreshData = async () => {
-    // const currentUser = await getUserFromDB();
     const userId = getCurrentUserId();
     const currentUserRole = await cookies.get(cookieKeys.ROLE);
     const { data } = await PNPBackend.get('/users');
-    // console.log(data);
 
     if (currentUserRole === SUPERADMIN_ROLE) {
       setIsSuperAdmin(true);
@@ -82,7 +81,6 @@ const ManageStaff = ({ cookies }) => {
   }, []);
 
   const search = async query => {
-    // console.log(query);
     if (query.target.value === '') {
       updateDisplay();
     } else {
@@ -94,26 +92,14 @@ const ManageStaff = ({ cookies }) => {
         fuse.setCollection(driverUsers);
       }
       const result = fuse.search(query.target.value);
-      // console.log(result);
       const filteredResults = result.map(user => user.item);
       setDisplayedUsers(filteredResults);
     }
   };
 
-  const printUsers = () => {
-    // console.log(displayedUsers);
-    // console.log(driverUsers);
-    // console.log(adminUsers);
-    // console.log(displayedUsers);
-  };
-
   useEffect(() => {
     updateDisplay();
   }, [currFilter, allUsers, driverUsers, adminUsers]);
-
-  // useEffect(() => {
-  //   updateDisplay();
-  // }, [allUsers, driverUsers, adminUsers, displayedUsers]);
 
   return (
     <Flex direction="column" m={10}>
@@ -125,7 +111,22 @@ const ManageStaff = ({ cookies }) => {
             </InputLeftElement>
             <Input placeholder="Search Staff" className={styles['search-bar']} onChange={search} />
           </InputGroup>
-          <Button onClick={printUsers}>Get users</Button>
+          {isSuperAdmin && currFilter === 'admin' ? (
+            <Tag colorScheme="blue">
+              <TagLabel fontSize={18} fontWeight={600} color="black">
+                Admin
+              </TagLabel>
+              <TagCloseButton onClick={() => setCurrFilter('all')} />
+            </Tag>
+          ) : null}
+          {isSuperAdmin && currFilter === 'driver' ? (
+            <Tag colorScheme="blue">
+              <TagLabel fontSize={18} fontWeight={600} color="black">
+                Driver
+              </TagLabel>
+              <TagCloseButton onClick={() => setCurrFilter('all')} />
+            </Tag>
+          ) : null}
         </Flex>
         {isSuperAdmin ? (
           <Flex vertical-align="center">

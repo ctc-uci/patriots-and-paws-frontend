@@ -32,13 +32,7 @@ import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './CreateAccount.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
-const CreateAccount = ({
-  isSuperAdmin,
-  setAllUsers,
-  setDriverUsers,
-  setAdminUsers,
-  updateDisplay,
-}) => {
+const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUsers }) => {
   const formSchema = yup.object({
     firstName: yup.string().required("Please enter the staff member's first name"),
     lastName: yup.string().required("Please enter the staff member's last name"),
@@ -72,8 +66,6 @@ const CreateAccount = ({
   });
 
   const [errorMessage, setErrorMessage] = useState();
-  // const [users, setUsers] = useState(users, setUsers);
-
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onSubmit = async e => {
@@ -87,44 +79,27 @@ const CreateAccount = ({
       password,
       role,
     };
-    await registerWithEmailAndPassword(user);
-    setErrorMessage('User successfully created');
-    // users.push(user);
-    await setAllUsers(u => u.concat(user));
-    if (role === 'admin') {
-      await setAdminUsers(u => u.concat(user));
-    } else {
-      await setDriverUsers(u => u.concat(user));
+    try {
+      await registerWithEmailAndPassword(user);
+      setErrorMessage('User successfully created');
+      setAllUsers(prev => prev.concat(user));
+      if (role === 'admin') {
+        setAdminUsers(prev => prev.concat(user));
+      } else {
+        setDriverUsers(prev => prev.concat(user));
+      }
+      onClose();
+      reset();
+    } catch (err) {
+      const errorCode = err.code;
+      const firebaseErrorMsg = err.message;
+
+      if (errorCode === 'auth/email-already-in-use') {
+        setErrorMessage('This email address is already associated with another account');
+      } else {
+        setErrorMessage(firebaseErrorMsg);
+      }
     }
-    onClose();
-    reset();
-    updateDisplay();
-    // try {
-    //   const { firstName, lastName, email, phoneNumber, password, role } = e;
-
-    //   const user = {
-    //     firstName,
-    //     lastName,
-    //     email,
-    //     phoneNumber,
-    //     password,
-    //     role,
-    //   };
-    //   await registerWithEmailAndPassword(user);
-    //   setErrorMessage('User successfully created');
-    //   await refreshData();
-    //   onClose();
-    //   reset();
-    // } catch (err) {
-    //   const errorCode = err.code;
-    //   const firebaseErrorMsg = err.message;
-
-    //   if (errorCode === 'auth/email-already-in-use') {
-    //     setErrorMessage('This email address is already associated with another account');
-    //   } else {
-    //     setErrorMessage(firebaseErrorMsg);
-    //   }
-    // }
   };
 
   const resetFields = () => {
@@ -339,7 +314,6 @@ CreateAccount.propTypes = {
   setAllUsers: PropTypes.func.isRequired,
   setDriverUsers: PropTypes.func.isRequired,
   setAdminUsers: PropTypes.func.isRequired,
-  updateDisplay: PropTypes.func.isRequired,
 };
 
 export default CreateAccount;

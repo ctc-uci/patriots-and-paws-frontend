@@ -24,15 +24,13 @@ const DeleteAccountModal = ({
     try {
       PNPBackend.delete(`/users/${staffProfile.id}`);
       onClose();
-      // setErrorMessage('User successfully edited');
-      // const usersCopy = users;
-      // const index = usersCopy.indexOf(usersCopy.find(user => user.id === staffProfile.id));
-      // delete usersCopy[index];
-      // setUsers(usersCopy);
+      setAllUsers(prev => prev.filter(user => user.id !== staffProfile.id));
+      if (staffProfile.role === 'admin') {
+        setAdminUsers(prev => prev.filter(user => user.id !== staffProfile.id));
+      } else {
+        setDriverUsers(prev => prev.filter(user => user.id !== staffProfile.id));
+      }
     } catch (err) {
-      setAllUsers([]);
-      setAdminUsers([]);
-      setDriverUsers([]);
       // const errorCode = err.code;
       // const firebaseErrorMsg = err.message;
       // eslint-disable-next-line no-console
