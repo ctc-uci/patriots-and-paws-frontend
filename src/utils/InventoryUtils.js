@@ -25,10 +25,26 @@ const getDonationsFromDB = async () => {
   return donations;
 };
 
-const getPictureFromDB = async donationId => {
-  const res = await PNPBackend.get(`/pictures/donation/${donationId}`);
-  const image = res.data;
-  return image;
+const formatData = data => {
+  if (data.length < 4) {
+    return data.reduce((acc, curr) => {
+      acc.push([curr]);
+      return acc;
+    }, []);
+  }
+
+  return data.reduce(
+    (acc, curr) => {
+      const lastGroup = acc[acc.length - 1];
+      if (lastGroup.length < 4) {
+        lastGroup.push(curr);
+      } else {
+        acc.push([curr]);
+      }
+      return acc;
+    },
+    [[]],
+  );
 };
 
-export { getDonationsFromDB, getPictureFromDB, makeDate };
+export { getDonationsFromDB, makeDate, formatData };

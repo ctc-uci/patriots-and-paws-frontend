@@ -27,7 +27,7 @@ import {
 import { EditIcon, LockIcon } from '@chakra-ui/icons';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
 import styles from './EditAccountModal.module.css';
-import AUTH_ROLES from '../../utils/AuthConfig';
+import AUTH_ROLES from '../../utils/config';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
 const { ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;

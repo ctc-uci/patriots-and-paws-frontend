@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import {
   ModalOverlay,
@@ -20,19 +20,24 @@ import {
   Modal,
   useDisclosure,
   Link,
-  Image,
+  // Image,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
 import { PNPBackend } from '../../utils/utils';
-import { makeDate, getPictureFromDB } from '../../utils/InventoryUtils';
-import ImageModal from './ImageModal';
+import { makeDate } from '../../utils/InventoryUtils';
+import DonationImagesContainer from './DonationImagesContainer';
+// import ImageModal from './ImageModal';
 import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
+import STATUSES from '../../utils/config';
 // import { getPictureFromDB } from '../../utils/InventoryUtils';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   // const dataCopy = data;
+
+  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES.STATUSES;
+
   const {
     id,
     status,
@@ -45,15 +50,11 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     email,
     phoneNum,
     notes,
+    pictures,
   } = data;
 
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
-  const {
-    isOpen: isOpenImageModal,
-    onOpen: onOpenImageModal,
-    onClose: onCloseImageModal,
-  } = useDisclosure();
 
   const {
     isOpen: isOpenEmailModal,
@@ -61,7 +62,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     onClose: onCloseEmailModal,
   } = useDisclosure();
 
-  const [images, setImages] = useState([]);
+  // const [images, setImages] = useState([]);
 
   // useEffect(() => {}, []);
 
@@ -73,14 +74,14 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   //   console.log(image);
   // };
 
-  useEffect(() => {
-    async function getImages() {
-      const result = await getPictureFromDB(id);
-      setImages(result);
-    }
-    getImages();
-    setCurrentStatus(status);
-  }, [data]);
+  // useEffect(() => {
+  //   async function getImages() {
+  //     const result = await getPictureFromDB(id);
+  //     setImages(result);
+  //   }
+  //   getImages();
+  //   setCurrentStatus(status);
+  // }, [data]);
 
   const updateDonationStatus = async newstatus => {
     setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, status: newstatus } : ele)));
@@ -102,19 +103,19 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
           <Flex>
             <Text fontSize={36}>Donation #{id}</Text>
             <Box>
-              {currentStatus === 'pending' ? (
+              {currentStatus === PENDING ? (
                 <Button colorScheme="gray" m={5} ml={15} size="xs">
                   Pending
                 </Button>
               ) : (
                 ''
               )}
-              {currentStatus === 'approved' && (
+              {currentStatus === APPROVED && (
                 <Button size="xs" m={5} ml={15} colorScheme="green">
                   Approved
                 </Button>
               )}
-              {currentStatus === 'changes requested' && (
+              {currentStatus === CHANGES_REQUESTED && (
                 <Button size="xs" m={5} ml={15} colorScheme="blue">
                   Changes Requested
                 </Button>
@@ -124,12 +125,12 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   Picked Up
                 </Button>
               )}
-              {currentStatus === 'scheduled' && (
+              {currentStatus === SCHEDULED && (
                 <Button size="xs" m={5} ml={15} colorScheme="green">
                   Scheduled
                 </Button>
               )}
-              {currentStatus === 'archived' && (
+              {currentStatus === ARCHIVED && (
                 <Button size="xs" m={5} ml={15} colorScheme="blue">
                   Archived
                 </Button>
@@ -151,20 +152,20 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               <Stack spacing={3}>
                 <InputGroup>
                   <InputLeftAddon>Name</InputLeftAddon>
-                  <Input placeholder="name" defaultValue={firstName} isRequired isDisabled />
+                  <Input placeholder="name" defaultvalue={firstName} isRequired isDisabled />
                 </InputGroup>
               </Stack>
               <Stack direction="row" my={2}>
                 <InputGroup>
                   <InputLeftAddon>Email</InputLeftAddon>
-                  <Input placeholder="email" defaultValue={email} isRequired isDisabled />
+                  <Input placeholder="email" defaultvalue={email} isRequired isDisabled />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>Phone Number</InputLeftAddon>
                   <Input
                     type="tel"
                     placeholder="phone number"
-                    defaultValue={phoneNum}
+                    defaultvalue={phoneNum}
                     isRequired
                     isDisabled
                   />
@@ -176,17 +177,17 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               <Stack spacing={3} direction="row">
                 <InputGroup>
                   <InputLeftAddon>Street Address</InputLeftAddon>
-                  <Input placeholder="street" defaultValue={addressStreet} isRequired isDisabled />
+                  <Input placeholder="street" defaultvalue={addressStreet} isRequired isDisabled />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>Unit</InputLeftAddon>
-                  <Input placeholder="unit" defaultValue={addressUnit} isRequired isDisabled />
+                  <Input placeholder="unit" defaultvalue={addressUnit} isRequired isDisabled />
                 </InputGroup>
               </Stack>
               <Stack spacing={3} direction="row" my={2}>
                 <InputGroup>
                   <InputLeftAddon>City</InputLeftAddon>
-                  <Input placeholder="city" defaultValue={addressCity} isRequired isDisabled />
+                  <Input placeholder="city" defaultvalue={addressCity} isRequired isDisabled />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>State</InputLeftAddon>
@@ -201,30 +202,27 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               </Text>
               <Textarea
                 placeholder="Enter additional comments here"
-                defaultValues={notes}
+                defaultvalues={notes}
                 isDisabled
               />
             </Box>
 
-            <Box h={600} w="40%" m={5} onClick={onOpenImageModal}>
+            {/* <Box h={600} w="40%" m={5} onClick={onOpenImageModal}> */}
+            <Box h="50%" w="40%" m={5}>
               <Box>
                 <Text mb={5} fontSize="20px">
                   Images
                 </Text>
-                {images.length > 0 && images.length < 4 ? (
-                  <Image h={300} w={395} alt="test" src={images[0].imageUrl} />
+                <DonationImagesContainer data={pictures} />
+                {/* {images.length > 0 && images.length < 4 ? (
+                  <DonationImagesContainer data={images} />
                 ) : (
+                  // <Image h={300} w={395} alt="test" src={images[0].imageUrl} />
                   <Box h={300} w={395} bg="gray" />
-                )}
-                <ImageModal
-                  isOpenImageModal={isOpenImageModal}
-                  onOpenImageModal={onOpenImageModal}
-                  onCloseImageModal={onCloseImageModal}
-                  image={images.length > 0 && images.length < 4 && images[0].imageUrl}
-                />
+                )} */}
               </Box>
 
-              <Box h={400} w="70%">
+              <Box h="50%" w="70%">
                 <Text mt="45px" mb={5} fontSize="20px">
                   Furniture Items
                 </Text>
@@ -256,11 +254,11 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
         <ModalFooter justifyContent="space-between">
           <Box>
-            {currentStatus === 'pending' || currentStatus === 'changes requested' ? (
+            {currentStatus === PENDING || currentStatus === CHANGES_REQUESTED ? (
               <>
                 <Button
                   colorScheme="red"
-                  isDisabled={currentStatus === 'changes requested'}
+                  isDisabled={currentStatus === CHANGES_REQUESTED}
                   onClick={() => {
                     OnOpenEmailModal();
                     setEmailStatus('request changes');
@@ -282,7 +280,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
             ) : (
               ''
             )}
-            {currentStatus === 'scheduled' && (
+            {currentStatus === SCHEDULED && (
               <Button
                 ml={3}
                 colorScheme="red"
@@ -305,7 +303,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
         </ModalFooter>
         <EmailModal
           isOpenEmailModal={isOpenEmailModal}
-          OnOpenEmailModal={onOpenImageModal}
+          // OnOpenEmailModal={onOpenEmailModal}
           onCloseEmailModal={onCloseEmailModal}
           status={emailStatus}
           updateDonationStatus={updateDonationStatus}
@@ -318,9 +316,9 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 };
 
 DonationModal.propTypes = {
-  setUsers: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
-  isOpen: PropTypes.bool.isRequired,
+  setUsers: PropTypes.func,
+  onClose: PropTypes.func,
+  isOpen: PropTypes.bool,
   data: PropTypes.shape({
     status: PropTypes.string.isRequired,
     id: PropTypes.number.isRequired,
@@ -334,7 +332,19 @@ DonationModal.propTypes = {
     phoneNum: PropTypes.string.isRequired,
     notes: PropTypes.string.isRequired,
     submittedDate: PropTypes.string.isRequired,
-  }).isRequired,
+    pictures: PropTypes.shape({
+      id: PropTypes.string,
+      imageURL: PropTypes.string,
+      notes: PropTypes.string,
+    }),
+  }),
+};
+
+DonationModal.defaultProps = {
+  data: {},
+  isOpen: false,
+  onClose: () => {},
+  setUsers: () => {},
 };
 
 export default DonationModal;

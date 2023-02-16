@@ -15,11 +15,14 @@ import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
 import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
+import STATUSES from '../../utils/config';
 
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
+
+  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES.STATUSES;
 
   const handleRowClick = data => {
     setDonationData(data);
@@ -31,11 +34,11 @@ const InventoryPage = () => {
 
     if (newStatus === 'rejected') {
       color = 'red';
-    } else if (newStatus === 'approved' || newStatus === 'scheduled') {
+    } else if (newStatus === APPROVED || newStatus === SCHEDULED) {
       color = 'green';
-    } else if (newStatus === 'flagged' || newStatus === 'pending') {
+    } else if (newStatus === 'flagged' || newStatus === PENDING) {
       color = 'gray';
-    } else if (newStatus === 'changes requested' || newStatus === 'archived') {
+    } else if (newStatus === CHANGES_REQUESTED || newStatus === ARCHIVED) {
       color = 'blue';
     }
     return (

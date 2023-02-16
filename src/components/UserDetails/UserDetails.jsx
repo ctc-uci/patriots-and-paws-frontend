@@ -25,7 +25,7 @@ import {
   getCurrentUserId,
 } from '../../utils/AuthUtils';
 import { Cookies, withCookies, cookieKeys } from '../../utils/CookieUtils';
-import AUTH_ROLES from '../../utils/AuthConfig';
+import AUTH_ROLES from '../../utils/config';
 
 const UserDetails = ({ userId, cookies }) => {
   const [user, setUser] = useState({
