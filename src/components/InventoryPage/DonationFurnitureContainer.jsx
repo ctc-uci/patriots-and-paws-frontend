@@ -27,17 +27,15 @@ const DonationFurnitureContainer = ({ data }) => {
 
   return (
     <ChakraProvider>
-      <div>
-        {displayedData.map(furniture => (
-          <InputGroup key={furniture.id}>
-            <Input value={furniture.name} isDisabled />
-            <InputRightAddon>{furniture.count}</InputRightAddon>
-            <br />
-          </InputGroup>
-        ))}
-      </div>
+      {displayedData.map(furniture => (
+        <InputGroup key={furniture.id}>
+          <Input value={furniture.name} isDisabled />
+          <InputRightAddon>{furniture.count}</InputRightAddon>
+        </InputGroup>
+      ))}
+      <br />
       <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
-        <PaginationContainer>
+        <PaginationContainer justify="right">
           <PaginationPrevious>&lsaquo;</PaginationPrevious>
           <PaginationNext>&rsaquo;</PaginationNext>
         </PaginationContainer>

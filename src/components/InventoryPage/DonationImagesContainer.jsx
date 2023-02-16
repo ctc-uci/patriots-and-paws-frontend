@@ -47,8 +47,6 @@ const DonationImagesContainer = ({ data }) => {
         {displayedData.map(image => (
           <Image
             key={image.id}
-            h={300}
-            w={395}
             alt="test"
             src={image.imageUrl}
             onClick={() => handleImageClick(image)}
@@ -61,8 +59,9 @@ const DonationImagesContainer = ({ data }) => {
         onCloseImageModal={onCloseImageModal}
         image={currentImage}
       />
+      <br />
       <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
-        <PaginationContainer>
+        <PaginationContainer justify="right">
           <PaginationPrevious>&lsaquo;</PaginationPrevious>
           <PaginationNext>&rsaquo;</PaginationNext>
         </PaginationContainer>

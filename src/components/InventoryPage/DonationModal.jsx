@@ -118,7 +118,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
         <ModalCloseButton />
         <ModalBody>
           <Flex flexDirection="row" m={3}>
-            <Box h={600} w="60%" m={5}>
+            <Box h="100%" w="60%" m={5}>
               <Text mb={5} fontSize="20px">
                 Basic Information
               </Text>
@@ -188,7 +188,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                 <DonationImagesContainer data={pictures} />
               </Box>
 
-              <Box h="50%" w="70%">
+              <Box h="50%" w="100%">
                 <Text mt="45px" mb={5} fontSize="20px">
                   Furniture Items
                 </Text>
