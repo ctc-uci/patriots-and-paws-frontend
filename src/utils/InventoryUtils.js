@@ -25,7 +25,7 @@ const getDonationsFromDB = async () => {
   return donations;
 };
 
-const formatData = data => {
+const formatImageData = data => {
   if (data.length < 4) {
     return data.reduce((acc, curr) => {
       acc.push([curr]);
@@ -47,4 +47,19 @@ const formatData = data => {
   );
 };
 
-export { getDonationsFromDB, makeDate, formatData };
+const formatFurnitureData = data => {
+  return data.reduce(
+    (acc, curr) => {
+      const lastGroup = acc[acc.length - 1];
+      if (lastGroup.length < 4) {
+        lastGroup.push(curr);
+      } else {
+        acc.push([curr]);
+      }
+      return acc;
+    },
+    [[]],
+  );
+};
+
+export { getDonationsFromDB, makeDate, formatImageData, formatFurnitureData };

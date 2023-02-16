@@ -14,7 +14,6 @@ import {
   Input,
   Stack,
   InputLeftAddon,
-  InputRightAddon,
   InputGroup,
   Textarea,
   Modal,
@@ -27,15 +26,12 @@ import { PropTypes } from 'prop-types';
 import { PNPBackend } from '../../utils/utils';
 import { makeDate } from '../../utils/InventoryUtils';
 import DonationImagesContainer from './DonationImagesContainer';
-// import ImageModal from './ImageModal';
+import DonationFurnitureContainer from './DonationFurnitureContainer';
 import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
 import STATUSES from '../../utils/config';
-// import { getPictureFromDB } from '../../utils/InventoryUtils';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
-  // const dataCopy = data;
-
   const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES.STATUSES;
 
   const {
@@ -51,6 +47,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     phoneNum,
     notes,
     pictures,
+    furniture,
   } = data;
 
   const [emailStatus, setEmailStatus] = useState('');
@@ -61,27 +58,6 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     onOpen: OnOpenEmailModal,
     onClose: onCloseEmailModal,
   } = useDisclosure();
-
-  // const [images, setImages] = useState([]);
-
-  // useEffect(() => {}, []);
-
-  // const [canEditInfo, setCanEditInfo] = useState(false);
-
-  // const getImage = async () => {
-  //   const result = await getPictureFromDB(id);
-  //   setImage(result[0]);
-  //   console.log(image);
-  // };
-
-  // useEffect(() => {
-  //   async function getImages() {
-  //     const result = await getPictureFromDB(id);
-  //     setImages(result);
-  //   }
-  //   getImages();
-  //   setCurrentStatus(status);
-  // }, [data]);
 
   const updateDonationStatus = async newstatus => {
     setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, status: newstatus } : ele)));
@@ -136,9 +112,6 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                 </Button>
               )}
             </Box>
-            {/* <Button mt={5} ml={15} colorScheme="gray" size="xs">
-              {status}
-            </Button> */}
           </Flex>
           <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
         </ModalHeader>
@@ -207,46 +180,19 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               />
             </Box>
 
-            {/* <Box h={600} w="40%" m={5} onClick={onOpenImageModal}> */}
             <Box h="50%" w="40%" m={5}>
               <Box>
                 <Text mb={5} fontSize="20px">
                   Images
                 </Text>
                 <DonationImagesContainer data={pictures} />
-                {/* {images.length > 0 && images.length < 4 ? (
-                  <DonationImagesContainer data={images} />
-                ) : (
-                  // <Image h={300} w={395} alt="test" src={images[0].imageUrl} />
-                  <Box h={300} w={395} bg="gray" />
-                )} */}
               </Box>
 
               <Box h="50%" w="70%">
                 <Text mt="45px" mb={5} fontSize="20px">
                   Furniture Items
                 </Text>
-                <Stack>
-                  <InputGroup>
-                    <Input value="Dining Table" isDisabled />
-                    <InputRightAddon>2</InputRightAddon>
-                  </InputGroup>
-
-                  <InputGroup>
-                    <Input value="Dining Table" isDisabled />
-                    <InputRightAddon>2</InputRightAddon>
-                  </InputGroup>
-
-                  <InputGroup>
-                    <Input value="Dining Table" isDisabled />
-                    <InputRightAddon>2</InputRightAddon>
-                  </InputGroup>
-
-                  <InputGroup>
-                    <Input value="Dining Table" isDisabled />
-                    <InputRightAddon>2</InputRightAddon>
-                  </InputGroup>
-                </Stack>
+                <DonationFurnitureContainer data={furniture} />
               </Box>
             </Box>
           </Flex>
@@ -336,6 +282,11 @@ DonationModal.propTypes = {
       id: PropTypes.string,
       imageURL: PropTypes.string,
       notes: PropTypes.string,
+    }),
+    furniture: PropTypes.shape({
+      id: PropTypes.string,
+      name: PropTypes.string,
+      count: PropTypes.number,
     }),
   }),
 };

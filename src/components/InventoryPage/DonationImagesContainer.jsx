@@ -10,7 +10,7 @@ import {
 } from '@ajna/pagination';
 
 import ImageModal from './ImageModal';
-import { formatData } from '../../utils/InventoryUtils';
+import { formatImageData } from '../../utils/InventoryUtils';
 
 const DonationImagesContainer = ({ data }) => {
   const {
@@ -30,7 +30,7 @@ const DonationImagesContainer = ({ data }) => {
     initialState: { currentPage: 1 },
   });
 
-  const formattedData = formatData(data);
+  const formattedData = formatImageData(data);
 
   useEffect(() => {
     setDisplayedData(formattedData[currentPage - 1]);
