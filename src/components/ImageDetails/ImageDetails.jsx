@@ -22,14 +22,7 @@ function ImageDetails({
           removeDescription(index);
         }}
       />
-      <img
-        key={preview}
-        alt="pic"
-        src={preview}
-        // onLoad={() => {
-        //   URL.revokeObjectURL(file.preview);
-        // }}
-      />
+      <img key={preview} alt={name} src={preview} />
       <Input
         placeholder="Add description"
         onChange={ev => {

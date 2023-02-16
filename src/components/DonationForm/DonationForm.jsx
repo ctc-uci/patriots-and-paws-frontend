@@ -36,6 +36,7 @@ import DropZone from '../DropZone/DropZone';
 import { sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
+import uploadImage from '../../utils/furnitureUtils';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
@@ -130,8 +131,12 @@ function DonationForm() {
   };
 
   const onSubmit = async data => {
-    // const urls = await Promise.all(files.map(async file => uploadImage(file)));
-    sendEmail(data.email1, dconfirmemailtemplate);
+    await Promise.all(files.map(async file => uploadImage(file)));
+    try {
+      sendEmail(data.email1, dconfirmemailtemplate);
+    } catch (err) {
+      // to do: error message that email is invalid
+    }
   };
 
   const onOpenModal = e => {
@@ -141,15 +146,12 @@ function DonationForm() {
   };
 
   const onSave = e => {
-    // console.log(descriptionsIntermediateList);
     setFiles(filesIntermediate);
     setDescriptions(descriptionsIntermediateList);
-    // console.log(descriptions);
     onClose(e);
   };
 
   const onCancel = e => {
-    // helper function for closing the model
     setFilesIntermediate(files);
     replaceIntermediateDescriptions(descriptions);
     onClose(e);
