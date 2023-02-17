@@ -25,6 +25,7 @@ import Navbar from './components/Navbar/Navbar';
 import EmailSending from './components/EmailTemplates/EmailSending';
 import SampleRoute from './components/SampleRoute/SampleRoute';
 import InventoryPage from './components/InventoryPage/InventoryPage';
+import DriverDashboard from './pages/DriverDashboard/DriverDashboard';
 
 import AUTH_ROLES from './utils/AuthConfig';
 
@@ -167,6 +168,50 @@ function App() {
             <Route exact path="/inventory" element={<InventoryPage />} />
           </Route>
           <Route exact path="/login" element={<Login />} />
+          <Route
+            exact
+            path="/users/:userId"
+            element={
+              <ProtectedRoute
+                Component={UserProfile}
+                redirectPath="/login"
+                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/logout"
+            element={
+              <ProtectedRoute
+                Component={Logout}
+                redirectPath="/login"
+                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/manage-staff"
+            element={
+              <ProtectedRoute
+                Component={ManageStaff}
+                redirectPath="/login"
+                roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+              />
+            }
+          />
+          <Route
+            exact
+            path="/driver-dashboard"
+            element={
+              <ProtectedRoute
+                Component={DriverDashboard}
+                redirectPath="/login"
+                roles={[DRIVER_ROLE]}
+              />
+            }
+          />
           <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 
