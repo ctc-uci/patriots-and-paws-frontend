@@ -10,6 +10,11 @@ import {
   TableContainer,
   useDisclosure,
   Text,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
 } from '@chakra-ui/react';
 import './InventoryPage.module.css';
 
@@ -68,36 +73,168 @@ const InventoryPage = () => {
     fetchDonationsFromDB();
   }, []);
 
-  const makeUserRows = users.map(ele => {
-    return (
-      <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
-        <Td>
-          <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-          <Text color="#718096">{ele.email}</Text>
-        </Td>
-        <Td>#{ele.id}</Td>
-        <Td>{makeStatus(ele.status)}</Td>
-        <Td>{makeDate(ele.submittedDate)}</Td>
-      </Tr>
-    );
-    // return <DonationModal key={ele.id} props={ele} />;
-  });
+  // const makeUserRows = users.map(ele => {
+  //   console.log(ele);
+  //   return (
+  //     <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+  //       <Td>
+  //         <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+  //         <Text color="#718096">{ele.email}</Text>
+  //       </Td>
+  //       <Td>#{ele.id}</Td>
+  //       <Td>{makeStatus(ele.status)}</Td>
+  //       <Td>{makeDate(ele.submittedDate)}</Td>
+  //     </Tr>
+  //   );
+  //   // return <DonationModal key={ele.id} props={ele} />;
+  // });
+
+  const makePendingUserRows = users
+    .filter(ele => ele.status === 'pending' || ele.status === 'changes requested')
+    .map(ele => {
+      console.log(ele);
+      return (
+        <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+          <Td>
+            <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+            <Text color="#718096">{ele.email}</Text>
+          </Td>
+          <Td>#{ele.id}</Td>
+          <Td>{makeStatus(ele.status)}</Td>
+          <Td>{makeDate(ele.submittedDate)}</Td>
+        </Tr>
+      );
+    });
+
+  const makeDonorApprovalUserRows = users
+    .filter(ele => ele.status === 'approved' || ele.status === 'scheduling')
+    .map(ele => {
+      console.log(ele);
+      return (
+        <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+          <Td>
+            <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+            <Text color="#718096">{ele.email}</Text>
+          </Td>
+          <Td>#{ele.id}</Td>
+          <Td>{makeStatus(ele.status)}</Td>
+          <Td>{makeDate(ele.submittedDate)}</Td>
+        </Tr>
+      );
+    });
+
+  const makeAwaitingUserRows = users
+    .filter(ele => ele.status === 'scheduled')
+    .map(ele => {
+      console.log(ele);
+      return (
+        <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+          <Td>
+            <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+            <Text color="#718096">{ele.email}</Text>
+          </Td>
+          <Td>#{ele.id}</Td>
+          <Td>{makeStatus(ele.status)}</Td>
+          <Td>{makeDate(ele.submittedDate)}</Td>
+        </Tr>
+      );
+    });
+
+  const makeArchivedUserRows = users
+    .filter(ele => ele.status === 'archived')
+    .map(ele => {
+      console.log(ele);
+      return (
+        <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+          <Td>
+            <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+            <Text color="#718096">{ele.email}</Text>
+          </Td>
+          <Td>#{ele.id}</Td>
+          <Td>{makeStatus(ele.status)}</Td>
+          <Td>{makeDate(ele.submittedDate)}</Td>
+        </Tr>
+      );
+    });
 
   return (
     <>
-      <TableContainer p="122px">
-        <Table variant="simple">
-          <Thead>
-            <Tr bg="#F7FAFC" height="40px">
-              <Th>NAME</Th>
-              <Th>DONATION ID</Th>
-              <Th>STATUS</Th>
-              <Th>SUBMISSION DATE</Th>
-            </Tr>
-          </Thead>
-          <Tbody>{makeUserRows}</Tbody>
-        </Table>
-      </TableContainer>
+      <Tabs p="40px">
+        <TabList>
+          <Tab>Pending</Tab>
+          <Tab>Waiting for Donor Approval</Tab>
+          <Tab>Awaiting Pickup</Tab>
+          <Tab>Archived</Tab>
+        </TabList>
+
+        {/* pending columns: name, donation id, status, submission date
+            waiting columns: name, donation id, route, scheduled date
+            awaiting pickup columns: name, donation id, route, pickup date
+            archived columns: name, donation id, status, pickup date */}
+
+        <TabPanels>
+          <TabPanel>
+            <TableContainer p="40px">
+              <Table variant="simple">
+                <Thead>
+                  <Tr bg="#F7FAFC" height="40px">
+                    <Th>NAME</Th>
+                    <Th>DONATION ID</Th>
+                    <Th>STATUS</Th>
+                    <Th>SUBMISSION DATE</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{makePendingUserRows}</Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+          <TabPanel>
+            <TableContainer p="40px">
+              <Table variant="simple">
+                <Thead>
+                  <Tr bg="#F7FAFC" height="40px">
+                    <Th>NAME</Th>
+                    <Th>DONATION ID</Th>
+                    <Th>ROUTE</Th>
+                    <Th>SCHEDULED DATE</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{makeDonorApprovalUserRows}</Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+          <TabPanel>
+            <TableContainer p="40px">
+              <Table variant="simple">
+                <Thead>
+                  <Tr bg="#F7FAFC" height="40px">
+                    <Th>NAME</Th>
+                    <Th>DONATION ID</Th>
+                    <Th>ROUTE</Th>
+                    <Th>PICKUP DATE</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{makeAwaitingUserRows}</Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+          <TabPanel>
+            <TableContainer p="40px">
+              <Table variant="simple">
+                <Thead>
+                  <Tr bg="#F7FAFC" height="40px">
+                    <Th>NAME</Th>
+                    <Th>DONATION ID</Th>
+                    <Th>STATUS</Th>
+                    <Th>PICKUP DATE</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{makeArchivedUserRows}</Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
       <DonationModal
         setUsers={setUsers}
         data={donationData}
