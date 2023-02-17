@@ -17,11 +17,12 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import CreateRouteModal from '../CreateRouteModal/CreateRouteModal';
-import { getAllRoutes } from '../../utils/RouteUtils';
+import { getAllRoutes, getDrivers } from '../../utils/RouteUtils';
 import EditRouteModal from '../EditRouteModal/EditRouteModal';
 
 const RouteCalendar = () => {
   const [currentEvents, setCurrentEvents] = useState([]);
+  const [drivers, setDrivers] = useState([]);
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
   const [selectedEventDate, setSelectedEventDate] = useState();
   const [selectedRouteId, setSelectedRouteId] = useState();
@@ -42,20 +43,25 @@ const RouteCalendar = () => {
   } = useDisclosure();
 
   useEffect(() => {
-    const fetchAllRoutes = async () => {
-      const routesFromDB = await getAllRoutes();
-      const eventsList = routesFromDB.map(route => ({
-        id: route.id,
-        title: route.name,
-        start: new Date(route.date).toISOString().replace(/T.*$/, ''),
-        allDay: true,
-      }));
+    const fetchAllRoutesAndDrivers = async () => {
+      const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
+      const eventsList = routesFromDB.map(route => {
+        const { id, name, date } = route;
+        return {
+          id,
+          title: name,
+          start: new Date(date).toISOString().replace(/T.*$/, ''),
+          allDay: true,
+        };
+      });
       setCurrentEvents(eventsList);
+      setDrivers(driversFromDB);
+
       // prevents duplication of events on calendar upon hot reloading during dev
       calendarRef.current.getApi().removeAllEventSources();
       calendarRef.current.getApi().addEventSource(eventsList);
     };
-    fetchAllRoutes();
+    fetchAllRoutesAndDrivers();
   }, []);
 
   const handleDateSelect = e => {
@@ -109,11 +115,13 @@ const RouteCalendar = () => {
       <EditRouteModal
         routeId={selectedRouteId}
         routeDate={selectedEventDate}
+        drivers={drivers}
         isOpen={editRouteIsOpen}
         onClose={handleEditRouteOnClose}
       />
       <CreateRouteModal
         routeDate={selectedCalendarDate.start}
+        drivers={drivers}
         isOpen={createRouteIsOpen}
         onClose={createRouteOnClose}
         handleCalendarAddEvent={handleCalendarAddEvent}

@@ -23,13 +23,13 @@ import {
   Select,
 } from '@chakra-ui/react';
 import { Reorder } from 'framer-motion';
-import { updateDonation, getDrivers, getRoute, updateRoute } from '../../utils/RouteUtils';
+import { updateDonation, getRoute, updateRoute } from '../../utils/RouteUtils';
+import { handleNavigateToAddress } from '../../utils/utils';
 
-const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
+const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose }) => {
   const [assignedDriverId, setAssignedDriverId] = useState('');
   const [route, setRoute] = useState({});
   const [donations, setDonations] = useState([]);
-  const [drivers, setDrivers] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
 
   const fetchDonations = async () => {
@@ -44,14 +44,6 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
       fetchDonations();
     }
   }, [routeId]);
-
-  useEffect(() => {
-    const fetchDrivers = async () => {
-      const driversFromDB = await getDrivers();
-      setDrivers(driversFromDB);
-    };
-    fetchDrivers();
-  }, []);
 
   // create red circle icon
   const CircleIcon = props => (
@@ -69,23 +61,6 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
       timeZone: 'UTC',
     });
     return formattedDate;
-  };
-
-  // create address string from address components
-  const formatAddress = ({ addressStreet, addressUnit, addressCity, addressZip }) => {
-    const addressArray = [addressStreet, addressUnit, addressCity, `CA ${addressZip}`].filter(
-      Boolean,
-    );
-    return addressArray.join(', ');
-  };
-
-  // creates Google Maps URL for address and opens it in new window
-  const handleNavigateToAddress = donation => {
-    const address = formatAddress(donation);
-    const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-      address,
-    )}`;
-    window.open(googleMapsUrl, '_blank');
   };
 
   const handleDriverChange = e => {
@@ -225,6 +200,7 @@ const EditRouteModal = ({ routeId, routeDate, isOpen, onClose }) => {
 EditRouteModal.propTypes = {
   routeId: PropTypes.string,
   routeDate: PropTypes.instanceOf(Date),
+  drivers: PropTypes.instanceOf(Array).isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };

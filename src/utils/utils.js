@@ -41,8 +41,33 @@ const formatPhone = value => {
   return value.replace(phoneRegex, '$1-$2-$3');
 };
 
+// create address string from address components
+const formatAddress = ({ addressStreet, addressUnit, addressCity, addressZip }) => {
+  const addressArray = [addressStreet, addressUnit, addressCity, `CA ${addressZip}`].filter(
+    Boolean,
+  );
+  return addressArray.join(', ');
+};
+
+// creates Google Maps URL for address and opens it in new window
+const handleNavigateToAddress = donation => {
+  const address = formatAddress(donation);
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    address,
+  )}`;
+  window.open(googleMapsUrl, '_blank');
+};
+
 const calendarConfigs = {
   dateFormat: 'MM-dd-yyyy',
 };
 // eslint-disable-next-line import/prefer-default-export
-export { PNPBackend, passwordRequirementsRegex, sendEmail, formatPhone, calendarConfigs };
+export {
+  PNPBackend,
+  passwordRequirementsRegex,
+  sendEmail,
+  formatPhone,
+  formatAddress,
+  handleNavigateToAddress,
+  calendarConfigs,
+};
