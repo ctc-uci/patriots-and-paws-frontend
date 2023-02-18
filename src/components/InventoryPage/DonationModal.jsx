@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import {
   ModalOverlay,
@@ -52,6 +52,9 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
+  useEffect(() => {
+    setCurrentStatus(status);
+  }, [data]);
 
   const {
     isOpen: isOpenEmailModal,
@@ -78,7 +81,43 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
         <ModalHeader m={3}>
           <Flex>
             <Text fontSize={36}>Donation #{id}</Text>
-            <Box>
+            {currentStatus && (
+              <Box>
+                {currentStatus === PENDING ? (
+                  <Button colorScheme="gray" m={5} ml={15} size="xs">
+                    Pending
+                  </Button>
+                ) : (
+                  ''
+                )}
+                {currentStatus === APPROVED && (
+                  <Button size="xs" m={5} ml={15} colorScheme="green">
+                    Approved
+                  </Button>
+                )}
+                {currentStatus === CHANGES_REQUESTED && (
+                  <Button size="xs" m={5} ml={15} colorScheme="blue">
+                    Changes Requested
+                  </Button>
+                )}
+                {currentStatus === 'picked up' && (
+                  <Button size="xs" m={5} ml={15} colorScheme="green">
+                    Picked Up
+                  </Button>
+                )}
+                {currentStatus === SCHEDULED && (
+                  <Button size="xs" m={5} ml={15} colorScheme="green">
+                    Scheduled
+                  </Button>
+                )}
+                {currentStatus === ARCHIVED && (
+                  <Button size="xs" m={5} ml={15} colorScheme="blue">
+                    Archived
+                  </Button>
+                )}
+              </Box>
+            )}
+            {/* <Box>
               {currentStatus === PENDING ? (
                 <Button colorScheme="gray" m={5} ml={15} size="xs">
                   Pending
@@ -111,7 +150,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   Archived
                 </Button>
               )}
-            </Box>
+            </Box> */}
           </Flex>
           <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
         </ModalHeader>
@@ -125,20 +164,20 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               <Stack spacing={3}>
                 <InputGroup>
                   <InputLeftAddon>Name</InputLeftAddon>
-                  <Input placeholder="name" defaultvalue={firstName} isRequired isDisabled />
+                  <Input placeholder="name" defaultValue={firstName} isRequired isDisabled />
                 </InputGroup>
               </Stack>
               <Stack direction="row" my={2}>
                 <InputGroup>
                   <InputLeftAddon>Email</InputLeftAddon>
-                  <Input placeholder="email" defaultvalue={email} isRequired isDisabled />
+                  <Input placeholder="email" defaultValue={email} isRequired isDisabled />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>Phone Number</InputLeftAddon>
                   <Input
                     type="tel"
                     placeholder="phone number"
-                    defaultvalue={phoneNum}
+                    defaultValue={phoneNum}
                     isRequired
                     isDisabled
                   />
@@ -150,17 +189,17 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               <Stack spacing={3} direction="row">
                 <InputGroup>
                   <InputLeftAddon>Street Address</InputLeftAddon>
-                  <Input placeholder="street" defaultvalue={addressStreet} isRequired isDisabled />
+                  <Input placeholder="street" defaultValue={addressStreet} isRequired isDisabled />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>Unit</InputLeftAddon>
-                  <Input placeholder="unit" defaultvalue={addressUnit} isRequired isDisabled />
+                  <Input placeholder="unit" defaultValue={addressUnit} isRequired isDisabled />
                 </InputGroup>
               </Stack>
               <Stack spacing={3} direction="row" my={2}>
                 <InputGroup>
                   <InputLeftAddon>City</InputLeftAddon>
-                  <Input placeholder="city" defaultvalue={addressCity} isRequired isDisabled />
+                  <Input placeholder="city" defaultValue={addressCity} isRequired isDisabled />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>State</InputLeftAddon>
@@ -175,7 +214,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               </Text>
               <Textarea
                 placeholder="Enter additional comments here"
-                defaultvalues={notes}
+                defaultValue={notes}
                 isDisabled
               />
             </Box>
