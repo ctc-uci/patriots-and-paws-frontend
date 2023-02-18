@@ -22,6 +22,7 @@ import {
   FormLabel,
   Select,
 } from '@chakra-ui/react';
+import { ArrowForwardIcon } from '@chakra-ui/icons';
 import { Reorder } from 'framer-motion';
 import { updateDonation, getRoute, updateRoute } from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
@@ -103,12 +104,24 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose }) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <Heading paddingLeft={5} paddingTop={5}>
-            Route #{routeId}
-          </Heading>
-          <Text paddingLeft={5} fontSize="md" fontWeight="normal">
-            {convertDate(routeDate)}
-          </Text>
+          <Stack>
+            <Heading paddingLeft={5} paddingTop={5}>
+              Route #{routeId}
+            </Heading>
+            <Flex justifyContent="space-between">
+              <Text paddingLeft={5} fontSize="md" fontWeight="normal">
+                {convertDate(routeDate)}
+              </Text>
+              <Button
+                size="xs"
+                rightIcon={<ArrowForwardIcon />}
+                onClick={() => handleNavigateToAddress(donations)}
+                marginRight={5}
+              >
+                Navigate to Address
+              </Button>
+            </Flex>
+          </Stack>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -151,9 +164,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose }) => {
                     >
                       <Flex justifyContent="space-between" alignItems="center">
                         <Text>Donation #{donation.id}</Text>
-                        <Button onClick={() => handleNavigateToAddress(donation)}>
-                          Navigate to Address
-                        </Button>
                         <Text>
                           {donation.firstName} {donation.lastName}
                         </Text>
@@ -165,7 +175,11 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose }) => {
             </List>
             <FormControl isRequired>
               <FormLabel paddingTop={6}>Assigned Driver</FormLabel>
-              <Select value={assignedDriverId} onChange={handleDriverChange}>
+              <Select
+                value={assignedDriverId}
+                placeholder="Select Driver"
+                onChange={handleDriverChange}
+              >
                 {drivers.map(driver => (
                   <option key={driver.id} value={driver.id}>
                     {driver.firstName} {driver.lastName}
