@@ -49,12 +49,24 @@ const formatAddress = ({ addressStreet, addressUnit, addressCity, addressZip }) 
   return addressArray.join(', ');
 };
 
-// creates Google Maps URL for address and opens it in new window
-const handleNavigateToAddress = donation => {
-  const address = formatAddress(donation);
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-    address,
-  )}`;
+// creates Google Maps URL for route and opens it in new window
+const handleNavigateToAddress = donations => {
+  // set PNP address as origin; this will show the origin as Patriots and Paws rather than as just the address on Google Maps
+  const origin = 'Patriots and Paws';
+
+  const addresses = donations.map(donation => formatAddress(donation));
+  const n = addresses.length;
+
+  // set all addresses except last one as waypoint
+  const waypoints = addresses.slice(0, -1).join('|');
+  // set last address as destination
+  const destination = addresses[n - 1];
+
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
+    origin,
+  )}&destination=${encodeURIComponent(destination)}&waypoints=${encodeURIComponent(
+    waypoints,
+  )}&travelmode=driving`;
   window.open(googleMapsUrl, '_blank');
 };
 
