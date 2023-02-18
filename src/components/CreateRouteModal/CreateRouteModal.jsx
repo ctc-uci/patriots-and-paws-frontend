@@ -99,9 +99,7 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
         <ModalBody>
           <form>
             <FormControl isRequired>
-              <FormLabel paddingTop={3} isRequired>
-                Route Name
-              </FormLabel>
+              <FormLabel paddingTop={3}>Route Name</FormLabel>
               <Input
                 id="route-name"
                 placeholder="Name"
