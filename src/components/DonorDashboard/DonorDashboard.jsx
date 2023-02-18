@@ -46,8 +46,20 @@ const DonorDashboard = ({ donationId }) => {
         </GridItem>
       </Grid>
 
-      <footer>
-        <Grid templateColumns="repeat(12, 1fr)" p="20px" fontSize="15px" fontWeight="500">
+      <footer
+        style={{
+          backgroundColor: 'white',
+          borderWidth: '4px 0px 0px 0px',
+          borderColor: '#3182CE #fff #fff #fff',
+        }}
+      >
+        <Grid
+          templateColumns="repeat(12, 1fr)"
+          p="20px 40px 20px 40px"
+          fontSize="15px"
+          fontWeight="500"
+          textAlign="center"
+        >
           <GridItem colSpan={1}>
             <Link href="https://www.patriotsandpaws.org/our-story/">About Us</Link>
           </GridItem>
