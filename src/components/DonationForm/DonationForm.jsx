@@ -168,7 +168,6 @@ function DonationForm() {
     setFurnitureOptions(prev => [...prev, removedName]);
     const res = DonatedFurnitureList.filter(e => e.name !== removedName);
     setDonatedFurniture(res);
-    console.log(res);
   };
 
   const onSelectFurniture = async ev => {
@@ -179,7 +178,6 @@ function DonationForm() {
   const changeDonation = (furnitureName, ev) => {
     const furniture = DonatedFurnitureList.find(e => e.name === furnitureName);
     furniture.num = +ev;
-    console.log(DonatedFurnitureList);
   };
 
   return (
@@ -292,9 +290,7 @@ function DonationForm() {
           <DonationCard
             // eslint-disable-next-line react/no-array-index-key
             key={i}
-            name={donatedFurniture.name}
-            // num={donatedFurniture.num}
-            donation={donatedFurniture}
+            donatedFurniture={donatedFurniture}
             changeDon={changeDonation}
             removeDon={removeDonation}
           />

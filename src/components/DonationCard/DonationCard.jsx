@@ -10,13 +10,23 @@ import {
   Spacer,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import styles from './DonationCard.module.css';
 
-function DonationCard({ donation, changeDon, removeDon }) {
-  // console.log(name, num);
-  const { name, num } = donation;
+function DonationCard({ donatedFurniture, changeDon, removeDon }) {
+  const { name, num } = donatedFurniture;
+  const [value, setValue] = useState(num);
+
+  const handleChange = val => {
+    setValue(val);
+    changeDon(name, val);
+  };
+
+  useEffect(() => {
+    handleChange(num);
+  }, [num]);
+
   return (
     <Stat className={styles['field-section']}>
       <Flex
@@ -30,8 +40,8 @@ function DonationCard({ donation, changeDon, removeDon }) {
         <Heading size="sm">{name}</Heading>
         <Spacer />
         <NumberInput
-          defaultValue={num}
-          onChange={ev => changeDon(name, ev)}
+          value={value}
+          onChange={handleChange}
           min={1}
           className={styles['integer-input']}
           size="sm"
@@ -48,8 +58,10 @@ function DonationCard({ donation, changeDon, removeDon }) {
   );
 }
 DonationCard.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  donation: PropTypes.object.isRequired,
+  donatedFurniture: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    num: PropTypes.number.isRequired,
+  }).isRequired,
   changeDon: PropTypes.func.isRequired,
   removeDon: PropTypes.func.isRequired,
 };
