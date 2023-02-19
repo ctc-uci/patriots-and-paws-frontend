@@ -1,6 +1,19 @@
-import { ChakraProvider, Button, Image, Card, CardBody, Text } from '@chakra-ui/react';
+import {
+  ChakraProvider,
+  Button,
+  Image,
+  Card,
+  CardBody,
+  Text,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalBody,
+  ModalFooter,
+} from '@chakra-ui/react';
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { PDFViewer } from '@react-pdf/renderer';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
@@ -26,6 +39,8 @@ import EmailSending from './components/EmailTemplates/EmailSending';
 import SampleRoute from './components/SampleRoute/SampleRoute';
 import InventoryPage from './components/InventoryPage/InventoryPage';
 
+import RoutePDF from './components/RoutePDF/RoutePDF';
+
 import AUTH_ROLES from './utils/AuthConfig';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
@@ -33,6 +48,7 @@ const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 function App() {
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => console.log(files), [files]);
 
@@ -66,6 +82,25 @@ function App() {
             <Text>Hi</Text>
           </CardBody>
         </Card>
+        <Button mt={4} onClick={onOpen}>
+          Export Route
+        </Button>
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalContent>
+            <ModalBody>
+              <PDFViewer>
+                <RoutePDF routeID={3} />
+              </PDFViewer>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} onClick={onClose}>
+                Close
+              </Button>
+              <Button variant="ghost">Secondary Action</Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </>
     );
   };
