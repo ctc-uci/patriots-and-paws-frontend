@@ -16,16 +16,17 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  // Card,
-  Tag,
-  TagCloseButton,
-  TagLabel,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
+  // NumberInput,
+  // NumberInputField,
+  // NumberInputStepper,
+  // NumberIncrementStepper,
+  // NumberDecrementStepper,
+  // Stat,
+  Heading,
+  // Flex,
+  // Spacer,
 } from '@chakra-ui/react';
+// import { CloseIcon } from '@chakra-ui/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, useFieldArray } from 'react-hook-form';
 // import { useForm } from 'react-hook-form';
@@ -37,6 +38,7 @@ import { sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
 import uploadImage from '../../utils/furnitureUtils';
+import DonationCard from '../DonationCard/DonationCard';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
@@ -158,16 +160,15 @@ function DonationForm() {
   };
 
   const addDonation = ev => {
-    // appendDonation({ name: ev.target.value, num: 1 });
-    setDonatedFurniture([...DonatedFurnitureList, { name: ev.target.value, num: 1 }]);
+    setDonatedFurniture(prev => [...prev, { name: ev.target.value, num: 1 }]);
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
   };
 
   const removeDonation = removedName => {
-    console.log(removedName);
-    setFurnitureOptions([...furnitureOptions, removedName]);
-    setDonatedFurniture(prev => prev.filter(e => e.name !== removedName));
-    // removeFurniture({ name: removedName });
+    setFurnitureOptions(prev => [...prev, removedName]);
+    const res = DonatedFurnitureList.filter(e => e.name !== removedName);
+    setDonatedFurniture(res);
+    console.log(res);
   };
 
   const onSelectFurniture = async ev => {
@@ -178,13 +179,16 @@ function DonationForm() {
   const changeDonation = (furnitureName, ev) => {
     const furniture = DonatedFurnitureList.find(e => e.name === furnitureName);
     furniture.num = +ev;
+    console.log(DonatedFurnitureList);
   };
 
   return (
     <Box className={styles['form-padding']}>
       <form onSubmit={handleSubmit(data => onSubmit(data))}>
         <Box className={styles['field-section']}>
-          <h1 className={styles.title}>Name</h1>
+          <Heading size="md" className={styles.title}>
+            Name
+          </Heading>
           <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.firstName} width="47%">
               <FormLabel>First</FormLabel>
@@ -201,7 +205,9 @@ function DonationForm() {
         </Box>
 
         <Box className={styles['field-section']}>
-          <h1 className={styles.title}>Address</h1>
+          <Heading size="md" className={styles.title}>
+            Address
+          </Heading>
 
           <FormControl>
             <FormLabel>Street Address</FormLabel>
@@ -241,7 +247,9 @@ function DonationForm() {
         </Box>
 
         <Box className={styles['field-section']}>
-          <h1 className={styles.title}>Phone</h1>
+          <Heading size="md" className={styles.title}>
+            Phone
+          </Heading>
           <FormControl isInvalid={errors && errors.phoneNumber}>
             <Input type="tel" {...register('phoneNumber')} />
             <FormErrorMessage>{errors.phoneNumber && errors.phoneNumber.message}</FormErrorMessage>
@@ -249,7 +257,9 @@ function DonationForm() {
         </Box>
 
         <Box className={styles['field-section']}>
-          <h1 className={styles.title}>Email</h1>
+          <Heading size="md" className={styles.title}>
+            Email
+          </Heading>
           <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.email1} width="47%">
               <FormLabel>Enter Email </FormLabel>
@@ -265,29 +275,11 @@ function DonationForm() {
           </Box>
         </Box>
 
-        {/* <Box className={styles['field-section']}>
-          <h1 className={styles.title}>Furniture Submissions</h1>
-          <FormControl isInvalid={errors && errors.Item}>
-            {itemsList.map((furniture, index) => {
-              if (index === 0) {
-                // eslint-disable-next-line react/jsx-key
-                return <FurnitureField index={index} register={register} />;
-              }
-              return (
-                // eslint-disable-next-line react/jsx-key
-                <FurnitureField index={index} register={register} removeFurniture={removeItem} />
-              );
-            })}
-          </FormControl>
-        </Box>
-
-        <Box className={styles['field-section']}>
-          <Button onClick={() => appendItem({})}>Add new furniture field</Button>
-        </Box> */}
         <Select
           placeholder="Select Furniture"
           value={selectedFurnitureValue}
           onChange={ev => onSelectFurniture(ev)}
+          className={styles['field-section']}
         >
           {furnitureOptions.map((furnitureItem, i) => (
             // eslint-disable-next-line react/no-array-index-key
@@ -297,25 +289,55 @@ function DonationForm() {
 
         {DonatedFurnitureList.map((donatedFurniture, i) => (
           // eslint-disable-next-line react/no-array-index-key
-          <Tag key={i}>
-            <TagLabel>{donatedFurniture.name}</TagLabel>
-            <NumberInput
-              defaultValue={1}
-              onChange={ev => changeDonation(donatedFurniture.name, ev)}
-              min={1}
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-            <TagCloseButton onClick={() => removeDonation(donatedFurniture.name)} />
-          </Tag>
+          <DonationCard
+            // eslint-disable-next-line react/no-array-index-key
+            key={i}
+            name={donatedFurniture.name}
+            // num={donatedFurniture.num}
+            donation={donatedFurniture}
+            changeDon={changeDonation}
+            removeDon={removeDonation}
+          />
+          // <Stat key={i} className={styles['field-section']}>
+          //   <Flex
+          //     border="1px"
+          //     borderColor="gray.200"
+          //     alignItems="center"
+          //     h="14vh"
+          //     w="30vw"
+          //     paddingLeft={5}
+          //   >
+          //     <Heading size="sm">{donatedFurniture.name}</Heading>
+          //     <Spacer />
+          //     <NumberInput
+          //       // defaultValue={1}
+          //       // value={donatedFurniture.num}
+          //       defaultValue={donatedFurniture.num}
+          //       onChange={ev => changeDonation(donatedFurniture.name, ev)}
+          //       min={1}
+          //       className={styles['integer-input']}
+          //       size="sm"
+          //     >
+          //       <NumberInputField />
+          //       <NumberInputStepper>
+          //         <NumberIncrementStepper />
+          //         <NumberDecrementStepper />
+          //       </NumberInputStepper>
+          //     </NumberInput>
+          //     <CloseIcon
+          //       onClick={() => removeDonation(donatedFurniture.name)}
+          //       w="3vw"
+          //       h="3vh"
+          //       color="red.500"
+          //     />
+          //   </Flex>
+          // </Stat>
         ))}
 
         <Box className={styles['field-section']}>
-          <h1 className={styles.title}>Images</h1>
+          <Heading size="md" className={styles.title}>
+            Images
+          </Heading>
           <Button onClick={onOpenModal}>Upload Images</Button>
 
           <Modal isOpen={isOpen} onClose={onClose}>
@@ -352,9 +374,13 @@ function DonationForm() {
         </Box>
 
         <Box className={styles['field-section']}>
-          <h1 className={styles.title}>Do you Have any Questions or Comments</h1>
+          <Heading size="md" className={styles.title}>
+            Do you Have any Questions or Comments
+          </Heading>
           <Input {...register('additional')} />
         </Box>
+
+        <Button onClick={() => console.log(DonatedFurnitureList)}> Donated Furniture Print</Button>
 
         <Button type="submit">Submit</Button>
       </form>
