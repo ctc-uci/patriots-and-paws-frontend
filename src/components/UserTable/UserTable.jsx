@@ -36,8 +36,8 @@ const UserTable = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: deleteIsOpen, onOpen: deleteOnOpen, onClose: deleteOnClose } = useDisclosure();
-  const [editUserData, setEditUserData] = useState([]);
-  const [deleteUserData, setDeleteUserData] = useState([]);
+  const [editUserData, setEditUserData] = useState({});
+  const [deleteUserData, setDeleteUserData] = useState({});
 
   const openEdit = data => {
     setEditUserData(data);
@@ -72,26 +72,26 @@ const UserTable = ({
                   <Text color="black">Phone Number</Text>
                 </Flex>
               </Th>
-              {isSuperAdmin ? (
+              {isSuperAdmin && (
                 <Th>
                   <Flex>
                     <Image src={cardAccount} mr={2} />
                     <Text color="black">Role</Text>
                   </Flex>
                 </Th>
-              ) : null}
+              )}
               <Th />
             </Tr>
           </Thead>
           <Tbody className={styles['row-text']}>
             {users.map(user => (
-              <Tr key={`${user.id}`}>
+              <Tr key={`${user.email}`}>
                 <Td>
                   {user.firstName} {user.lastName}
                 </Td>
                 <Td>{user.email}</Td>
                 <Td>{formatPhone(user.phoneNumber)}</Td>
-                {isSuperAdmin ? (
+                {isSuperAdmin && (
                   <Td>
                     {user.role === ADMIN_ROLE || user.role === SUPERADMIN_ROLE ? (
                       <Tag
@@ -109,16 +109,16 @@ const UserTable = ({
                       </Tag>
                     )}
                   </Td>
-                ) : null}
+                )}
                 <Td>
                   <IconButton onClick={() => openEdit(user)} icon={<EditIcon />} variant="ghost" />
-                  {isSuperAdmin ? (
+                  {isSuperAdmin && (
                     <IconButton
                       onClick={() => openDelete(user)}
                       icon={<DeleteIcon />}
                       variant="ghost"
                     />
-                  ) : null}
+                  )}
                 </Td>
               </Tr>
             ))}
@@ -130,13 +130,14 @@ const UserTable = ({
         isSuperAdmin={isSuperAdmin}
         data={editUserData}
         onClose={onClose}
+        // onOpen={onOpen}
         isOpen={isOpen}
         setUsers={setAllUsers}
         setAdminUsers={setAdminUsers}
         setDriverUsers={setDriverUsers}
         updateDisplay={updateDisplay}
       />
-      {isSuperAdmin ? (
+      {isSuperAdmin && (
         <DeleteAccountModal
           staffProfile={deleteUserData}
           onClose={deleteOnClose}
@@ -145,7 +146,7 @@ const UserTable = ({
           setAdminUsers={setAdminUsers}
           setDriverUsers={setDriverUsers}
         />
-      ) : null}
+      )}
     </>
   );
 };
@@ -156,7 +157,7 @@ UserTable.propTypes = {
     PropTypes.shape({
       email: PropTypes.string.isRequired,
       firstName: PropTypes.string.isRequired,
-      id: PropTypes.string.isRequired,
+      id: PropTypes.string,
       lastName: PropTypes.string.isRequired,
       phoneNumber: PropTypes.string.isRequired,
       role: PropTypes.string.isRequired,

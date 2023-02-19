@@ -71,6 +71,7 @@ const ManageStaff = ({ cookies }) => {
       setDisplayedUsers(data.filter(user => user.id !== userId));
     } else {
       const driverData = data.filter(d => d.role === DRIVER_ROLE);
+      setAllUsers(driverData);
       setDriverUsers(driverData);
       setDisplayedUsers(driverData);
     }
@@ -111,24 +112,24 @@ const ManageStaff = ({ cookies }) => {
             </InputLeftElement>
             <Input placeholder="Search Staff" className={styles['search-bar']} onChange={search} />
           </InputGroup>
-          {isSuperAdmin && currFilter === 'admin' ? (
+          {isSuperAdmin && currFilter === 'admin' && (
             <Tag colorScheme="blue">
               <TagLabel fontSize={18} fontWeight={600} color="black">
                 Admin
               </TagLabel>
               <TagCloseButton onClick={() => setCurrFilter('all')} />
             </Tag>
-          ) : null}
-          {isSuperAdmin && currFilter === 'driver' ? (
+          )}
+          {isSuperAdmin && currFilter === 'driver' && (
             <Tag colorScheme="blue">
               <TagLabel fontSize={18} fontWeight={600} color="black">
                 Driver
               </TagLabel>
               <TagCloseButton onClick={() => setCurrFilter('all')} />
             </Tag>
-          ) : null}
+          )}
         </Flex>
-        {isSuperAdmin ? (
+        {isSuperAdmin && (
           <Flex vertical-align="center">
             <Menu minW={0} w="20px">
               <Flex vertical-align="center" align="center">
@@ -174,7 +175,7 @@ const ManageStaff = ({ cookies }) => {
               updateDisplay={updateDisplay}
             />
           </Flex>
-        ) : null}
+        )}
       </Flex>
       <UserTable
         isSuperAdmin={isSuperAdmin}

@@ -26,6 +26,8 @@ import {
   PopoverBody,
   PopoverArrow,
   Text,
+  UnorderedList,
+  ListItem,
 } from '@chakra-ui/react';
 import { SmallAddIcon, InfoIcon } from '@chakra-ui/icons';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
@@ -138,7 +140,6 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                           style={{ width: '240px' }}
                           placeholder="Enter first name"
                           {...register('firstName')}
-                          // isRequired
                         />
                         <FormErrorMessage>
                           {errors.firstName && errors.firstName.message}
@@ -217,14 +218,16 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                                 <Text textAlign="center" fontSize={16} fontWeight={400}>
                                   Password must contain:
                                 </Text>
-                                <Text fontSize={16} fontWeight={400}>
-                                  <ul>
-                                    <li>8 characters</li>
-                                    <li>1 lowercase letter</li>
-                                    <li>1 uppercase letter</li>
-                                    <li>1 symbol</li>
-                                  </ul>
-                                </Text>
+                                <UnorderedList
+                                  listStylePosition="inside"
+                                  fontSize={16}
+                                  fontWeight={400}
+                                >
+                                  <ListItem>8 characters</ListItem>
+                                  <ListItem>1 lowercase letter</ListItem>
+                                  <ListItem>1 uppercase letter</ListItem>
+                                  <ListItem>1 symbol</ListItem>
+                                </UnorderedList>
                               </PopoverBody>
                             </PopoverContent>
                           </Popover>
@@ -259,24 +262,26 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                       </FormControl>
                     </Flex>
                   </Flex>
-                  {isSuperAdmin ? (
+                  {isSuperAdmin && (
                     <Flex>
                       <Flex direction="column">
                         <FormControl isInvalid={errors && errors.role}>
                           <FormLabel className={styles['create-account-form-label']}>
                             Role
                           </FormLabel>
-                          <Select style={{ width: '240px' }} {...register('role')} isRequired>
-                            <option value="admin" selected>
-                              Admin
-                            </option>
+                          <Select
+                            style={{ width: '240px' }}
+                            {...register('role')}
+                            defaultValue="admin"
+                          >
+                            <option value="admin">Admin</option>
                             <option value="driver">Driver</option>
                           </Select>
                           <FormErrorMessage>{errors.role && errors.role.message}</FormErrorMessage>
                         </FormControl>
                       </Flex>
                     </Flex>
-                  ) : null}
+                  )}
                 </FormControl>
               </form>
               <Box className={styles['error-box']}>{errorMessage}</Box>

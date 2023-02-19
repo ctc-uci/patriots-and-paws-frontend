@@ -2,13 +2,12 @@ import React from 'react';
 import { PropTypes } from 'prop-types';
 import {
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalCloseButton,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
 } from '@chakra-ui/react';
 import { PNPBackend } from '../../utils/utils';
 
@@ -37,44 +36,46 @@ const DeleteAccountModal = ({
       console.log(err);
     }
   };
+  const cancelRef = React.useRef();
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Delete Staff Member</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            Are you sure you want to delete this staff member? You can not undo this action
-            afterwards.
-          </ModalBody>
-
-          <ModalFooter>
-            <Button mr={3} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button colorScheme="red" onClick={onSubmit}>
+      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
               Delete Staff Member
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+            </AlertDialogHeader>
+
+            <AlertDialogBody>
+              Are you sure you want to delete this staff member? You can not undo this action
+              afterwards.
+            </AlertDialogBody>
+
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={onSubmit} ml={3}>
+                Delete Staff Member
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </>
   );
 };
 
 DeleteAccountModal.propTypes = {
-  staffProfile: PropTypes.arrayOf(
-    PropTypes.shape({
-      email: PropTypes.string,
-      firstName: PropTypes.string,
-      id: PropTypes.string,
-      lastName: PropTypes.string,
-      phoneNumber: PropTypes.string,
-      role: PropTypes.string,
-    }),
-  ).isRequired,
+  staffProfile: PropTypes.shape({
+    email: PropTypes.string,
+    firstName: PropTypes.string,
+    id: PropTypes.string,
+    lastName: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    role: PropTypes.string,
+  }).isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   setAllUsers: PropTypes.func.isRequired,

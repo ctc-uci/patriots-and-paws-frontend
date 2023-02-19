@@ -22,8 +22,9 @@ import {
   useDisclosure,
   InputLeftElement,
   InputGroup,
+  IconButton,
 } from '@chakra-ui/react';
-import { LockIcon } from '@chakra-ui/icons';
+import { LockIcon, CloseIcon } from '@chakra-ui/icons';
 import { updateUser } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 import styles from './EditAccountModal.module.css';
@@ -32,6 +33,7 @@ const EditAccountModal = ({
   data,
   isSuperAdmin,
   isOpen,
+  // onOpen,
   onClose,
   setUsers,
   setAdminUsers,
@@ -136,12 +138,19 @@ const EditAccountModal = ({
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalCloseButton />
           <Flex m={5}>
             <Stack>
-              <Heading className={styles['create-account-title']} mb={5}>
-                Edit Staff
-              </Heading>
+              <Flex justifyContent="space-between">
+                <Heading className={styles['create-account-title']} mb={5}>
+                  Edit Staff
+                </Heading>
+                <IconButton
+                  variant="solid"
+                  colorScheme="gray"
+                  icon={<CloseIcon />}
+                  onClick={saveOnOpen}
+                />
+              </Flex>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl className={styles['create-account-form']}>
                   <Flex mb={5}>
@@ -203,7 +212,7 @@ const EditAccountModal = ({
                       <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
                     </Flex>
                   </Flex>
-                  {isSuperAdmin ? (
+                  {isSuperAdmin && (
                     <Flex mb={5}>
                       <Flex direction="column" mr={8}>
                         <FormLabel className={styles['create-account-form-label']}>
@@ -234,7 +243,7 @@ const EditAccountModal = ({
                         <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
                       </Flex>
                     </Flex>
-                  ) : null}
+                  )}
                 </FormControl>
               </form>
               <Box className={styles['error-box']}>{errorMessage}</Box>
@@ -263,7 +272,7 @@ const EditAccountModal = ({
                 <ModalOverlay />
                 <ModalContent>
                   <ModalHeader>Save before exiting?</ModalHeader>
-                  <ModalCloseButton />
+                  <ModalCloseButton onClick={cancel} />
                   <ModalBody>Are you sure you want to exit without saving?</ModalBody>
 
                   <ModalFooter>
@@ -285,16 +294,6 @@ const EditAccountModal = ({
 };
 
 EditAccountModal.propTypes = {
-  // data: PropTypes.arrayOf(
-  //   PropTypes.shape({
-  //     email: PropTypes.string,
-  //     firstName: PropTypes.string,
-  //     id: PropTypes.string,
-  //     lastName: PropTypes.string,
-  //     phoneNumber: PropTypes.string,
-  //     role: PropTypes.string,
-  //   }),
-  // ).isRequired,
   data: PropTypes.shape({
     email: PropTypes.string,
     firstName: PropTypes.string,
@@ -305,6 +304,7 @@ EditAccountModal.propTypes = {
   }).isRequired,
   isSuperAdmin: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
+  // onOpen: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   setUsers: PropTypes.func.isRequired,
   setAdminUsers: PropTypes.func.isRequired,
