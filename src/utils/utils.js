@@ -34,5 +34,42 @@ const formatPhone = value => {
   const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
   return value.replace(phoneRegex, '$1-$2-$3');
 };
+
+// create address string from address components
+const formatAddress = ({ addressStreet, addressUnit, addressCity, addressZip }) => {
+  const addressArray = [addressStreet, addressUnit, addressCity, `CA ${addressZip}`].filter(
+    Boolean,
+  );
+  return addressArray.join(', ');
+};
+
+// creates Google Maps URL for route and opens it in new window
+const handleNavigateToAddress = donations => {
+  const addresses = donations.map(donation => formatAddress(donation));
+  const n = addresses.length;
+
+  // set all addresses except last one as waypoint
+  const waypoints = addresses.slice(0, -1).join('|');
+  // set last address as destination
+  const destination = addresses[n - 1];
+
+  // no origin parameter specified so that origin will default to device location
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+    destination,
+  )}&waypoints=${encodeURIComponent(waypoints)}&travelmode=driving`;
+  window.open(googleMapsUrl, '_blank');
+};
+
+const calendarConfigs = {
+  dateFormat: 'MM-dd-yyyy',
+};
 // eslint-disable-next-line import/prefer-default-export
-export { PNPBackend, passwordRequirementsRegex, sendEmail, formatPhone };
+export {
+  PNPBackend,
+  passwordRequirementsRegex,
+  sendEmail,
+  formatPhone,
+  formatAddress,
+  handleNavigateToAddress,
+  calendarConfigs,
+};
