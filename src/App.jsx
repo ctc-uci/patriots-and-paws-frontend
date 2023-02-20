@@ -138,7 +138,7 @@ function App() {
               <ProtectedRoute
                 Component={ManageStaff}
                 redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+                roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
               />
             }
           />

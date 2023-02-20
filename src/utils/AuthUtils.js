@@ -5,7 +5,6 @@ import {
   signInWithEmailAndPassword,
   signOut,
   createUserWithEmailAndPassword,
-  // sendEmailVerification,
   sendPasswordResetEmail,
   confirmPasswordReset,
   applyActionCode,

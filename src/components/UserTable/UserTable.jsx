@@ -130,7 +130,6 @@ const UserTable = ({
         isSuperAdmin={isSuperAdmin}
         data={editUserData}
         onClose={onClose}
-        // onOpen={onOpen}
         isOpen={isOpen}
         setUsers={setAllUsers}
         setAdminUsers={setAdminUsers}
