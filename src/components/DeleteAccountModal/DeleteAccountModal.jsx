@@ -19,9 +19,9 @@ const DeleteAccountModal = ({
   setAdminUsers,
   setDriverUsers,
 }) => {
-  const onSubmit = () => {
+  const onSubmit = async () => {
     try {
-      PNPBackend.delete(`/users/${staffProfile.id}`);
+      await PNPBackend.delete(`/users/${staffProfile.id}`);
       onClose();
       setAllUsers(prev => prev.filter(user => user.id !== staffProfile.id));
       if (staffProfile.role === 'admin') {
