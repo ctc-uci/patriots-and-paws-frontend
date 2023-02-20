@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Select } from '@chakra-ui/react';
+import { Select, Stack, Text, ChakraProvider } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
-  Stack,
-  Text,
-  ChakraProvider,
   Pagination,
   usePagination,
   PaginationNext,
@@ -19,7 +16,7 @@ const PaginationFooter = ({ setData, table }) => {
 
   const { currentPage, setCurrentPage, pagesCount } = usePagination({
     // replace '32' in page count to total number of items / number of rows per page
-    // pagesCount: Math.ceil({ databaseEntryTotal } / rowsPerPage),
+    // pagesCount: Math.ceil(databaseEntryTotal{  } / rowsPerPage),
     pagesCount: Math.ceil(32 / rowsPerPage),
     initialState: { currentPage: 1 },
   });
@@ -27,7 +24,11 @@ const PaginationFooter = ({ setData, table }) => {
   // when the number of rows or the next page is clicked, get the desired data from the backend
   useEffect(() => {
     // replace this line with the correct call to the backend with the given table and num rows/what page
-    const res = PNPBackend.get(`/${table}`);
+    const pageInfo = {
+      pageNum: currentPage,
+      numEntries: rowsPerPage,
+    };
+    const res = PNPBackend.get(`/${table}`, pageInfo);
     setData(res.data);
   }, [currentPage, rowsPerPage]);
 

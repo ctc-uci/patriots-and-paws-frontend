@@ -342,9 +342,9 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 };
 
 DonationModal.propTypes = {
-  setUsers: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
-  isOpen: PropTypes.bool.isRequired,
+  setUsers: PropTypes.func,
+  onClose: PropTypes.func,
+  isOpen: PropTypes.bool,
   data: PropTypes.shape({
     id: PropTypes.string.isRequired,
     addressStreet: PropTypes.string.isRequired,
@@ -357,7 +357,14 @@ DonationModal.propTypes = {
     phoneNum: PropTypes.string.isRequired,
     notes: PropTypes.string.isRequired,
     submittedDate: PropTypes.string.isRequired,
-  }).isRequired,
+  }),
+};
+
+DonationModal.defaultProps = {
+  data: {},
+  isOpen: false,
+  onClose: () => {},
+  setUsers: () => {},
 };
 
 export default DonationModal;
