@@ -45,15 +45,12 @@ const RouteCalendar = () => {
   useEffect(() => {
     const fetchAllRoutesAndDrivers = async () => {
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-      const eventsList = routesFromDB.map(route => {
-        const { id, name, date } = route;
-        return {
-          id,
-          title: name,
-          start: new Date(date).toISOString().replace(/T.*$/, ''),
-          allDay: true,
-        };
-      });
+      const eventsList = routesFromDB.map(({ id, name, date }) => ({
+        id,
+        title: name,
+        start: new Date(date).toISOString().replace(/T.*$/, ''),
+        allDay: true,
+      }));
       setCurrentEvents(eventsList);
       setDrivers(driversFromDB);
 

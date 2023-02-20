@@ -51,9 +51,6 @@ const formatAddress = ({ addressStreet, addressUnit, addressCity, addressZip }) 
 
 // creates Google Maps URL for route and opens it in new window
 const handleNavigateToAddress = donations => {
-  // set PNP address as origin; this will show the origin as Patriots and Paws rather than as just the address on Google Maps
-  const origin = 'Patriots and Paws';
-
   const addresses = donations.map(donation => formatAddress(donation));
   const n = addresses.length;
 
@@ -62,11 +59,10 @@ const handleNavigateToAddress = donations => {
   // set last address as destination
   const destination = addresses[n - 1];
 
-  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(
-    origin,
-  )}&destination=${encodeURIComponent(destination)}&waypoints=${encodeURIComponent(
-    waypoints,
-  )}&travelmode=driving`;
+  // no origin parameter specified so that origin will default to device location
+  const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+    destination,
+  )}&waypoints=${encodeURIComponent(waypoints)}&travelmode=driving`;
   window.open(googleMapsUrl, '_blank');
 };
 
