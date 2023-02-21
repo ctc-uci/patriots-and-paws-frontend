@@ -14,12 +14,17 @@ import {
   MenuList,
   MenuItem,
   useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalCloseButton,
 } from '@chakra-ui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { logout, useNavigate, getUserFromDB, auth, getCurrentUser } from '../../utils/AuthUtils';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import pnpLogo from './PNPlogo.png';
 import AUTH_ROLES from '../../utils/AuthConfig';
+import EditAccountModal from '../EditAccountModal/EditAccountModal';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
@@ -28,6 +33,8 @@ const Navbar = ({ cookies }) => {
   const [role, setRole] = useState('');
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isProfileOpen, onOpen: onProfileOpen, onClose: onProfileClose } = useDisclosure();
+
   useEffect(() => {
     const checkRole = () => {
       const currentUserRole = cookies.get(cookieKeys.ROLE);
@@ -63,6 +70,14 @@ const Navbar = ({ cookies }) => {
       top={0}
       h="60px"
     >
+      <Modal isOpen={isProfileOpen} onClose={onProfileClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <EditAccountModal staffProfile={user} />
+          <ModalCloseButton />
+        </ModalContent>
+      </Modal>
+
       <HStack spacing="24px">
         <LinkBox>
           <LinkOverlay href="https://www.patriotsandpaws.org/" isExternal>
@@ -106,9 +121,7 @@ const Navbar = ({ cookies }) => {
           {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
         </MenuButton>
         <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
-          <MenuItem as={NavLink} to={`/users/${user.id}`}>
-            Profile
-          </MenuItem>
+          <MenuItem onClick={onProfileOpen}>Profile</MenuItem>
           <MenuItem onClick={handleSubmit}>Logout</MenuItem>
         </MenuList>
       </Menu>
