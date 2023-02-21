@@ -16,15 +16,7 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  // NumberInput,
-  // NumberInputField,
-  // NumberInputStepper,
-  // NumberIncrementStepper,
-  // NumberDecrementStepper,
-  // Stat,
   Heading,
-  // Flex,
-  // Spacer,
 } from '@chakra-ui/react';
 // import { CloseIcon } from '@chakra-ui/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -87,7 +79,7 @@ function DonationForm() {
     'Patio Furniture',
   ]);
 
-  const [DonatedFurnitureList, setDonatedFurniture] = useState([]);
+  const [donatedFurnitureList, setDonatedFurniture] = useState([]);
 
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
@@ -159,24 +151,20 @@ function DonationForm() {
     onClose(e);
   };
 
-  const addDonation = ev => {
-    setDonatedFurniture(prev => [...prev, { name: ev.target.value, num: 1 }]);
-    setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
-  };
-
   const removeDonation = removedName => {
     setFurnitureOptions(prev => [...prev, removedName]);
-    const res = DonatedFurnitureList.filter(e => e.name !== removedName);
+    const res = donatedFurnitureList.filter(e => e.name !== removedName);
     setDonatedFurniture(res);
   };
 
-  const onSelectFurniture = async ev => {
-    await addDonation(ev);
+  const addDonation = async ev => {
+    setDonatedFurniture(prev => [...prev, { name: ev.target.value, num: 1 }]);
+    setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
     setSelectedFurnitureValue('Select Furniture');
   };
 
   const changeDonation = (furnitureName, ev) => {
-    const furniture = DonatedFurnitureList.find(e => e.name === furnitureName);
+    const furniture = donatedFurnitureList.find(e => e.name === furnitureName);
     furniture.num = +ev;
   };
 
@@ -276,7 +264,7 @@ function DonationForm() {
         <Select
           placeholder="Select Furniture"
           value={selectedFurnitureValue}
-          onChange={ev => onSelectFurniture(ev)}
+          onChange={ev => addDonation(ev)}
           className={styles['field-section']}
         >
           {furnitureOptions.map((furnitureItem, i) => (
@@ -285,8 +273,7 @@ function DonationForm() {
           ))}
         </Select>
 
-        {DonatedFurnitureList.map((donatedFurniture, i) => (
-          // eslint-disable-next-line react/no-array-index-key
+        {donatedFurnitureList.map((donatedFurniture, i) => (
           <DonationCard
             // eslint-disable-next-line react/no-array-index-key
             key={i}
@@ -294,40 +281,6 @@ function DonationForm() {
             changeDon={changeDonation}
             removeDon={removeDonation}
           />
-          // <Stat key={i} className={styles['field-section']}>
-          //   <Flex
-          //     border="1px"
-          //     borderColor="gray.200"
-          //     alignItems="center"
-          //     h="14vh"
-          //     w="30vw"
-          //     paddingLeft={5}
-          //   >
-          //     <Heading size="sm">{donatedFurniture.name}</Heading>
-          //     <Spacer />
-          //     <NumberInput
-          //       // defaultValue={1}
-          //       // value={donatedFurniture.num}
-          //       defaultValue={donatedFurniture.num}
-          //       onChange={ev => changeDonation(donatedFurniture.name, ev)}
-          //       min={1}
-          //       className={styles['integer-input']}
-          //       size="sm"
-          //     >
-          //       <NumberInputField />
-          //       <NumberInputStepper>
-          //         <NumberIncrementStepper />
-          //         <NumberDecrementStepper />
-          //       </NumberInputStepper>
-          //     </NumberInput>
-          //     <CloseIcon
-          //       onClick={() => removeDonation(donatedFurniture.name)}
-          //       w="3vw"
-          //       h="3vh"
-          //       color="red.500"
-          //     />
-          //   </Flex>
-          // </Stat>
         ))}
 
         <Box className={styles['field-section']}>
@@ -375,8 +328,6 @@ function DonationForm() {
           </Heading>
           <Input {...register('additional')} />
         </Box>
-
-        <Button onClick={() => console.log(DonatedFurnitureList)}> Donated Furniture Print</Button>
 
         <Button type="submit">Submit</Button>
       </form>

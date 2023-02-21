@@ -33,8 +33,8 @@ function DonationCard({ donatedFurniture, changeDon, removeDon }) {
         border="1px"
         borderColor="gray.200"
         alignItems="center"
-        h="14vh"
-        w="30vw"
+        h="10vh"
+        w="25vw"
         paddingLeft={5}
       >
         <Heading size="sm">{name}</Heading>
@@ -52,7 +52,7 @@ function DonationCard({ donatedFurniture, changeDon, removeDon }) {
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
-        <CloseIcon onClick={() => removeDon(name)} w="3vw" h="3vh" color="red.500" />
+        <CloseIcon onClick={() => removeDon(name)} w="2vw" h="2vh" color="red.500" />
       </Flex>
     </Stat>
   );
