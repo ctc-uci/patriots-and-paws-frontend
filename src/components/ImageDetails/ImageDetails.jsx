@@ -1,35 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { Input, Box, CloseButton } from '@chakra-ui/react';
+import { Input, Box, CloseButton, Image, Text } from '@chakra-ui/react';
 
-function ImageDetails({
-  index,
-  name,
-  preview,
-  defaultDescription,
-  removeImage,
-  removeDescription,
-  updateDescription,
-}) {
-  const [currentDescription, setCurrentDescription] = useState(defaultDescription);
-
+function ImageDetails({ index, name, preview, description, removeImage, updateDescription }) {
   return (
     <Box>
-      <p>{name}</p>
+      <Text>{name}</Text>
       <CloseButton
         onClick={() => {
           removeImage(index);
-          removeDescription(index);
         }}
       />
-      <img key={preview} alt={name} src={preview} />
+      <Image key={preview} alt={name} src={preview} />
       <Input
         placeholder="Add description"
         onChange={ev => {
-          setCurrentDescription(ev.target.value);
           updateDescription(index, ev.target.value);
         }}
-        value={currentDescription}
+        defaultValue={description}
       />
     </Box>
   );
@@ -39,9 +27,8 @@ ImageDetails.propTypes = {
   index: PropTypes.number.isRequired,
   name: PropTypes.isRequired,
   preview: PropTypes.isRequired,
-  defaultDescription: PropTypes.isRequired,
+  description: PropTypes.isRequired,
   removeImage: PropTypes.func.isRequired,
-  removeDescription: PropTypes.func.isRequired,
   updateDescription: PropTypes.func.isRequired,
 };
 
