@@ -17,6 +17,7 @@ import {
   ModalCloseButton,
   useDisclosure,
   Heading,
+  Flex,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -247,15 +248,17 @@ function DonationForm() {
           ))}
         </Select>
 
-        {donatedFurnitureList.map((donatedFurniture, i) => (
-          <DonationCard
-            // eslint-disable-next-line react/no-array-index-key
-            key={i}
-            donatedFurniture={donatedFurniture}
-            changeDon={changeDonation}
-            removeDon={removeDonation}
-          />
-        ))}
+        <Flex wrap="wrap" w="100vw">
+          {donatedFurnitureList.map((donatedFurniture, i) => (
+            <DonationCard
+              // eslint-disable-next-line react/no-array-index-key
+              key={i}
+              donatedFurniture={donatedFurniture}
+              changeDon={changeDonation}
+              removeDon={removeDonation}
+            />
+          ))}
+        </Flex>
 
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>

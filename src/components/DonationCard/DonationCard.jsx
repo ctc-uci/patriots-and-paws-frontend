@@ -29,14 +29,7 @@ function DonationCard({ donatedFurniture, changeDon, removeDon }) {
 
   return (
     <Stat className={styles['field-section']}>
-      <Flex
-        border="1px"
-        borderColor="gray.200"
-        alignItems="center"
-        h="10vh"
-        w="25vw"
-        paddingLeft={5}
-      >
+      <Flex border="1px" borderColor="gray.200" alignItems="center" h={50} w={300} paddingLeft={5}>
         <Heading size="sm">{name}</Heading>
         <Spacer />
         <NumberInput
@@ -52,7 +45,7 @@ function DonationCard({ donatedFurniture, changeDon, removeDon }) {
             <NumberDecrementStepper />
           </NumberInputStepper>
         </NumberInput>
-        <CloseIcon onClick={() => removeDon(name)} w="2vw" h="2vh" color="red.500" />
+        <CloseIcon onClick={() => removeDon(name)} w={7} h={7} color="red.500" padding={2} />
       </Flex>
     </Stat>
   );
