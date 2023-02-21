@@ -14,10 +14,6 @@ import {
   MenuList,
   MenuItem,
   useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalCloseButton,
 } from '@chakra-ui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { logout, useNavigate, getUserFromDB, auth, getCurrentUser } from '../../utils/AuthUtils';
@@ -70,13 +66,7 @@ const Navbar = ({ cookies }) => {
       top={0}
       h="60px"
     >
-      <Modal isOpen={isProfileOpen} onClose={onProfileClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <EditAccountModal staffProfile={user} />
-          <ModalCloseButton />
-        </ModalContent>
-      </Modal>
+      <EditAccountModal data={user} isOpen={isProfileOpen} onClose={onProfileClose} isSuperAdmin />
 
       <HStack spacing="24px">
         <LinkBox>

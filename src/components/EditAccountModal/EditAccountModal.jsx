@@ -115,15 +115,18 @@ const EditAccountModal = ({
         confirmPassword: '',
       });
       setErrorMessage('User successfully edited');
-      setUsers(prev => prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)));
-      if (data.role === 'admin') {
-        setAdminUsers(prev =>
-          prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
-        );
-      } else {
-        setDriverUsers(prev =>
-          prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
-        );
+      console.log(setUsers);
+      if (setUsers) {
+        setUsers(prev => prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)));
+        if (data.role === 'admin') {
+          setAdminUsers(prev =>
+            prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
+          );
+        } else {
+          setDriverUsers(prev =>
+            prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
+          );
+        }
       }
       closeModals();
     } catch (err) {
