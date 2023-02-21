@@ -18,13 +18,10 @@ import {
   useDisclosure,
   Heading,
 } from '@chakra-ui/react';
-// import { CloseIcon } from '@chakra-ui/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-// import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
-// import FurnitureField from '../FurnitureField/FurnitureField';
 import DropZone from '../DropZone/DropZone';
 import { sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
@@ -61,7 +58,6 @@ function DonationForm() {
   const {
     handleSubmit,
     register,
-    // control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
