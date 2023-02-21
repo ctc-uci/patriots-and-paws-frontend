@@ -20,7 +20,7 @@ import {
 } from '@chakra-ui/react';
 // import { CloseIcon } from '@chakra-ui/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 // import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
@@ -61,7 +61,7 @@ function DonationForm() {
   const {
     handleSubmit,
     register,
-    control,
+    // control,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
@@ -83,45 +83,26 @@ function DonationForm() {
 
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
-  const {
-    fields: descriptionsIntermediateList,
-    update: updateDescription,
-    replace: replaceIntermediateDescriptions,
-    append: appendDescription,
-    remove: removeDescription,
-  } = useFieldArray({
-    control,
-    name: 'ImageDetail',
-  });
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [files, setFiles] = useState([]);
   const [filesIntermediate, setFilesIntermediate] = useState([]);
-  const [descriptions, setDescriptions] = useState([]);
 
   const removeIntermediateFile = index => {
-    setFilesIntermediate(
-      filesIntermediate.filter(item => filesIntermediate.indexOf(item) !== index),
-    );
-  };
-
-  const removeIntermediateDescription = index => {
-    removeDescription(index);
+    setFilesIntermediate(prev => prev.filter((item, idx) => idx !== index));
   };
 
   const getDescription = index => {
-    const descObj = descriptionsIntermediateList[index];
-    if (descObj) {
-      return Object.values(descObj).slice(0, -1).join('');
-    }
-    return '';
+    return filesIntermediate[index].description;
   };
 
   const updateIntermediateDescription = (index, newDescription) => {
-    if (index >= descriptionsIntermediateList.length) {
-      appendDescription('');
-    }
-    updateDescription(index, newDescription);
+    setFilesIntermediate(prev => {
+      return prev
+        .slice(0, index)
+        .concat(
+          [{ file: prev[index].file, description: newDescription }].concat(prev.slice(index + 1)),
+        );
+    });
   };
 
   const onSubmit = async data => {
@@ -135,19 +116,16 @@ function DonationForm() {
 
   const onOpenModal = e => {
     setFilesIntermediate(files);
-    replaceIntermediateDescriptions(descriptions);
     onOpen(e);
   };
 
   const onSave = e => {
     setFiles(filesIntermediate);
-    setDescriptions(descriptionsIntermediateList);
     onClose(e);
   };
 
   const onCancel = e => {
     setFilesIntermediate(files);
-    replaceIntermediateDescriptions(descriptions);
     onClose(e);
   };
 
@@ -296,17 +274,17 @@ function DonationForm() {
               <ModalCloseButton />
               <ModalBody>
                 <DropZone setFiles={setFilesIntermediate} />
-                {filesIntermediate.map(({ name, preview }, index) => {
+                {filesIntermediate.map(({ file: { name, preview }, description }, index) => {
                   return (
                     // eslint-disable-next-line react/jsx-key
                     <ImageDetails
                       index={index}
                       name={name}
                       preview={preview}
-                      defaultDescription={getDescription(index)}
+                      description={description}
                       removeImage={removeIntermediateFile}
-                      removeDescription={removeIntermediateDescription}
                       updateDescription={updateIntermediateDescription}
+                      getCurrentDescription={getDescription}
                     />
                   );
                 })}
