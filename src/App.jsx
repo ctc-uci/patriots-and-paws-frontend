@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
-import uploadImage from './utils/furnitureUtils'; // was originally 'FurnitureUtils' should probably be this
+import uploadImage from './utils/FurnitureUtils'; // was originally 'FurnitureUtils' should probably be this
 import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';

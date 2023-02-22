@@ -13,6 +13,8 @@ import {
   ListItem,
 } from '@chakra-ui/react';
 
+import { PropTypes } from 'prop-types';
+
 const ItemInfo = ({ items, isAccepted = false }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
@@ -51,6 +53,16 @@ const ItemInfo = ({ items, isAccepted = false }) => {
       </Modal>
     </>
   );
+};
+
+ItemInfo.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      accepted: PropTypes.bool,
+    }),
+  ).isRequired,
+  isAccepted: PropTypes.bool.isRequired,
 };
 
 export default ItemInfo;
