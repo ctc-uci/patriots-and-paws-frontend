@@ -47,7 +47,7 @@ const DonationImagesContainer = ({ data }) => {
         {displayedData.map(image => (
           <Image
             key={image.id}
-            alt="test"
+            alt={image.notes}
             src={image.imageUrl}
             onClick={() => handleImageClick(image)}
           />

@@ -19,7 +19,6 @@ import {
   Modal,
   useDisclosure,
   Link,
-  // Image,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
