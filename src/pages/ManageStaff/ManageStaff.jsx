@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { PNPBackend } from '../../utils/utils';
-import { getUserFromDB } from '../../utils/AuthUtils';
+import { auth, getCurrentUser, getUserFromDB } from '../../utils/AuthUtils';
 import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import menuIcon from '../../assets/Menu.svg';
@@ -31,7 +31,8 @@ const ManageStaff = ({ cookies }) => {
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   const refreshData = async () => {
-    const currentUser = await getUserFromDB();
+    const { uid } = await getCurrentUser(auth);
+    const currentUser = await getUserFromDB(uid);
     const userId = currentUser.id;
     const currentUserRole = await cookies.get(cookieKeys.ROLE);
     const { data } = await PNPBackend.get('/users');
