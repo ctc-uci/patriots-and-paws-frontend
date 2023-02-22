@@ -17,26 +17,27 @@ import {
   InputGroup,
   Textarea,
   Modal,
+  Tag,
   useDisclosure,
   Link,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
 import { PNPBackend } from '../../utils/utils';
-import { makeDate } from '../../utils/InventoryUtils';
+import { makeDate, colorMap, STATUSES } from '../../utils/InventoryUtils';
 import DonationImagesContainer from './DonationImagesContainer';
 import DonationFurnitureContainer from './DonationFurnitureContainer';
 import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
-import STATUSES from '../../utils/config';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
-  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES.STATUSES;
+  const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES.STATUSES;
 
   const {
     id,
     status,
     firstName,
+    lastName,
     submittedDate,
     addressStreet,
     addressUnit,
@@ -51,8 +52,22 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
+  // const [currentAddress, setCurrentAddress] = useState({
+  //   addressStreet: '',
+  //   addressUnit: '',
+  //   addressCity: '',
+  //   addressZip: '',
+  // });
   useEffect(() => {
     setCurrentStatus(status);
+    // setCurrentAddress(() => {
+    //   return {
+    //     addressStreet,
+    //     addressUnit,
+    //     addressCity,
+    //     addressZip,
+    //   };
+    // });
   }, [data]);
 
   const {
@@ -68,10 +83,33 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     });
   };
 
+  const fullname = `${firstName} ${lastName}`;
+
+  //   const googleMap = "";
+  //   if (addressStreet){
+  //  const addressArray = [
+  //     addressStreet,
+  //     addressUnit,
+  //     addressCity,
+  //     addressZip,
+  //   ];
+  //    googleMap = handleNavigateToAddress(addressArray);
+  //   // addressUnit !== ''
+  //   //   ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
+  //   //   : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
+  //   }
   const googleMap =
     addressUnit !== ''
       ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
       : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
+
+  const makeStatusTag = curstatus => {
+    return (
+      <Tag size="xs" m={5} ml={15} colorScheme={colorMap[curstatus]}>
+        {STATUSES[status]}
+      </Tag>
+    );
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="full">
@@ -80,76 +118,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
         <ModalHeader m={3}>
           <Flex>
             <Text fontSize={36}>Donation #{id}</Text>
-            {currentStatus && (
-              <Box>
-                {currentStatus === PENDING ? (
-                  <Button colorScheme="gray" m={5} ml={15} size="xs">
-                    Pending
-                  </Button>
-                ) : (
-                  ''
-                )}
-                {currentStatus === APPROVED && (
-                  <Button size="xs" m={5} ml={15} colorScheme="green">
-                    Approved
-                  </Button>
-                )}
-                {currentStatus === CHANGES_REQUESTED && (
-                  <Button size="xs" m={5} ml={15} colorScheme="blue">
-                    Changes Requested
-                  </Button>
-                )}
-                {currentStatus === 'picked up' && (
-                  <Button size="xs" m={5} ml={15} colorScheme="green">
-                    Picked Up
-                  </Button>
-                )}
-                {currentStatus === SCHEDULED && (
-                  <Button size="xs" m={5} ml={15} colorScheme="green">
-                    Scheduled
-                  </Button>
-                )}
-                {currentStatus === ARCHIVED && (
-                  <Button size="xs" m={5} ml={15} colorScheme="blue">
-                    Archived
-                  </Button>
-                )}
-              </Box>
-            )}
-            {/* <Box>
-              {currentStatus === PENDING ? (
-                <Button colorScheme="gray" m={5} ml={15} size="xs">
-                  Pending
-                </Button>
-              ) : (
-                ''
-              )}
-              {currentStatus === APPROVED && (
-                <Button size="xs" m={5} ml={15} colorScheme="green">
-                  Approved
-                </Button>
-              )}
-              {currentStatus === CHANGES_REQUESTED && (
-                <Button size="xs" m={5} ml={15} colorScheme="blue">
-                  Changes Requested
-                </Button>
-              )}
-              {currentStatus === 'picked up' && (
-                <Button size="xs" m={5} ml={15} colorScheme="green">
-                  Picked Up
-                </Button>
-              )}
-              {currentStatus === SCHEDULED && (
-                <Button size="xs" m={5} ml={15} colorScheme="green">
-                  Scheduled
-                </Button>
-              )}
-              {currentStatus === ARCHIVED && (
-                <Button size="xs" m={5} ml={15} colorScheme="blue">
-                  Archived
-                </Button>
-              )}
-            </Box> */}
+            {makeStatusTag}
           </Flex>
           <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
         </ModalHeader>
@@ -163,7 +132,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               <Stack spacing={3}>
                 <InputGroup>
                   <InputLeftAddon>Name</InputLeftAddon>
-                  <Input placeholder="name" defaultValue={firstName} isRequired isDisabled />
+                  <Input placeholder="name" defaultValue={fullname} isRequired isDisabled />
                 </InputGroup>
               </Stack>
               <Stack direction="row" my={2}>
@@ -304,18 +273,18 @@ DonationModal.propTypes = {
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
   data: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    id: PropTypes.number.isRequired,
-    addressStreet: PropTypes.string.isRequired,
-    addressUnit: PropTypes.string.isRequired,
-    addressCity: PropTypes.string.isRequired,
-    addressZip: PropTypes.number.isRequired,
-    firstName: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    phoneNum: PropTypes.string.isRequired,
-    notes: PropTypes.string.isRequired,
-    submittedDate: PropTypes.string.isRequired,
+    status: PropTypes.string,
+    id: PropTypes.number,
+    addressStreet: PropTypes.string,
+    addressUnit: PropTypes.string,
+    addressCity: PropTypes.string,
+    addressZip: PropTypes.number,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    phoneNum: PropTypes.string,
+    notes: PropTypes.string,
+    submittedDate: PropTypes.string,
     pictures: PropTypes.shape({
       id: PropTypes.string,
       imageURL: PropTypes.string,

@@ -44,7 +44,7 @@ const DonationImagesContainer = ({ data }) => {
   return (
     <ChakraProvider>
       <SimpleGrid columns={2} gap={1}>
-        {displayedData.map(image => (
+        {displayedData?.map(image => (
           <Image
             key={image.id}
             alt={image.notes}
@@ -71,11 +71,13 @@ const DonationImagesContainer = ({ data }) => {
 };
 
 DonationImagesContainer.propTypes = {
-  data: PropTypes.arrayOf({
-    id: PropTypes.string,
-    imageURL: PropTypes.string,
-    notes: PropTypes.string,
-  }),
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      imageURL: PropTypes.string,
+      notes: PropTypes.string,
+    }),
+  ),
 };
 
 DonationImagesContainer.defaultProps = {

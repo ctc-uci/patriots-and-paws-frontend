@@ -4,13 +4,4 @@ const AUTH_ROLES = {
   DRIVER_ROLE: 'driver',
 };
 
-const STATUSES = {
-  PENDING: 'pending',
-  APPROVED: 'approved',
-  CHANGES_REQUESTED: 'changes requested',
-  SCHEDULING: 'scheduling',
-  SCHEDULED: 'scheduled',
-  ARCHIVED: 'archived',
-};
-
-export default { AUTH_ROLES, STATUSES };
+export default AUTH_ROLES;

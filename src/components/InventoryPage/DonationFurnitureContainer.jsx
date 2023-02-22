@@ -27,7 +27,7 @@ const DonationFurnitureContainer = ({ data }) => {
 
   return (
     <ChakraProvider>
-      {displayedData.map(furniture => (
+      {displayedData?.map(furniture => (
         <InputGroup key={furniture.id}>
           <Input value={furniture.name} isDisabled />
           <InputRightAddon>{furniture.count}</InputRightAddon>
@@ -45,11 +45,13 @@ const DonationFurnitureContainer = ({ data }) => {
 };
 
 DonationFurnitureContainer.propTypes = {
-  data: PropTypes.arrayOf({
-    id: PropTypes.string,
-    name: PropTypes.string,
-    cout: PropTypes.number,
-  }),
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      name: PropTypes.string,
+      cout: PropTypes.number,
+    }),
+  ),
 };
 
 DonationFurnitureContainer.defaultProps = {

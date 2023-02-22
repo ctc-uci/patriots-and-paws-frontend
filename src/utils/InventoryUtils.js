@@ -25,6 +25,15 @@ const getDonationsFromDB = async () => {
   return donations;
 };
 
+const colorMap = {
+  APPROVED: 'green',
+  PENDING: 'gray',
+  CHANGES_REQUESTED: 'blue',
+  PICKED_UP: 'green',
+  SCHEDULED: 'green',
+  ARCHIVED: 'blue',
+};
+
 const formatImageData = data => {
   if (data.length < 4) {
     return data.reduce((acc, curr) => {
@@ -62,4 +71,27 @@ const formatFurnitureData = data => {
   );
 };
 
-export { getDonationsFromDB, makeDate, formatImageData, formatFurnitureData };
+const STATUSES = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  CHANGES_REQUESTED: 'changes requested',
+  SCHEDULING: 'scheduling',
+  SCHEDULED: 'scheduled',
+  ARCHIVED: 'archived',
+};
+
+const EMAILSTATUSES = {
+  CANCEL_PICKUP: 'cancel pickup',
+  APPROVE: 'approve',
+  REQUEST_CHANGES: 'request changes',
+  SCHEDULED: 'scheduled',
+};
+export {
+  getDonationsFromDB,
+  makeDate,
+  formatImageData,
+  formatFurnitureData,
+  colorMap,
+  STATUSES,
+  EMAILSTATUSES,
+};
