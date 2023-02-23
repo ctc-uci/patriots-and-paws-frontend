@@ -9,9 +9,9 @@ import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import Donate from './pages/donation/Donate';
-import DonateStatus from './pages/donation/DonateStatus';
 import UserProfile from './pages/UserProfile/UserProfile';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
+import RoutesPage from './pages/RoutesPage/RoutesPage';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 import EmailAction from './components/EmailAction/EmailAction';
@@ -28,6 +28,7 @@ import InventoryPage from './components/InventoryPage/InventoryPage';
 import DriverDashboard from './pages/DriverDashboard/DriverDashboard';
 
 import AUTH_ROLES from './utils/AuthConfig';
+import DonorLogin from './pages/DonorLogin/DonorLogin';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
@@ -162,6 +163,17 @@ function App() {
                 />
               }
             />
+            <Route
+              exact
+              path="/routes"
+              element={
+                <ProtectedRoute
+                  Component={RoutesPage}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+                />
+              }
+            />
             <Route exact path="/donate/edit" element={<EditDonationForm />} />
             <Route exact path="/drivers/:id" element={<Drivers />} />
             <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
@@ -216,8 +228,8 @@ function App() {
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 
           <Route exact path="/donate" element={<Donate />} />
-          <Route exact path="/donate/status" element={<DonateStatus />} />
           <Route exact path="/donate/form" element={<DonationForm />} />
+          <Route exact path="/donate/status" element={<DonorLogin />} />
         </Routes>
       </Router>
     </ChakraProvider>

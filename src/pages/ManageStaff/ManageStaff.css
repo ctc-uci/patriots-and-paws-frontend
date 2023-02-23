@@ -10,18 +10,18 @@
   width: '300px';
 }
 
-.test{
+.test {
   display: flex;
   flex-direction: column;
 }
 
 .poop {
-  width: "20px";
+  width: '20px';
 }
 
 .blah {
   min-width: 0;
-  width: "100px";
+  width: '100px';
   background-color: rgb(223, 216, 216);
 }
 
@@ -31,26 +31,26 @@
   size: "sm";
 } */
 
-.driver-name{
+.driver-name {
   font-weight: bold;
   /* margin-left: 40px; */
   align-self: left;
   text-align: left;
 }
 
-.driver-info{
+.driver-info {
   /* background-color: rgb(77, 77, 130); */
   flex-direction: column;
   text-align: left;
   margin-right: 20;
 }
 
-.role{
+.role {
   font-size: 12px;
   color: gray;
 }
 
-.users{
+.users {
   /* spacing: 0;  */
   align-items: center;
   margin-right: 40;
@@ -60,19 +60,19 @@
   background-color: rgb(245, 245, 245);
 }
 
-.side-panel{
+.side-panel {
   /* background-color: rgb(245, 245, 245); */
   flex-direction: column;
 }
 
-.staff-title{
+.staff-title {
   font-weight: bold;
   font-size: 20px;
   align-items: center;
   margin-left: 3;
 }
 
-.panel-title{
+.panel-title {
   flex-direction: row;
   margin-top: 2;
   margin-bottom: 2;
@@ -83,8 +83,7 @@
 
 .create-account-button {
   margin: 1em 0 0 0;
-  width: 20px
-
+  width: 20px;
 }
 
 .table-column-names {
@@ -96,14 +95,13 @@
 }
 
 .row-text {
-  font-family: "Inter";
+  font-family: 'Inter';
   font-size: 16px;
   border: 1px;
-
 }
 
 .table-header {
-  font-family: "Inter";
+  font-family: 'Inter';
   font-size: 12px;
   /* {.column-name {
       color: black;
