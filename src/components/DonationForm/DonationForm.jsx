@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import {
   Box,
@@ -8,16 +7,8 @@ import {
   FormControl,
   FormErrorMessage,
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Heading,
   Flex,
+  Heading,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -27,7 +18,7 @@ import DropZone from '../DropZone/DropZone';
 import { sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
-import uploadImage from '../../utils/furnitureUtils';
+// import uploadImage from '../../utils/furnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
 
 const itemFieldSchema = {
@@ -40,7 +31,9 @@ const schema = yup.object({
   phoneNumber: yup
     .string()
     .required('Phone number is required')
-    .matches(/[0-9]{3}-[0-9]{3}-[0-9]{4}/, 'Phone number must match xxx-xxx-xxxx format'),
+    .matches(/[0-9]{10}/, 'Phone number must be 10 digits'),
+  streetAddress: yup.string().required('Street Address is required'),
+  city: yup.string().required('City is required'),
   zipcode: yup
     .string()
     .required('ZIP Code is required')
@@ -65,7 +58,6 @@ function DonationForm() {
   });
 
   const [furnitureOptions, setFurnitureOptions] = useState([
-    // 'Select Furniture',
     'Dressers',
     'Clean Housewares',
     'Antiques',
@@ -80,20 +72,14 @@ function DonationForm() {
 
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [files, setFiles] = useState([]);
-  const [filesIntermediate, setFilesIntermediate] = useState([]);
 
-  const removeIntermediateFile = index => {
-    setFilesIntermediate(prev => prev.filter((item, idx) => idx !== index));
+  const removeFile = index => {
+    setFiles(prev => prev.filter((item, idx) => idx !== index));
   };
 
-  const getDescription = index => {
-    return filesIntermediate[index].description;
-  };
-
-  const updateIntermediateDescription = (index, newDescription) => {
-    setFilesIntermediate(prev => {
+  const updateDescription = (index, newDescription) => {
+    setFiles(prev => {
       return prev
         .slice(0, index)
         .concat(
@@ -103,27 +89,16 @@ function DonationForm() {
   };
 
   const onSubmit = async data => {
-    await Promise.all(files.map(async file => uploadImage(file)));
+    // console.log(data);
+    // console.log(donatedFurnitureList);
+    // console.log(files);
+    // await Promise.all(files.map(async file => uploadImage(file)));
     try {
       sendEmail(data.email1, dconfirmemailtemplate);
     } catch (err) {
+      // console.log(err.message);
       // to do: error message that email is invalid
     }
-  };
-
-  const onOpenModal = e => {
-    setFilesIntermediate(files);
-    onOpen(e);
-  };
-
-  const onSave = e => {
-    setFiles(filesIntermediate);
-    onClose(e);
-  };
-
-  const onCancel = e => {
-    setFilesIntermediate(files);
-    onClose(e);
   };
 
   const removeDonation = removedName => {
@@ -170,32 +145,30 @@ function DonationForm() {
             Address
           </Heading>
 
-          <FormControl>
+          <FormControl isInvalid={errors && errors.streetAddress}>
             <FormLabel>Street Address</FormLabel>
-            <Input {...register('streetAddres')} />
+            <Input {...register('streetAddress')} />
+            <FormErrorMessage>
+              {errors.streetAddress && errors.streetAddress.message}
+            </FormErrorMessage>
           </FormControl>
 
           <FormControl>
             <FormLabel>Address Line 2</FormLabel>
-            <Input {...register('streetAddres2')} />
+            <Input {...register('streetAddress2')} />
           </FormControl>
 
           <Box className={styles.form}>
-            <FormControl width="47%">
+            <FormControl width="47%" isInvalid={errors && errors.city}>
               <FormLabel>City </FormLabel>
               <Input {...register('city')} />
+              <FormErrorMessage>{errors.city && errors.city.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl width="47%">
               <FormLabel>State</FormLabel>
-              <Select
-                placeholder="Select state"
-                defaultChecked="Select state"
-                {...register('state')}
-              >
-                <option>Alaska</option>
-                <option>California</option>
-                <option>Texas</option>
+              <Select defaultChecked="CA" disabled>
+                <option>CA</option>
               </Select>
             </FormControl>
           </Box>
@@ -236,67 +209,54 @@ function DonationForm() {
           </Box>
         </Box>
 
-        <Select
-          placeholder="Select Furniture"
-          value={selectedFurnitureValue}
-          onChange={ev => addDonation(ev)}
-          className={styles['field-section']}
-        >
-          {furnitureOptions.map((furnitureItem, i) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <option key={i}>{furnitureItem}</option>
-          ))}
-        </Select>
-
-        <Flex wrap="wrap" w="100vw">
-          {donatedFurnitureList.map((donatedFurniture, i) => (
+        <Box className={styles['field-section']}>
+          <Heading size="md" className={styles.title} marginBottom="1em">
+            Furniture
+          </Heading>
+          <Select
+            placeholder="Select Furniture"
+            value={selectedFurnitureValue}
+            onChange={ev => addDonation(ev)}
+            marginBottom="1em"
+            w="80%"
+          >
+            {furnitureOptions.map(furnitureItem => (
+              <option key={furnitureItem}>{furnitureItem}</option>
+            ))}
+          </Select>
+          {donatedFurnitureList.map(donatedFurniture => (
             <DonationCard
-              // eslint-disable-next-line react/no-array-index-key
-              key={i}
+              key={donatedFurniture.name}
               donatedFurniture={donatedFurniture}
               changeDon={changeDonation}
               removeDon={removeDonation}
             />
           ))}
-        </Flex>
+        </Box>
 
         <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title}>
+          <Heading size="md" className={styles.title} marginBottom="1em">
             Images
           </Heading>
-          <Button onClick={onOpenModal}>Upload Images</Button>
 
-          <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Images</ModalHeader>
-              <ModalCloseButton />
-              <ModalBody>
-                <DropZone setFiles={setFilesIntermediate} />
-                {filesIntermediate.map(({ file: { name, preview }, description }, index) => {
-                  return (
-                    // eslint-disable-next-line react/jsx-key
-                    <ImageDetails
-                      index={index}
-                      name={name}
-                      preview={preview}
-                      description={description}
-                      removeImage={removeIntermediateFile}
-                      updateDescription={updateIntermediateDescription}
-                      getCurrentDescription={getDescription}
-                    />
-                  );
-                })}
-              </ModalBody>
-
-              <ModalFooter>
-                <Button mr={3} onClick={onCancel}>
-                  Cancel
-                </Button>
-                <Button onClick={onSave}>Save Images</Button>
-              </ModalFooter>
-            </ModalContent>
-          </Modal>
+          <Box w="80%">
+            <DropZone setFiles={setFiles} />
+            <Flex wrap="wrap">
+              {files.map(({ file: { name, preview }, description }, index) => {
+                return (
+                  <ImageDetails
+                    key={name}
+                    index={index}
+                    name={name}
+                    preview={preview}
+                    description={description}
+                    removeImage={removeFile}
+                    updateDescription={updateDescription}
+                  />
+                );
+              })}
+            </Flex>
+          </Box>
         </Box>
 
         <Box className={styles['field-section']}>
