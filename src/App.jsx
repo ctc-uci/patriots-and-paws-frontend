@@ -9,7 +9,6 @@ import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import Donate from './pages/donation/Donate';
-import DonateStatus from './pages/donation/DonateStatus';
 import UserProfile from './pages/UserProfile/UserProfile';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
 import RoutesPage from './pages/RoutesPage/RoutesPage';
@@ -28,6 +27,7 @@ import SampleRoute from './components/SampleRoute/SampleRoute';
 import InventoryPage from './components/InventoryPage/InventoryPage';
 
 import AUTH_ROLES from './utils/AuthConfig';
+import DonorLogin from './pages/DonorLogin/DonorLogin';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
@@ -184,8 +184,8 @@ function App() {
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 
           <Route exact path="/donate" element={<Donate />} />
-          <Route exact path="/donate/status" element={<DonateStatus />} />
           <Route exact path="/donate/form" element={<DonationForm />} />
+          <Route exact path="/donate/status" element={<DonorLogin />} />
         </Routes>
       </Router>
     </ChakraProvider>
