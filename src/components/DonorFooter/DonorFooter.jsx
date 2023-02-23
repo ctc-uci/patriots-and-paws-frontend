@@ -16,16 +16,16 @@ const DonorFooter = () => {
       justifyContent="space-between"
     >
       <Flex justifyContent="space-between" gap="10px">
-        <Link href="https://www.patriotsandpaws.org/our-story/">
+        <Link href="https://www.patriotsandpaws.org/our-story/" isExternal>
           <Text as="u">About Us</Text>
         </Link>
-        <Link href="https://www.patriotsandpaws.org/wanted/">
+        <Link href="https://www.patriotsandpaws.org/wanted/" isExternal>
           <Text as="u">Volunteer</Text>
         </Link>
-        <Link href="https://www.patriotsandpaws.org/asked-questions/">
+        <Link href="https://www.patriotsandpaws.org/asked-questions/" isExternal>
           <Text as="u">FAQ</Text>
         </Link>
-        <Link href="https://www.patriotsandpaws.org/donors">
+        <Link href="https://www.patriotsandpaws.org/donors" isExternal>
           <Text as="u">Donors & Supporters</Text>
         </Link>
       </Flex>

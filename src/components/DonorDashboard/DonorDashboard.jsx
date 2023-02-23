@@ -19,7 +19,7 @@ const DonorDashboard = ({ donationId }) => {
         pending: 1,
         'changes requested': 1,
       };
-      setStage(donationStage[donationStatus]);
+      setStage(donationStage[donationStatus] ?? 1);
     };
     fetchData();
   }, [donationId]);
