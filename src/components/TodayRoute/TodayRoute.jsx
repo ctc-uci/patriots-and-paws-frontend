@@ -13,24 +13,23 @@ import {
   Th,
   Td,
   Tbody,
-  useDisclosure,
 } from '@chakra-ui/react';
 import './TodayRoute.module.css';
 import { PNPBackend } from '../../utils/utils';
 import { makeDate } from '../../utils/InventoryUtils';
 
 import { getCurrentUserId } from '../../utils/AuthUtils';
-import DonationModal from '../InventoryPage/DonationModal';
+// import DonationModal from '../InventoryPage/DonationModal';
 
 const TodayRoute = () => {
   const [donations, setDonations] = useState();
   // const [users, setUsers] = useState([]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [donationData, setDonationData] = useState({});
-  const handleRowClick = data => {
-    setDonationData(data);
-    onOpen();
-  };
+  // const { isOpen, onOpen, onClose } = useDisclosure();
+  // const [donationData, setDonationData] = useState({});
+  // const handleRowClick = data => {
+  // setDonationData(data);
+  //   onOpen();
+  // };
 
   const [route, setRoute] = useState();
   const getDonationsForToday = async () => {
@@ -50,10 +49,12 @@ const TodayRoute = () => {
     getDonationsForToday();
   }, []);
 
-  // const pickupComplete = () => {
-  //   // TODO - change status in backend to archived
-
-  // };
+  const pickupComplete = id => {
+    // TODO - change status in backend to archived
+    PNPBackend.put(`/donations/${id}`, {
+      status: 'archived',
+    });
+  };
 
   return (
     <Flex minH="100vh">
@@ -85,12 +86,17 @@ const TodayRoute = () => {
                         </Tag>
                       ) : (
                         <Tag>
-                          <Checkbox />
+                          <Checkbox
+                            onChange={() => {
+                              pickupComplete(d.id);
+                            }}
+                          />
                         </Tag>
                       )}
                     </Td>
                     <Td>
-                      <Button mr={5} ml={5} onClick={() => handleRowClick(d)}>
+                      <Button mr={5} ml={5}>
+                        {/* onChange={() => handleRowClick(d)} */}
                         INFO
                       </Button>
                     </Td>
@@ -99,13 +105,13 @@ const TodayRoute = () => {
             </Tbody>
           </Table>
         </TableContainer>
-        <DonationModal
+        {/* <DonationModal
           // setUsers={setUsers}
           data={donationData}
           onClose={onClose}
           onOpen={onOpen}
           isOpen={isOpen}
-        />
+        /> */}
       </Stack>
     </Flex>
   );
