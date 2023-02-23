@@ -9,7 +9,6 @@ import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import Donate from './pages/donation/Donate';
-import DonateStatus from './pages/donation/DonateStatus';
 import UserProfile from './pages/UserProfile/UserProfile';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
 
@@ -25,6 +24,7 @@ import EmailSending from './components/EmailTemplates/EmailSending';
 import SampleRoute from './components/SampleRoute/SampleRoute';
 
 import AUTH_ROLES from './utils/AuthConfig';
+import DonorLogin from './pages/DonorLogin/DonorLogin';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
@@ -144,7 +144,7 @@ function App() {
           <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
           <Route exact path="/donate" element={<Donate />} />
           <Route exact path="/donate/form" element={<DonationForm />} />
-          <Route exact path="/donate/status" element={<DonateStatus />} />
+          <Route exact path="/donate/status" element={<DonorLogin />} />
         </Routes>
       </Router>
     </ChakraProvider>

@@ -73,12 +73,10 @@ const DonorLogin = () => {
                       onChange={e => setEmail(e.target.value)}
                     />
                   </FormControl>
-                  {loginFailed ? (
+                  {loginFailed ?? (
                     <Text color="red" fontSize="14px">
                       Donation ID and email do not match
                     </Text>
-                  ) : (
-                    <></>
                   )}
 
                   <Button colorScheme="blue" type="submit" w="100%" mt="50px">

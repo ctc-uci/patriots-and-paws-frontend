@@ -25,7 +25,7 @@ const DonorDashboard = ({ donationId }) => {
   }, [donationId]);
 
   return (
-    <Box bg="#edf1f9">
+    <Box bg="#edf1f9" minHeight="100vh">
       <Grid templateColumns="repeat(3, 1fr)" gap={10} p="20px 40px 40px 40px">
         <GridItem colSpan={2}>
           <Text fontSize="30px" fontWeight="700" mb="20px">
@@ -47,6 +47,7 @@ const DonorDashboard = ({ donationId }) => {
         </GridItem>
       </Grid>
 
+      {/* BUG: If window too small height, overflow occurs & screen becomes scrollable */}
       <DonorFooter />
     </Box>
   );
