@@ -14,15 +14,21 @@ import {
 import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
-import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
-import STATUSES from '../../utils/config';
+import {
+  getDonationsFromDB,
+  getRoutesFromDB,
+  makeDate,
+  STATUSES,
+} from '../../utils/InventoryUtils';
+// import STATUSES from '../../utils/config';
 
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
+  const [routes, setRoutes] = useState([]);
 
-  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES.STATUSES;
+  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES;
 
   const handleRowClick = data => {
     setDonationData(data);
@@ -61,6 +67,14 @@ const InventoryPage = () => {
     fetchDonationsFromDB();
   }, []);
 
+  useEffect(() => {
+    const fetchRoutesFromDB = async () => {
+      const routesFromDB = await getRoutesFromDB();
+      setRoutes(routesFromDB);
+    };
+    fetchRoutesFromDB();
+  }, []);
+
   const makeUserRows = users.map(ele => {
     return (
       <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
@@ -97,6 +111,7 @@ const InventoryPage = () => {
         onClose={onClose}
         onOpen={onOpen}
         isOpen={isOpen}
+        routes={routes}
       />
     </>
   );

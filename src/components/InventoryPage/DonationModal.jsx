@@ -20,6 +20,8 @@ import {
   Tag,
   useDisclosure,
   Link,
+  Select,
+  SimpleGrid,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
@@ -30,8 +32,8 @@ import DonationFurnitureContainer from './DonationFurnitureContainer';
 import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
 
-const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
-  const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES.STATUSES;
+const DonationModal = ({ data, onClose, isOpen, setUsers, routes }) => {
+  const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES;
 
   const {
     id,
@@ -185,6 +187,23 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                 defaultValue={notes}
                 isDisabled
               />
+              <SimpleGrid gap={3} columns={3}>
+                <Text mt="60px" mb={5} fontSize="20px">
+                  Schedule
+                </Text>
+                <Select mt="60px" mb={5} placeholder="Choose a date">
+                  {routes.map(route => (
+                    <option key={route.date} value={route.date}>
+                      {route.date}
+                    </option>
+                  ))}
+                </Select>
+                <Select mt="60px" mb={5} placeholder="Choose a route">
+                  <option value="option1">Option 1</option>
+                  <option value="option2">Option 2</option>
+                  <option value="option3">Option 3</option>
+                </Select>
+              </SimpleGrid>
             </Box>
 
             <Box h="50%" w="40%" m={5}>
@@ -272,6 +291,7 @@ DonationModal.propTypes = {
   setUsers: PropTypes.func,
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
+  routes: PropTypes.func.isRequired,
   data: PropTypes.shape({
     status: PropTypes.string,
     id: PropTypes.number,

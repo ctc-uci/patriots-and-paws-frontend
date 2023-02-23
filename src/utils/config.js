@@ -4,4 +4,4 @@ const AUTH_ROLES = {
   DRIVER_ROLE: 'driver',
 };
 
-export default AUTH_ROLES;
+export default { AUTH_ROLES };

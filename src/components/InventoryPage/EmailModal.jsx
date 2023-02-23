@@ -76,7 +76,7 @@ function EmailModal({
     <Email title={status}>
       <Item align="center">
         <Span fontSize={15}>
-          <p>{modalContent.body}</p>
+          <p>{modalContent?.body}</p>
           <p>{newMessage}</p>
         </Span>
       </Item>
@@ -88,8 +88,8 @@ function EmailModal({
     sendEmail(modalContent.header, email, emailTemplate);
   };
 
-  const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, SCHEDULED } = EMAILSTATUSES.EMAILSTATUSES;
-  const { APPROVED, CHANGES_REQUESTED } = STATUSES.STATUSES;
+  const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, SCHEDULED } = EMAILSTATUSES;
+  const { APPROVED, CHANGES_REQUESTED } = STATUSES;
 
   const statusMap = {
     CANCEL_PICKUP: {
@@ -110,7 +110,9 @@ function EmailModal({
     },
   };
   useEffect(() => {
-    setModalContent(statusMap[status]);
+    setModalContent({ ...statusMap.status });
+    console.log(status);
+    console.log(statusMap.status);
   }, [status]);
 
   return (
@@ -118,7 +120,7 @@ function EmailModal({
       <ModalOverlay />
       <ModalContent>
         <ModalHeader m={30} fontSize={36}>
-          {modalContent.header}
+          {modalContent?.header}
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody mt={5}>
@@ -128,7 +130,7 @@ function EmailModal({
             <Box p={20} mr={20} ml={20} mt={20} bg="#EDF1F8">
               <Text fontSize={22}>Dear Patriots and Paws Donor,</Text>
               <br />
-              <Text fontSize={22}>{modalContent.body}</Text>
+              <Text fontSize={22}>{modalContent?.body}</Text>
             </Box>
             <Box mr={20} ml={20} mt={2} mb={20} bg="#EDF1F8">
               <Textarea
@@ -138,7 +140,6 @@ function EmailModal({
                 bg="white"
                 size="lg"
                 placeholder="Write message here"
-                on
               />
             </Box>
             <br />

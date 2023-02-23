@@ -25,6 +25,12 @@ const getDonationsFromDB = async () => {
   return donations;
 };
 
+const getRoutesFromDB = async () => {
+  const res = await PNPBackend.get(`/routes`);
+  const routes = res.data;
+  return routes;
+};
+
 const colorMap = {
   APPROVED: 'green',
   PENDING: 'gray',
@@ -88,6 +94,7 @@ const EMAILSTATUSES = {
 };
 export {
   getDonationsFromDB,
+  getRoutesFromDB,
   makeDate,
   formatImageData,
   formatFurnitureData,
