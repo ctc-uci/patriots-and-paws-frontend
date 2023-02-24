@@ -5,7 +5,6 @@ import {
   signInWithEmailAndPassword,
   signOut,
   createUserWithEmailAndPassword,
-  sendEmailVerification,
   sendPasswordResetEmail,
   confirmPasswordReset,
   applyActionCode,
@@ -26,6 +25,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const secondaryApp = initializeApp(firebaseConfig, 'Secondary');
+const secondaryAuth = getAuth(secondaryApp);
 
 const refreshUrl = `https://securetoken.googleapis.com/v1/token?key=${process.env.REACT_APP_FIREBASE_APIKEY}`;
 
@@ -142,10 +143,6 @@ const createUserInDB = async (user, id) => {
  */
 const logInWithEmailAndPassword = async (email, password, redirectPath, navigate, cookies) => {
   await signInWithEmailAndPassword(auth, email, password);
-  // Check if the user has verified their email.
-  if (!auth.currentUser.emailVerified) {
-    throw new Error('Please verify your email before logging in.');
-  }
   cookies.set(cookieKeys.ACCESS_TOKEN, auth.currentUser.accessToken, cookieConfig);
   const res = await PNPBackend.get(`/users/${auth.currentUser.uid}`);
   const { role } = res.data[0];
@@ -160,7 +157,7 @@ const logInWithEmailAndPassword = async (email, password, redirectPath, navigate
  * @returns A UserCredential object from firebase
  */
 const createUserInFirebase = async (email, password) => {
-  const user = await createUserWithEmailAndPassword(auth, email, password);
+  const user = await createUserWithEmailAndPassword(secondaryAuth, email, password);
   return user.user;
 };
 
@@ -173,8 +170,7 @@ const createUser = async user => {
   const { email, password } = user;
   const firebaseUser = await createUserInFirebase(email, password);
   await createUserInDB(user, firebaseUser.uid);
-  sendEmailVerification(firebaseUser);
-  await auth.signOut();
+  await secondaryAuth.signOut();
 };
 
 // Updates user information in PNP DB
