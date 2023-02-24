@@ -19,7 +19,7 @@ import {
 import { SearchIcon } from '@chakra-ui/icons';
 import Fuse from 'fuse.js';
 import { PNPBackend } from '../../utils/utils';
-import { auth, getCurrentUser, getUserFromDB } from '../../utils/AuthUtils';
+import { getCurrentUserId } from '../../utils/AuthUtils';
 import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import menuIcon from '../../assets/Menu.svg';
