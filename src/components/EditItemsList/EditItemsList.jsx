@@ -1,27 +1,37 @@
-import React, { useRef } from 'react';
-import {
-  Wrap,
-  Input,
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-} from '@chakra-ui/react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Wrap, Input, Box, Button, Flex, FormControl } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import ItemCard from '../ItemCard/ItemCard';
 
 const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAccepted }) => {
-  const ref = useRef();
+  const formSchema = yup.object({
+    furnitureName: yup.string().required('Please enter the furniture name'),
+  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(formSchema),
+    delayError: 750,
+  });
 
-  const handleAdd = () => {
+  const handleAdd = e => {
     // add validation to make sure current value isn't already in items
     // if it is already in items, set an error message (see chakra form control)
-
-    setItems(prev => [...prev, { name: ref.current.value, accepted: isAccepted }]);
-    setNewEntries(prev => [...prev, { name: ref.current.value, accepted: isAccepted }]);
+    if (
+      items.some(itemName => {
+        return e.furnitureName === itemName.name;
+      })
+    ) {
+      errors.furnitureName.message = 'Furniture item already exists';
+      return;
+    }
+    setItems(prev => [...prev, { name: e.furnitureName, accepted: isAccepted }]);
+    setNewEntries(prev => [...prev, { name: e.furnitureName, accepted: isAccepted }]);
   };
 
   return (
@@ -40,10 +50,13 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
           ))}
       </Wrap>
       <Flex>
-        <FormControl>
-          <Input placeholder="Item" />
-        </FormControl>
-        <Button onClick={handleAdd}> Add Item to List</Button>
+        <form onSubmit={handleSubmit(handleAdd)}>
+          <FormControl>
+            <Input id="furnitureName" placeholder="Item" {...register('furnitureName')} />
+            <Button type="submit"> Add Item to List</Button>
+            <Box>{errors.furnitureName?.message}</Box>
+          </FormControl>
+        </form>
       </Flex>
     </Box>
   );
