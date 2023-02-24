@@ -1,5 +1,5 @@
 import { ChakraProvider, Button, Image, Card, CardBody, Text } from '@chakra-ui/react';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
