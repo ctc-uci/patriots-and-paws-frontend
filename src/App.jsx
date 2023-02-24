@@ -12,7 +12,9 @@ import Donate from './pages/donation/Donate';
 import DonateStatus from './pages/donation/DonateStatus';
 import UserProfile from './pages/UserProfile/UserProfile';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
+
 import ManageDonationForm from './pages/ManageDonationForm/ManageDonationForm';
+import RoutesPage from './pages/RoutesPage/RoutesPage';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 import EmailAction from './components/EmailAction/EmailAction';
@@ -164,12 +166,21 @@ function App() {
             />
             <Route
               exact
+
               path="/manage-donation-form"
               element={
                 <ProtectedRoute
                   Component={ManageDonationForm}
                   redirectPath="/login"
                   roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+
+              path="/routes"
+              element={
+                <ProtectedRoute
+                  Component={RoutesPage}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
+
                 />
               }
             />
@@ -179,6 +190,7 @@ function App() {
             <Route exact path="/inventory" element={<InventoryPage />} />
           </Route>
           <Route exact path="/login" element={<Login />} />
+
           <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 

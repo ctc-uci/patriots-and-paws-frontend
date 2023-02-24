@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -20,78 +20,70 @@ import {
   ModalFooter,
   ModalCloseButton,
   useDisclosure,
-  IconButton,
   InputLeftElement,
   InputGroup,
+  IconButton,
 } from '@chakra-ui/react';
-import { EditIcon, LockIcon } from '@chakra-ui/icons';
-import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
-import styles from './EditAccountModal.module.css';
-import AUTH_ROLES from '../../utils/AuthConfig';
+import { LockIcon, CloseIcon } from '@chakra-ui/icons';
+import { updateUser } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
+import styles from './EditAccountModal.module.css';
 
-const { ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
-
-const EditAccountModal = ({ staffProfile }) => {
-  const [role] = useState(ADMIN_ROLE);
-  const formSchema = yup.object({
-    firstName: yup.string().required("Please enter the staff member's first name"),
-    lastName: yup.string().required("Please enter the staff member's last name"),
-    phoneNumber: yup
-      .string()
-      .length(10, 'Please enter a ten digit phone number')
-      .matches(/^\d{10}$/)
-      .required("Please enter the staff member's phone number"),
-    email: yup.string().email().required("Please enter the staff member's email address"),
-    password: yup
-      .string()
-      .matches(
-        passwordRequirementsRegex,
-        'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
-      )
-      .required("Please enter the staff member's password"),
-    confirmPassword: yup
-      .string()
-      .required("Please confirm the staff member's password")
-      .oneOf([yup.ref('password'), null], 'Passwords must both match'),
-  });
+const EditAccountModal = ({
+  data,
+  isSuperAdmin,
+  isOpen,
+  onClose,
+  setUsers,
+  setAdminUsers,
+  setDriverUsers,
+}) => {
+  let formSchema;
+  if (isSuperAdmin) {
+    formSchema = yup.object({
+      firstName: yup.string().required("Please enter the staff member's first name"),
+      lastName: yup.string().required("Please enter the staff member's last name"),
+      phoneNumber: yup
+        .string()
+        .length(10, 'Please enter a ten digit phone number')
+        .matches(/^\d{10}$/)
+        .required("Please enter the staff member's phone number"),
+      newPassword: yup
+        .string()
+        .nullable()
+        .transform(value => value || null)
+        .matches(
+          passwordRequirementsRegex,
+          'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
+        ),
+      confirmPassword: yup
+        .string()
+        .oneOf([yup.ref('newPassword'), null, ''], 'Passwords must both match'),
+    });
+  } else {
+    formSchema = yup.object({
+      firstName: yup.string().required("Please enter the staff member's first name"),
+      lastName: yup.string().required("Please enter the staff member's last name"),
+      phoneNumber: yup
+        .string()
+        .length(10, 'Please enter a ten digit phone number')
+        .matches(/^\d{10}$/),
+    });
+  }
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
+    defaultValues: data,
     resolver: yupResolver(formSchema),
     delayError: 750,
   });
 
   const [errorMessage, setErrorMessage] = useState();
+  const originalData = { ...data };
 
-  const onSubmit = async e => {
-    // TODO: Edits should be done in the backend when a user edit's a profile
-    try {
-      const { firstName, lastName, email } = e;
-
-      const user = {
-        firstName,
-        lastName,
-        email,
-        role,
-      };
-      await registerWithEmailAndPassword(user);
-      setErrorMessage('User successfully created');
-    } catch (err) {
-      const errorCode = err.code;
-      const firebaseErrorMsg = err.message;
-
-      if (errorCode === 'auth/email-already-in-use') {
-        setErrorMessage('This email address is already associated with another account');
-      } else {
-        setErrorMessage(firebaseErrorMsg);
-      }
-    }
-  };
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: saveIsOpen, onOpen: saveOnOpen, onClose: saveOnClose } = useDisclosure();
 
   const closeModals = () => {
@@ -99,19 +91,68 @@ const EditAccountModal = ({ staffProfile }) => {
     onClose();
   };
 
+  const cancel = () => {
+    reset(originalData);
+    saveOnClose();
+    onClose();
+  };
+
+  useEffect(() => {
+    reset(data);
+  }, [data]);
+
+  const onSubmit = async e => {
+    try {
+      const { firstName, lastName, phoneNumber, newPassword } = e;
+      const updatedUser = { firstName, lastName, phoneNumber };
+      if (newPassword) {
+        updatedUser.newPassword = newPassword;
+      }
+
+      await updateUser(updatedUser, data.id);
+      reset({
+        newPassword: '',
+        confirmPassword: '',
+      });
+      setErrorMessage('User successfully edited');
+      setUsers(prev => prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)));
+      if (data.role === 'admin') {
+        setAdminUsers(prev =>
+          prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
+        );
+      } else {
+        setDriverUsers(prev =>
+          prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
+        );
+      }
+      closeModals();
+    } catch (err) {
+      const firebaseErrorMsg = err.message;
+      setErrorMessage(firebaseErrorMsg);
+    }
+  };
+
   return (
     <>
-      <IconButton onClick={onOpen} icon={<EditIcon />} variant="ghost" />
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalCloseButton />
           <Flex m={5}>
             <Stack>
-              <Heading className={styles['create-account-title']}>Edit Staff</Heading>
+              <Flex justifyContent="space-between">
+                <Heading className={styles['create-account-title']} mb={5}>
+                  Edit Staff
+                </Heading>
+                <IconButton
+                  variant="solid"
+                  colorScheme="gray"
+                  icon={<CloseIcon />}
+                  onClick={saveOnOpen}
+                />
+              </Flex>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl className={styles['create-account-form']}>
-                  <Flex>
+                  <Flex mb={5}>
                     <Flex direction="column" mr={8}>
                       <FormLabel className={styles['create-account-form-label']}>
                         First Name
@@ -119,7 +160,6 @@ const EditAccountModal = ({ staffProfile }) => {
                       <Input
                         id="first-name"
                         style={{ width: '240px' }}
-                        defaultValue={staffProfile.firstName}
                         {...register('firstName')}
                         isRequired
                       />
@@ -132,14 +172,13 @@ const EditAccountModal = ({ staffProfile }) => {
                       <Input
                         id="last-name"
                         style={{ width: '240px' }}
-                        defaultValue={staffProfile.lastName}
                         {...register('lastName')}
                         isRequired
                       />
                       <Box className={styles['error-box']}>{errors.lastName?.message}</Box>
                     </Flex>
                   </Flex>
-                  <Flex>
+                  <Flex mb={5}>
                     <Flex direction="column" mr={8}>
                       <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
                       <InputGroup>
@@ -151,8 +190,7 @@ const EditAccountModal = ({ staffProfile }) => {
                           id="email"
                           style={{ width: '240px' }}
                           placeholder="Enter email"
-                          value={staffProfile.email}
-                          {...register('email')}
+                          value={data.email}
                           isRequired
                           isReadOnly
                         />
@@ -167,13 +205,44 @@ const EditAccountModal = ({ staffProfile }) => {
                         type="tel"
                         id="phone-number"
                         style={{ width: '240px' }}
-                        defaultValue={staffProfile.phoneNumber}
                         {...register('phoneNumber')}
                         isRequired
                       />
                       <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
                     </Flex>
                   </Flex>
+                  {isSuperAdmin && (
+                    <Flex mb={5}>
+                      <Flex direction="column" mr={8}>
+                        <FormLabel className={styles['create-account-form-label']}>
+                          Password
+                        </FormLabel>
+                        <Input
+                          type="password"
+                          id="password"
+                          style={{ width: '240px' }}
+                          placeholder="Enter password"
+                          {...register('newPassword')}
+                          isRequired
+                        />
+                        <Box className={styles['error-box']}>{errors.newPassword?.message}</Box>
+                      </Flex>
+                      <Flex direction="column">
+                        <FormLabel className={styles['create-account-form-label']}>
+                          Re-enter Password
+                        </FormLabel>
+                        <Input
+                          type="password"
+                          id="check-password"
+                          style={{ width: '240px' }}
+                          placeholder="Re-enter password"
+                          {...register('confirmPassword')}
+                          isRequired
+                        />
+                        <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
+                      </Flex>
+                    </Flex>
+                  )}
                 </FormControl>
               </form>
               <Box className={styles['error-box']}>{errorMessage}</Box>
@@ -194,7 +263,7 @@ const EditAccountModal = ({ staffProfile }) => {
                 colorScheme="blue"
                 className={styles['create-account-button']}
                 type="submit"
-                onClick={onSubmit}
+                onClick={handleSubmit(onSubmit)}
               >
                 Save
               </Button>
@@ -202,11 +271,11 @@ const EditAccountModal = ({ staffProfile }) => {
                 <ModalOverlay />
                 <ModalContent>
                   <ModalHeader>Save before exiting?</ModalHeader>
-                  <ModalCloseButton />
+                  <ModalCloseButton onClick={cancel} />
                   <ModalBody>Are you sure you want to exit without saving?</ModalBody>
 
                   <ModalFooter>
-                    <Button mr={3} onClick={closeModals}>
+                    <Button mr={3} onClick={cancel}>
                       Exit
                     </Button>
                     <Button colorScheme="blue" onClick={closeModals}>
@@ -224,7 +293,7 @@ const EditAccountModal = ({ staffProfile }) => {
 };
 
 EditAccountModal.propTypes = {
-  staffProfile: PropTypes.shape({
+  data: PropTypes.shape({
     email: PropTypes.string,
     firstName: PropTypes.string,
     id: PropTypes.string,
@@ -232,6 +301,12 @@ EditAccountModal.propTypes = {
     phoneNumber: PropTypes.string,
     role: PropTypes.string,
   }).isRequired,
+  isSuperAdmin: PropTypes.bool.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  setUsers: PropTypes.func.isRequired,
+  setAdminUsers: PropTypes.func.isRequired,
+  setDriverUsers: PropTypes.func.isRequired,
 };
 
 export default EditAccountModal;
