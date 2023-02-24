@@ -4,4 +4,20 @@ const AUTH_ROLES = {
   DRIVER_ROLE: 'driver',
 };
 
-export default AUTH_ROLES;
+// const EMAILSTATUSES = {
+//   CANCEL_PICKUP: 'cancel pickup',
+//   APPROVE: 'approve',
+//   REQUEST_CHANGES: 'request changes',
+//   SCHEDULED: 'scheduled',
+// };
+
+const STATUSES = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  CHANGES_REQUESTED: 'changes requested',
+  SCHEDULING: 'scheduling',
+  SCHEDULED: 'scheduled',
+  ARCHIVED: 'archived',
+};
+
+export default { AUTH_ROLES, STATUSES };

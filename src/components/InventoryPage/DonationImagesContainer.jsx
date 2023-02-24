@@ -73,7 +73,7 @@ const DonationImagesContainer = ({ data }) => {
 DonationImagesContainer.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string,
+      id: PropTypes.number,
       imageURL: PropTypes.string,
       notes: PropTypes.string,
     }),

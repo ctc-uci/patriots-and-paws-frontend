@@ -47,7 +47,7 @@ const DonationFurnitureContainer = ({ data }) => {
 DonationFurnitureContainer.propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string,
+      id: PropTypes.number,
       name: PropTypes.string,
       cout: PropTypes.number,
     }),

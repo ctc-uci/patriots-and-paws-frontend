@@ -18,7 +18,8 @@ import { Email, Item, Span } from 'react-html-email';
 
 import { PropTypes } from 'prop-types';
 import { sendEmail } from '../../utils/utils';
-import { EMAILSTATUSES, STATUSES } from '../../utils/InventoryUtils';
+import { EMAILSTATUSES } from '../../utils/InventoryUtils';
+import STATUSES from '../../utils/config';
 
 function CancelModal({ isOpenCancelModal, onCloseCancelModal, onCloseEmailModal, handleSubmit }) {
   return (
@@ -88,7 +89,7 @@ function EmailModal({
     sendEmail(modalContent.header, email, emailTemplate);
   };
 
-  const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, SCHEDULED } = EMAILSTATUSES.EMAILSTATUSES;
+  const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, SCHEDULED } = EMAILSTATUSES;
   const { APPROVED, CHANGES_REQUESTED } = STATUSES.STATUSES;
 
   const statusMap = {

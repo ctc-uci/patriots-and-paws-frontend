@@ -23,12 +23,13 @@ import {
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
-import { PNPBackend } from '../../utils/utils';
-import { makeDate, colorMap, STATUSES } from '../../utils/InventoryUtils';
+import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
+import { makeDate, colorMap } from '../../utils/InventoryUtils';
 import DonationImagesContainer from './DonationImagesContainer';
 import DonationFurnitureContainer from './DonationFurnitureContainer';
 import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
+import STATUSES from '../../utils/config';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES.STATUSES;
@@ -85,19 +86,14 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   const fullname = `${firstName} ${lastName}`;
 
-  //   const googleMap = "";
-  //   if (addressStreet){
-  //  const addressArray = [
-  //     addressStreet,
-  //     addressUnit,
-  //     addressCity,
-  //     addressZip,
-  //   ];
-  //    googleMap = handleNavigateToAddress(addressArray);
-  //   // addressUnit !== ''
-  //   //   ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
-  //   //   : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
-  //   }
+  // const googleMap = '';
+  // if (addressStreet) {
+  //   const addressArray = [addressStreet, addressUnit, addressCity, addressZip];
+  //  const googleMap = handleNavigateToAddress([data]);
+  // addressUnit !== ''
+  //   ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
+  //   : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
+  // }
   const googleMap =
     addressUnit !== ''
       ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
@@ -106,7 +102,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
   const makeStatusTag = curstatus => {
     return (
       <Tag size="xs" m={5} ml={15} colorScheme={colorMap[curstatus]}>
-        {STATUSES[status]}
+        {STATUSES[curstatus]}
       </Tag>
     );
   };
@@ -118,7 +114,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
         <ModalHeader m={3}>
           <Flex>
             <Text fontSize={36}>Donation #{id}</Text>
-            {makeStatusTag}
+            {makeStatusTag(currentStatus)}
           </Flex>
           <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
         </ModalHeader>
@@ -247,7 +243,12 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
             )}
           </Box>
           <Box>
-            <Button ml={3} colorScheme="gray" type="submit">
+            <Button
+              ml={3}
+              colorScheme="gray"
+              type="submit"
+              onClick={handleNavigateToAddress([data])}
+            >
               <Link href={googleMap} isExternal>
                 Navigate to Address
               </Link>
@@ -285,16 +286,20 @@ DonationModal.propTypes = {
     phoneNum: PropTypes.string,
     notes: PropTypes.string,
     submittedDate: PropTypes.string,
-    pictures: PropTypes.shape({
-      id: PropTypes.string,
-      imageURL: PropTypes.string,
-      notes: PropTypes.string,
-    }),
-    furniture: PropTypes.shape({
-      id: PropTypes.string,
-      name: PropTypes.string,
-      count: PropTypes.number,
-    }),
+    pictures: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        imageURL: PropTypes.string,
+        notes: PropTypes.string,
+      }),
+    ),
+    furniture: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        count: PropTypes.number,
+      }),
+    ),
   }),
 };
 

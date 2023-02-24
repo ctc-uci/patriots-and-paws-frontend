@@ -71,15 +71,6 @@ const formatFurnitureData = data => {
   );
 };
 
-const STATUSES = {
-  PENDING: 'pending',
-  APPROVED: 'approved',
-  CHANGES_REQUESTED: 'changes requested',
-  SCHEDULING: 'scheduling',
-  SCHEDULED: 'scheduled',
-  ARCHIVED: 'archived',
-};
-
 const EMAILSTATUSES = {
   CANCEL_PICKUP: 'cancel pickup',
   APPROVE: 'approve',
@@ -92,6 +83,5 @@ export {
   formatImageData,
   formatFurnitureData,
   colorMap,
-  STATUSES,
   EMAILSTATUSES,
 };
