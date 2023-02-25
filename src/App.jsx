@@ -85,10 +85,10 @@ function App() {
         <Button mt={4} onClick={onOpen}>
           Export Route
         </Button>
-        <Modal isOpen={isOpen} onClose={onClose}>
+        <Modal isOpen={isOpen} onClose={onClose} size="full">
           <ModalContent>
             <ModalBody>
-              <PDFViewer>
+              <PDFViewer width={800} height={800}>
                 <RoutePDF routeID={3} />
               </PDFViewer>
             </ModalBody>
