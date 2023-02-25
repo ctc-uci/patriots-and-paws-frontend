@@ -15,16 +15,25 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  Drawer,
+  DrawerBody,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
 } from '@chakra-ui/react';
 import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
 import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
+import RouteCalendar from '../RouteCalendar/RouteCalendar';
 
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
+
+  const btnRef = React.useRef();
 
   const handleRowClick = data => {
     setDonationData(data);
@@ -73,26 +82,10 @@ const InventoryPage = () => {
     fetchDonationsFromDB();
   }, []);
 
-  // const makeUserRows = users.map(ele => {
-  //   console.log(ele);
-  //   return (
-  //     <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
-  //       <Td>
-  //         <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-  //         <Text color="#718096">{ele.email}</Text>
-  //       </Td>
-  //       <Td>#{ele.id}</Td>
-  //       <Td>{makeStatus(ele.status)}</Td>
-  //       <Td>{makeDate(ele.submittedDate)}</Td>
-  //     </Tr>
-  //   );
-  //   // return <DonationModal key={ele.id} props={ele} />;
-  // });
-
   const makePendingUserRows = users
     .filter(ele => ele.status === 'pending' || ele.status === 'changes requested')
     .map(ele => {
-      console.log(ele);
+      // console.log(ele);
       return (
         <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
           <Td>
@@ -109,7 +102,7 @@ const InventoryPage = () => {
   const makeDonorApprovalUserRows = users
     .filter(ele => ele.status === 'approved' || ele.status === 'scheduling')
     .map(ele => {
-      console.log(ele);
+      // console.log(ele);
       return (
         <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
           <Td>
@@ -126,7 +119,7 @@ const InventoryPage = () => {
   const makeAwaitingUserRows = users
     .filter(ele => ele.status === 'scheduled')
     .map(ele => {
-      console.log(ele);
+      // console.log(ele);
       return (
         <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
           <Td>
@@ -143,7 +136,7 @@ const InventoryPage = () => {
   const makeArchivedUserRows = users
     .filter(ele => ele.status === 'archived')
     .map(ele => {
-      console.log(ele);
+      // console.log(ele);
       return (
         <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
           <Td>
@@ -165,12 +158,26 @@ const InventoryPage = () => {
           <Tab>Waiting for Donor Approval</Tab>
           <Tab>Awaiting Pickup</Tab>
           <Tab>Archived</Tab>
+          <Button ref={btnRef} onClick={onDrawerOpen}>
+            Open Calendar
+          </Button>
         </TabList>
+        <Drawer
+          isOpen={isDrawerOpen}
+          placement="right"
+          onClose={onDrawerClose}
+          finalFocusRef={btnRef}
+          size="full"
+        >
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
 
-        {/* pending columns: name, donation id, status, submission date
-            waiting columns: name, donation id, route, scheduled date
-            awaiting pickup columns: name, donation id, route, pickup date
-            archived columns: name, donation id, status, pickup date */}
+            <DrawerBody>
+              <RouteCalendar />
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
 
         <TabPanels>
           <TabPanel>
