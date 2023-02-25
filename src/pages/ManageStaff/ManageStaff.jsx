@@ -22,6 +22,7 @@ import menuIcon from '../../assets/Menu.svg';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import AUTH_ROLES from '../../utils/AuthConfig';
 import UserTable from '../../components/UserTable/UserTable';
+import PaginationFooter from '../../components/PaginationFooter/PaginationFooter';
 
 const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
@@ -106,6 +107,7 @@ const ManageStaff = ({ cookies }) => {
         ) : null}
       </Flex>
       <UserTable isSuperAdmin={isSuperAdmin} users={users} />
+      {/* <PaginationFooter setData={setUsers} table={'users'} /> */}
     </Flex>
   );
 };

@@ -23,13 +23,19 @@ const PaginationFooter = ({ setData, table }) => {
 
   // when the number of rows or the next page is clicked, get the desired data from the backend
   useEffect(() => {
+    console.log('in use effect');
     // replace this line with the correct call to the backend with the given table and num rows/what page
-    const pageInfo = {
-      pageNum: currentPage,
-      numEntries: rowsPerPage,
-    };
-    const res = PNPBackend.get(`/${table}`, pageInfo);
-    setData(res.data);
+    // const refreshData = async () => {
+    //   const res = await PNPBackend.get(`/${table}`, {
+    //     pageNum: currentPage,
+    //     numEntries: rowsPerPage,
+    //   });
+    //   console.log(res);
+    //   console.log(res.data);
+    //   return res.data;
+    // };
+    // const newData = refreshData();
+    // setData(newData);
   }, [currentPage, rowsPerPage]);
 
   return (
@@ -53,12 +59,12 @@ const PaginationFooter = ({ setData, table }) => {
         {/* change '32' to total number of entries in table */}
         {(currentPage - 1) * rowsPerPage + 1}-{(currentPage - 1) * rowsPerPage + rowsPerPage} of 32
       </Text>
-      <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
+      {/* <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
         <PaginationContainer justify="right">
           <PaginationPrevious>&lsaquo;</PaginationPrevious>
           <PaginationNext>&rsaquo;</PaginationNext>
         </PaginationContainer>
-      </Pagination>
+      </Pagination> */}
     </ChakraProvider>
   );
 };
