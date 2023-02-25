@@ -346,7 +346,7 @@ DonationModal.propTypes = {
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
   data: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string,
     addressStreet: PropTypes.string.isRequired,
     addressUnit: PropTypes.string.isRequired,
     addressCity: PropTypes.string.isRequired,

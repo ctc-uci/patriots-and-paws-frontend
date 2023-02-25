@@ -16,11 +16,12 @@ import './InventoryPage.module.css';
 import DonationModal from './DonationModal';
 import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
 import PaginationFooter from '../PaginationFooter/PaginationFooter';
-
+import { PNPBackend } from '../../utils/utils';
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
+  const [count, setCount] = useState();
 
   const handleRowClick = data => {
     setDonationData(data);
@@ -56,33 +57,25 @@ const InventoryPage = () => {
     );
   }
 
+  const getTotalCount = async () => {
+    const { data } = await PNPBackend.get(`donations/total`);
+    const { count: totalCount } = data[0];
+    setCount(totalCount);
+  };
+
   // function makeDate(dateDB) {
   //   const d = new Date(dateDB);
   //   return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
   // }
 
   useEffect(() => {
-    const fetchDonationsFromDB = async () => {
-      const donationsFromDB = await getDonationsFromDB();
-      setUsers(donationsFromDB);
-    };
-    fetchDonationsFromDB();
+    // const fetchDonationsFromDB = async () => {
+    //   const donationsFromDB = await getDonationsFromDB();
+    //   setUsers(donationsFromDB);
+    // };
+    // fetchDonationsFromDB();
+    getTotalCount();
   }, []);
-
-  const makeUserRows = users.map(ele => {
-    return (
-      <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
-        <Td>
-          <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-          <Text color="#718096">{ele.email}</Text>
-        </Td>
-        <Td>#{ele.id}</Td>
-        <Td>{makeStatus(ele.status)}</Td>
-        <Td>{makeDate(ele.submittedDate)}</Td>
-      </Tr>
-    );
-    // return <DonationModal key={ele.id} props={ele} />;
-  });
 
   return (
     <>
@@ -96,10 +89,22 @@ const InventoryPage = () => {
               <Th>SUBMISSION DATE</Th>
             </Tr>
           </Thead>
-          <Tbody>{makeUserRows}</Tbody>
+          <Tbody>
+            {users.map(ele => (
+              <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+                <Td>
+                  <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+                  <Text color="#718096">{ele.email}</Text>
+                </Td>
+                <Td>#{ele.id}</Td>
+                <Td>{makeStatus(ele.status)}</Td>
+                <Td>{makeDate(ele.submittedDate)}</Td>
+              </Tr>
+            ))}
+          </Tbody>
         </Table>
       </TableContainer>
-      <PaginationFooter setData={setUsers} table={'donations'} />
+      {count && <PaginationFooter count={count} setData={setUsers} table={'donations'} />}
       <DonationModal
         setUsers={setUsers}
         data={donationData}
