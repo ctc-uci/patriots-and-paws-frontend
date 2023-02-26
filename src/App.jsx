@@ -166,21 +166,22 @@ function App() {
             />
             <Route
               exact
-
               path="/manage-donation-form"
               element={
                 <ProtectedRoute
                   Component={ManageDonationForm}
                   redirectPath="/login"
                   roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
-
+                />
+              }
+            />
+            <Route
               path="/routes"
               element={
                 <ProtectedRoute
                   Component={RoutesPage}
                   redirectPath="/login"
                   roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
-
                 />
               }
             />

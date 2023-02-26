@@ -13,6 +13,7 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(formSchema),
@@ -27,7 +28,8 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
         return e.furnitureName === itemName.name;
       })
     ) {
-      errors.furnitureName.message = 'Furniture item already exists';
+      setError('Furniture item already exists', { type: 'focus' }, { shouldFocus: true });
+      // errors.furnitureName.message = 'Furniture item already exists';
       return;
     }
     setItems(prev => [...prev, { name: e.furnitureName, accepted: isAccepted }]);
