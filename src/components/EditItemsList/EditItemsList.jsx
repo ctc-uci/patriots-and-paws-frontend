@@ -2,38 +2,49 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Wrap, Input, Box, Button, Flex, FormControl } from '@chakra-ui/react';
+import { Wrap, Input, Box, Button, Flex, FormControl, FormErrorMessage } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import ItemCard from '../ItemCard/ItemCard';
 
 const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAccepted }) => {
   const formSchema = yup.object({
-    furnitureName: yup.string().required('Please enter the furniture name'),
+    furnitureName: yup.string(),
   });
   const {
     register,
     handleSubmit,
     setError,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(formSchema),
     delayError: 750,
   });
 
-  const handleAdd = e => {
+  const handleAdd = ({ furnitureName }) => {
     // add validation to make sure current value isn't already in items
     // if it is already in items, set an error message (see chakra form control)
-    if (
+    if (!furnitureName) {
+      setError('furnitureName', {
+        type: 'focus',
+        message: 'Please enter a furniture name',
+        shouldFocus: true,
+      });
+    } else if (
       items.some(itemName => {
-        return e.furnitureName === itemName.name;
+        return furnitureName.toLowerCase() === itemName.name.toLowerCase();
       })
     ) {
-      setError('Furniture item already exists', { type: 'focus' }, { shouldFocus: true });
-      // errors.furnitureName.message = 'Furniture item already exists';
-      return;
+      setError('furnitureName', {
+        type: 'focus',
+        message: 'Furniture item already exists',
+        shouldFocus: true,
+      });
+    } else {
+      setItems(prev => [...prev, { name: furnitureName, accepted: isAccepted }]);
+      setNewEntries(prev => [...prev, { name: furnitureName, accepted: isAccepted }]);
+      reset({ furnitureName: '' });
     }
-    setItems(prev => [...prev, { name: e.furnitureName, accepted: isAccepted }]);
-    setNewEntries(prev => [...prev, { name: e.furnitureName, accepted: isAccepted }]);
   };
 
   return (
@@ -53,10 +64,10 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
       </Wrap>
       <Flex>
         <form onSubmit={handleSubmit(handleAdd)}>
-          <FormControl>
+          <FormControl isInvalid={errors.furnitureName?.message}>
             <Input id="furnitureName" placeholder="Item" {...register('furnitureName')} />
             <Button type="submit"> Add Item to List</Button>
-            <Box>{errors.furnitureName?.message}</Box>
+            <FormErrorMessage>{errors.furnitureName?.message}</FormErrorMessage>
           </FormControl>
         </form>
       </Flex>
