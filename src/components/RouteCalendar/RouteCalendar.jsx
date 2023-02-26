@@ -17,8 +17,10 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import CreateRouteModal from '../CreateRouteModal/CreateRouteModal';
-import { getAllRoutes, getDrivers } from '../../utils/RouteUtils';
+// import { getAllRoutes, getDrivers } from '../../utils/RouteUtils';
+import { getCurrentUserId, getUserFromDB } from '../../utils/AuthUtils';
 import EditRouteModal from '../EditRouteModal/EditRouteModal';
+import { PNPBackend } from '../../utils/utils';
 
 const RouteCalendar = () => {
   const [currentEvents, setCurrentEvents] = useState([]);
@@ -44,15 +46,23 @@ const RouteCalendar = () => {
 
   useEffect(() => {
     const fetchAllRoutesAndDrivers = async () => {
-      const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
+      const currentUserId = await getCurrentUserId();
+      const currentUser = await getUserFromDB(currentUserId);
+      const result = await PNPBackend.get(`/routes/driver/${currentUserId}`);
+      const routesFromDB = result.data;
+
+      // const [routesFromDB2, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
       const eventsList = routesFromDB.map(({ id, name, date }) => ({
         id,
         title: name,
         start: new Date(date).toISOString().replace(/T.*$/, ''),
         allDay: true,
       }));
+
+      const d = [currentUser];
       setCurrentEvents(eventsList);
-      setDrivers(driversFromDB);
+      // setDrivers(driversFromDB);
+      setDrivers(d);
 
       // prevents duplication of events on calendar upon hot reloading during dev
       calendarRef.current.getApi().removeAllEventSources();
