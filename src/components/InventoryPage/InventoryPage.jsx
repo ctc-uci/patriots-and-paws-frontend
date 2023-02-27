@@ -18,7 +18,7 @@ import {
   getDonationsFromDB,
   getRoutesFromDB,
   makeDate,
-  STATUSES,
+  EMAILSTATUSES,
 } from '../../utils/InventoryUtils';
 // import STATUSES from '../../utils/config';
 
@@ -28,7 +28,7 @@ const InventoryPage = () => {
   const [donationData, setDonationData] = useState({});
   const [routes, setRoutes] = useState([]);
 
-  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES;
+  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = EMAILSTATUSES;
 
   const handleRowClick = data => {
     setDonationData(data);
@@ -62,6 +62,7 @@ const InventoryPage = () => {
   useEffect(() => {
     const fetchDonationsFromDB = async () => {
       const donationsFromDB = await getDonationsFromDB();
+      // console.log(donationsFromDB);
       setUsers(donationsFromDB);
     };
     fetchDonationsFromDB();
@@ -70,7 +71,17 @@ const InventoryPage = () => {
   useEffect(() => {
     const fetchRoutesFromDB = async () => {
       const routesFromDB = await getRoutesFromDB();
-      setRoutes(routesFromDB);
+      const formattedRoutes = routesFromDB.map(({ id, name, date: day }) => ({
+        id,
+        name,
+        date: new Date(day).toISOString().replace(/T.*$/, ''),
+      }));
+      const routesList = {};
+      formattedRoutes.forEach(({ date }) => {
+        routesList[date] = [];
+      });
+      formattedRoutes.forEach(({ id, name, date }) => routesList[date].push({ id, name }));
+      setRoutes(routesList);
     };
     fetchRoutesFromDB();
   }, []);

@@ -27,9 +27,9 @@ import EmailSending from './components/EmailTemplates/EmailSending';
 import SampleRoute from './components/SampleRoute/SampleRoute';
 import InventoryPage from './components/InventoryPage/InventoryPage';
 
-import AUTH_ROLES from './utils/config';
+import { AUTH_ROLES } from './utils/config';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
 
 function App() {
   const [files, setFiles] = useState([]);

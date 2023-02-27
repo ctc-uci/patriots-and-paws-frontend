@@ -18,7 +18,8 @@ import { Email, Item, Span } from 'react-html-email';
 
 import { PropTypes } from 'prop-types';
 import { sendEmail } from '../../utils/utils';
-import { EMAILSTATUSES, STATUSES } from '../../utils/InventoryUtils';
+import { EMAILSTATUSES } from '../../utils/InventoryUtils';
+import { STATUSES } from '../../utils/config';
 
 function CancelModal({ isOpenCancelModal, onCloseCancelModal, onCloseEmailModal, handleSubmit }) {
   return (

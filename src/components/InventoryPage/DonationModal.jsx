@@ -21,19 +21,21 @@ import {
   useDisclosure,
   Link,
   Select,
-  SimpleGrid,
+  Grid,
+  GridItem,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
-import { PNPBackend } from '../../utils/utils';
-import { makeDate, colorMap, STATUSES } from '../../utils/InventoryUtils';
+import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
+import { makeDate, colorMap } from '../../utils/InventoryUtils';
 import DonationImagesContainer from './DonationImagesContainer';
 import DonationFurnitureContainer from './DonationFurnitureContainer';
 import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
+import { STATUSES } from '../../utils/config';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers, routes }) => {
-  const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES;
+  const { APPROVED, SCHEDULING, PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES;
 
   const {
     id,
@@ -50,16 +52,21 @@ const DonationModal = ({ data, onClose, isOpen, setUsers, routes }) => {
     notes,
     pictures,
     furniture,
+    routeId,
+    pickupDate,
   } = data;
 
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
+  const [date, setDate] = useState('');
+  // useEffect(() => console.log(data), [data]);
   // const [currentAddress, setCurrentAddress] = useState({
   //   addressStreet: '',
   //   addressUnit: '',
   //   addressCity: '',
   //   addressZip: '',
   // });
+  console.log(pickupDate);
   useEffect(() => {
     setCurrentStatus(status);
     // setCurrentAddress(() => {
@@ -87,19 +94,14 @@ const DonationModal = ({ data, onClose, isOpen, setUsers, routes }) => {
 
   const fullname = `${firstName} ${lastName}`;
 
-  //   const googleMap = "";
-  //   if (addressStreet){
-  //  const addressArray = [
-  //     addressStreet,
-  //     addressUnit,
-  //     addressCity,
-  //     addressZip,
-  //   ];
-  //    googleMap = handleNavigateToAddress(addressArray);
-  //   // addressUnit !== ''
-  //   //   ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
-  //   //   : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
-  //   }
+  // const googleMap = '';
+  // if (addressStreet) {
+  //   const addressArray = [addressStreet, addressUnit, addressCity, addressZip];
+  //  const googleMap = handleNavigateToAddress([data]);
+  // addressUnit !== ''
+  //   ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
+  //   : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
+  // }
   const googleMap =
     addressUnit !== ''
       ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
@@ -108,7 +110,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers, routes }) => {
   const makeStatusTag = curstatus => {
     return (
       <Tag size="xs" m={5} ml={15} colorScheme={colorMap[curstatus]}>
-        {STATUSES[status]}
+        {STATUSES[curstatus]}
       </Tag>
     );
   };
@@ -120,7 +122,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers, routes }) => {
         <ModalHeader m={3}>
           <Flex>
             <Text fontSize={36}>Donation #{id}</Text>
-            {makeStatusTag}
+            {makeStatusTag(currentStatus)}
           </Flex>
           <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
         </ModalHeader>
@@ -187,23 +189,43 @@ const DonationModal = ({ data, onClose, isOpen, setUsers, routes }) => {
                 defaultValue={notes}
                 isDisabled
               />
-              <SimpleGrid gap={3} columns={3}>
-                <Text mt="60px" mb={5} fontSize="20px">
-                  Schedule
-                </Text>
-                <Select mt="60px" mb={5} placeholder="Choose a date">
-                  {routes.map(route => (
-                    <option key={route.date} value={route.date}>
-                      {route.date}
-                    </option>
-                  ))}
-                </Select>
-                <Select mt="60px" mb={5} placeholder="Choose a route">
-                  <option value="option1">Option 1</option>
-                  <option value="option2">Option 2</option>
-                  <option value="option3">Option 3</option>
-                </Select>
-              </SimpleGrid>
+              {(currentStatus === APPROVED ||
+                currentStatus === SCHEDULED ||
+                currentStatus === SCHEDULING) && (
+                <Grid templateRows="repeat(2, 1fr)" bg="#E2E8F0" spacing="40px">
+                  <GridItem>
+                    <Text mt="25px" mb={5} ml={5} fontSize="20px">
+                      Schedule
+                    </Text>
+                  </GridItem>
+                  <GridItem>
+                    <Select
+                      mt="25px"
+                      mb={5}
+                      placeholder={!pickupDate && 'Choose a date'}
+                      defaultValue={pickupDate ?? ''}
+                      onChange={e => setDate(e.target.value)}
+                      disabled={currentStatus !== APPROVED}
+                    >
+                      {Object.keys(routes).map(day => (
+                        <option key={day} value={day}>
+                          {day}
+                        </option>
+                      ))}
+                    </Select>
+                  </GridItem>
+                  <GridItem>
+                    <Select mt="25px" mb={5} placeholder="Choose a route" disabled={!date}>
+                      {date &&
+                        routes[date].map(({ id: routeId, name }) => (
+                          <option key={routeId} value={routeId}>
+                            {name}
+                          </option>
+                        ))}
+                    </Select>
+                  </GridItem>
+                </Grid>
+              )}
             </Box>
 
             <Box h="50%" w="40%" m={5}>
@@ -266,7 +288,12 @@ const DonationModal = ({ data, onClose, isOpen, setUsers, routes }) => {
             )}
           </Box>
           <Box>
-            <Button ml={3} colorScheme="gray" type="submit">
+            <Button
+              ml={3}
+              colorScheme="gray"
+              type="submit"
+              onClick={() => handleNavigateToAddress([data])}
+            >
               <Link href={googleMap} isExternal>
                 Navigate to Address
               </Link>
@@ -305,16 +332,20 @@ DonationModal.propTypes = {
     phoneNum: PropTypes.string,
     notes: PropTypes.string,
     submittedDate: PropTypes.string,
-    pictures: PropTypes.shape({
-      id: PropTypes.string,
-      imageURL: PropTypes.string,
-      notes: PropTypes.string,
-    }),
-    furniture: PropTypes.shape({
-      id: PropTypes.string,
-      name: PropTypes.string,
-      count: PropTypes.number,
-    }),
+    pictures: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        imageURL: PropTypes.string,
+        notes: PropTypes.string,
+      }),
+    ),
+    furniture: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        count: PropTypes.number,
+      }),
+    ),
   }),
 };
 

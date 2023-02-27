@@ -20,9 +20,9 @@ import EditAccountModal from '../EditAccountModal/EditAccountModal';
 import DeleteAccountModal from '../DeleteAccountModal/DeleteAccountModal';
 import peopleIcon from '../../assets/Bold.svg';
 import cardAccount from '../../assets/card-account-details.svg';
-import AUTH_ROLES from '../../utils/config';
+import { AUTH_ROLES } from '../../utils/config';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 
 const UserTable = ({ isSuperAdmin, users }) => {
   return (
