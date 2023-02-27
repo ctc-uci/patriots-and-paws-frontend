@@ -14,9 +14,10 @@ import {
 import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
-import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
+import { makeDate } from '../../utils/InventoryUtils';
 import PaginationFooter from '../PaginationFooter/PaginationFooter';
 import { PNPBackend } from '../../utils/utils';
+
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -63,17 +64,7 @@ const InventoryPage = () => {
     setCount(totalCount);
   };
 
-  // function makeDate(dateDB) {
-  //   const d = new Date(dateDB);
-  //   return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-  // }
-
   useEffect(() => {
-    // const fetchDonationsFromDB = async () => {
-    //   const donationsFromDB = await getDonationsFromDB();
-    //   setUsers(donationsFromDB);
-    // };
-    // fetchDonationsFromDB();
     getTotalCount();
   }, []);
 
@@ -103,8 +94,8 @@ const InventoryPage = () => {
             ))}
           </Tbody>
         </Table>
+        {count && <PaginationFooter count={count} setData={setUsers} table="donations" />}
       </TableContainer>
-      {count && <PaginationFooter count={count} setData={setUsers} table={'donations'} />}
       <DonationModal
         setUsers={setUsers}
         data={donationData}

@@ -26,7 +26,7 @@ import menuIcon from '../../assets/Menu.svg';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import AUTH_ROLES from '../../utils/AuthConfig';
 import UserTable from '../../components/UserTable/UserTable';
-import PaginationFooter from '../../components/PaginationFooter/PaginationFooter';
+import ManageStaffPagination from './ManageStaffPagination';
 
 const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
 
@@ -37,9 +37,10 @@ const ManageStaff = ({ cookies }) => {
   const [driverUsers, setDriverUsers] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [currFilter, setCurrFilter] = useState('all');
-  const [count, setCount] = useState(1);
-  const [currentUserRole, setCurrentUserRole] = useState('');
-  const [userId, setUserId] = useState(0);
+  // const [count, setCount] = useState(1);
+  // const [currentUserRole, setCurrentUserRole] = useState('');
+  // const [userId, setUserId] = useState(0);
+  const [filteredUsers, setFilteredUsers] = useState([]);
 
   const fuse = new Fuse(allUsers, {
     keys: ['firstName', 'lastName', 'email'],
@@ -47,13 +48,13 @@ const ManageStaff = ({ cookies }) => {
 
   const updateDisplay = () => {
     if (currFilter === 'all') {
-      setDisplayedUsers(allUsers);
+      setFilteredUsers(allUsers);
       fuse.setCollection(allUsers);
     } else if (currFilter === 'admin') {
-      setDisplayedUsers(adminUsers);
+      setFilteredUsers(adminUsers);
       fuse.setCollection(adminUsers);
     } else {
-      setDisplayedUsers(driverUsers);
+      setFilteredUsers(driverUsers);
       fuse.setCollection(driverUsers);
     }
   };
@@ -72,23 +73,23 @@ const ManageStaff = ({ cookies }) => {
         d => (d.role === ADMIN_ROLE || d.role === SUPERADMIN_ROLE) && d.id !== userId,
       );
       setAdminUsers(adminData);
-      setDisplayedUsers(data.filter(user => user.id !== userId));
+      setFilteredUsers(data.filter(user => user.id !== userId));
     } else {
       const driverData = data.filter(d => d.role === DRIVER_ROLE);
       setAllUsers(driverData);
       setDriverUsers(driverData);
-      setDisplayedUsers(driverData);
+      setFilteredUsers(driverData);
     }
   };
 
   useEffect(() => {
-    const getRole = async () => {
-      const userId = getCurrentUserId();
-      setUserId(userId);
-      const userRole = await cookies.get(cookieKeys.ROLE);
-      setCurrentUserRole(userRole);
-    };
-    getRole();
+    // const getRole = async () => {
+    //   const userId = getCurrentUserId();
+    //   setUserId(userId);
+    //   const userRole = await cookies.get(cookieKeys.ROLE);
+    //   setCurrentUserRole(userRole);
+    // };
+    // getRole();
     refreshData();
   }, []);
 
@@ -105,19 +106,18 @@ const ManageStaff = ({ cookies }) => {
       }
       const result = fuse.search(query.target.value);
       const filteredResults = result.map(user => user.item);
-      setDisplayedUsers(filteredResults);
+      setFilteredUsers(filteredResults);
     }
   };
 
   useEffect(() => {
-    const getTotalCount = async () => {
-      const { data } = await PNPBackend.get(`users/total`);
-      const { count: totalCount } = data[0];
-      console.log(totalCount);
-      setCount(totalCount);
-    };
+    // const getTotalCount = async () => {
+    //   const { data } = await PNPBackend.get(`users/total`);
+    //   const { count: totalCount } = data[0];
+    //   setCount(totalCount);
+    // };
     updateDisplay();
-    getTotalCount();
+    // getTotalCount();
   }, [currFilter, allUsers, driverUsers, adminUsers]);
 
   return (
@@ -203,7 +203,8 @@ const ManageStaff = ({ cookies }) => {
         setAdminUsers={setAdminUsers}
         updateDisplay={updateDisplay}
       />
-      {count && <PaginationFooter count={count} setData={setDisplayedUsers} table={'users'} />}
+      <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
+      {/* {count && <PaginationFooter count={count} setData={setDisplayedUsers} table={'users'} />} */}
     </Flex>
   );
 };

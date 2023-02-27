@@ -84,7 +84,7 @@ const UserTable = ({
             </Tr>
           </Thead>
           <Tbody className={styles['row-text']}>
-            {users.map(user => (
+            {users?.map(user => (
               <Tr key={`${user.email}`}>
                 <Td>
                   {user.firstName} {user.lastName}
@@ -161,11 +161,15 @@ UserTable.propTypes = {
       phoneNumber: PropTypes.string.isRequired,
       role: PropTypes.string.isRequired,
     }),
-  ).isRequired,
+  ),
   setAllUsers: PropTypes.func.isRequired,
   setDriverUsers: PropTypes.func.isRequired,
   setAdminUsers: PropTypes.func.isRequired,
   updateDisplay: PropTypes.func.isRequired,
+};
+
+UserTable.defaultProps = {
+  users: [],
 };
 
 export default UserTable;

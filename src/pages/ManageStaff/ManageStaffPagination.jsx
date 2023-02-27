@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Select, Flex, Text } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import { Flex, Select, Text } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
   Pagination,
@@ -8,26 +8,27 @@ import {
   PaginationPrevious,
   PaginationContainer,
 } from '@ajna/pagination';
-import { PNPBackend } from '../../utils/utils';
 
-const PaginationFooter = ({ count, setData, table }) => {
+import formatStaffData from '../../utils/manageStaffUtils';
+
+const ManageStaffPagination = ({ data, setData }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [formattedData, setFormattedData] = useState([]);
 
   const { currentPage, setCurrentPage, pagesCount } = usePagination({
-    pagesCount: Math.ceil(count / rowsPerPage),
+    pagesCount: Math.ceil(data.length / rowsPerPage),
     initialState: { currentPage: 1 },
   });
 
-  // when the number of rows or the next page is clicked, get the desired data from the backend
   useEffect(() => {
-    const refreshData = async () => {
-      const { data } = await PNPBackend.get(
-        `/${table}?numDonations=${rowsPerPage}&pageNum=${currentPage}`,
-      );
-      setData(data);
-    };
-    refreshData();
-  }, [currentPage, rowsPerPage]);
+    const formatted = formatStaffData(data, rowsPerPage);
+    setData(formatted[0]);
+    setFormattedData(formatted);
+  }, [data, rowsPerPage]);
+
+  useEffect(() => {
+    setData(formattedData[currentPage - 1]);
+  }, [currentPage]);
 
   return (
     <Flex direction="row" m={5} justify="space-between">
@@ -49,10 +50,20 @@ const PaginationFooter = ({ count, setData, table }) => {
   );
 };
 
-PaginationFooter.propTypes = {
-  count: PropTypes.string.isRequired,
-  setData: PropTypes.func.isRequired,
-  table: PropTypes.string.isRequired,
+ManageStaffPagination.propTypes = {
+  setData: PropTypes.func,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      name: PropTypes.string,
+      cout: PropTypes.number,
+    }),
+  ),
 };
 
-export default PaginationFooter;
+ManageStaffPagination.defaultProps = {
+  data: [],
+  setData: () => {},
+};
+
+export default ManageStaffPagination;
