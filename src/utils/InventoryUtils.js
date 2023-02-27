@@ -1,4 +1,7 @@
 import { PNPBackend } from './utils';
+import { STATUSES } from './config';
+
+const { APPROVED, PENDING, CHANGES_REQUESTED, SCHEDULED, PICKED_UP, ARCHIVED } = STATUSES;
 
 function makeDate(dateDB) {
   const months = [
@@ -25,14 +28,16 @@ const getDonationsFromDB = async () => {
   return donations;
 };
 
-const colorMap = {
-  APPROVED: 'green',
-  PENDING: 'gray',
-  CHANGES_REQUESTED: 'blue',
-  PICKED_UP: 'green',
-  SCHEDULED: 'green',
-  ARCHIVED: 'blue',
-};
+const colorMap = Object.fromEntries(
+  new Map([
+    [APPROVED, 'green'],
+    [PENDING, 'gray'],
+    [CHANGES_REQUESTED, 'blue'],
+    [PICKED_UP, 'green'],
+    [SCHEDULED, 'green'],
+    [ARCHIVED, 'blue'],
+  ]),
+);
 
 const formatImageData = data => {
   if (data.length < 4) {
@@ -77,6 +82,7 @@ const EMAILSTATUSES = {
   REQUEST_CHANGES: 'request changes',
   SCHEDULED: 'scheduled',
 };
+
 export {
   getDonationsFromDB,
   makeDate,

@@ -15,14 +15,14 @@ import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
 import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
-import STATUSES from '../../utils/config';
+import { STATUSES } from '../../utils/config';
 
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
 
-  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES.STATUSES;
+  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES;
 
   const handleRowClick = data => {
     setDonationData(data);

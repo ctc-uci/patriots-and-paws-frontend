@@ -19,20 +19,20 @@ import {
   Modal,
   Tag,
   useDisclosure,
-  Link,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
-import { makeDate, colorMap } from '../../utils/InventoryUtils';
+import { makeDate, colorMap, EMAILSTATUSES } from '../../utils/InventoryUtils';
 import DonationImagesContainer from './DonationImagesContainer';
 import DonationFurnitureContainer from './DonationFurnitureContainer';
 import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
-import STATUSES from '../../utils/config';
+import { STATUSES } from '../../utils/config';
 
 const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
-  const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES.STATUSES;
+  const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES;
+  const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES } = EMAILSTATUSES;
 
   const {
     id,
@@ -43,7 +43,6 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     addressStreet,
     addressUnit,
     addressCity,
-    addressZip,
     email,
     phoneNum,
     notes,
@@ -53,22 +52,8 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
-  // const [currentAddress, setCurrentAddress] = useState({
-  //   addressStreet: '',
-  //   addressUnit: '',
-  //   addressCity: '',
-  //   addressZip: '',
-  // });
   useEffect(() => {
     setCurrentStatus(status);
-    // setCurrentAddress(() => {
-    //   return {
-    //     addressStreet,
-    //     addressUnit,
-    //     addressCity,
-    //     addressZip,
-    //   };
-    // });
   }, [data]);
 
   const {
@@ -86,23 +71,10 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
   const fullname = `${firstName} ${lastName}`;
 
-  // const googleMap = '';
-  // if (addressStreet) {
-  //   const addressArray = [addressStreet, addressUnit, addressCity, addressZip];
-  //  const googleMap = handleNavigateToAddress([data]);
-  // addressUnit !== ''
-  //   ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
-  //   : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
-  // }
-  const googleMap =
-    addressUnit !== ''
-      ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
-      : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
-
   const makeStatusTag = curstatus => {
     return (
-      <Tag size="xs" m={5} ml={15} colorScheme={colorMap[curstatus]}>
-        {STATUSES[curstatus]}
+      <Tag size="sm" m={5} ml={15} colorScheme={colorMap[curstatus]}>
+        {curstatus}
       </Tag>
     );
   };
@@ -210,7 +182,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   isDisabled={currentStatus === CHANGES_REQUESTED}
                   onClick={() => {
                     OnOpenEmailModal();
-                    setEmailStatus('request changes');
+                    setEmailStatus(REQUEST_CHANGES);
                   }}
                 >
                   Request Changes
@@ -220,7 +192,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   colorScheme="green"
                   onClick={() => {
                     OnOpenEmailModal();
-                    setEmailStatus('approve');
+                    setEmailStatus(APPROVE);
                   }}
                 >
                   Approve
@@ -235,7 +207,7 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                 colorScheme="red"
                 onClick={() => {
                   OnOpenEmailModal();
-                  setEmailStatus('cancel pickup');
+                  setEmailStatus(CANCEL_PICKUP);
                 }}
               >
                 Cancel Pickup
@@ -247,17 +219,16 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               ml={3}
               colorScheme="gray"
               type="submit"
-              onClick={handleNavigateToAddress([data])}
+              onClick={() => {
+                handleNavigateToAddress([data]);
+              }}
             >
-              <Link href={googleMap} isExternal>
-                Navigate to Address
-              </Link>
+              Navigate to Address
             </Button>
           </Box>
         </ModalFooter>
         <EmailModal
           isOpenEmailModal={isOpenEmailModal}
-          // OnOpenEmailModal={onOpenEmailModal}
           onCloseEmailModal={onCloseEmailModal}
           status={emailStatus}
           updateDonationStatus={updateDonationStatus}

@@ -20,4 +20,4 @@ const STATUSES = {
   ARCHIVED: 'archived',
 };
 
-export default { AUTH_ROLES, STATUSES };
+export { AUTH_ROLES, STATUSES };
