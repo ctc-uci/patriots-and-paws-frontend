@@ -18,9 +18,8 @@ import {
   getDonationsFromDB,
   getRoutesFromDB,
   makeDate,
-  EMAILSTATUSES,
 } from '../../utils/InventoryUtils';
-// import STATUSES from '../../utils/config';
+import { STATUSES } from '../../utils/config';
 
 const InventoryPage = () => {
   const [users, setUsers] = useState([]);
@@ -28,7 +27,7 @@ const InventoryPage = () => {
   const [donationData, setDonationData] = useState({});
   const [routes, setRoutes] = useState([]);
 
-  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = EMAILSTATUSES;
+  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES;
 
   const handleRowClick = data => {
     setDonationData(data);

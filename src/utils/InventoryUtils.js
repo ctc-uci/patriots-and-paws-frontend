@@ -1,4 +1,7 @@
 import { PNPBackend } from './utils';
+import { STATUSES } from './config';
+
+const { APPROVED, PENDING, CHANGES_REQUESTED, SCHEDULED, PICKED_UP, ARCHIVED } = STATUSES;
 
 function makeDate(dateDB) {
   const months = [
@@ -83,6 +86,7 @@ const EMAILSTATUSES = {
   REQUEST_CHANGES: 'request changes',
   SCHEDULED: 'scheduled',
 };
+
 export {
   getDonationsFromDB,
   getRoutesFromDB,
