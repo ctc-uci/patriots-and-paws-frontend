@@ -62,6 +62,34 @@ const InventoryPage = () => {
         </Button>
       );
     }
+    if (newStatus === 'approval requested') {
+      return (
+        <Button size="xs" colorScheme="red">
+          Approval Requested
+        </Button>
+      );
+    }
+    if (newStatus === 'changes requested') {
+      return (
+        <Button size="xs" colorScheme="blue">
+          Changes Requested
+        </Button>
+      );
+    }
+    if (newStatus === 'reschedule') {
+      return (
+        <Button size="xs" colorScheme="orange">
+          Reschedule
+        </Button>
+      );
+    }
+    if (newStatus === 'pending') {
+      return (
+        <Button size="xs" colorScheme="red">
+          Pending
+        </Button>
+      );
+    }
     return (
       <Button size="xs" colorScheme="gray">
         {newStatus}
@@ -82,8 +110,14 @@ const InventoryPage = () => {
     fetchDonationsFromDB();
   }, []);
 
-  const makePendingUserRows = users
-    .filter(ele => ele.status === 'pending' || ele.status === 'changes requested')
+  const makeAdminApprovalUserRows = users
+    .filter(
+      ele =>
+        ele.status === 'pending' ||
+        ele.status === 'changes requested' ||
+        ele.status === 'reschedule' ||
+        ele.status === 'approval requested',
+    )
     .map(ele => {
       // console.log(ele);
       return (
@@ -110,7 +144,7 @@ const InventoryPage = () => {
             <Text color="#718096">{ele.email}</Text>
           </Td>
           <Td>#{ele.id}</Td>
-          <Td>{makeStatus(ele.status)}</Td>
+          <Td>{ele.addressCity}</Td>
           <Td>{makeDate(ele.submittedDate)}</Td>
         </Tr>
       );
@@ -127,7 +161,7 @@ const InventoryPage = () => {
             <Text color="#718096">{ele.email}</Text>
           </Td>
           <Td>#{ele.id}</Td>
-          <Td>{makeStatus(ele.status)}</Td>
+          <Td>{ele.addressCity}</Td>
           <Td>{makeDate(ele.submittedDate)}</Td>
         </Tr>
       );
@@ -144,7 +178,7 @@ const InventoryPage = () => {
             <Text color="#718096">{ele.email}</Text>
           </Td>
           <Td>#{ele.id}</Td>
-          <Td>{makeStatus(ele.status)}</Td>
+          <Td>{ele.addressCity}</Td>
           <Td>{makeDate(ele.submittedDate)}</Td>
         </Tr>
       );
@@ -154,10 +188,10 @@ const InventoryPage = () => {
     <>
       <Tabs p="40px">
         <TabList>
-          <Tab>Pending</Tab>
-          <Tab>Waiting for Donor Approval</Tab>
+          <Tab>Pending Admin Approval</Tab>
+          <Tab>Pending Donor Approval</Tab>
           <Tab>Awaiting Pickup</Tab>
-          <Tab>Archived</Tab>
+          <Tab>Archive</Tab>
           <Button ref={btnRef} onClick={onDrawerOpen}>
             Open Calendar
           </Button>
@@ -191,7 +225,7 @@ const InventoryPage = () => {
                     <Th>SUBMISSION DATE</Th>
                   </Tr>
                 </Thead>
-                <Tbody>{makePendingUserRows}</Tbody>
+                <Tbody>{makeAdminApprovalUserRows}</Tbody>
               </Table>
             </TableContainer>
           </TabPanel>
@@ -232,7 +266,7 @@ const InventoryPage = () => {
                   <Tr bg="#F7FAFC" height="40px">
                     <Th>NAME</Th>
                     <Th>DONATION ID</Th>
-                    <Th>STATUS</Th>
+                    <Th>ROUTE</Th>
                     <Th>PICKUP DATE</Th>
                   </Tr>
                 </Thead>
