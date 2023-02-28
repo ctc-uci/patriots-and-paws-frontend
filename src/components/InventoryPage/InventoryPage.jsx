@@ -18,51 +18,32 @@ import {
   getDonationsFromDB,
   getRoutesFromDB,
   makeDate,
+  colorMap,
 } from '../../utils/InventoryUtils';
-import { STATUSES } from '../../utils/config';
 
 const InventoryPage = () => {
-  const [users, setUsers] = useState([]);
+  const [allDonations, setAllDonations] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
-  const [routes, setRoutes] = useState([]);
-
-  const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULED, ARCHIVED } = STATUSES;
+  const [routes, setRoutes] = useState({});
 
   const handleRowClick = data => {
     setDonationData(data);
     onOpen();
   };
 
-  function makeStatus(newStatus) {
-    let color = 'gray';
-
-    if (newStatus === 'rejected') {
-      color = 'red';
-    } else if (newStatus === APPROVED || newStatus === SCHEDULED) {
-      color = 'green';
-    } else if (newStatus === 'flagged' || newStatus === PENDING) {
-      color = 'gray';
-    } else if (newStatus === CHANGES_REQUESTED || newStatus === ARCHIVED) {
-      color = 'blue';
-    }
+  function makeStatus(status) {
     return (
-      <Tag size="lg" colorScheme={color}>
-        {newStatus[0].toUpperCase() + newStatus.slice(1)}
+      <Tag size="lg" colorScheme={colorMap[status]}>
+        {status[0].toUpperCase() + status.slice(1)}
       </Tag>
     );
   }
 
-  // function makeDate(dateDB) {
-  //   const d = new Date(dateDB);
-  //   return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-  // }
-
   useEffect(() => {
     const fetchDonationsFromDB = async () => {
       const donationsFromDB = await getDonationsFromDB();
-      // console.log(donationsFromDB);
-      setUsers(donationsFromDB);
+      setAllDonations(donationsFromDB);
     };
     fetchDonationsFromDB();
   }, []);
@@ -85,19 +66,19 @@ const InventoryPage = () => {
     fetchRoutesFromDB();
   }, []);
 
-  const makeUserRows = users.map(ele => {
+  const makeUserRows = allDonations?.map(donation => {
+    const { id, status, firstName, lastName, email, submittedDate } = donation;
     return (
-      <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+      <Tr onClick={() => handleRowClick(donation)} key={id}>
         <Td>
-          <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-          <Text color="#718096">{ele.email}</Text>
+          <Text>{`${firstName} ${lastName}`}</Text>
+          <Text color="#718096">{email}</Text>
         </Td>
-        <Td>#{ele.id}</Td>
-        <Td>{makeStatus(ele.status)}</Td>
-        <Td>{makeDate(ele.submittedDate)}</Td>
+        <Td>#{id}</Td>
+        <Td>{makeStatus(status)}</Td>
+        <Td>{makeDate(submittedDate)}</Td>
       </Tr>
     );
-    // return <DonationModal key={ele.id} props={ele} />;
   });
 
   return (
@@ -116,7 +97,7 @@ const InventoryPage = () => {
         </Table>
       </TableContainer>
       <DonationModal
-        setUsers={setUsers}
+        setAllDonations={setAllDonations}
         data={donationData}
         onClose={onClose}
         onOpen={onOpen}

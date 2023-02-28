@@ -5,7 +5,7 @@ import {
   ModalContent,
   ModalBody,
   ModalCloseButton,
-  Text,
+  Textarea,
   Modal,
   Image,
 } from '@chakra-ui/react';
@@ -21,7 +21,7 @@ const ImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
           <ModalCloseButton />
           <ModalBody>
             <Image h={500} w="35%" my={50} mx="auto" src={imageUrl} />
-            <Text placeholder={notes} isDisabled />
+            <Textarea defaultValue={notes} isReadOnly />
           </ModalBody>
         </ModalContent>
       </Modal>

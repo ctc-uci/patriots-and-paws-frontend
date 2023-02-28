@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChakraProvider, InputGroup, Input, InputRightAddon } from '@chakra-ui/react';
+import { InputGroup, Input, InputRightAddon, Flex } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
   Pagination,
@@ -26,13 +26,15 @@ const DonationFurnitureContainer = ({ data }) => {
   }, [currentPage]);
 
   return (
-    <ChakraProvider>
-      {displayedData?.map(furniture => (
-        <InputGroup key={furniture.id}>
-          <Input value={furniture.name} isDisabled />
-          <InputRightAddon>{furniture.count}</InputRightAddon>
-        </InputGroup>
-      ))}
+    <>
+      <Flex direction="column" gap={3}>
+        {displayedData?.map(furniture => (
+          <InputGroup key={furniture.id}>
+            <Input value={furniture.name} isDisabled />
+            <InputRightAddon w="4em">{furniture.count}</InputRightAddon>
+          </InputGroup>
+        ))}
+      </Flex>
       <br />
       <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
         <PaginationContainer justify="right">
@@ -40,7 +42,7 @@ const DonationFurnitureContainer = ({ data }) => {
           <PaginationNext>&rsaquo;</PaginationNext>
         </PaginationContainer>
       </Pagination>
-    </ChakraProvider>
+    </>
   );
 };
 
@@ -49,7 +51,7 @@ DonationFurnitureContainer.propTypes = {
     PropTypes.shape({
       id: PropTypes.number,
       name: PropTypes.string,
-      cout: PropTypes.number,
+      count: PropTypes.number,
     }),
   ),
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ChakraProvider, SimpleGrid, Image, useDisclosure } from '@chakra-ui/react';
+import { SimpleGrid, Image, useDisclosure } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
   Pagination,
@@ -42,7 +42,7 @@ const DonationImagesContainer = ({ data }) => {
   };
 
   return (
-    <ChakraProvider>
+    <>
       <SimpleGrid columns={2} gap={1}>
         {displayedData?.map(image => (
           <Image
@@ -66,7 +66,7 @@ const DonationImagesContainer = ({ data }) => {
           <PaginationNext>&rsaquo;</PaginationNext>
         </PaginationContainer>
       </Pagination>
-    </ChakraProvider>
+    </>
   );
 };
 

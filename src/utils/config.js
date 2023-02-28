@@ -4,13 +4,6 @@ const AUTH_ROLES = {
   DRIVER_ROLE: 'driver',
 };
 
-// const EMAILSTATUSES = {
-//   CANCEL_PICKUP: 'cancel pickup',
-//   APPROVE: 'approve',
-//   REQUEST_CHANGES: 'request changes',
-//   SCHEDULED: 'scheduled',
-// };
-
 const STATUSES = {
   PENDING: 'pending',
   APPROVED: 'approved',

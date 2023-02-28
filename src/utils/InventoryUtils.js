@@ -35,12 +35,12 @@ const getRoutesFromDB = async () => {
 };
 
 const colorMap = {
-  APPROVED: 'green',
-  PENDING: 'gray',
-  CHANGES_REQUESTED: 'blue',
-  PICKED_UP: 'green',
-  SCHEDULED: 'green',
-  ARCHIVED: 'blue',
+  [APPROVED]: 'green',
+  [PENDING]: 'gray',
+  [CHANGES_REQUESTED]: 'blue',
+  [PICKED_UP]: 'green',
+  [SCHEDULED]: 'green',
+  [ARCHIVED]: 'blue',
 };
 
 const formatImageData = data => {
@@ -80,7 +80,7 @@ const formatFurnitureData = data => {
   );
 };
 
-const EMAILSTATUSES = {
+const EMAIL_TYPE = {
   CANCEL_PICKUP: 'cancel pickup',
   APPROVE: 'approve',
   REQUEST_CHANGES: 'request changes',
@@ -94,5 +94,5 @@ export {
   formatImageData,
   formatFurnitureData,
   colorMap,
-  EMAILSTATUSES,
+  EMAIL_TYPE,
 };
