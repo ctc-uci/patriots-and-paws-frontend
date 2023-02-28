@@ -1,5 +1,5 @@
 import { ChakraProvider, Button, Image, Card, CardBody, Text } from '@chakra-ui/react';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
@@ -35,8 +35,6 @@ const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
 function App() {
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
-
-  useEffect(() => console.log(files), [files]);
 
   const onSubmit = async () => {
     const urls = await Promise.all(files.map(async file => uploadImage(file)));

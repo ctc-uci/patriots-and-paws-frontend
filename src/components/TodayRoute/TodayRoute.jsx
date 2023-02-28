@@ -31,18 +31,24 @@ const TodayRoute = () => {
   //   onOpen();
   // };
 
+  const getFurnitureCount = furnitures => {
+    let counter = 0;
+    furnitures.forEach(ele => {
+      counter += ele.count;
+    });
+    return counter;
+  };
+
   const [route, setRoute] = useState();
   const getDonationsForToday = async () => {
     const userId = getCurrentUserId();
-    const result = await PNPBackend.get(`/routes/driver/${userId}`);
+    const driverRoute = await PNPBackend.get(`/routes/driver/${userId}`);
     const today = '2023-02-16T08:00:00.000Z';
-    const route2 = result.data.find(route3 => route3.date === today);
-    const data = await PNPBackend.get(`/routes/${route2.id}`);
-    setRoute(route2);
-    const donations2 = data.data[0].donations;
-    setDonations(donations2);
-    // setUsers(donations2);
-    // console.log(donations2);
+    const todayRoute = driverRoute.data.find(route3 => route3.date === today);
+    const data = await PNPBackend.get(`/routes/${todayRoute.id}`);
+    const donationData = data.data[0].donations;
+    setRoute(route);
+    setDonations(donationData);
   };
 
   useEffect(() => {
@@ -50,7 +56,6 @@ const TodayRoute = () => {
   }, []);
 
   const pickupComplete = id => {
-    // TODO - change status in backend to archived
     PNPBackend.put(`/donations/${id}`, {
       status: 'archived',
     });
@@ -78,7 +83,7 @@ const TodayRoute = () => {
                     {/* donation Id */}
                     <Td>#{d.id}</Td>
                     {/* number of items */}
-                    <Td>{d.orderNum}</Td>
+                    <Td>{getFurnitureCount(d.furniture)}</Td>
                     <Td>
                       {d.status === 'archived' ? (
                         <Tag>
