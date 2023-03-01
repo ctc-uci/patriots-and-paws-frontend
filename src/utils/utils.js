@@ -19,11 +19,11 @@ const PNPBackend = axios.create({
 const passwordRequirementsRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-const sendEmail = async (newEmail, emailtemplate) => {
+const sendEmail = async (subject, newEmail, emailtemplate) => {
   const response = await PNPBackend.post('/nodemailer/send', {
     email: newEmail,
     messageHtml: renderEmail(emailtemplate),
-    subject: 'test!',
+    subject,
   });
   if (response.status !== 200) {
     throw new Error('Oops, something went wrong. Try again');

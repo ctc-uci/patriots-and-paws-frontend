@@ -25,7 +25,7 @@ import {
   getCurrentUserId,
 } from '../../utils/AuthUtils';
 import { Cookies, withCookies, cookieKeys } from '../../utils/CookieUtils';
-import AUTH_ROLES from '../../utils/AuthConfig';
+import { AUTH_ROLES } from '../../utils/config';
 
 const UserDetails = ({ userId, cookies }) => {
   const [user, setUser] = useState({
@@ -38,7 +38,7 @@ const UserDetails = ({ userId, cookies }) => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
-  const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
+  const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
 
   useEffect(() => {
     const fetchUserFromDB = async () => {
