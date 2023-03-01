@@ -20,6 +20,7 @@ import {
   useDisclosure,
   Select,
 } from '@chakra-ui/react';
+import { WarningIcon } from '@chakra-ui/icons';
 
 import { PropTypes } from 'prop-types';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
@@ -79,7 +80,8 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
 
   const makeStatusTag = curStatus => {
     return (
-      <Tag size="sm" m={5} ml={15} colorScheme={colorMap[curStatus]}>
+      // bgColor={colorMap[curStatus]}
+      <Tag size="sm" m={5} ml={15} color="white" bgColor={colorMap[curStatus]}>
         {curStatus[0].toUpperCase() + curStatus.slice(1)}
       </Tag>
     );
@@ -107,11 +109,26 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader m={3}>
-          <Flex>
-            <Text fontSize={36}>Donation #{id}</Text>
-            {currentStatus && makeStatusTag(currentStatus)}
+          {currentStatus && makeStatusTag(currentStatus)}
+          <Flex direction="row">
+            <Text ml={15} fontSize={36}>
+              Donation #{id}
+            </Text>
+            <Box rounded="md" bgColor="rgb(254,235,203)" ml={5}>
+              <Flex direction="row" verticalAlign="center" align="center">
+                <WarningIcon color="orange.500" mr={3} ml={3} />
+                <Flex direction="column">
+                  <Text fontSize="16px" fontStyle="bold">
+                    Donor Rejected Scheduled Date
+                  </Text>
+                  <Text fontSize="16px">Please select a new date to continue</Text>
+                </Flex>
+              </Flex>
+            </Box>
           </Flex>
-          <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
+          <Text ml={15} fontSize={16}>
+            Submission Date: {makeDate(submittedDate)}
+          </Text>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -136,9 +153,25 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   <Input type="tel" defaultValue={phoneNum} isReadOnly />
                 </InputGroup>
               </Stack>
-              <Text mt="60px" mb={5} fontSize="20px">
-                Address
-              </Text>
+              <Stack direction="row" my={2}>
+                <Text mt="60px" mb={5} fontSize="20px">
+                  Address
+                </Text>
+                <Box>
+                  <Button
+                    mt="60px"
+                    ml={4}
+                    colorScheme="teal"
+                    size="sm"
+                    type="submit"
+                    onClick={() => {
+                      handleNavigateToAddress([data]);
+                    }}
+                  >
+                    Navigate
+                  </Button>
+                </Box>
+              </Stack>
               <Stack spacing={3} direction="row">
                 <InputGroup>
                   <InputLeftAddon>Street Address</InputLeftAddon>
@@ -228,12 +261,12 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
           </Flex>
         </ModalBody>
 
-        <ModalFooter justifyContent="space-between">
-          <Box>
+        <ModalFooter>
+          <Box justifyContent="right" mr={6}>
             {(currentStatus === PENDING || currentStatus === CHANGES_REQUESTED) && (
               <>
                 <Button
-                  colorScheme="red"
+                  colorScheme="blue"
                   isDisabled={currentStatus === CHANGES_REQUESTED}
                   onClick={() => {
                     emailModalOnOpen();
@@ -267,18 +300,6 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 Cancel Pickup
               </Button>
             )}
-          </Box>
-          <Box>
-            <Button
-              ml={3}
-              colorScheme="gray"
-              type="submit"
-              onClick={() => {
-                handleNavigateToAddress([data]);
-              }}
-            >
-              Navigate to Address
-            </Button>
           </Box>
         </ModalFooter>
         <EmailModal

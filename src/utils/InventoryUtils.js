@@ -35,12 +35,12 @@ const getRoutesFromDB = async () => {
 };
 
 const colorMap = {
-  [APPROVED]: 'green',
-  [PENDING]: 'gray',
-  [CHANGES_REQUESTED]: 'blue',
+  [APPROVED]: 'rgb(229,62,62)',
+  [PENDING]: 'rgb(152,155,158)',
+  [CHANGES_REQUESTED]: 'rgb(49, 130, 206)',
   [PICKED_UP]: 'green',
   [SCHEDULED]: 'green',
-  [ARCHIVED]: 'blue',
+  [ARCHIVED]: 'rgb(152,155,158)',
 };
 
 const formatImageData = data => {
