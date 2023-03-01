@@ -64,8 +64,14 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     onClose: emailModalOnClose,
   } = useDisclosure();
 
-  const updateDonationStatus = async newStatus => {
-    setAllDonations(prev => prev.map(ele => (ele.id === id ? { ...ele, status: newStatus } : ele)));
+  const updateDonation = async ({ newStatus, newPickupDate, newRouteId }) => {
+    setAllDonations(prev =>
+      prev.map(ele =>
+        ele.id === id
+          ? { ...ele, status: newStatus, pickupDate: newPickupDate, routeId: newRouteId }
+          : ele,
+      ),
+    );
     await PNPBackend.put(`/donations/${id}`, {
       status: newStatus,
     });
@@ -80,7 +86,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
   };
 
   const resetScheduledRoute = () => {
-    setScheduledDate(pickupDate ?? '');
+    setScheduledDate(pickupDate?.replace(/T.*$/, '') ?? '');
     setScheduledRouteId(routeId ?? '');
   };
 
@@ -175,7 +181,6 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 <Text fontSize="20px">Schedule</Text>
                 <Select
                   placeholder={!pickupDate && 'Choose a date'}
-                  defaultValue={pickupDate ?? ''}
                   onChange={e => {
                     setScheduledDate(e.target.value);
                     setScheduledRouteId('');
@@ -192,7 +197,6 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 <Select
                   placeholder={!routeId && 'Choose a route'}
                   isDisabled={![PENDING].includes(status) || !scheduledDate}
-                  defaultValue={routes[pickupDate] ?? ''}
                   onChange={e => setScheduledRouteId(e.target.value)}
                   bg="white"
                 >
@@ -281,7 +285,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
           isOpenEmailModal={emailModalIsOpen}
           onCloseEmailModal={emailModalOnClose}
           status={emailStatus}
-          updateDonationStatus={updateDonationStatus}
+          updateDonation={updateDonation}
           email={email}
           setCurrentStatus={setCurrentStatus}
           donationInfo={{ id, scheduledDate, scheduledRouteId }}

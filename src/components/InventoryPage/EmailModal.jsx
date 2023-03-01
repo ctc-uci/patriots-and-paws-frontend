@@ -18,7 +18,7 @@ import {
 import { Email, Item, Span } from 'react-html-email';
 
 import { PropTypes } from 'prop-types';
-import { sendEmail } from '../../utils/utils';
+import { sendEmail, PNPBackend } from '../../utils/utils';
 import { EMAIL_TYPE, makeDate } from '../../utils/InventoryUtils';
 import { STATUSES } from '../../utils/config';
 
@@ -34,13 +34,23 @@ const makeSendButton = (
   routeInfo,
   isConfirmationSendEmail = false,
 ) => {
+  const { id: donationId, scheduledRouteId: routeId, scheduledDate: pickupDate } = routeInfo;
+
+  const handleApproveDonation = async e => {
+    handleSubmit(e);
+    await PNPBackend.post('/donations/assign-route', { donationId, routeId });
+    updateDonationStatus({ newStatus: APPROVED, newPickupDate: pickupDate, newRouteId: routeId });
+    setCurrentStatus(APPROVED);
+    onCloseEmailModal();
+  };
+
   if (status === CANCEL_PICKUP) {
     return (
       <Button
         colorScheme={isConfirmationSendEmail ? 'green' : 'red'}
         onClick={e => {
           handleSubmit(e);
-          updateDonationStatus(APPROVED);
+          updateDonationStatus({ newStatus: APPROVED });
           setCurrentStatus(APPROVED);
           onCloseEmailModal();
         }}
@@ -55,7 +65,7 @@ const makeSendButton = (
         colorScheme={isConfirmationSendEmail ? 'green' : 'blue'}
         onClick={e => {
           handleSubmit(e);
-          updateDonationStatus(CHANGES_REQUESTED);
+          updateDonationStatus({ newStatus: CHANGES_REQUESTED });
           setCurrentStatus(CHANGES_REQUESTED);
           onCloseEmailModal();
         }}
@@ -67,16 +77,7 @@ const makeSendButton = (
 
   if (status === APPROVE) {
     return (
-      <Button
-        colorScheme="green"
-        onClick={e => {
-          handleSubmit(e);
-          updateDonationStatus(APPROVED);
-          setCurrentStatus(APPROVED);
-          onCloseEmailModal();
-          console.log(routeInfo);
-        }}
-      >
+      <Button colorScheme="green" onClick={e => handleApproveDonation(e)}>
         {isConfirmationSendEmail ? 'Send Email' : 'Send Approval Email'}
       </Button>
     );
@@ -106,7 +107,7 @@ const EmailModal = ({
   isOpenEmailModal,
   onCloseEmailModal,
   status,
-  updateDonationStatus,
+  updateDonation,
   email,
   setCurrentStatus,
   donationInfo,
@@ -146,7 +147,7 @@ const EmailModal = ({
   const sendEmailButton = makeSendButton(
     status,
     handleSubmit,
-    updateDonationStatus,
+    updateDonation,
     setCurrentStatus,
     onCloseEmailModal,
     donationInfo,
@@ -155,7 +156,7 @@ const EmailModal = ({
   const confirmationSendEmailButton = makeSendButton(
     status,
     handleSubmit,
-    updateDonationStatus,
+    updateDonation,
     setCurrentStatus,
     onCloseEmailModal,
     donationInfo,
@@ -271,7 +272,7 @@ const EmailModal = ({
 };
 
 EmailModal.propTypes = {
-  updateDonationStatus: PropTypes.func.isRequired,
+  updateDonation: PropTypes.func.isRequired,
   status: PropTypes.string.isRequired,
   onCloseEmailModal: PropTypes.func,
   isOpenEmailModal: PropTypes.bool,
