@@ -28,7 +28,7 @@ const { APPROVED, CHANGES_REQUESTED } = STATUSES;
 const makeSendButton = (
   status,
   handleSubmit,
-  updateDonationStatus,
+  updateDonation,
   setCurrentStatus,
   onCloseEmailModal,
   routeInfo,
@@ -39,7 +39,7 @@ const makeSendButton = (
   const handleApproveDonation = async e => {
     handleSubmit(e);
     await PNPBackend.post('/donations/assign-route', { donationId, routeId });
-    updateDonationStatus({ newStatus: APPROVED, newPickupDate: pickupDate, newRouteId: routeId });
+    updateDonation({ newStatus: APPROVED, newPickupDate: pickupDate, newRouteId: routeId });
     setCurrentStatus(APPROVED);
     onCloseEmailModal();
   };
@@ -50,7 +50,7 @@ const makeSendButton = (
         colorScheme={isConfirmationSendEmail ? 'green' : 'red'}
         onClick={e => {
           handleSubmit(e);
-          updateDonationStatus({ newStatus: APPROVED });
+          updateDonation({ newStatus: APPROVED });
           setCurrentStatus(APPROVED);
           onCloseEmailModal();
         }}
@@ -65,7 +65,7 @@ const makeSendButton = (
         colorScheme={isConfirmationSendEmail ? 'green' : 'blue'}
         onClick={e => {
           handleSubmit(e);
-          updateDonationStatus({ newStatus: CHANGES_REQUESTED });
+          updateDonation({ newStatus: CHANGES_REQUESTED });
           setCurrentStatus(CHANGES_REQUESTED);
           onCloseEmailModal();
         }}

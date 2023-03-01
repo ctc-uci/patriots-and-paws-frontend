@@ -186,7 +186,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                     setScheduledRouteId('');
                   }}
                   bg="white"
-                  isDisabled={![PENDING].includes(status)}
+                  isDisabled={![PENDING].includes(currentStatus)}
                 >
                   {Object.keys(routes).map(day => (
                     <option key={day} value={day}>
@@ -196,7 +196,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 </Select>
                 <Select
                   placeholder={!routeId && 'Choose a route'}
-                  isDisabled={![PENDING].includes(status) || !scheduledDate}
+                  isDisabled={![PENDING].includes(currentStatus) || !scheduledDate}
                   onChange={e => setScheduledRouteId(e.target.value)}
                   bg="white"
                 >
