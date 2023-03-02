@@ -12,6 +12,7 @@ import {
 import { PropTypes } from 'prop-types';
 
 const ImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
+  const { imageUrl, notes } = image;
   return (
     <>
       <Modal isOpen={isOpenImageModal} onClose={onCloseImageModal} size="full">
@@ -19,8 +20,8 @@ const ImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
-            <Image h={500} w="35%" my={50} mx="auto" src={image} />
-            <Textarea placeholder="Image description" isDisabled />
+            <Image h={500} w="35%" my={50} mx="auto" src={imageUrl} />
+            <Textarea defaultValue={notes} isReadOnly />
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -31,6 +32,13 @@ const ImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
 ImageModal.propTypes = {
   isOpenImageModal: PropTypes.bool.isRequired,
   onCloseImageModal: PropTypes.func.isRequired,
-  image: PropTypes.string.isRequired,
+  image: PropTypes.shape({
+    imageUrl: PropTypes.string,
+    notes: PropTypes.string,
+  }),
+};
+
+ImageModal.defaultProps = {
+  image: {},
 };
 export default ImageModal;

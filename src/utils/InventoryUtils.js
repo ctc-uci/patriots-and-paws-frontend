@@ -1,4 +1,7 @@
 import { PNPBackend } from './utils';
+import { STATUSES } from './config';
+
+const { APPROVED, PENDING, CHANGES_REQUESTED, SCHEDULED, PICKED_UP, ARCHIVED } = STATUSES;
 
 function makeDate(dateDB) {
   const months = [
@@ -25,10 +28,71 @@ const getDonationsFromDB = async () => {
   return donations;
 };
 
-const getPictureFromDB = async donationId => {
-  const res = await PNPBackend.get(`/pictures/donation/${donationId}`);
-  const image = res.data;
-  return image;
+const getRoutesFromDB = async () => {
+  const res = await PNPBackend.get(`/routes`);
+  const routes = res.data;
+  return routes;
 };
 
-export { getDonationsFromDB, getPictureFromDB, makeDate };
+const colorMap = {
+  [APPROVED]: 'green',
+  [PENDING]: 'gray',
+  [CHANGES_REQUESTED]: 'blue',
+  [PICKED_UP]: 'green',
+  [SCHEDULED]: 'green',
+  [ARCHIVED]: 'blue',
+};
+
+const formatImageData = data => {
+  if (data.length < 4) {
+    return data.reduce((acc, curr) => {
+      acc.push([curr]);
+      return acc;
+    }, []);
+  }
+
+  return data.reduce(
+    (acc, curr) => {
+      const lastGroup = acc[acc.length - 1];
+      if (lastGroup.length < 4) {
+        lastGroup.push(curr);
+      } else {
+        acc.push([curr]);
+      }
+      return acc;
+    },
+    [[]],
+  );
+};
+
+const formatFurnitureData = data => {
+  return data.reduce(
+    (acc, curr) => {
+      const lastGroup = acc[acc.length - 1];
+      if (lastGroup.length < 4) {
+        lastGroup.push(curr);
+      } else {
+        acc.push([curr]);
+      }
+      return acc;
+    },
+    [[]],
+  );
+};
+
+const EMAIL_TYPE = {
+  CANCEL_PICKUP: 'cancel pickup',
+  APPROVE: 'approve',
+  REQUEST_CHANGES: 'request changes',
+  SCHEDULED: 'scheduled',
+};
+
+export {
+  getDonationsFromDB,
+  getRoutesFromDB,
+  makeDate,
+  formatImageData,
+  formatFurnitureData,
+  colorMap,
+  EMAIL_TYPE,
+};

@@ -9,7 +9,6 @@ import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import Donate from './pages/donation/Donate';
-import UserProfile from './pages/UserProfile/UserProfile';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
 import RoutesPage from './pages/RoutesPage/RoutesPage';
 
@@ -27,10 +26,10 @@ import SampleRoute from './components/SampleRoute/SampleRoute';
 import InventoryPage from './components/InventoryPage/InventoryPage';
 import DriverDashboard from './pages/DriverDashboard/DriverDashboard';
 
-import AUTH_ROLES from './utils/AuthConfig';
+import { AUTH_ROLES } from './utils/config';
 import DonorLogin from './pages/DonorLogin/DonorLogin';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
 
 function App() {
   const [files, setFiles] = useState([]);
@@ -130,17 +129,6 @@ function App() {
             />
             <Route
               exact
-              path="/users/:userId"
-              element={
-                <ProtectedRoute
-                  Component={UserProfile}
-                  redirectPath="/login"
-                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
-                />
-              }
-            />
-            <Route
-              exact
               path="/logout"
               element={
                 <ProtectedRoute
@@ -178,17 +166,6 @@ function App() {
             <Route exact path="/inventory" element={<InventoryPage />} />
           </Route>
           <Route exact path="/login" element={<Login />} />
-          <Route
-            exact
-            path="/users/:userId"
-            element={
-              <ProtectedRoute
-                Component={UserProfile}
-                redirectPath="/login"
-                roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
-              />
-            }
-          />
           <Route
             exact
             path="/logout"

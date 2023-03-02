@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import {
   ModalOverlay,
   ModalContent,
@@ -14,29 +13,32 @@ import {
   Input,
   Stack,
   InputLeftAddon,
-  InputRightAddon,
   InputGroup,
   Textarea,
   Modal,
+  Tag,
   useDisclosure,
-  Link,
-  Image,
+  Select,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
-import { PNPBackend } from '../../utils/utils';
-import { makeDate, getPictureFromDB } from '../../utils/InventoryUtils';
-import ImageModal from './ImageModal';
+import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
+import { makeDate, colorMap, EMAIL_TYPE } from '../../utils/InventoryUtils';
+import DonationImagesContainer from './DonationImagesContainer';
+import DonationFurnitureContainer from './DonationFurnitureContainer';
 import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
-// import { getPictureFromDB } from '../../utils/InventoryUtils';
+import { STATUSES } from '../../utils/config';
 
-const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
-  // const dataCopy = data;
+const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES;
+const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES } = EMAIL_TYPE;
+
+const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
   const {
     id,
     status,
     firstName,
+    lastName,
     submittedDate,
     addressStreet,
     addressUnit,
@@ -45,129 +47,93 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
     email,
     phoneNum,
     notes,
+    pictures,
+    furniture,
+    pickupDate,
+    routeId,
   } = data;
 
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
-  const {
-    isOpen: isOpenImageModal,
-    onOpen: onOpenImageModal,
-    onClose: onCloseImageModal,
-  } = useDisclosure();
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [scheduledRouteId, setScheduledRouteId] = useState('');
 
   const {
-    isOpen: isOpenEmailModal,
-    onOpen: OnOpenEmailModal,
-    onClose: onCloseEmailModal,
+    isOpen: emailModalIsOpen,
+    onOpen: emailModalOnOpen,
+    onClose: emailModalOnClose,
   } = useDisclosure();
 
-  const [images, setImages] = useState([]);
-
-  // useEffect(() => {}, []);
-
-  // const [canEditInfo, setCanEditInfo] = useState(false);
-
-  // const getImage = async () => {
-  //   const result = await getPictureFromDB(id);
-  //   setImage(result[0]);
-  //   console.log(image);
-  // };
-
-  useEffect(() => {
-    async function getImages() {
-      const result = await getPictureFromDB(id);
-      setImages(result);
-    }
-    getImages();
-    setCurrentStatus(status);
-  }, [data]);
-
-  const updateDonationStatus = async newstatus => {
-    setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, status: newstatus } : ele)));
+  const updateDonation = async ({ newStatus, newPickupDate, newRouteId }) => {
+    setAllDonations(prev =>
+      prev.map(ele =>
+        ele.id === id
+          ? { ...ele, status: newStatus, pickupDate: newPickupDate, routeId: newRouteId }
+          : ele,
+      ),
+    );
     await PNPBackend.put(`/donations/${id}`, {
-      status: newstatus,
+      status: newStatus,
     });
   };
 
-  const googleMap =
-    addressUnit !== ''
-      ? `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressUnit}, ${addressCity}, CA, ${addressZip}`
-      : `https://www.google.com/maps/search/?api=1&query=${addressStreet}, ${addressCity}, CA, ${addressZip}`;
+  const makeStatusTag = curStatus => {
+    return (
+      <Tag size="sm" m={5} ml={15} colorScheme={colorMap[curStatus]}>
+        {curStatus[0].toUpperCase() + curStatus.slice(1)}
+      </Tag>
+    );
+  };
+
+  const resetScheduledRoute = () => {
+    setScheduledDate(pickupDate?.replace(/T.*$/, '') ?? '');
+    setScheduledRouteId(routeId ?? '');
+  };
+
+  useEffect(() => {
+    setCurrentStatus(status);
+    resetScheduledRoute();
+  }, [data]);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="full">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        resetScheduledRoute();
+        onClose();
+      }}
+      size="full"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader m={3}>
           <Flex>
             <Text fontSize={36}>Donation #{id}</Text>
-            <Box>
-              {currentStatus === 'pending' ? (
-                <Button colorScheme="gray" m={5} ml={15} size="xs">
-                  Pending
-                </Button>
-              ) : (
-                ''
-              )}
-              {currentStatus === 'approved' && (
-                <Button size="xs" m={5} ml={15} colorScheme="green">
-                  Approved
-                </Button>
-              )}
-              {currentStatus === 'changes requested' && (
-                <Button size="xs" m={5} ml={15} colorScheme="blue">
-                  Changes Requested
-                </Button>
-              )}
-              {currentStatus === 'picked up' && (
-                <Button size="xs" m={5} ml={15} colorScheme="green">
-                  Picked Up
-                </Button>
-              )}
-              {currentStatus === 'scheduled' && (
-                <Button size="xs" m={5} ml={15} colorScheme="green">
-                  Scheduled
-                </Button>
-              )}
-              {currentStatus === 'archived' && (
-                <Button size="xs" m={5} ml={15} colorScheme="blue">
-                  Archived
-                </Button>
-              )}
-            </Box>
-            {/* <Button mt={5} ml={15} colorScheme="gray" size="xs">
-              {status}
-            </Button> */}
+            {currentStatus && makeStatusTag(currentStatus)}
           </Flex>
           <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Flex flexDirection="row" m={3}>
-            <Box h={600} w="60%" m={5}>
+            <Box h="100%" w="60%" m={5}>
               <Text mb={5} fontSize="20px">
                 Basic Information
               </Text>
               <Stack spacing={3}>
                 <InputGroup>
                   <InputLeftAddon>Name</InputLeftAddon>
-                  <Input placeholder="name" defaultValue={firstName} isRequired isDisabled />
+                  <Input defaultValue={`${firstName} ${lastName}`} isReadOnly />
                 </InputGroup>
               </Stack>
               <Stack direction="row" my={2}>
                 <InputGroup>
                   <InputLeftAddon>Email</InputLeftAddon>
-                  <Input placeholder="email" defaultValue={email} isRequired isDisabled />
+                  <Input defaultValue={email} isReadOnly />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>Phone Number</InputLeftAddon>
-                  <Input
-                    type="tel"
-                    placeholder="phone number"
-                    defaultValue={phoneNum}
-                    isRequired
-                    isDisabled
-                  />
+                  <Input type="tel" defaultValue={phoneNum} isReadOnly />
                 </InputGroup>
               </Stack>
               <Text mt="60px" mb={5} fontSize="20px">
@@ -176,79 +142,87 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
               <Stack spacing={3} direction="row">
                 <InputGroup>
                   <InputLeftAddon>Street Address</InputLeftAddon>
-                  <Input placeholder="street" defaultValue={addressStreet} isRequired isDisabled />
+                  <Input defaultValue={addressStreet} isReadOnly />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>Unit</InputLeftAddon>
-                  <Input placeholder="unit" defaultValue={addressUnit} isRequired isDisabled />
+                  <Input defaultValue={addressUnit} isReadOnly />
                 </InputGroup>
               </Stack>
               <Stack spacing={3} direction="row" my={2}>
                 <InputGroup>
                   <InputLeftAddon>City</InputLeftAddon>
-                  <Input placeholder="city" defaultValue={addressCity} isRequired isDisabled />
+                  <Input defaultValue={addressCity} isReadOnly />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>State</InputLeftAddon>
-                  <Input placeholder="CA" isDisabled />
+                  <Input defaultValue="CA" isReadOnly />
                 </InputGroup>
                 <InputGroup>
                   <InputLeftAddon>Zip Code</InputLeftAddon>
+                  <Input defaultValue={addressZip} isReadOnly />
                 </InputGroup>
               </Stack>
               <Text mt="60px" mb={5} fontSize="20px">
                 Additional Comments
               </Text>
-              <Textarea
-                placeholder="Enter additional comments here"
-                defaultValues={notes}
-                isDisabled
-              />
+              <Textarea defaultValue={notes} isReadOnly />
+
+              <Flex
+                direction="row"
+                bg="#E2E8F0"
+                align="center"
+                mt="2em"
+                borderRadius={6}
+                gap={5}
+                px={5}
+                py={3}
+              >
+                <Text fontSize="20px">Schedule</Text>
+                <Select
+                  placeholder={!pickupDate && 'Choose a date'}
+                  onChange={e => {
+                    setScheduledDate(e.target.value);
+                    setScheduledRouteId('');
+                  }}
+                  bg="white"
+                  isDisabled={![PENDING].includes(currentStatus)}
+                >
+                  {Object.keys(routes).map(day => (
+                    <option key={day} value={day}>
+                      {day}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  placeholder={!routeId && 'Choose a route'}
+                  isDisabled={![PENDING].includes(currentStatus) || !scheduledDate}
+                  onChange={e => setScheduledRouteId(e.target.value)}
+                  bg="white"
+                >
+                  {scheduledDate &&
+                    routes[scheduledDate]?.map(({ id: optionId, name }) => (
+                      <option key={optionId} value={optionId}>
+                        {name}
+                      </option>
+                    ))}
+                </Select>
+              </Flex>
             </Box>
 
-            <Box h={600} w="40%" m={5} onClick={onOpenImageModal}>
+            <Box h="50%" w="40%" m={5}>
               <Box>
                 <Text mb={5} fontSize="20px">
                   Images
                 </Text>
-                {images.length > 0 && images.length < 4 ? (
-                  <Image h={300} w={395} alt="test" src={images[0].imageUrl} />
-                ) : (
-                  <Box h={300} w={395} bg="gray" />
-                )}
-                <ImageModal
-                  isOpenImageModal={isOpenImageModal}
-                  onOpenImageModal={onOpenImageModal}
-                  onCloseImageModal={onCloseImageModal}
-                  image={images.length > 0 && images.length < 4 && images[0].imageUrl}
-                />
+                <DonationImagesContainer data={pictures} />
               </Box>
 
-              <Box h={400} w="70%">
+              <Box h="50%" w="100%">
                 <Text mt="45px" mb={5} fontSize="20px">
                   Furniture Items
                 </Text>
-                <Stack>
-                  <InputGroup>
-                    <Input value="Dining Table" isDisabled />
-                    <InputRightAddon>2</InputRightAddon>
-                  </InputGroup>
-
-                  <InputGroup>
-                    <Input value="Dining Table" isDisabled />
-                    <InputRightAddon>2</InputRightAddon>
-                  </InputGroup>
-
-                  <InputGroup>
-                    <Input value="Dining Table" isDisabled />
-                    <InputRightAddon>2</InputRightAddon>
-                  </InputGroup>
-
-                  <InputGroup>
-                    <Input value="Dining Table" isDisabled />
-                    <InputRightAddon>2</InputRightAddon>
-                  </InputGroup>
-                </Stack>
+                <DonationFurnitureContainer data={furniture} />
               </Box>
             </Box>
           </Flex>
@@ -256,14 +230,14 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 
         <ModalFooter justifyContent="space-between">
           <Box>
-            {currentStatus === 'pending' || currentStatus === 'changes requested' ? (
+            {(currentStatus === PENDING || currentStatus === CHANGES_REQUESTED) && (
               <>
                 <Button
                   colorScheme="red"
-                  isDisabled={currentStatus === 'changes requested'}
+                  isDisabled={currentStatus === CHANGES_REQUESTED}
                   onClick={() => {
-                    OnOpenEmailModal();
-                    setEmailStatus('request changes');
+                    emailModalOnOpen();
+                    setEmailStatus(REQUEST_CHANGES);
                   }}
                 >
                   Request Changes
@@ -272,23 +246,22 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
                   ml={3}
                   colorScheme="green"
                   onClick={() => {
-                    OnOpenEmailModal();
-                    setEmailStatus('approve');
+                    emailModalOnOpen();
+                    setEmailStatus(APPROVE);
                   }}
+                  isDisabled={!scheduledRouteId}
                 >
                   Approve
                 </Button>
               </>
-            ) : (
-              ''
             )}
-            {currentStatus === 'scheduled' && (
+            {currentStatus === SCHEDULED && (
               <Button
                 ml={3}
                 colorScheme="red"
                 onClick={() => {
-                  OnOpenEmailModal();
-                  setEmailStatus('cancel pickup');
+                  emailModalOnOpen();
+                  setEmailStatus(CANCEL_PICKUP);
                 }}
               >
                 Cancel Pickup
@@ -296,21 +269,26 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
             )}
           </Box>
           <Box>
-            <Button ml={3} colorScheme="gray" type="submit">
-              <Link href={googleMap} isExternal>
-                Navigate to Address
-              </Link>
+            <Button
+              ml={3}
+              colorScheme="gray"
+              type="submit"
+              onClick={() => {
+                handleNavigateToAddress([data]);
+              }}
+            >
+              Navigate to Address
             </Button>
           </Box>
         </ModalFooter>
         <EmailModal
-          isOpenEmailModal={isOpenEmailModal}
-          OnOpenEmailModal={onOpenImageModal}
-          onCloseEmailModal={onCloseEmailModal}
+          isOpenEmailModal={emailModalIsOpen}
+          onCloseEmailModal={emailModalOnClose}
           status={emailStatus}
-          updateDonationStatus={updateDonationStatus}
+          updateDonation={updateDonation}
           email={email}
           setCurrentStatus={setCurrentStatus}
+          donationInfo={{ id, scheduledDate, scheduledRouteId }}
         />
       </ModalContent>
     </Modal>
@@ -318,23 +296,55 @@ const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
 };
 
 DonationModal.propTypes = {
-  setUsers: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
-  isOpen: PropTypes.bool.isRequired,
+  setAllDonations: PropTypes.func,
+  onClose: PropTypes.func,
+  isOpen: PropTypes.bool,
+  routes: PropTypes.objectOf(
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+      }),
+    ),
+  ),
   data: PropTypes.shape({
-    status: PropTypes.string.isRequired,
-    id: PropTypes.number.isRequired,
-    addressStreet: PropTypes.string.isRequired,
-    addressUnit: PropTypes.string.isRequired,
-    addressCity: PropTypes.string.isRequired,
-    addressZip: PropTypes.number.isRequired,
-    firstName: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    phoneNum: PropTypes.string.isRequired,
-    notes: PropTypes.string.isRequired,
-    submittedDate: PropTypes.string.isRequired,
-  }).isRequired,
+    status: PropTypes.string,
+    id: PropTypes.number,
+    addressStreet: PropTypes.string,
+    addressUnit: PropTypes.string,
+    addressCity: PropTypes.string,
+    addressZip: PropTypes.number,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    phoneNum: PropTypes.string,
+    notes: PropTypes.string,
+    submittedDate: PropTypes.string,
+    pickupDate: PropTypes.string,
+    routeId: PropTypes.number,
+    pictures: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        imageURL: PropTypes.string,
+        notes: PropTypes.string,
+      }),
+    ),
+    furniture: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        count: PropTypes.number,
+      }),
+    ),
+  }),
+};
+
+DonationModal.defaultProps = {
+  data: {},
+  isOpen: false,
+  onClose: () => {},
+  setAllDonations: () => {},
+  routes: {},
 };
 
 export default DonationModal;
