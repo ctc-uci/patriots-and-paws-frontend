@@ -13,23 +13,24 @@ import {
   Th,
   Td,
   Tbody,
+  useDisclosure,
 } from '@chakra-ui/react';
 import './TodayRoute.module.css';
 import { PNPBackend } from '../../utils/utils';
 import { makeDate } from '../../utils/InventoryUtils';
 
 import { getCurrentUserId } from '../../utils/AuthUtils';
-// import DonationModal from '../InventoryPage/DonationModal';
+import DonationModal from '../InventoryPage/DonationModal';
 
 const TodayRoute = () => {
   const [donations, setDonations] = useState();
-  // const [users, setUsers] = useState([]);
-  // const { isOpen, onOpen, onClose } = useDisclosure();
-  // const [donationData, setDonationData] = useState({});
-  // const handleRowClick = data => {
-  // setDonationData(data);
-  //   onOpen();
-  // };
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [donationData, setDonationData] = useState({});
+
+  const handleRowClick = data => {
+    setDonationData(data);
+    onOpen();
+  };
 
   const getFurnitureCount = furnitures => {
     let counter = 0;
@@ -46,9 +47,9 @@ const TodayRoute = () => {
     const today = '2023-02-16T08:00:00.000Z';
     const todayRoute = driverRoute.data.find(route3 => route3.date === today);
     const data = await PNPBackend.get(`/routes/${todayRoute.id}`);
-    const donationData = data.data[0].donations;
+    const donationInfo = data.data[0].donations;
     setRoute(route);
-    setDonations(donationData);
+    setDonations(donationInfo);
   };
 
   useEffect(() => {
@@ -100,8 +101,7 @@ const TodayRoute = () => {
                       )}
                     </Td>
                     <Td>
-                      <Button mr={5} ml={5}>
-                        {/* onChange={() => handleRowClick(d)} */}
+                      <Button mr={5} ml={5} onClick={() => handleRowClick(d)}>
                         INFO
                       </Button>
                     </Td>
@@ -110,13 +110,7 @@ const TodayRoute = () => {
             </Tbody>
           </Table>
         </TableContainer>
-        {/* <DonationModal
-          // setUsers={setUsers}
-          data={donationData}
-          onClose={onClose}
-          onOpen={onOpen}
-          isOpen={isOpen}
-        /> */}
+        <DonationModal data={donationData} onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
       </Stack>
     </Flex>
   );
