@@ -26,7 +26,7 @@ import menuIcon from '../../assets/Menu.svg';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import { AUTH_ROLES } from '../../utils/config';
 import UserTable from '../../components/UserTable/UserTable';
-import ManageStaffPagination from './ManageStaffPagination';
+import ManageStaffPagination from '../../components/PaginationFooter/ManageStaffPagination';
 
 const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 
@@ -37,9 +37,6 @@ const ManageStaff = ({ cookies }) => {
   const [driverUsers, setDriverUsers] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [currFilter, setCurrFilter] = useState('all');
-  // const [count, setCount] = useState(1);
-  // const [currentUserRole, setCurrentUserRole] = useState('');
-  // const [userId, setUserId] = useState(0);
   const [filteredUsers, setFilteredUsers] = useState([]);
 
   const fuse = new Fuse(allUsers, {
@@ -83,13 +80,6 @@ const ManageStaff = ({ cookies }) => {
   };
 
   useEffect(() => {
-    // const getRole = async () => {
-    //   const userId = getCurrentUserId();
-    //   setUserId(userId);
-    //   const userRole = await cookies.get(cookieKeys.ROLE);
-    //   setCurrentUserRole(userRole);
-    // };
-    // getRole();
     refreshData();
   }, []);
 
