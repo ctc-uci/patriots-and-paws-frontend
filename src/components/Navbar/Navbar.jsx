@@ -19,6 +19,7 @@ import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { logout, useNavigate, getUserFromDB, auth, getCurrentUser } from '../../utils/AuthUtils';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import pnpLogo from './PNPlogo.png';
+import EditAccountModal from '../EditAccountModal/EditAccountModal';
 import { AUTH_ROLES } from '../../utils/config';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
@@ -28,6 +29,8 @@ const Navbar = ({ cookies }) => {
   const [role, setRole] = useState('');
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isProfileOpen, onOpen: onProfileOpen, onClose: onProfileClose } = useDisclosure();
+
   useEffect(() => {
     const checkRole = () => {
       const currentUserRole = cookies.get(cookieKeys.ROLE);
@@ -63,6 +66,8 @@ const Navbar = ({ cookies }) => {
       top={0}
       h="60px"
     >
+      <EditAccountModal data={user} isOpen={isProfileOpen} onClose={onProfileClose} isSuperAdmin />
+
       <HStack spacing="24px">
         <LinkBox>
           <LinkOverlay href="https://www.patriotsandpaws.org/" isExternal>
@@ -106,9 +111,7 @@ const Navbar = ({ cookies }) => {
           {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
         </MenuButton>
         <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
-          <MenuItem as={NavLink} to={`/users/${user.id}`}>
-            Profile
-          </MenuItem>
+          <MenuItem onClick={onProfileOpen}>Profile</MenuItem>
           <MenuItem onClick={handleSubmit}>Logout</MenuItem>
         </MenuList>
       </Menu>

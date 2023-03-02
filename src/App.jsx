@@ -9,7 +9,6 @@ import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import Donate from './pages/donation/Donate';
-import UserProfile from './pages/UserProfile/UserProfile';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
 import RoutesPage from './pages/RoutesPage/RoutesPage';
 
@@ -122,17 +121,6 @@ function App() {
               element={
                 <ProtectedRoute
                   Component={Logout}
-                  redirectPath="/login"
-                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
-                />
-              }
-            />
-            <Route
-              exact
-              path="/users/:userId"
-              element={
-                <ProtectedRoute
-                  Component={UserProfile}
                   redirectPath="/login"
                   roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
                 />
