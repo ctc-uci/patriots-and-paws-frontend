@@ -1,6 +1,19 @@
-import { ChakraProvider, Button, Image, Card, CardBody, Text } from '@chakra-ui/react';
+import {
+  ChakraProvider,
+  Button,
+  Image,
+  Card,
+  CardBody,
+  Text,
+  Modal,
+  useDisclosure,
+  ModalContent,
+  ModalBody,
+  ModalCloseButton,
+} from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import { PDFViewer, StyleSheet } from '@react-pdf/renderer';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
@@ -25,6 +38,8 @@ import EmailSending from './components/EmailTemplates/EmailSending';
 import SampleRoute from './components/SampleRoute/SampleRoute';
 import InventoryPage from './components/InventoryPage/InventoryPage';
 
+import RoutePDF from './components/RoutePDF/RoutePDF';
+
 import { AUTH_ROLES } from './utils/config';
 import DonorLogin from './pages/DonorLogin/DonorLogin';
 
@@ -34,6 +49,8 @@ function App() {
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
 
+  // useEffect(() => console.log(files), [files]);
+
   const onSubmit = async () => {
     const urls = await Promise.all(files.map(async file => uploadImage(file)));
     setImages(prev => [...prev, ...urls]);
@@ -41,6 +58,14 @@ function App() {
   };
 
   const Playground = () => {
+    const styles = StyleSheet.create({
+      viewer: {
+        width: '100%',
+        height: '80vh',
+      },
+    });
+    const { isOpen, onOpen, onClose } = useDisclosure();
+
     return (
       <>
         <EmailSending />
@@ -64,6 +89,19 @@ function App() {
             <Text>Hi</Text>
           </CardBody>
         </Card>
+        <Button mt={4} onClick={onOpen}>
+          Export Route
+        </Button>
+        <Modal isOpen={isOpen} onClose={onClose} size="full">
+          <ModalContent>
+            <ModalCloseButton />
+            <ModalBody p="5em 5em 0 5em">
+              <PDFViewer style={styles.viewer}>
+                <RoutePDF routeID={3} />
+              </PDFViewer>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
       </>
     );
   };
