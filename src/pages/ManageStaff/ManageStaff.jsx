@@ -12,38 +12,70 @@ import {
   MenuItem,
   IconButton,
   MenuDivider,
+  Tag,
+  TagCloseButton,
+  TagLabel,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
+import Fuse from 'fuse.js';
 import { PNPBackend } from '../../utils/utils';
-import { auth, getCurrentUser, getUserFromDB } from '../../utils/AuthUtils';
+import { getCurrentUserId } from '../../utils/AuthUtils';
 import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import menuIcon from '../../assets/Menu.svg';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
-import AUTH_ROLES from '../../utils/AuthConfig';
+import { AUTH_ROLES } from '../../utils/config';
 import UserTable from '../../components/UserTable/UserTable';
+import ManageStaffPagination from '../../components/PaginationFooter/ManageStaffPagination';
 
-const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 
 const ManageStaff = ({ cookies }) => {
-  const [users, setUsers] = useState([]);
-  const [usersCopy, setUsersCopy] = useState([]);
+  const [displayedUsers, setDisplayedUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [driverUsers, setDriverUsers] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const [currFilter, setCurrFilter] = useState('all');
+  const [filteredUsers, setFilteredUsers] = useState([]);
+
+  const fuse = new Fuse(allUsers, {
+    keys: ['firstName', 'lastName', 'email'],
+  });
+
+  const updateDisplay = () => {
+    if (currFilter === 'all') {
+      setFilteredUsers(allUsers);
+      fuse.setCollection(allUsers);
+    } else if (currFilter === 'admin') {
+      setFilteredUsers(adminUsers);
+      fuse.setCollection(adminUsers);
+    } else {
+      setFilteredUsers(driverUsers);
+      fuse.setCollection(driverUsers);
+    }
+  };
 
   const refreshData = async () => {
-    const { uid } = await getCurrentUser(auth);
-    const currentUser = await getUserFromDB(uid);
-    const userId = currentUser.id;
+    const userId = getCurrentUserId();
     const currentUserRole = await cookies.get(cookieKeys.ROLE);
     const { data } = await PNPBackend.get('/users');
 
     if (currentUserRole === SUPERADMIN_ROLE) {
       setIsSuperAdmin(true);
-      setUsers(data.filter(user => user.id !== userId));
-      setUsersCopy(data.filter(user => user.id !== userId));
+      setAllUsers(data.filter(user => user.id !== userId));
+      const driverData = data.filter(d => d.role === DRIVER_ROLE);
+      setDriverUsers(driverData);
+      const adminData = data.filter(
+        d => (d.role === ADMIN_ROLE || d.role === SUPERADMIN_ROLE) && d.id !== userId,
+      );
+      setAdminUsers(adminData);
+      setFilteredUsers(data.filter(user => user.id !== userId));
     } else {
       const driverData = data.filter(d => d.role === DRIVER_ROLE);
-      setUsers(driverData);
+      setAllUsers(driverData);
+      setDriverUsers(driverData);
+      setFilteredUsers(driverData);
     }
   };
 
@@ -51,17 +83,26 @@ const ManageStaff = ({ cookies }) => {
     refreshData();
   }, []);
 
-  const getAdmins = () => {
-    const adminData = usersCopy.filter(
-      user => user.role === ADMIN_ROLE || user.role === SUPERADMIN_ROLE,
-    );
-    setUsers(adminData);
+  const search = async query => {
+    if (query.target.value === '') {
+      updateDisplay();
+    } else {
+      if (currFilter === 'all') {
+        fuse.setCollection(allUsers);
+      } else if (currFilter === 'admin') {
+        fuse.setCollection(adminUsers);
+      } else {
+        fuse.setCollection(driverUsers);
+      }
+      const result = fuse.search(query.target.value);
+      const filteredResults = result.map(user => user.item);
+      setFilteredUsers(filteredResults);
+    }
   };
 
-  const getDrivers = () => {
-    const driverData = usersCopy.filter(user => user.role === DRIVER_ROLE);
-    setUsers(driverData);
-  };
+  useEffect(() => {
+    updateDisplay();
+  }, [currFilter, allUsers, driverUsers, adminUsers]);
 
   return (
     <Flex direction="column" m={10}>
@@ -71,10 +112,26 @@ const ManageStaff = ({ cookies }) => {
             <InputLeftElement pointerEvents="none">
               <SearchIcon color="gray.300" />
             </InputLeftElement>
-            <Input placeholder="Search Staff" className={styles['search-bar']} />
+            <Input placeholder="Search Staff" className={styles['search-bar']} onChange={search} />
           </InputGroup>
+          {isSuperAdmin && currFilter === 'admin' && (
+            <Tag colorScheme="blue">
+              <TagLabel fontSize={18} fontWeight={600} color="black">
+                Admin
+              </TagLabel>
+              <TagCloseButton onClick={() => setCurrFilter('all')} />
+            </Tag>
+          )}
+          {isSuperAdmin && currFilter === 'driver' && (
+            <Tag colorScheme="blue">
+              <TagLabel fontSize={18} fontWeight={600} color="black">
+                Driver
+              </TagLabel>
+              <TagCloseButton onClick={() => setCurrFilter('all')} />
+            </Tag>
+          )}
         </Flex>
-        {isSuperAdmin ? (
+        {isSuperAdmin && (
           <Flex vertical-align="center">
             <Menu minW={0} w="20px">
               <Flex vertical-align="center" align="center">
@@ -91,21 +148,46 @@ const ManageStaff = ({ cookies }) => {
                   height="80px"
                   bgColor="rgb(246, 246, 246)"
                 >
-                  <MenuItem onClick={getAdmins} fontSize={15} minH={0} height="30px" mt={0}>
+                  <MenuItem
+                    onClick={() => setCurrFilter('admin')}
+                    fontSize={15}
+                    minH={0}
+                    height="30px"
+                    mt={0}
+                  >
                     Admin
                   </MenuItem>
                   <MenuDivider borderColor="gray" mb={1} mt={1} />
-                  <MenuItem onClick={getDrivers} fontSize={15} minH={0} height="30px">
+                  <MenuItem
+                    onClick={() => setCurrFilter('driver')}
+                    fontSize={15}
+                    minH={0}
+                    height="30px"
+                  >
                     Driver
                   </MenuItem>
                 </MenuList>
               </Flex>
             </Menu>
-            <CreateAccount isSuperAdmin={isSuperAdmin} refreshData={refreshData} />
+            <CreateAccount
+              isSuperAdmin={isSuperAdmin}
+              setAllUsers={setAllUsers}
+              setDriverUsers={setDriverUsers}
+              setAdminUsers={setAdminUsers}
+              updateDisplay={updateDisplay}
+            />
           </Flex>
-        ) : null}
+        )}
       </Flex>
-      <UserTable isSuperAdmin={isSuperAdmin} users={users} />
+      <UserTable
+        isSuperAdmin={isSuperAdmin}
+        users={displayedUsers}
+        setAllUsers={setAllUsers}
+        setDriverUsers={setDriverUsers}
+        setAdminUsers={setAdminUsers}
+        updateDisplay={updateDisplay}
+      />
+      <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
     </Flex>
   );
 };

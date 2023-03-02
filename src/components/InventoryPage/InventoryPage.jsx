@@ -3,84 +3,95 @@ import {
   Table,
   Thead,
   Tbody,
-  Button,
   Tr,
   Td,
   Th,
   TableContainer,
   useDisclosure,
   Text,
+  Tag,
 } from '@chakra-ui/react';
 import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
-import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
+import PaginationFooter from '../PaginationFooter/PaginationFooter';
+import { PNPBackend } from '../../utils/utils';
+import {
+  getDonationsFromDB,
+  getRoutesFromDB,
+  makeDate,
+  colorMap,
+} from '../../utils/InventoryUtils';
 
 const InventoryPage = () => {
-  const [users, setUsers] = useState([]);
+  const [allDonations, setAllDonations] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
+  const [count, setCount] = useState();
+  const [routes, setRoutes] = useState({});
 
   const handleRowClick = data => {
     setDonationData(data);
     onOpen();
   };
 
-  function makeStatus(newStatus) {
-    if (newStatus === 'denied') {
-      return (
-        <Button size="xs" colorScheme="red">
-          REJECTED
-        </Button>
-      );
-    }
-    if (newStatus === 'approved') {
-      return (
-        <Button size="xs" colorScheme="green">
-          APPROVED
-        </Button>
-      );
-    }
-    if (newStatus === 'flagged') {
-      return (
-        <Button size="xs" colorScheme="gray">
-          FLAGGED
-        </Button>
-      );
-    }
+  function makeStatus(status) {
     return (
-      <Button size="xs" colorScheme="gray">
-        {newStatus}
-      </Button>
+      <Tag size="lg" colorScheme={colorMap[status]}>
+        {status[0].toUpperCase() + status.slice(1)}
+      </Tag>
     );
   }
 
-  // function makeDate(dateDB) {
-  //   const d = new Date(dateDB);
-  //   return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-  // }
+  const getTotalCount = async () => {
+    const { data } = await PNPBackend.get(`donations/total`);
+    const { count: totalCount } = data[0];
+    setCount(totalCount);
+  };
+
+  useEffect(() => {
+    getTotalCount();
+  }, []);
 
   useEffect(() => {
     const fetchDonationsFromDB = async () => {
       const donationsFromDB = await getDonationsFromDB();
-      setUsers(donationsFromDB);
+      setAllDonations(donationsFromDB);
     };
     fetchDonationsFromDB();
   }, []);
 
-  const makeUserRows = users.map(ele => {
+  useEffect(() => {
+    const fetchRoutesFromDB = async () => {
+      const routesFromDB = await getRoutesFromDB();
+      const formattedRoutes = routesFromDB.map(({ id, name, date: day }) => ({
+        id,
+        name,
+        date: new Date(day).toISOString().replace(/T.*$/, ''),
+      }));
+      const routesList = {};
+      formattedRoutes.forEach(({ date }) => {
+        routesList[date] = [];
+      });
+      formattedRoutes.forEach(({ id, name, date }) => routesList[date].push({ id, name }));
+      setRoutes(routesList);
+    };
+    fetchRoutesFromDB();
+  }, []);
+
+  const makeDonationRows = allDonations?.map(donation => {
+    const { id, status, firstName, lastName, email, submittedDate } = donation;
     return (
-      <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+      <Tr onClick={() => handleRowClick(donation)} key={id}>
         <Td>
-          <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-          <Text color="#718096">{ele.email}</Text>
+          <Text>{`${firstName} ${lastName}`}</Text>
+          <Text color="#718096">{email}</Text>
         </Td>
-        <Td>#{ele.id}</Td>
-        <Td>{makeStatus(ele.status)}</Td>
-        <Td>{makeDate(ele.submittedDate)}</Td>
+        <Td>#{id}</Td>
+        <Td>{makeStatus(status)}</Td>
+        <Td>{makeDate(submittedDate)}</Td>
       </Tr>
     );
-    // return <DonationModal key={ele.id} props={ele} />;
   });
 
   return (
@@ -95,15 +106,17 @@ const InventoryPage = () => {
               <Th>SUBMISSION DATE</Th>
             </Tr>
           </Thead>
-          <Tbody>{makeUserRows}</Tbody>
+          <Tbody>{makeDonationRows}</Tbody>
         </Table>
+        {count && <PaginationFooter count={count} setData={setAllDonations} table="donations" />}
       </TableContainer>
       <DonationModal
-        setUsers={setUsers}
+        setAllDonations={setAllDonations}
         data={donationData}
         onClose={onClose}
         onOpen={onOpen}
         isOpen={isOpen}
+        routes={routes}
       />
     </>
   );

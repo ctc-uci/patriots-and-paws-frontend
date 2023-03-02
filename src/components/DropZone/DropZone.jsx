@@ -15,11 +15,12 @@ const DropZone = ({ setFiles }) => {
     onDrop: acceptedFiles => {
       setFiles(prev => [
         ...prev,
-        ...acceptedFiles.map(file =>
-          Object.assign(file, {
+        ...acceptedFiles.map(file => ({
+          file: Object.assign(file, {
             preview: URL.createObjectURL(file),
           }),
-        ),
+          description: '',
+        })),
       ]);
     },
   });
