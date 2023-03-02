@@ -12,11 +12,18 @@ import { PNPBackend } from '../../utils/utils';
 
 const PaginationFooter = ({ count, setData, table }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [itemCountString, setItemCountString] = useState('');
 
   const { currentPage, setCurrentPage, pagesCount } = usePagination({
     pagesCount: Math.ceil(count / rowsPerPage),
     initialState: { currentPage: 1 },
   });
+
+  const calculateItemCount = dataLength => {
+    const start = (currentPage - 1) * rowsPerPage + 1;
+
+    setItemCountString(`${start} - ${start + dataLength - 1}`);
+  };
 
   // when the number of rows or the next page is clicked, get the desired data from the backend
   useEffect(() => {
@@ -25,6 +32,7 @@ const PaginationFooter = ({ count, setData, table }) => {
         `/${table}?numDonations=${rowsPerPage}&pageNum=${currentPage}`,
       );
       setData(data);
+      calculateItemCount(data.length);
     };
     refreshData();
   }, [currentPage, rowsPerPage]);
@@ -39,12 +47,17 @@ const PaginationFooter = ({ count, setData, table }) => {
           <option value="20">20</option>
         </Select>
       </Flex>
-      <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
-        <PaginationContainer justify="right">
-          <PaginationPrevious>&lsaquo;</PaginationPrevious>
-          <PaginationNext>&rsaquo;</PaginationNext>
-        </PaginationContainer>
-      </Pagination>
+      <Flex align="center" gap={5}>
+        <Text>
+          <Text as="b">{itemCountString}</Text> of {count}
+        </Text>
+        <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
+          <PaginationContainer justify="right">
+            <PaginationPrevious>&lsaquo;</PaginationPrevious>
+            <PaginationNext>&rsaquo;</PaginationNext>
+          </PaginationContainer>
+        </Pagination>
+      </Flex>
     </Flex>
   );
 };

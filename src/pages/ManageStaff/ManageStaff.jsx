@@ -101,13 +101,7 @@ const ManageStaff = ({ cookies }) => {
   };
 
   useEffect(() => {
-    // const getTotalCount = async () => {
-    //   const { data } = await PNPBackend.get(`users/total`);
-    //   const { count: totalCount } = data[0];
-    //   setCount(totalCount);
-    // };
     updateDisplay();
-    // getTotalCount();
   }, [currFilter, allUsers, driverUsers, adminUsers]);
 
   return (
@@ -194,7 +188,6 @@ const ManageStaff = ({ cookies }) => {
         updateDisplay={updateDisplay}
       />
       <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
-      {/* {count && <PaginationFooter count={count} setData={setDisplayedUsers} table={'users'} />} */}
     </Flex>
   );
 };

@@ -14,20 +14,31 @@ import formatStaffData from '../../utils/manageStaffUtils';
 const ManageStaffPagination = ({ data, setData }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [formattedData, setFormattedData] = useState([]);
+  const [itemCountString, setItemCountString] = useState('');
 
   const { currentPage, setCurrentPage, pagesCount } = usePagination({
     pagesCount: Math.ceil(data.length / rowsPerPage),
     initialState: { currentPage: 1 },
   });
 
+  const calculateItemCount = dataLength => {
+    const start = (currentPage - 1) * rowsPerPage + 1;
+
+    setItemCountString(`${start} - ${start + Math.min(dataLength, rowsPerPage) - 1}`);
+  };
+
   useEffect(() => {
     const formatted = formatStaffData(data, rowsPerPage);
     setData(formatted[0]);
     setFormattedData(formatted);
+    calculateItemCount(formatted[0].length);
+    setCurrentPage(1);
   }, [data, rowsPerPage]);
 
   useEffect(() => {
-    setData(formattedData[currentPage - 1]);
+    const pageData = formattedData[currentPage - 1];
+    setData(pageData);
+    calculateItemCount(pageData?.length);
   }, [currentPage]);
 
   return (
@@ -40,12 +51,17 @@ const ManageStaffPagination = ({ data, setData }) => {
           <option value="20">20</option>
         </Select>
       </Flex>
-      <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
-        <PaginationContainer justify="right">
-          <PaginationPrevious>&lsaquo;</PaginationPrevious>
-          <PaginationNext>&rsaquo;</PaginationNext>
-        </PaginationContainer>
-      </Pagination>
+      <Flex align="center" gap={5}>
+        <Text>
+          <Text as="b">{itemCountString}</Text> of {data.length}
+        </Text>
+        <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
+          <PaginationContainer justify="right">
+            <PaginationPrevious>&lsaquo;</PaginationPrevious>
+            <PaginationNext>&rsaquo;</PaginationNext>
+          </PaginationContainer>
+        </Pagination>
+      </Flex>
     </Flex>
   );
 };
@@ -56,7 +72,7 @@ ManageStaffPagination.propTypes = {
     PropTypes.shape({
       id: PropTypes.string,
       name: PropTypes.string,
-      cout: PropTypes.number,
+      count: PropTypes.number,
     }),
   ),
 };
