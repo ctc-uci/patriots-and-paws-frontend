@@ -14,6 +14,8 @@ import {
 import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
+import PaginationFooter from '../PaginationFooter/PaginationFooter';
+import { PNPBackend } from '../../utils/utils';
 import {
   getDonationsFromDB,
   getRoutesFromDB,
@@ -25,6 +27,7 @@ const InventoryPage = () => {
   const [allDonations, setAllDonations] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
+  const [count, setCount] = useState();
   const [routes, setRoutes] = useState({});
 
   const handleRowClick = data => {
@@ -39,6 +42,16 @@ const InventoryPage = () => {
       </Tag>
     );
   }
+
+  const getTotalCount = async () => {
+    const { data } = await PNPBackend.get(`donations/total`);
+    const { count: totalCount } = data[0];
+    setCount(totalCount);
+  };
+
+  useEffect(() => {
+    getTotalCount();
+  }, []);
 
   useEffect(() => {
     const fetchDonationsFromDB = async () => {
@@ -66,7 +79,7 @@ const InventoryPage = () => {
     fetchRoutesFromDB();
   }, []);
 
-  const makeUserRows = allDonations?.map(donation => {
+  const makeDonationRows = allDonations?.map(donation => {
     const { id, status, firstName, lastName, email, submittedDate } = donation;
     return (
       <Tr onClick={() => handleRowClick(donation)} key={id}>
@@ -93,8 +106,9 @@ const InventoryPage = () => {
               <Th>SUBMISSION DATE</Th>
             </Tr>
           </Thead>
-          <Tbody>{makeUserRows}</Tbody>
+          <Tbody>{makeDonationRows}</Tbody>
         </Table>
+        {count && <PaginationFooter count={count} setData={setAllDonations} table="donations" />}
       </TableContainer>
       <DonationModal
         setAllDonations={setAllDonations}
