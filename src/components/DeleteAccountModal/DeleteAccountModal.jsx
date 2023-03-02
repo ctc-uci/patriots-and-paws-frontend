@@ -33,7 +33,7 @@ const DeleteAccountModal = ({
       // const errorCode = err.code;
       // const firebaseErrorMsg = err.message;
       // eslint-disable-next-line no-console
-      console.log(err);
+      // console.log(err);
     }
   };
   const cancelRef = React.useRef();
