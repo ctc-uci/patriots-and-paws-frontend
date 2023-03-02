@@ -35,8 +35,8 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Navbar from './components/Navbar/Navbar';
 
 import EmailSending from './components/EmailTemplates/EmailSending';
-import SampleRoute from './components/SampleRoute/SampleRoute';
 import InventoryPage from './components/InventoryPage/InventoryPage';
+import DriverDashboard from './pages/Dashboard/DriverDashboard';
 
 import RoutePDF from './components/RoutePDF/RoutePDF';
 
@@ -133,34 +133,12 @@ function App() {
             />
             <Route
               exact
-              path="/temp"
-              element={
-                <ProtectedRoute
-                  Component={SampleRoute}
-                  redirectPath="/login"
-                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
-                />
-              }
-            />
-            <Route
-              exact
               path="/register"
               element={
                 <ProtectedRoute
                   Component={CreateAccount}
                   redirectPath="/login"
                   roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
-                />
-              }
-            />
-            <Route
-              exact
-              path="/logout"
-              element={
-                <ProtectedRoute
-                  Component={Logout}
-                  redirectPath="/login"
-                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
                 />
               }
             />
@@ -197,13 +175,23 @@ function App() {
                 />
               }
             />
+            <Route
+              exact
+              path="/driver-dashboard"
+              element={
+                <ProtectedRoute
+                  Component={DriverDashboard}
+                  redirectPath="/login"
+                  roles={[DRIVER_ROLE]}
+                />
+              }
+            />
             <Route exact path="/donate/edit" element={<EditDonationForm />} />
             <Route exact path="/drivers/:id" element={<Drivers />} />
             <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
             <Route exact path="/inventory" element={<InventoryPage />} />
           </Route>
           <Route exact path="/login" element={<Login />} />
-
           <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 

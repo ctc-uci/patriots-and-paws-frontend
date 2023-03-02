@@ -1,27 +1,22 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useState, useEffect, useRef } from 'react';
 import { AddIcon } from '@chakra-ui/icons';
-import {
-  Heading,
-  Text,
-  Box,
-  UnorderedList,
-  ListItem,
-  Flex,
-  useDisclosure,
-  Button,
-} from '@chakra-ui/react';
-import { formatDate } from '@fullcalendar/core';
+import { Box, Flex, useDisclosure, Button } from '@chakra-ui/react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import CreateRouteModal from '../CreateRouteModal/CreateRouteModal';
-import { getAllRoutes, getDrivers } from '../../utils/RouteUtils';
+import { getCurrentUserId, getUserFromDB } from '../../utils/AuthUtils';
 import EditRouteModal from '../EditRouteModal/EditRouteModal';
+import { PNPBackend } from '../../utils/utils';
+import { AUTH_ROLES } from '../../utils/config';
+import { getAllRoutes, getDrivers } from '../../utils/RouteUtils';
+
+const { DRIVER_ROLE } = AUTH_ROLES;
 
 const RouteCalendar = () => {
-  const [currentEvents, setCurrentEvents] = useState([]);
+  const [role, setRole] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
   const [selectedEventDate, setSelectedEventDate] = useState();
@@ -44,26 +39,46 @@ const RouteCalendar = () => {
 
   useEffect(() => {
     const fetchAllRoutesAndDrivers = async () => {
-      const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-      const eventsList = routesFromDB.map(({ id, name, date }) => ({
-        id,
-        title: name,
-        start: new Date(date).toISOString().replace(/T.*$/, ''),
-        allDay: true,
-      }));
-      setCurrentEvents(eventsList);
-      setDrivers(driversFromDB);
+      const currentUserId = await getCurrentUserId();
+      const currentUser = await getUserFromDB(currentUserId);
+      const { role: userRole } = currentUser;
+      setRole(userRole);
+      if (role === DRIVER_ROLE) {
+        const { data } = await PNPBackend.get(`/routes/driver/${currentUserId}`);
 
-      // prevents duplication of events on calendar upon hot reloading during dev
-      calendarRef.current.getApi().removeAllEventSources();
-      calendarRef.current.getApi().addEventSource(eventsList);
+        const eventsList = data.map(({ id, name, date }) => ({
+          id,
+          title: name,
+          start: new Date(date).toISOString().replace(/T.*$/, ''),
+          allDay: true,
+        }));
+
+        const d = [currentUser];
+        setDrivers(d);
+        calendarRef.current.getApi().removeAllEventSources();
+        calendarRef.current.getApi().addEventSource(eventsList);
+      } else {
+        const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
+        const eventsList = routesFromDB.map(({ id, name, date }) => ({
+          id,
+          title: name,
+          start: new Date(date).toISOString().replace(/T.*$/, ''),
+          allDay: true,
+        }));
+        setDrivers(driversFromDB);
+
+        calendarRef.current.getApi().removeAllEventSources();
+        calendarRef.current.getApi().addEventSource(eventsList);
+      }
     };
     fetchAllRoutesAndDrivers();
   }, []);
 
   const handleDateSelect = e => {
-    setSelectedCalendarDate(e);
-    createRouteOnOpen();
+    if (role !== DRIVER_ROLE) {
+      setSelectedCalendarDate(e);
+      createRouteOnOpen();
+    }
   };
 
   /* eslint no-underscore-dangle: 0 */
@@ -89,24 +104,6 @@ const RouteCalendar = () => {
     });
   };
 
-  const renderSidebar = (
-    <Box w="300px">
-      <Box>
-        <Heading size="md">All Routes ({currentEvents.length})</Heading>
-        <UnorderedList>
-          {currentEvents.map(event => (
-            <ListItem key={event.id}>
-              <Text as="b" mr="1">
-                {formatDate(event.start, { year: 'numeric', month: 'short', day: 'numeric' })}
-              </Text>
-              <Text as="i">{event.title}</Text>
-            </ListItem>
-          ))}
-        </UnorderedList>
-      </Box>
-    </Box>
-  );
-
   return (
     <Flex p={5} height="90vh">
       <EditRouteModal
@@ -123,21 +120,22 @@ const RouteCalendar = () => {
         onClose={createRouteOnClose}
         handleCalendarAddEvent={handleCalendarAddEvent}
       />
-      {renderSidebar}
       <Box
         flex="1"
         _hover={{
           backgroundColor: 'white',
         }}
       >
-        <Button
-          leftIcon={<AddIcon boxSize={3} />}
-          onClick={createRouteOnOpen}
-          colorScheme="blue"
-          marginBottom={1}
-        >
-          Create Route
-        </Button>
+        {role !== DRIVER_ROLE && (
+          <Button
+            leftIcon={<AddIcon boxSize={3} />}
+            onClick={createRouteOnOpen}
+            colorScheme="blue"
+            marginBottom={1}
+          >
+            Create Route
+          </Button>
+        )}
         <FullCalendar
           ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -152,9 +150,6 @@ const RouteCalendar = () => {
           dayMaxEvents
           select={handleDateSelect}
           eventClick={handleEventClick}
-          eventsSet={events => {
-            setCurrentEvents(events);
-          }}
         />
       </Box>
     </Flex>
