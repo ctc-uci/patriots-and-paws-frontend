@@ -9,11 +9,11 @@ import {
   useDisclosure,
   ModalContent,
   ModalBody,
-  ModalFooter,
+  ModalCloseButton,
 } from '@chakra-ui/react';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
-import { PDFViewer } from '@react-pdf/renderer';
+import { PDFViewer, StyleSheet } from '@react-pdf/renderer';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
@@ -49,7 +49,7 @@ function App() {
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
 
-  useEffect(() => console.log(files), [files]);
+  // useEffect(() => console.log(files), [files]);
 
   const onSubmit = async () => {
     const urls = await Promise.all(files.map(async file => uploadImage(file)));
@@ -58,6 +58,12 @@ function App() {
   };
 
   const Playground = () => {
+    const styles = StyleSheet.create({
+      viewer: {
+        width: '100%',
+        height: '80vh',
+      },
+    });
     const { isOpen, onOpen, onClose } = useDisclosure();
 
     return (
@@ -88,18 +94,12 @@ function App() {
         </Button>
         <Modal isOpen={isOpen} onClose={onClose} size="full">
           <ModalContent>
-            <ModalBody>
-              <PDFViewer width={800} height={800}>
+            <ModalCloseButton />
+            <ModalBody p="5em 5em 0 5em">
+              <PDFViewer style={styles.viewer}>
                 <RoutePDF routeID={3} />
               </PDFViewer>
             </ModalBody>
-
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={onClose}>
-                Close
-              </Button>
-              <Button variant="ghost">Secondary Action</Button>
-            </ModalFooter>
           </ModalContent>
         </Modal>
       </>

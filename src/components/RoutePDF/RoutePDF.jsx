@@ -108,59 +108,74 @@ const RoutePDF = ({ routeID }) => {
       marginBottom: 30,
     },
   });
-  const donationsList = donations.map(d => (
-    <View key={d.id}>
-      <Svg height="10" width="520">
-        <Line x1="0" y1="0" x2="520" y2="0" strokeWidth={2} stroke="#939393" />
-      </Svg>
+  const donationsList = donations.map(
+    ({
+      id,
+      firstName,
+      lastName,
+      addressStreet,
+      addressUnit,
+      addressCity,
+      addressZip,
+      email,
+      phoneNum,
+      furniture,
+    }) => (
+      <View key={id}>
+        <Svg height="10" width="520">
+          <Line x1="0" y1="0" x2="520" y2="0" strokeWidth={2} stroke="#939393" />
+        </Svg>
 
-      <Text style={styles.donationTitle}>Donation #{d.id}</Text>
-      <View style={styles.donorInfo}>
-        <View>
-          <View style={styles.iconTitleContainer}>
-            <Image src={deliveryIcon} style={styles.icon} />
-            <Text style={styles.subTitle}>Delivery Address:</Text>
+        <Text style={styles.donationTitle}>Donation #{id}</Text>
+        <View style={styles.donorInfo}>
+          <View>
+            <View style={styles.iconTitleContainer}>
+              <Image src={deliveryIcon} style={styles.icon} />
+              <Text style={styles.subTitle}>Delivery Address:</Text>
+            </View>
+            <Text style={styles.indent}>
+              {firstName} {lastName}
+            </Text>
+            <Text style={styles.indent}>
+              {addressStreet} {addressUnit ? `, ${addressUnit}` : ''}
+            </Text>
+            <Text style={styles.indent}>
+              {addressCity}, {addressZip}
+            </Text>
           </View>
-          <Text style={styles.indent}>
-            {d.firstName} {d.lastName}
-          </Text>
-          <Text style={styles.indent}>
-            {d.addressStreet} {d.addressUnit ? `, ${d.addressUnit}` : ''}
-          </Text>
-          <Text style={styles.indent}>
-            {d.addressCity}, {d.addressZip}
-          </Text>
+
+          <View style={styles.contactInfo}>
+            <View style={styles.iconTitleContainer}>
+              <Image src={emailIcon} style={styles.icon} />
+              <Text> {email} </Text>
+            </View>
+            <View style={styles.iconTitleContainer}>
+              <Image src={phoneIcon} style={styles.icon} />
+              <Text> {formatPhone(phoneNum)} </Text>
+            </View>
+            <View style={styles.iconTitleContainer}>
+              <Image src={driverIcon} style={styles.icon} />
+              <Text> {driver} </Text>
+            </View>
+          </View>
         </View>
 
-        <View style={styles.contactInfo}>
+        <View style={styles.furnitureList}>
           <View style={styles.iconTitleContainer}>
-            <Image src={emailIcon} style={styles.icon} />
-            <Text> {d.email} </Text>
+            <Image src={itemIcon} style={styles.icon} />
+            <Text style={styles.subTitle}>
+              Number of Items: {furniture.reduce((acc, { count }) => acc + count, 0)}
+            </Text>
           </View>
-          <View style={styles.iconTitleContainer}>
-            <Image src={phoneIcon} style={styles.icon} />
-            <Text> {formatPhone(d.phoneNum)} </Text>
-          </View>
-          <View style={styles.iconTitleContainer}>
-            <Image src={driverIcon} style={styles.icon} />
-            <Text> {driver} </Text>
-          </View>
+          {furniture.map(({ id: fid, name, count }, index) => (
+            <Text style={styles.indent} key={fid}>
+              {index + 1}. {name} - {count}
+            </Text>
+          ))}
         </View>
       </View>
-
-      <View style={styles.furnitureList}>
-        <View style={styles.iconTitleContainer}>
-          <Image src={itemIcon} style={styles.icon} />
-          <Text style={styles.subTitle}>Number of Items: {d.furniture.length}</Text>
-        </View>
-        {d.furniture.map((f, index) => (
-          <Text style={styles.indent} key={f.id}>
-            {index + 1}. {f.name}
-          </Text>
-        ))}
-      </View>
-    </View>
-  ));
+    ),
+  );
 
   return (
     <Document>
