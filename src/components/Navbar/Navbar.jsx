@@ -19,9 +19,9 @@ import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { logout, useNavigate, getUserFromDB, auth, getCurrentUser } from '../../utils/AuthUtils';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import pnpLogo from './PNPlogo.png';
-import AUTH_ROLES from '../../utils/AuthConfig';
+import { AUTH_ROLES } from '../../utils/config';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 
 const Navbar = ({ cookies }) => {
   const [user, setUser] = useState({});

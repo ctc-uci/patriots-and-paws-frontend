@@ -24,11 +24,11 @@ import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import menuIcon from '../../assets/Menu.svg';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
-import AUTH_ROLES from '../../utils/AuthConfig';
+import { AUTH_ROLES } from '../../utils/config';
 import UserTable from '../../components/UserTable/UserTable';
 import ManageStaffPagination from './ManageStaffPagination';
 
-const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 
 const ManageStaff = ({ cookies }) => {
   const [displayedUsers, setDisplayedUsers] = useState([]);

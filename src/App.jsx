@@ -26,10 +26,10 @@ import EmailSending from './components/EmailTemplates/EmailSending';
 import SampleRoute from './components/SampleRoute/SampleRoute';
 import InventoryPage from './components/InventoryPage/InventoryPage';
 
-import AUTH_ROLES from './utils/AuthConfig';
+import { AUTH_ROLES } from './utils/config';
 import DonorLogin from './pages/DonorLogin/DonorLogin';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
 
 function App() {
   const [files, setFiles] = useState([]);

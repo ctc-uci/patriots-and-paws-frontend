@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import {
   ModalOverlay,
   ModalContent,
@@ -14,349 +13,329 @@ import {
   Input,
   Stack,
   InputLeftAddon,
-  InputRightAddon,
   InputGroup,
   Textarea,
   Modal,
-  FormControl,
-  FormErrorMessage,
+  Tag,
+  useDisclosure,
+  Select,
 } from '@chakra-ui/react';
 
-import { useForm } from 'react-hook-form';
 import { PropTypes } from 'prop-types';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { PNPBackend } from '../../utils/utils';
-import { makeDate } from '../../utils/InventoryUtils';
+import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
+import { makeDate, colorMap, EMAIL_TYPE } from '../../utils/InventoryUtils';
+import DonationImagesContainer from './DonationImagesContainer';
+import DonationFurnitureContainer from './DonationFurnitureContainer';
 import './InventoryPage.module.css';
+import EmailModal from './EmailModal';
+import { STATUSES } from '../../utils/config';
 
-const DonationModal = ({ data, onClose, isOpen, setUsers }) => {
-  const dataCopy = data;
-  const { id, submittedDate } = data;
+const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES;
+const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES } = EMAIL_TYPE;
 
-  // const [image, setImage] = useState([]);
+const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
+  const {
+    id,
+    status,
+    firstName,
+    lastName,
+    submittedDate,
+    addressStreet,
+    addressUnit,
+    addressCity,
+    addressZip,
+    email,
+    phoneNum,
+    notes,
+    pictures,
+    furniture,
+    pickupDate,
+    routeId,
+  } = data;
 
-  // useEffect(async () => {
-  // const result = await getPictureFromDB(id);
-  // setImage(result[0]);
-  // }, []);
-
-  const schema = yup.object({
-    firstName: yup.string().required('Invalid fist name'),
-    lastName: yup.string().required('Invalid last name'),
-    addressZip: yup
-      .string()
-      .length(5, 'Invalid zip code')
-      .matches(/^\d{5}$/)
-      .required('enter a zip'),
-    email: yup.string().email('Invalid email').required('enter your email'),
-    phoneNum: yup.number().typeError('Must be a number').required('Please enter a phone number'),
-    addressStreet: yup.string(),
-    addressUnit: yup.string().required('Must be a number'),
-    addressCity: yup.string().required('Must be a valid city'),
-    notes: yup.string(),
-  });
+  const [emailStatus, setEmailStatus] = useState('');
+  const [currentStatus, setCurrentStatus] = useState(status);
+  const [scheduledDate, setScheduledDate] = useState('');
+  const [scheduledRouteId, setScheduledRouteId] = useState('');
 
   const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm({ defaultValues: data, resolver: yupResolver(schema) });
-  const [canEditInfo, setCanEditInfo] = useState(false);
+    isOpen: emailModalIsOpen,
+    onOpen: emailModalOnOpen,
+    onClose: emailModalOnClose,
+  } = useDisclosure();
 
-  useEffect(() => {
-    reset(data);
-  }, [data]);
-
-  const updateDonationStatus = async newstatus => {
-    setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, status: newstatus } : ele)));
+  const updateDonation = async ({ newStatus, newPickupDate, newRouteId }) => {
+    setAllDonations(prev =>
+      prev.map(ele =>
+        ele.id === id
+          ? { ...ele, status: newStatus, pickupDate: newPickupDate, routeId: newRouteId }
+          : ele,
+      ),
+    );
     await PNPBackend.put(`/donations/${id}`, {
-      status: newstatus,
+      status: newStatus,
     });
   };
 
-  const updateDonation = async e => {
-    setUsers(prev => prev.map(ele => (ele.id === id ? { ...ele, ...e } : ele)));
-    setCanEditInfo(false);
-    onClose();
-    await PNPBackend.put(`/donations/${id}`, e);
+  const makeStatusTag = curStatus => {
+    return (
+      <Tag size="sm" m={5} ml={15} colorScheme={colorMap[curStatus]}>
+        {curStatus[0].toUpperCase() + curStatus.slice(1)}
+      </Tag>
+    );
   };
 
-  const close = () => {
-    setCanEditInfo(false);
-    onClose();
+  const resetScheduledRoute = () => {
+    setScheduledDate(pickupDate?.replace(/T.*$/, '') ?? '');
+    setScheduledRouteId(routeId ?? '');
   };
 
-  // function makeDate(dateDB) {
-  //   const d = new Date(dateDB);
-  //   return `${d.getMonth() + 1} ${d.getDate()}, ${d.getFullYear()}`;
-  // }
+  useEffect(() => {
+    setCurrentStatus(status);
+    resetScheduledRoute();
+  }, [data]);
+
   return (
-    <Modal isOpen={isOpen} onClose={close} size="full">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {
+        resetScheduledRoute();
+        onClose();
+      }}
+      size="full"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader m={3}>
-          <Text fontSize={36}>Donation #{id}</Text>
+          <Flex>
+            <Text fontSize={36}>Donation #{id}</Text>
+            {currentStatus && makeStatusTag(currentStatus)}
+          </Flex>
           <Text fontSize={16}>Submission Date: {makeDate(submittedDate)}</Text>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <form>
-            <Flex flexDirection="row" m={3}>
-              <Box h={600} w="60%" m={5}>
+          <Flex flexDirection="row" m={3}>
+            <Box h="100%" w="60%" m={5}>
+              <Text mb={5} fontSize="20px">
+                Basic Information
+              </Text>
+              <Stack spacing={3}>
+                <InputGroup>
+                  <InputLeftAddon>Name</InputLeftAddon>
+                  <Input defaultValue={`${firstName} ${lastName}`} isReadOnly />
+                </InputGroup>
+              </Stack>
+              <Stack direction="row" my={2}>
+                <InputGroup>
+                  <InputLeftAddon>Email</InputLeftAddon>
+                  <Input defaultValue={email} isReadOnly />
+                </InputGroup>
+                <InputGroup>
+                  <InputLeftAddon>Phone Number</InputLeftAddon>
+                  <Input type="tel" defaultValue={phoneNum} isReadOnly />
+                </InputGroup>
+              </Stack>
+              <Text mt="60px" mb={5} fontSize="20px">
+                Address
+              </Text>
+              <Stack spacing={3} direction="row">
+                <InputGroup>
+                  <InputLeftAddon>Street Address</InputLeftAddon>
+                  <Input defaultValue={addressStreet} isReadOnly />
+                </InputGroup>
+                <InputGroup>
+                  <InputLeftAddon>Unit</InputLeftAddon>
+                  <Input defaultValue={addressUnit} isReadOnly />
+                </InputGroup>
+              </Stack>
+              <Stack spacing={3} direction="row" my={2}>
+                <InputGroup>
+                  <InputLeftAddon>City</InputLeftAddon>
+                  <Input defaultValue={addressCity} isReadOnly />
+                </InputGroup>
+                <InputGroup>
+                  <InputLeftAddon>State</InputLeftAddon>
+                  <Input defaultValue="CA" isReadOnly />
+                </InputGroup>
+                <InputGroup>
+                  <InputLeftAddon>Zip Code</InputLeftAddon>
+                  <Input defaultValue={addressZip} isReadOnly />
+                </InputGroup>
+              </Stack>
+              <Text mt="60px" mb={5} fontSize="20px">
+                Additional Comments
+              </Text>
+              <Textarea defaultValue={notes} isReadOnly />
+
+              <Flex
+                direction="row"
+                bg="#E2E8F0"
+                align="center"
+                mt="2em"
+                borderRadius={6}
+                gap={5}
+                px={5}
+                py={3}
+              >
+                <Text fontSize="20px">Schedule</Text>
+                <Select
+                  placeholder={!pickupDate && 'Choose a date'}
+                  onChange={e => {
+                    setScheduledDate(e.target.value);
+                    setScheduledRouteId('');
+                  }}
+                  bg="white"
+                  isDisabled={![PENDING].includes(currentStatus)}
+                >
+                  {Object.keys(routes).map(day => (
+                    <option key={day} value={day}>
+                      {day}
+                    </option>
+                  ))}
+                </Select>
+                <Select
+                  placeholder={!routeId && 'Choose a route'}
+                  isDisabled={![PENDING].includes(currentStatus) || !scheduledDate}
+                  onChange={e => setScheduledRouteId(e.target.value)}
+                  bg="white"
+                >
+                  {scheduledDate &&
+                    routes[scheduledDate]?.map(({ id: optionId, name }) => (
+                      <option key={optionId} value={optionId}>
+                        {name}
+                      </option>
+                    ))}
+                </Select>
+              </Flex>
+            </Box>
+
+            <Box h="50%" w="40%" m={5}>
+              <Box>
                 <Text mb={5} fontSize="20px">
-                  Basic Information
+                  Images
                 </Text>
-                <Stack spacing={3}>
-                  <FormControl isInvalid={errors && errors.firstName} width="47%">
-                    <InputGroup>
-                      <InputLeftAddon>Name</InputLeftAddon>
-                      <Input
-                        placeholder="name"
-                        {...register('firstName')}
-                        isRequired
-                        isDisabled={!canEditInfo}
-                      />
-                    </InputGroup>
-                    <FormErrorMessage>
-                      {errors.firstName && errors.firstName.message}
-                    </FormErrorMessage>
-                  </FormControl>
-                </Stack>
-                <Stack direction="row" my={2}>
-                  <InputGroup>
-                    <InputLeftAddon>Email</InputLeftAddon>
-                    <Input
-                      placeholder="email"
-                      {...register('email')}
-                      isRequired
-                      isDisabled={!canEditInfo}
-                    />
-                  </InputGroup>
-                  <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
-                  <InputGroup>
-                    <InputLeftAddon>Phone Number</InputLeftAddon>
-                    <FormControl isInvalid={errors && errors.phoneNum}>
-                      <Input
-                        type="tel"
-                        placeholder="phone number"
-                        {...register('phoneNum')}
-                        isRequired
-                        isDisabled={!canEditInfo}
-                      />
-                      <FormErrorMessage>
-                        {errors.phoneNum && errors.phoneNum.message}
-                      </FormErrorMessage>
-                    </FormControl>
-                  </InputGroup>
-                </Stack>
-                <Text mt="60px" mb={5} fontSize="20px">
-                  Address
-                </Text>
-                <Stack spacing={3} direction="row">
-                  <InputGroup>
-                    <InputLeftAddon>Street Address</InputLeftAddon>
-                    <Input
-                      placeholder="street"
-                      {...register('addressStreet')}
-                      isRequired
-                      isDisabled={!canEditInfo}
-                    />
-                  </InputGroup>
-                  <FormErrorMessage>
-                    {errors.addressStreet && errors.addressStreet.message}
-                  </FormErrorMessage>
-                  <InputGroup>
-                    <InputLeftAddon>Unit</InputLeftAddon>
-                    <Input
-                      placeholder="unit"
-                      {...register('addressUnit')}
-                      isRequired
-                      isDisabled={!canEditInfo}
-                    />
-                  </InputGroup>
-                  <FormErrorMessage>
-                    {errors.addressUnit && errors.addressUnit.message}
-                  </FormErrorMessage>
-                </Stack>
-                <Stack spacing={3} direction="row" my={2}>
-                  <InputGroup>
-                    <InputLeftAddon>City</InputLeftAddon>
-                    <Input
-                      placeholder="city"
-                      {...register('addressCity')}
-                      isRequired
-                      isDisabled={!canEditInfo}
-                    />
-                  </InputGroup>
-                  <FormErrorMessage>
-                    {errors.addressCity && errors.addressCity.message}
-                  </FormErrorMessage>
-                  <InputGroup>
-                    <InputLeftAddon>State</InputLeftAddon>
-                    <Input placeholder="CA" isDisabled />
-                  </InputGroup>
-                  <FormErrorMessage>{errors.add && errors.state.message}</FormErrorMessage>
-                  <InputGroup>
-                    <InputLeftAddon>Zip Code</InputLeftAddon>
-                    <FormControl isInvalid={errors && errors.addressZip}>
-                      <Input
-                        placeholder="zip"
-                        {...register('addressZip')}
-                        isRequired
-                        isDisabled={!canEditInfo}
-                      />
-                      <FormErrorMessage>
-                        {errors.addressZip && errors.addressZip.message}
-                      </FormErrorMessage>
-                    </FormControl>
-                  </InputGroup>
-                </Stack>
-                <Text mt="60px" mb={5} fontSize="20px">
-                  Additional Comments
-                </Text>
-                <Textarea
-                  placeholder="Enter additional comments here"
-                  {...register('notes')}
-                  isDisabled={!canEditInfo}
-                />
+                <DonationImagesContainer data={pictures} />
               </Box>
 
-              <Box h={600} w="40%" m={5}>
-                <Box>
-                  <Text mb={5} fontSize="20px">
-                    Images
-                  </Text>
-                  <Box h={300} w={395} bg="gray">
-                    {/* {image ? image.imageUrl : 'no image provided'} */}
-                  </Box>
-                </Box>
-
-                <Box h={400} w="70%">
-                  <Text mt="45px" mb={5} fontSize="20px">
-                    Furniture Items
-                  </Text>
-                  <Stack>
-                    <InputGroup>
-                      <Input value="Dining Table" />
-                      {/* isDisabled={true}  */}
-                      <InputRightAddon>2</InputRightAddon>
-                    </InputGroup>
-
-                    <InputGroup>
-                      <Input value="Dining Table" />
-                      {/* isDisabled={true}  */}
-
-                      <InputRightAddon>2</InputRightAddon>
-                    </InputGroup>
-
-                    <InputGroup>
-                      <Input value="Dining Table" />
-                      {/* isDisabled={true}  */}
-
-                      <InputRightAddon>2</InputRightAddon>
-                    </InputGroup>
-
-                    <InputGroup>
-                      <Input value="Dining Table" />
-                      {/* isDisabled={true}  */}
-
-                      <InputRightAddon>2</InputRightAddon>
-                    </InputGroup>
-                  </Stack>
-                </Box>
+              <Box h="50%" w="100%">
+                <Text mt="45px" mb={5} fontSize="20px">
+                  Furniture Items
+                </Text>
+                <DonationFurnitureContainer data={furniture} />
               </Box>
-            </Flex>
-          </form>
+            </Box>
+          </Flex>
         </ModalBody>
 
         <ModalFooter justifyContent="space-between">
           <Box>
-            <Button
-              colorScheme="red"
-              onClick={() => {
-                updateDonationStatus('denied');
-              }}
-            >
-              Reject
-            </Button>
-            <Button
-              ml={3}
-              colorScheme="gray"
-              onClick={() => {
-                updateDonationStatus('flagged');
-              }}
-            >
-              Flag
-            </Button>
-            <Button
-              ml={3}
-              colorScheme="green"
-              onClick={() => {
-                updateDonationStatus('approved');
-              }}
-            >
-              Approve
-            </Button>
-          </Box>
-          <Box>
-            {!canEditInfo ? (
-              <Button
-                colorScheme="blue"
-                mr={3}
-                onClick={() => {
-                  setCanEditInfo(true);
-                }}
-              >
-                Edit Information
-              </Button>
-            ) : (
+            {(currentStatus === PENDING || currentStatus === CHANGES_REQUESTED) && (
               <>
                 <Button
-                  ml={3}
-                  colorScheme="gray"
+                  colorScheme="red"
+                  isDisabled={currentStatus === CHANGES_REQUESTED}
                   onClick={() => {
-                    // close();
-                    setCanEditInfo(false);
-                    reset(dataCopy);
+                    emailModalOnOpen();
+                    setEmailStatus(REQUEST_CHANGES);
                   }}
                 >
-                  Cancel
+                  Request Changes
                 </Button>
                 <Button
                   ml={3}
-                  colorScheme="blue"
-                  onClick={handleSubmit(updateDonation)}
-                  type="submit"
+                  colorScheme="green"
+                  onClick={() => {
+                    emailModalOnOpen();
+                    setEmailStatus(APPROVE);
+                  }}
+                  isDisabled={!scheduledRouteId}
                 >
-                  Save Changes
+                  Approve
                 </Button>
               </>
             )}
+            {currentStatus === SCHEDULED && (
+              <Button
+                ml={3}
+                colorScheme="red"
+                onClick={() => {
+                  emailModalOnOpen();
+                  setEmailStatus(CANCEL_PICKUP);
+                }}
+              >
+                Cancel Pickup
+              </Button>
+            )}
+          </Box>
+          <Box>
+            <Button
+              ml={3}
+              colorScheme="gray"
+              type="submit"
+              onClick={() => {
+                handleNavigateToAddress([data]);
+              }}
+            >
+              Navigate to Address
+            </Button>
           </Box>
         </ModalFooter>
+        <EmailModal
+          isOpenEmailModal={emailModalIsOpen}
+          onCloseEmailModal={emailModalOnClose}
+          status={emailStatus}
+          updateDonation={updateDonation}
+          email={email}
+          setCurrentStatus={setCurrentStatus}
+          donationInfo={{ id, scheduledDate, scheduledRouteId }}
+        />
       </ModalContent>
     </Modal>
   );
 };
 
 DonationModal.propTypes = {
-  setUsers: PropTypes.func,
+  setAllDonations: PropTypes.func,
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
+  routes: PropTypes.objectOf(
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+      }),
+    ),
+  ),
   data: PropTypes.shape({
-    id: PropTypes.string,
-    addressStreet: PropTypes.string.isRequired,
-    addressUnit: PropTypes.string.isRequired,
-    addressCity: PropTypes.string.isRequired,
-    addressZip: PropTypes.number.isRequired,
-    firstName: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
-    email: PropTypes.string.isRequired,
-    phoneNum: PropTypes.string.isRequired,
-    notes: PropTypes.string.isRequired,
-    submittedDate: PropTypes.string.isRequired,
+    status: PropTypes.string,
+    id: PropTypes.number,
+    addressStreet: PropTypes.string,
+    addressUnit: PropTypes.string,
+    addressCity: PropTypes.string,
+    addressZip: PropTypes.number,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    phoneNum: PropTypes.string,
+    notes: PropTypes.string,
+    submittedDate: PropTypes.string,
+    pickupDate: PropTypes.string,
+    routeId: PropTypes.number,
+    pictures: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        imageURL: PropTypes.string,
+        notes: PropTypes.string,
+      }),
+    ),
+    furniture: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        count: PropTypes.number,
+      }),
+    ),
   }),
 };
 
@@ -364,7 +343,8 @@ DonationModal.defaultProps = {
   data: {},
   isOpen: false,
   onClose: () => {},
-  setUsers: () => {},
+  setAllDonations: () => {},
+  routes: {},
 };
 
 export default DonationModal;
