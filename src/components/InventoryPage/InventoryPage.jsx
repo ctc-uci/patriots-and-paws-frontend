@@ -114,8 +114,17 @@ const InventoryPage = () => {
               <Text color="#718096">{ele.email}</Text>
             </Td>
             <Td>#{ele.id}</Td>
-            {tabIndex === 0 ? <Td>{makeStatus(ele.status)}</Td> : <Td>{ele.addressCity}</Td>}
-            <Td>{makeDate(ele.submittedDate)}</Td>
+            {tabIndex === 0 ? (
+              <>
+                <Td>{makeStatus(ele.status)}</Td>
+                <Td>{makeDate(ele.submittedDate)}</Td>
+              </>
+            ) : (
+              <>
+                <Td>{ele.addressCity}</Td>
+                <Td>{makeDate(ele.pickupDate)}</Td>
+              </>
+            )}
           </Tr>
         );
       });

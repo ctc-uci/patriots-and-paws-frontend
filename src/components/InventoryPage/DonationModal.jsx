@@ -91,8 +91,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
   };
 
   useEffect(() => {
+    console.log(routes);
+  }, []);
+
+  useEffect(() => {
     setCurrentStatus(status);
     resetScheduledRoute();
+    console.log(pickupDate);
   }, [data]);
 
   return (
@@ -185,6 +190,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                     setScheduledDate(e.target.value);
                     setScheduledRouteId('');
                   }}
+                  defaultValue={scheduledDate}
                   bg="white"
                   isDisabled={![PENDING].includes(currentStatus)}
                 >
