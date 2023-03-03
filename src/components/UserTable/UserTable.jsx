@@ -22,9 +22,9 @@ import EditAccountModal from '../EditAccountModal/EditAccountModal';
 import DeleteAccountModal from '../DeleteAccountModal/DeleteAccountModal';
 import peopleIcon from '../../assets/Bold.svg';
 import cardAccount from '../../assets/card-account-details.svg';
-import AUTH_ROLES from '../../utils/AuthConfig';
+import { AUTH_ROLES } from '../../utils/config';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 
 const UserTable = ({
   isSuperAdmin,
@@ -84,7 +84,7 @@ const UserTable = ({
             </Tr>
           </Thead>
           <Tbody className={styles['row-text']}>
-            {users.map(user => (
+            {users?.map(user => (
               <Tr key={`${user.email}`}>
                 <Td>
                   {user.firstName} {user.lastName}
@@ -161,11 +161,15 @@ UserTable.propTypes = {
       phoneNumber: PropTypes.string.isRequired,
       role: PropTypes.string.isRequired,
     }),
-  ).isRequired,
+  ),
   setAllUsers: PropTypes.func.isRequired,
   setDriverUsers: PropTypes.func.isRequired,
   setAdminUsers: PropTypes.func.isRequired,
   updateDisplay: PropTypes.func.isRequired,
+};
+
+UserTable.defaultProps = {
+  users: [],
 };
 
 export default UserTable;

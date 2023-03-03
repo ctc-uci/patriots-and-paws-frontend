@@ -3,7 +3,6 @@ import {
   Table,
   Thead,
   Tbody,
-  Button,
   Tr,
   Td,
   Th,
@@ -20,189 +19,119 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
+  Button,
+  Tag,
 } from '@chakra-ui/react';
 import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
-import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
 import RouteCalendar from '../RouteCalendar/RouteCalendar';
+import PaginationFooter from '../PaginationFooter/PaginationFooter';
+import { PNPBackend } from '../../utils/utils';
+import {
+  getDonationsFromDB,
+  getRoutesFromDB,
+  makeDate,
+  colorMap,
+} from '../../utils/InventoryUtils';
+import { STATUSES } from '../../utils/config';
+
+const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULING, SCHEDULED, ARCHIVED } = STATUSES;
 
 const InventoryPage = () => {
-  const [users, setUsers] = useState([]);
+  const [allDonations, setAllDonations] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
+  const [count, setCount] = useState();
+  const [routes, setRoutes] = useState({});
+  const [tabIndex, setTabIndex] = useState(0);
 
-  const btnRef = React.useRef();
+  const tabStatuses = [
+    [PENDING, CHANGES_REQUESTED],
+    [APPROVED, SCHEDULING],
+    [SCHEDULED],
+    [ARCHIVED],
+  ];
 
   const handleRowClick = data => {
     setDonationData(data);
     onOpen();
   };
 
-  function makeStatus(newStatus) {
-    if (newStatus === 'denied') {
-      return (
-        <Button size="xs" colorScheme="red">
-          REJECTED
-        </Button>
-      );
-    }
-    if (newStatus === 'approved') {
-      return (
-        <Button size="xs" colorScheme="green">
-          APPROVED
-        </Button>
-      );
-    }
-    if (newStatus === 'flagged') {
-      return (
-        <Button size="xs" colorScheme="gray">
-          FLAGGED
-        </Button>
-      );
-    }
-    if (newStatus === 'approval requested') {
-      return (
-        <Button size="xs" colorScheme="red">
-          Approval Requested
-        </Button>
-      );
-    }
-    if (newStatus === 'changes requested') {
-      return (
-        <Button size="xs" colorScheme="blue">
-          Changes Requested
-        </Button>
-      );
-    }
-    if (newStatus === 'reschedule') {
-      return (
-        <Button size="xs" colorScheme="orange">
-          Reschedule
-        </Button>
-      );
-    }
-    if (newStatus === 'pending') {
-      return (
-        <Button size="xs" colorScheme="red">
-          Pending
-        </Button>
-      );
-    }
+  const makeStatus = status => {
     return (
-      <Button size="xs" colorScheme="gray">
-        {newStatus}
-      </Button>
+      <Tag size="lg" colorScheme={colorMap[status]}>
+        {status[0].toUpperCase() + status.slice(1)}
+      </Tag>
     );
-  }
+  };
 
-  // function makeDate(dateDB) {
-  //   const d = new Date(dateDB);
-  //   return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-  // }
+  const getTotalCount = async () => {
+    const { data } = await PNPBackend.get(`donations/total`);
+    const { count: totalCount } = data[0];
+    setCount(totalCount);
+  };
+
+  useEffect(() => {
+    getTotalCount();
+  }, []);
 
   useEffect(() => {
     const fetchDonationsFromDB = async () => {
       const donationsFromDB = await getDonationsFromDB();
-      setUsers(donationsFromDB);
+      setAllDonations(donationsFromDB);
     };
     fetchDonationsFromDB();
   }, []);
 
-  const makeAdminApprovalUserRows = users
-    .filter(
-      ele =>
-        ele.status === 'pending' ||
-        ele.status === 'changes requested' ||
-        ele.status === 'reschedule' ||
-        ele.status === 'approval requested',
-    )
-    .map(ele => {
-      // console.log(ele);
-      return (
-        <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
-          <Td>
-            <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-            <Text color="#718096">{ele.email}</Text>
-          </Td>
-          <Td>#{ele.id}</Td>
-          <Td>{makeStatus(ele.status)}</Td>
-          <Td>{makeDate(ele.submittedDate)}</Td>
-        </Tr>
-      );
-    });
+  useEffect(() => {
+    const fetchRoutesFromDB = async () => {
+      const routesFromDB = await getRoutesFromDB();
+      const formattedRoutes = routesFromDB.map(({ id, name, date: day }) => ({
+        id,
+        name,
+        date: new Date(day).toISOString().replace(/T.*$/, ''),
+      }));
+      const routesList = {};
+      formattedRoutes.forEach(({ date }) => {
+        routesList[date] = [];
+      });
+      formattedRoutes.forEach(({ id, name, date }) => routesList[date].push({ id, name }));
+      setRoutes(routesList);
+    };
+    fetchRoutesFromDB();
+  }, []);
 
-  const makeDonorApprovalUserRows = users
-    .filter(ele => ele.status === 'approved' || ele.status === 'scheduling')
-    .map(ele => {
-      // console.log(ele);
-      return (
-        <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
-          <Td>
-            <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-            <Text color="#718096">{ele.email}</Text>
-          </Td>
-          <Td>#{ele.id}</Td>
-          <Td>{ele.addressCity}</Td>
-          <Td>{makeDate(ele.submittedDate)}</Td>
-        </Tr>
-      );
-    });
-
-  const makeAwaitingUserRows = users
-    .filter(ele => ele.status === 'scheduled')
-    .map(ele => {
-      // console.log(ele);
-      return (
-        <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
-          <Td>
-            <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-            <Text color="#718096">{ele.email}</Text>
-          </Td>
-          <Td>#{ele.id}</Td>
-          <Td>{ele.addressCity}</Td>
-          <Td>{makeDate(ele.submittedDate)}</Td>
-        </Tr>
-      );
-    });
-
-  const makeArchivedUserRows = users
-    .filter(ele => ele.status === 'archived')
-    .map(ele => {
-      // console.log(ele);
-      return (
-        <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
-          <Td>
-            <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-            <Text color="#718096">{ele.email}</Text>
-          </Td>
-          <Td>#{ele.id}</Td>
-          <Td>{ele.addressCity}</Td>
-          <Td>{makeDate(ele.submittedDate)}</Td>
-        </Tr>
-      );
-    });
+  const makeDonationRows = () => {
+    return allDonations
+      .filter(ele => tabStatuses[tabIndex].includes(ele.status))
+      .map(ele => {
+        return (
+          <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+            <Td>
+              <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+              <Text color="#718096">{ele.email}</Text>
+            </Td>
+            <Td>#{ele.id}</Td>
+            {tabIndex === 0 ? <Td>{makeStatus(ele.status)}</Td> : <Td>{ele.addressCity}</Td>}
+            <Td>{makeDate(ele.submittedDate)}</Td>
+          </Tr>
+        );
+      });
+  };
 
   return (
     <>
-      <Tabs p="40px">
+      <Tabs p="40px" onChange={index => setTabIndex(index)}>
         <TabList>
           <Tab>Pending Admin Approval</Tab>
           <Tab>Pending Donor Approval</Tab>
           <Tab>Awaiting Pickup</Tab>
           <Tab>Archive</Tab>
-          <Button ref={btnRef} onClick={onDrawerOpen}>
-            Open Calendar
-          </Button>
+          <Button onClick={onDrawerOpen}>Open Calendar</Button>
         </TabList>
-        <Drawer
-          isOpen={isDrawerOpen}
-          placement="right"
-          onClose={onDrawerClose}
-          finalFocusRef={btnRef}
-          size="full"
-        >
+        <Drawer isOpen={isDrawerOpen} placement="right" onClose={onDrawerClose} size="full">
           <DrawerOverlay />
           <DrawerContent>
             <DrawerCloseButton />
@@ -225,7 +154,7 @@ const InventoryPage = () => {
                     <Th>SUBMISSION DATE</Th>
                   </Tr>
                 </Thead>
-                <Tbody>{makeAdminApprovalUserRows}</Tbody>
+                <Tbody>{makeDonationRows()}</Tbody>
               </Table>
             </TableContainer>
           </TabPanel>
@@ -240,7 +169,7 @@ const InventoryPage = () => {
                     <Th>SCHEDULED DATE</Th>
                   </Tr>
                 </Thead>
-                <Tbody>{makeDonorApprovalUserRows}</Tbody>
+                <Tbody>{makeDonationRows()}</Tbody>
               </Table>
             </TableContainer>
           </TabPanel>
@@ -255,7 +184,7 @@ const InventoryPage = () => {
                     <Th>PICKUP DATE</Th>
                   </Tr>
                 </Thead>
-                <Tbody>{makeAwaitingUserRows}</Tbody>
+                <Tbody>{makeDonationRows()}</Tbody>
               </Table>
             </TableContainer>
           </TabPanel>
@@ -270,18 +199,20 @@ const InventoryPage = () => {
                     <Th>PICKUP DATE</Th>
                   </Tr>
                 </Thead>
-                <Tbody>{makeArchivedUserRows}</Tbody>
+                <Tbody>{makeDonationRows()}</Tbody>
               </Table>
             </TableContainer>
           </TabPanel>
+          {count && <PaginationFooter count={count} setData={setAllDonations} table="donations" />}
         </TabPanels>
       </Tabs>
       <DonationModal
-        setUsers={setUsers}
+        setAllDonations={setAllDonations}
         data={donationData}
         onClose={onClose}
         onOpen={onOpen}
         isOpen={isOpen}
+        routes={routes}
       />
     </>
   );

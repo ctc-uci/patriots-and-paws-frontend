@@ -29,6 +29,35 @@ import { updateUser } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 import styles from './EditAccountModal.module.css';
 
+const superAdminFormSchema = yup.object({
+  firstName: yup.string().required("Please enter the staff member's first name"),
+  lastName: yup.string().required("Please enter the staff member's last name"),
+  phoneNumber: yup
+    .string()
+    .length(10, 'Please enter a ten digit phone number')
+    .matches(/^\d{10}$/)
+    .required("Please enter the staff member's phone number"),
+  newPassword: yup
+    .string()
+    .nullable()
+    .transform(value => value || null)
+    .matches(
+      passwordRequirementsRegex,
+      'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
+    ),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('newPassword'), null, ''], 'Passwords must both match'),
+});
+const defaultFormSchema = yup.object({
+  firstName: yup.string().required("Please enter the staff member's first name"),
+  lastName: yup.string().required("Please enter the staff member's last name"),
+  phoneNumber: yup
+    .string()
+    .length(10, 'Please enter a ten digit phone number')
+    .matches(/^\d{10}$/),
+});
+
 const EditAccountModal = ({
   data,
   isSuperAdmin,
@@ -38,38 +67,6 @@ const EditAccountModal = ({
   setAdminUsers,
   setDriverUsers,
 }) => {
-  let formSchema;
-  if (isSuperAdmin) {
-    formSchema = yup.object({
-      firstName: yup.string().required("Please enter the staff member's first name"),
-      lastName: yup.string().required("Please enter the staff member's last name"),
-      phoneNumber: yup
-        .string()
-        .length(10, 'Please enter a ten digit phone number')
-        .matches(/^\d{10}$/)
-        .required("Please enter the staff member's phone number"),
-      newPassword: yup
-        .string()
-        .nullable()
-        .transform(value => value || null)
-        .matches(
-          passwordRequirementsRegex,
-          'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
-        ),
-      confirmPassword: yup
-        .string()
-        .oneOf([yup.ref('newPassword'), null, ''], 'Passwords must both match'),
-    });
-  } else {
-    formSchema = yup.object({
-      firstName: yup.string().required("Please enter the staff member's first name"),
-      lastName: yup.string().required("Please enter the staff member's last name"),
-      phoneNumber: yup
-        .string()
-        .length(10, 'Please enter a ten digit phone number')
-        .matches(/^\d{10}$/),
-    });
-  }
   const {
     register,
     handleSubmit,
@@ -77,7 +74,7 @@ const EditAccountModal = ({
     formState: { errors },
   } = useForm({
     defaultValues: data,
-    resolver: yupResolver(formSchema),
+    resolver: yupResolver(isSuperAdmin ? superAdminFormSchema : defaultFormSchema),
     delayError: 750,
   });
 
@@ -115,15 +112,17 @@ const EditAccountModal = ({
         confirmPassword: '',
       });
       setErrorMessage('User successfully edited');
-      setUsers(prev => prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)));
-      if (data.role === 'admin') {
-        setAdminUsers(prev =>
-          prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
-        );
-      } else {
-        setDriverUsers(prev =>
-          prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
-        );
+      if (setUsers) {
+        setUsers(prev => prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)));
+        if (data.role === 'admin') {
+          setAdminUsers(prev =>
+            prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
+          );
+        } else {
+          setDriverUsers(prev =>
+            prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)),
+          );
+        }
       }
       closeModals();
     } catch (err) {
