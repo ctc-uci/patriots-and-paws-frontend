@@ -8,11 +8,18 @@ import DonationDetails from './DonationDetails';
 
 const DonorDashboard = ({ donationId }) => {
   const [stage, setStage] = useState(0);
+  const [donation, setDonation] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
       const donationStatus = await getDonationStatus(donationId);
-      console.log(getDonation(donationId));
+      // const donation = await getDonation(donationId);
+      getDonation(donationId).then(res => {
+        if (res != null) {
+          setDonation(res);
+        }
+      });
+      // console.log(getDonation(donationId));
       const donationStage = {
         archieved: 4,
         scheduled: 3,
@@ -37,7 +44,7 @@ const DonorDashboard = ({ donationId }) => {
             What a cool box
           </Box>
           <Box bg="white" w="100%" h="500" p={4}>
-            <DonationDetails />
+            <DonationDetails data={donation} />
           </Box>
         </GridItem>
         <GridItem colSpan={1}>
