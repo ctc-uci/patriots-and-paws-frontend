@@ -22,7 +22,6 @@ import {
   Button,
   Tag,
 } from '@chakra-ui/react';
-import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
 import RouteCalendar from '../RouteCalendar/RouteCalendar';
@@ -108,10 +107,16 @@ const InventoryPage = () => {
       .filter(ele => tabStatuses[tabIndex].includes(ele.status))
       .map(ele => {
         return (
-          <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
+          <Tr
+            onClick={() => handleRowClick(ele)}
+            key={ele.id}
+            cursor="pointer"
+            _hover={{
+              background: 'blue.50',
+            }}
+          >
             <Td>
               <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-              <Text color="#718096">{ele.email}</Text>
             </Td>
             <Td>#{ele.id}</Td>
             {tabIndex === 0 ? (

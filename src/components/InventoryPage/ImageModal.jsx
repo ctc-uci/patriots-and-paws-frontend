@@ -1,5 +1,4 @@
 import React from 'react';
-import './InventoryPage.module.css';
 import {
   ModalOverlay,
   ModalContent,
