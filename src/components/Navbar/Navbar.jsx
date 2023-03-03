@@ -78,21 +78,23 @@ const Navbar = ({ cookies }) => {
             />
           </LinkOverlay>
         </LinkBox>
-        <>
-          <Link as={NavLink} to="/">
-            Dashboard
-          </Link>
-          {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
-            <>
-              <Link as={NavLink} to="/donate/edit">
-                Manage Donation Form
-              </Link>
-              <Link as={NavLink} to="/manage-staff">
-                Manage Staff
-              </Link>
-            </>
-          )}
-        </>
+        {role && (
+          <>
+            <Link as={NavLink} to="/">
+              Dashboard
+            </Link>
+            {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
+              <>
+                <Link as={NavLink} to="/donate/edit">
+                  Manage Donation Form
+                </Link>
+                <Link as={NavLink} to="/manage-staff">
+                  Manage Staff
+                </Link>
+              </>
+            )}
+          </>
+        )}
       </HStack>
       <Menu isOpen={isOpen} alignSelf="right">
         <MenuButton
