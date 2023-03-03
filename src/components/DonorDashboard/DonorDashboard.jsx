@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, GridItem, Box, Text } from '@chakra-ui/react';
-import { getDonationStatus } from '../../utils/donorUtils';
+import { getDonationStatus, getDonation } from '../../utils/donorUtils';
 import DonorFooter from '../DonorFooter/DonorFooter';
 import TrackDonationSection from '../TrackDonationSection/TrackDonationSection';
+import DonationDetails from './DonationDetails';
 
 const DonorDashboard = ({ donationId }) => {
   const [stage, setStage] = useState(0);
@@ -11,6 +12,7 @@ const DonorDashboard = ({ donationId }) => {
   useEffect(() => {
     const fetchData = async () => {
       const donationStatus = await getDonationStatus(donationId);
+      console.log(getDonation(donationId));
       const donationStage = {
         archieved: 4,
         scheduled: 3,
@@ -29,9 +31,14 @@ const DonorDashboard = ({ donationId }) => {
       <Grid templateColumns="repeat(3, 1fr)" gap={10} p="20px 40px 40px 40px">
         <GridItem colSpan={2}>
           <Text fontSize="30px" fontWeight="700" mb="20px">
-            My Forms
+            My Donation
           </Text>
-          <Box bg="white" w="100%" h="500" p={4} />
+          <Box bg="blue.50" w="100%" p={4} mb={4} color="black">
+            What a cool box
+          </Box>
+          <Box bg="white" w="100%" h="500" p={4}>
+            <DonationDetails />
+          </Box>
         </GridItem>
         <GridItem colSpan={1}>
           <Text fontSize="30px" fontWeight="700" mb="20px">
