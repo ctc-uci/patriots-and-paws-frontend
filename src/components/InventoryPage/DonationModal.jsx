@@ -185,6 +185,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                     setScheduledDate(e.target.value);
                     setScheduledRouteId('');
                   }}
+                  defaultValue={scheduledDate}
                   bg="white"
                   isDisabled={![PENDING].includes(currentStatus)}
                 >
