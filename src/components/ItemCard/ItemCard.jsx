@@ -10,7 +10,14 @@ const ItemCard = ({ name, items, setItems, setDeletedEntries }) => {
   };
 
   return (
-    <Tag size="lg" borderRadius="5" variant="solid" colorScheme="gray">
+    <Tag
+      size="lg"
+      borderRadius="5"
+      variant="solid"
+      bg="white"
+      color="black"
+      border="1px solid #E2E8F0;"
+    >
       <TagLabel>{name}</TagLabel>
       {/* On click, delete this item */}
       <TagCloseButton onClick={handleDelete} />

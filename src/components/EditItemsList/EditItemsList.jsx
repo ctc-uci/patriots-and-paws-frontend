@@ -2,7 +2,16 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Wrap, Input, Box, Button, Flex, FormControl, FormErrorMessage } from '@chakra-ui/react';
+import {
+  Wrap,
+  Input,
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  Text,
+} from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import ItemCard from '../ItemCard/ItemCard';
 
@@ -48,30 +57,59 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
   };
 
   return (
-    <Box bg="gray.50" width="50%" height="100%" mx="3vh" overflow="hidden">
-      <Wrap height="100%" minHeight="50vh" my="3%">
-        {items
-          .filter(({ accepted }) => accepted === isAccepted)
-          .map(({ name }) => (
-            <ItemCard
-              key={name}
-              name={name}
-              items={items}
-              setItems={setItems}
-              setDeletedEntries={setDeletedEntries}
-            />
-          ))}
-      </Wrap>
-      <Flex>
-        <form onSubmit={handleSubmit(handleAdd)}>
-          <FormControl isInvalid={errors.furnitureName?.message}>
-            <Input id="furnitureName" placeholder="Item" {...register('furnitureName')} />
-            <Button type="submit"> Add Item to List</Button>
-            <FormErrorMessage>{errors.furnitureName?.message}</FormErrorMessage>
-          </FormControl>
-        </form>
-      </Flex>
-    </Box>
+    <>
+      <Box width="40%" height="100%" mx="3vh" overflow="hidden">
+        {isAccepted ? (
+          <Text as="b" fontSize="xl">
+            Items We Accept
+          </Text>
+        ) : (
+          <Flex>
+            <Text as="b" fontSize="xl">
+              Items We
+            </Text>
+            <Text as="b" color="red" fontSize="xl">
+              &nbsp;DO NOT&nbsp;
+            </Text>
+            <Text as="b" fontSize="xl">
+              Accept
+            </Text>
+          </Flex>
+        )}
+
+        <Box bg="rgba(0, 0, 0, 0.04);" padding="15px">
+          <Wrap height="50vh" my="3%">
+            {items
+              .filter(({ accepted }) => accepted === isAccepted)
+              .map(({ name }) => (
+                <ItemCard
+                  key={name}
+                  name={name}
+                  items={items}
+                  setItems={setItems}
+                  setDeletedEntries={setDeletedEntries}
+                />
+              ))}
+          </Wrap>
+          <form onSubmit={handleSubmit(handleAdd)}>
+            <FormControl isInvalid={errors.furnitureName?.message}>
+              <Flex flexDirection="row">
+                <Input
+                  bg="white"
+                  id="furnitureName"
+                  placeholder="Item"
+                  {...register('furnitureName')}
+                />
+                <Button type="submit" bg="#3182CE" color="white" mx="3%">
+                  Add Item
+                </Button>
+              </Flex>
+              <FormErrorMessage>{errors.furnitureName?.message}</FormErrorMessage>
+            </FormControl>
+          </form>
+        </Box>
+      </Box>
+    </>
   );
 };
 

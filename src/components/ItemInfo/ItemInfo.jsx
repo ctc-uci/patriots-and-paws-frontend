@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -19,7 +19,9 @@ const ItemInfo = ({ items, isAccepted = false }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <Button onClick={onOpen}>Preview</Button>
+      <Button bg="white" border="1px solid #E2E8F0;" onClick={onOpen}>
+        Preview Item List
+      </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />

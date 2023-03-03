@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Heading, Flex, useToast } from '@chakra-ui/react';
+import { Button, Heading, Flex, useToast, Box } from '@chakra-ui/react';
 import EditItemsList from '../../components/EditItemsList/EditItemsList';
 import ItemInfo from '../../components/ItemInfo/ItemInfo';
 import { PNPBackend } from '../../utils/utils';
@@ -37,26 +37,34 @@ const ManageDonationForm = () => {
 
   return (
     <>
-      <Heading> Manage Donation Form </Heading>
-      <Flex minWidth="max-content" alignItems="center" minHeight="50%">
-        <EditItemsList
-          items={items}
-          setItems={setItems}
-          setNewEntries={setNewEntries}
-          setDeletedEntries={setDeletedEntries}
-          isAccepted
-        />
-        <EditItemsList
-          items={items}
-          setItems={setItems}
-          setNewEntries={setNewEntries}
-          setDeletedEntries={setDeletedEntries}
-        />
+      <Flex flexDirection="column">
+        <Heading mx="3vh" my="2vh">
+          Manage Donation Form{' '}
+        </Heading>
+        <Flex alignItems="center" minHeight="50%">
+          <EditItemsList
+            items={items}
+            setItems={setItems}
+            setNewEntries={setNewEntries}
+            setDeletedEntries={setDeletedEntries}
+            isAccepted
+          />
+          <EditItemsList
+            items={items}
+            setItems={setItems}
+            setNewEntries={setNewEntries}
+            setDeletedEntries={setDeletedEntries}
+          />
+        </Flex>
       </Flex>
-      {/* On click, pop up ItemListModal that displays all the items accepted/not accepted */}
-      <ItemInfo items={items} isAccepted />
-      {/* On click, save the items list to the backend (add toast confirmation - see chakra toast) */}
-      <Button onClick={updateItems}>Publish</Button>
+      <Box paddingRight="70px" marginTop="1%" textAlign="right">
+        {/* On click, pop up ItemListModal that displays all the items accepted/not accepted */}
+        <ItemInfo items={items} isAccepted />
+        {/* On click, save the items list to the backend (add toast confirmation - see chakra toast) */}
+        <Button bg="#3182CE" color="white" onClick={updateItems}>
+          Publish
+        </Button>
+      </Box>
     </>
   );
 };
