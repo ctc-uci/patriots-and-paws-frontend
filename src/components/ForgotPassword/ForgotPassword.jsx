@@ -9,16 +9,19 @@ import {
   Heading,
   Link,
   Box,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sendPasswordReset } from '../../utils/AuthUtils';
+import EmailSentModal from '../EmailSentModal/EmailSentModal';
 import styles from './ForgotPassword.module.css';
 
 const ForgotPassword = () => {
   const [errorMessage, setErrorMessage] = useState();
-  const [confirmationMessage, setConfirmationMessage] = useState();
+  const [isOpen, setIsOpen] = useState(false);
+  const { onClose } = useDisclosure();
 
   const formSchema = yup.object({
     email: yup.string().email().required('Please enter your email address'),
@@ -36,9 +39,7 @@ const ForgotPassword = () => {
     try {
       const { email } = data;
       await sendPasswordReset(email);
-      setConfirmationMessage(
-        'If the email entered is associated with an account, you should receive an email to reset your password shortly.',
-      );
+      setIsOpen(true);
       setErrorMessage('');
     } catch (err) {
       setErrorMessage(err.message);
@@ -59,9 +60,7 @@ const ForgotPassword = () => {
             </Button>
           </FormControl>
         </form>
-        {confirmationMessage && (
-          <Box className={styles['confirmation-msg']}>{confirmationMessage}</Box>
-        )}
+        <EmailSentModal isOpen={isOpen} onClose={onClose} />;
         <Link className={styles['login-link']} href="/login" color="teal.500">
           Back to Login
         </Link>
