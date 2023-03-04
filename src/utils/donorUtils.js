@@ -10,14 +10,24 @@ const verifyDonorLogin = async (donationId, email) => {
   }
 };
 
-const getDonationStatus = async donationId => {
+// const getDonationStatus = async donationId => {
+//   try {
+//     const res = await PNPBackend.get(`donations/${donationId}/`);
+//     const donation = res.data;
+//     return donation[0].status;
+//   } catch (err) {
+//     return 'can not find donation';
+//   }
+// };
+
+const getDonationData = async donationId => {
   try {
     const res = await PNPBackend.get(`donations/${donationId}/`);
     const donation = res.data;
-    return donation[0].status;
+    return donation[0];
   } catch (err) {
     return 'can not find donation';
   }
 };
 
-export { verifyDonorLogin, getDonationStatus };
+export { verifyDonorLogin, getDonationData };

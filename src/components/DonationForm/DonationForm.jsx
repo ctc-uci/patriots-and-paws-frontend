@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   FormLabel,
@@ -48,7 +49,7 @@ const schema = yup.object({
   Items: yup.array().of(yup.object().shape(itemFieldSchema), 'A Furniture Selection is Required'),
 });
 
-function DonationForm() {
+function DonationForm({ donationData }) {
   const {
     handleSubmit,
     register,
@@ -73,6 +74,10 @@ function DonationForm() {
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
   const [files, setFiles] = useState([]);
+
+  useEffect(() => {
+    setDonatedFurniture(donationData.furniture);
+  }, []);
 
   const removeFile = index => {
     setFiles(prev => prev.filter((item, idx) => idx !== index));
@@ -108,14 +113,14 @@ function DonationForm() {
   };
 
   const addDonation = async ev => {
-    setDonatedFurniture(prev => [...prev, { name: ev.target.value, num: 1 }]);
+    setDonatedFurniture(prev => [...prev, { name: ev.target.value, count: 1 }]);
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
     setSelectedFurnitureValue('Select Furniture');
   };
 
   const changeDonation = (furnitureName, ev) => {
     const furniture = donatedFurnitureList.find(e => e.name === furnitureName);
-    furniture.num = +ev;
+    furniture.count = +ev;
   };
 
   return (
@@ -128,13 +133,13 @@ function DonationForm() {
           <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.firstName} width="47%">
               <FormLabel>First</FormLabel>
-              <Input {...register('firstName')} />
+              <Input {...register('firstName')} defaultValue={donationData.firstName} />
               <FormErrorMessage>{errors.firstName && errors.firstName.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors && errors.lastName} width="47%">
               <FormLabel>Last</FormLabel>
-              <Input {...register('lastName')} />
+              <Input {...register('lastName')} defaultValue={donationData.lastName} />
               <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
             </FormControl>
           </Box>
@@ -147,7 +152,7 @@ function DonationForm() {
 
           <FormControl isInvalid={errors && errors.streetAddress}>
             <FormLabel>Street Address</FormLabel>
-            <Input {...register('streetAddress')} />
+            <Input {...register('streetAddress')} defaultValue={donationData.addressStreet} />
             <FormErrorMessage>
               {errors.streetAddress && errors.streetAddress.message}
             </FormErrorMessage>
@@ -161,7 +166,7 @@ function DonationForm() {
           <Box className={styles.form}>
             <FormControl width="47%" isInvalid={errors && errors.city}>
               <FormLabel>City </FormLabel>
-              <Input {...register('city')} />
+              <Input {...register('city')} defaultValue={donationData.addressCity} />
               <FormErrorMessage>{errors.city && errors.city.message}</FormErrorMessage>
             </FormControl>
 
@@ -175,7 +180,7 @@ function DonationForm() {
 
           <FormControl isInvalid={errors && errors.zipcode}>
             <FormLabel>ZIP Code</FormLabel>
-            <Input {...register('zipcode')} />
+            <Input {...register('zipcode')} defaultValue={donationData.addressZip} />
             <FormErrorMessage>{errors.zipcode && errors.zipcode.message}</FormErrorMessage>
           </FormControl>
         </Box>
@@ -185,7 +190,7 @@ function DonationForm() {
             Phone
           </Heading>
           <FormControl isInvalid={errors && errors.phoneNumber}>
-            <Input type="tel" {...register('phoneNumber')} />
+            <Input type="tel" {...register('phoneNumber')} defaultValue={donationData.phoneNum} />
             <FormErrorMessage>{errors.phoneNumber && errors.phoneNumber.message}</FormErrorMessage>
           </FormControl>
         </Box>
@@ -197,13 +202,13 @@ function DonationForm() {
           <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.email1} width="47%">
               <FormLabel>Enter Email </FormLabel>
-              <Input {...register('email1')} />
+              <Input {...register('email1')} defaultValue={donationData.email} />
               <FormErrorMessage>{errors.email1 && errors.email1.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors && errors.email2} width="47%">
               <FormLabel>Confirm Email </FormLabel>
-              <Input {...register('email2')} />
+              <Input {...register('email2')} defaultValue={donationData.email} />
               <FormErrorMessage>{errors.email2 && errors.email2.message}</FormErrorMessage>
             </FormControl>
           </Box>
@@ -263,7 +268,7 @@ function DonationForm() {
           <Heading size="md" className={styles.title}>
             Do you Have any Questions or Comments
           </Heading>
-          <Input {...register('additional')} />
+          <Input {...register('additional')} defaultValue={donationData.notes} />
         </Box>
 
         <Button type="submit">Submit</Button>
@@ -271,5 +276,41 @@ function DonationForm() {
     </Box>
   );
 }
+
+DonationForm.propTypes = {
+  donationData: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    addressStreet: PropTypes.string,
+    addressCity: PropTypes.string,
+    addressUnit: PropTypes.string,
+    addressZip: PropTypes.number,
+    phoneNum: PropTypes.string,
+    email: PropTypes.string,
+    notes: PropTypes.string,
+    furniture: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        count: PropTypes.number,
+      }),
+    ),
+  }),
+};
+
+DonationForm.defaultProps = {
+  donationData: {
+    firstName: '',
+    lastName: '',
+    addressStreet: '',
+    addressCity: '',
+    addressUnit: '',
+    addressZip: '',
+    phoneNum: '',
+    email: '',
+    notes: '',
+    furniture: [],
+  },
+};
 
 export default DonationForm;
