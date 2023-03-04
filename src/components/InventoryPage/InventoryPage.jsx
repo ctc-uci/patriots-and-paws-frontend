@@ -3,107 +3,230 @@ import {
   Table,
   Thead,
   Tbody,
-  Button,
   Tr,
   Td,
   Th,
   TableContainer,
   useDisclosure,
   Text,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Drawer,
+  DrawerBody,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+  Button,
+  Tag,
 } from '@chakra-ui/react';
-import './InventoryPage.module.css';
 
 import DonationModal from './DonationModal';
-import { getDonationsFromDB, makeDate } from '../../utils/InventoryUtils';
+import RouteCalendar from '../RouteCalendar/RouteCalendar';
+import PaginationFooter from '../PaginationFooter/PaginationFooter';
+import { PNPBackend } from '../../utils/utils';
+import {
+  getDonationsFromDB,
+  getRoutesFromDB,
+  makeDate,
+  colorMap,
+} from '../../utils/InventoryUtils';
+import { STATUSES } from '../../utils/config';
+
+const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULING, SCHEDULED, ARCHIVED } = STATUSES;
 
 const InventoryPage = () => {
-  const [users, setUsers] = useState([]);
+  const [allDonations, setAllDonations] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
+  const [count, setCount] = useState();
+  const [routes, setRoutes] = useState({});
+  const [tabIndex, setTabIndex] = useState(0);
+
+  const tabStatuses = [
+    [PENDING, CHANGES_REQUESTED],
+    [APPROVED, SCHEDULING],
+    [SCHEDULED],
+    [ARCHIVED],
+  ];
 
   const handleRowClick = data => {
     setDonationData(data);
     onOpen();
   };
 
-  function makeStatus(newStatus) {
-    if (newStatus === 'denied') {
-      return (
-        <Button size="xs" colorScheme="red">
-          REJECTED
-        </Button>
-      );
-    }
-    if (newStatus === 'approved') {
-      return (
-        <Button size="xs" colorScheme="green">
-          APPROVED
-        </Button>
-      );
-    }
-    if (newStatus === 'flagged') {
-      return (
-        <Button size="xs" colorScheme="gray">
-          FLAGGED
-        </Button>
-      );
-    }
+  const makeStatus = status => {
     return (
-      <Button size="xs" colorScheme="gray">
-        {newStatus}
-      </Button>
+      <Tag size="lg" colorScheme={colorMap[status]}>
+        {status[0].toUpperCase() + status.slice(1)}
+      </Tag>
     );
-  }
+  };
 
-  // function makeDate(dateDB) {
-  //   const d = new Date(dateDB);
-  //   return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-  // }
+  const getTotalCount = async () => {
+    const { data } = await PNPBackend.get(`donations/total`);
+    const { count: totalCount } = data[0];
+    setCount(totalCount);
+  };
+
+  useEffect(() => {
+    getTotalCount();
+  }, []);
 
   useEffect(() => {
     const fetchDonationsFromDB = async () => {
       const donationsFromDB = await getDonationsFromDB();
-      setUsers(donationsFromDB);
+      setAllDonations(donationsFromDB);
     };
     fetchDonationsFromDB();
   }, []);
 
-  const makeUserRows = users.map(ele => {
-    return (
-      <Tr onClick={() => handleRowClick(ele)} key={ele.id}>
-        <Td>
-          <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
-          <Text color="#718096">{ele.email}</Text>
-        </Td>
-        <Td>#{ele.id}</Td>
-        <Td>{makeStatus(ele.status)}</Td>
-        <Td>{makeDate(ele.submittedDate)}</Td>
-      </Tr>
-    );
-    // return <DonationModal key={ele.id} props={ele} />;
-  });
+  useEffect(() => {
+    const fetchRoutesFromDB = async () => {
+      const routesFromDB = await getRoutesFromDB();
+      const formattedRoutes = routesFromDB.map(({ id, name, date: day }) => ({
+        id,
+        name,
+        date: new Date(day).toISOString().replace(/T.*$/, ''),
+      }));
+      const routesList = {};
+      formattedRoutes.forEach(({ date }) => {
+        routesList[date] = [];
+      });
+      formattedRoutes.forEach(({ id, name, date }) => routesList[date].push({ id, name }));
+      setRoutes(routesList);
+    };
+    fetchRoutesFromDB();
+  }, []);
+
+  const makeDonationRows = () => {
+    return allDonations
+      .filter(ele => tabStatuses[tabIndex].includes(ele.status))
+      .map(ele => {
+        return (
+          <Tr
+            onClick={() => handleRowClick(ele)}
+            key={ele.id}
+            cursor="pointer"
+            _hover={{
+              background: 'blue.50',
+            }}
+          >
+            <Td>
+              <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+            </Td>
+            <Td>#{ele.id}</Td>
+            {tabIndex === 0 ? (
+              <>
+                <Td>{makeStatus(ele.status)}</Td>
+                <Td>{makeDate(ele.submittedDate)}</Td>
+              </>
+            ) : (
+              <>
+                <Td>{ele.addressCity}</Td>
+                <Td>{makeDate(ele.pickupDate)}</Td>
+              </>
+            )}
+          </Tr>
+        );
+      });
+  };
 
   return (
     <>
-      <TableContainer p="122px">
-        <Table variant="simple">
-          <Thead>
-            <Tr bg="#F7FAFC" height="40px">
-              <Th>NAME</Th>
-              <Th>DONATION ID</Th>
-              <Th>STATUS</Th>
-              <Th>SUBMISSION DATE</Th>
-            </Tr>
-          </Thead>
-          <Tbody>{makeUserRows}</Tbody>
-        </Table>
-      </TableContainer>
+      <Tabs p="40px" onChange={index => setTabIndex(index)}>
+        <TabList>
+          <Tab>Pending Admin Approval</Tab>
+          <Tab>Pending Donor Approval</Tab>
+          <Tab>Awaiting Pickup</Tab>
+          <Tab>Archive</Tab>
+          <Button onClick={onDrawerOpen}>Open Calendar</Button>
+        </TabList>
+        <Drawer isOpen={isDrawerOpen} placement="right" onClose={onDrawerClose} size="full">
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+
+            <DrawerBody>
+              <RouteCalendar />
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
+
+        <TabPanels>
+          <TabPanel>
+            <TableContainer p="40px">
+              <Table variant="simple">
+                <Thead>
+                  <Tr bg="#F7FAFC" height="40px">
+                    <Th>NAME</Th>
+                    <Th>DONATION ID</Th>
+                    <Th>STATUS</Th>
+                    <Th>SUBMISSION DATE</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{makeDonationRows()}</Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+          <TabPanel>
+            <TableContainer p="40px">
+              <Table variant="simple">
+                <Thead>
+                  <Tr bg="#F7FAFC" height="40px">
+                    <Th>NAME</Th>
+                    <Th>DONATION ID</Th>
+                    <Th>ROUTE</Th>
+                    <Th>SCHEDULED DATE</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{makeDonationRows()}</Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+          <TabPanel>
+            <TableContainer p="40px">
+              <Table variant="simple">
+                <Thead>
+                  <Tr bg="#F7FAFC" height="40px">
+                    <Th>NAME</Th>
+                    <Th>DONATION ID</Th>
+                    <Th>ROUTE</Th>
+                    <Th>PICKUP DATE</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{makeDonationRows()}</Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+          <TabPanel>
+            <TableContainer p="40px">
+              <Table variant="simple">
+                <Thead>
+                  <Tr bg="#F7FAFC" height="40px">
+                    <Th>NAME</Th>
+                    <Th>DONATION ID</Th>
+                    <Th>ROUTE</Th>
+                    <Th>PICKUP DATE</Th>
+                  </Tr>
+                </Thead>
+                <Tbody>{makeDonationRows()}</Tbody>
+              </Table>
+            </TableContainer>
+          </TabPanel>
+          {count && <PaginationFooter count={count} setData={setAllDonations} table="donations" />}
+        </TabPanels>
+      </Tabs>
       <DonationModal
-        setUsers={setUsers}
+        setAllDonations={setAllDonations}
         data={donationData}
         onClose={onClose}
         onOpen={onOpen}
         isOpen={isOpen}
+        routes={routes}
       />
     </>
   );

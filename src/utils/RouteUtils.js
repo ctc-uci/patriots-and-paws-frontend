@@ -1,7 +1,7 @@
 import { PNPBackend } from './utils';
-import AUTH_ROLES from './AuthConfig';
+import { AUTH_ROLES } from './config';
 
-const { DRIVER_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { DRIVER_ROLE } = AUTH_ROLES;
 
 const getAllRoutes = async () => {
   const res = await PNPBackend.get(`/routes/`);

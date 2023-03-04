@@ -19,15 +19,16 @@ import {
 import { SearchIcon } from '@chakra-ui/icons';
 import Fuse from 'fuse.js';
 import { PNPBackend } from '../../utils/utils';
-import { auth, getCurrentUser, getUserFromDB } from '../../utils/AuthUtils';
+import { getCurrentUserId } from '../../utils/AuthUtils';
 import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import menuIcon from '../../assets/Menu.svg';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
-import AUTH_ROLES from '../../utils/AuthConfig';
+import { AUTH_ROLES } from '../../utils/config';
 import UserTable from '../../components/UserTable/UserTable';
+import ManageStaffPagination from '../../components/PaginationFooter/ManageStaffPagination';
 
-const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES.AUTH_ROLES;
+const { SUPERADMIN_ROLE, DRIVER_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 
 const ManageStaff = ({ cookies }) => {
   const [displayedUsers, setDisplayedUsers] = useState([]);
@@ -36,6 +37,7 @@ const ManageStaff = ({ cookies }) => {
   const [driverUsers, setDriverUsers] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [currFilter, setCurrFilter] = useState('all');
+  const [filteredUsers, setFilteredUsers] = useState([]);
 
   const fuse = new Fuse(allUsers, {
     keys: ['firstName', 'lastName', 'email'],
@@ -43,13 +45,13 @@ const ManageStaff = ({ cookies }) => {
 
   const updateDisplay = () => {
     if (currFilter === 'all') {
-      setDisplayedUsers(allUsers);
+      setFilteredUsers(allUsers);
       fuse.setCollection(allUsers);
     } else if (currFilter === 'admin') {
-      setDisplayedUsers(adminUsers);
+      setFilteredUsers(adminUsers);
       fuse.setCollection(adminUsers);
     } else {
-      setDisplayedUsers(driverUsers);
+      setFilteredUsers(driverUsers);
       fuse.setCollection(driverUsers);
     }
   };
@@ -68,12 +70,12 @@ const ManageStaff = ({ cookies }) => {
         d => (d.role === ADMIN_ROLE || d.role === SUPERADMIN_ROLE) && d.id !== userId,
       );
       setAdminUsers(adminData);
-      setDisplayedUsers(data.filter(user => user.id !== userId));
+      setFilteredUsers(data.filter(user => user.id !== userId));
     } else {
       const driverData = data.filter(d => d.role === DRIVER_ROLE);
       setAllUsers(driverData);
       setDriverUsers(driverData);
-      setDisplayedUsers(driverData);
+      setFilteredUsers(driverData);
     }
   };
 
@@ -94,7 +96,7 @@ const ManageStaff = ({ cookies }) => {
       }
       const result = fuse.search(query.target.value);
       const filteredResults = result.map(user => user.item);
-      setDisplayedUsers(filteredResults);
+      setFilteredUsers(filteredResults);
     }
   };
 
@@ -185,6 +187,7 @@ const ManageStaff = ({ cookies }) => {
         setAdminUsers={setAdminUsers}
         updateDisplay={updateDisplay}
       />
+      <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
     </Flex>
   );
 };
