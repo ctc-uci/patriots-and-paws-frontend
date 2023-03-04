@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { PropTypes } from 'prop-types';
 import {
   Flex,
-  Icon,
   List,
   ListItem,
   Box,
@@ -20,7 +19,6 @@ import {
   ModalFooter,
   Heading,
   FormControl,
-  FormLabel,
   Select,
   Switch,
 } from '@chakra-ui/react';
@@ -30,7 +28,7 @@ import { updateDonation, getRoute, updateRoute } from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
 import { AUTH_ROLES } from '../../utils/config';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 
 const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) => {
   const [assignedDriverId, setAssignedDriverId] = useState('');
@@ -41,7 +39,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
-    console.log(routeFromDB.donations);
     setRoute(routeFromDB);
     setAssignedDriverId(routeFromDB.driverId);
     setDonations(routeFromDB.donations);
@@ -53,16 +50,12 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
     }
   }, [routeId]);
 
-  useEffect(() => {
-    console.log(modalState);
-  }, [modalState]);
-
   // create red circle icon
-  const CircleIcon = props => (
-    <Icon viewBox="0 0 200 200" {...props}>
-      <path fill="currentColor" d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0" />
-    </Icon>
-  );
+  // const CircleIcon = props => (
+  //   <Icon viewBox="0 0 200 200" {...props}>
+  //     <path fill="currentColor" d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0" />
+  //   </Icon>
+  // );
 
   // convert date to 'Weekday, Month Day' format
   const convertDate = date => {
@@ -142,7 +135,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
               {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
                 <FormControl isRequired>
                   <Select
-                    isDisabled={modalState == 'view'}
+                    isDisabled={modalState === 'view'}
                     variant="outline"
                     size="sm"
                     width="80%"
@@ -283,22 +276,10 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
             {modalState === 'view' && (
               <>
                 <Flex justify="left" gap={2}>
-                  <Button
-                    colorScheme="blackAlpha"
-                    type="submit"
-                    onClick={() => {
-                      console.log('unimplemented');
-                    }}
-                  >
+                  <Button colorScheme="blackAlpha" type="submit" onClick={() => {}}>
                     Export PDF
                   </Button>
-                  <Button
-                    colorScheme="teal"
-                    type="submit"
-                    onClick={() => {
-                      console.log('unimplemented');
-                    }}
-                  >
+                  <Button colorScheme="teal" type="submit" onClick={() => {}}>
                     Navigate to Route
                   </Button>
                 </Flex>
@@ -323,6 +304,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
 
 EditRouteModal.propTypes = {
   routeId: PropTypes.string,
+  role: PropTypes.string,
   routeDate: PropTypes.instanceOf(Date),
   drivers: PropTypes.instanceOf(Array).isRequired,
   isOpen: PropTypes.bool.isRequired,
@@ -331,6 +313,7 @@ EditRouteModal.propTypes = {
 
 EditRouteModal.defaultProps = {
   routeId: '',
+  role: '',
   routeDate: new Date(),
 };
 
