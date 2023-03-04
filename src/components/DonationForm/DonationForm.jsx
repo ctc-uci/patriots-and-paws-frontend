@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
-import { sendEmail } from '../../utils/utils';
+import { sendEmail, PNPBackend } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
 // import uploadImage from '../../utils/furnitureUtils';
@@ -89,12 +89,30 @@ function DonationForm() {
   };
 
   const onSubmit = async data => {
-    // console.log(data);
     // console.log(donatedFurnitureList);
     // console.log(files);
     // await Promise.all(files.map(async file => uploadImage(file)));
     try {
-      sendEmail(data.email1, dconfirmemailtemplate);
+      sendEmail('OOGA BOOGA', data.email1, dconfirmemailtemplate);
+      const { additional, city, email1, firstName, lastName, streetAddress, phoneNumber } = data;
+      const zip = parseInt(data.zipcode, 10);
+      const images = files.map(currentFile => ({
+        imageURL: currentFile.file.path,
+        notes: currentFile.description,
+      }));
+      // console.log(pictures);
+      await PNPBackend.post('/donations', {
+        addressStreet: streetAddress,
+        addressCity: city,
+        addressZip: zip,
+        firstName,
+        lastName,
+        email: email1,
+        phoneNum: phoneNumber,
+        notes: additional,
+        furniture: donatedFurnitureList,
+        pictures: images,
+      });
     } catch (err) {
       // console.log(err.message);
       // to do: error message that email is invalid
@@ -108,14 +126,14 @@ function DonationForm() {
   };
 
   const addDonation = async ev => {
-    setDonatedFurniture(prev => [...prev, { name: ev.target.value, num: 1 }]);
+    setDonatedFurniture(prev => [...prev, { name: ev.target.value, count: 1 }]);
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
     setSelectedFurnitureValue('Select Furniture');
   };
 
   const changeDonation = (furnitureName, ev) => {
     const furniture = donatedFurnitureList.find(e => e.name === furnitureName);
-    furniture.num = +ev;
+    furniture.count = +ev;
   };
 
   return (
