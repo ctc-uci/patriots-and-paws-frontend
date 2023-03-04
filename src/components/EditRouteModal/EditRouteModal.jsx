@@ -132,7 +132,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
               </Button>{' '}
             </Flex>
             <Flex direction="row" gap={5} paddingTop={2} PaddingRight={5} justify="space-between">
-              {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
+              {role === ADMIN_ROLE || role === SUPERADMIN_ROLE ? (
                 <FormControl isRequired>
                   <Select
                     isDisabled={modalState === 'view'}
@@ -151,8 +151,10 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                     ))}
                   </Select>
                 </FormControl>
+              ) : (
+                <div />
               )}
-              <FormControl display="flex" PaddingRight={5}>
+              <FormControl display="flex" PaddingRight={5} justify="right">
                 <Text fontSize="sm" fontWeight="normal" mb="0" mr={3}>
                   Show confirmed donations only
                 </Text>
