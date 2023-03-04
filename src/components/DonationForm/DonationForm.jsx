@@ -9,6 +9,7 @@ import {
   Button,
   Flex,
   Heading,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -20,6 +21,7 @@ import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
 // import uploadImage from '../../utils/furnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
+import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
@@ -56,6 +58,8 @@ function DonationForm() {
   } = useForm({
     resolver: yupResolver(schema),
   });
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [furnitureOptions, setFurnitureOptions] = useState([
     'Dressers',
@@ -139,7 +143,6 @@ function DonationForm() {
             </FormControl>
           </Box>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Address
@@ -179,7 +182,6 @@ function DonationForm() {
             <FormErrorMessage>{errors.zipcode && errors.zipcode.message}</FormErrorMessage>
           </FormControl>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Phone
@@ -189,7 +191,6 @@ function DonationForm() {
             <FormErrorMessage>{errors.phoneNumber && errors.phoneNumber.message}</FormErrorMessage>
           </FormControl>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Email
@@ -208,7 +209,6 @@ function DonationForm() {
             </FormControl>
           </Box>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title} marginBottom="1em">
             Furniture
@@ -233,7 +233,6 @@ function DonationForm() {
             />
           ))}
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title} marginBottom="1em">
             Images
@@ -258,14 +257,14 @@ function DonationForm() {
             </Flex>
           </Box>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Do you Have any Questions or Comments
           </Heading>
           <Input {...register('additional')} />
         </Box>
-
+        <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
+        <Button onClick={onOpen}>Open Terms Condition Modal</Button>
         <Button type="submit">Submit</Button>
       </form>
     </Box>
