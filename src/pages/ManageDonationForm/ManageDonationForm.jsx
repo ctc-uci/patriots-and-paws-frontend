@@ -39,9 +39,9 @@ const ManageDonationForm = () => {
     <>
       <Flex flexDirection="column">
         <Heading mx="3vh" my="2vh">
-          Manage Donation Form{' '}
+          Manage Donation Form
         </Heading>
-        <Flex alignItems="center" minHeight="50%">
+        <Flex justifyContent="center" minHeight="50%">
           <EditItemsList
             items={items}
             setItems={setItems}
@@ -58,9 +58,7 @@ const ManageDonationForm = () => {
         </Flex>
       </Flex>
       <Box paddingRight="70px" marginTop="1%" textAlign="right">
-        {/* On click, pop up ItemListModal that displays all the items accepted/not accepted */}
         <ItemInfo items={items} isAccepted />
-        {/* On click, save the items list to the backend (add toast confirmation - see chakra toast) */}
         <Button bg="#3182CE" color="white" onClick={updateItems}>
           Publish
         </Button>

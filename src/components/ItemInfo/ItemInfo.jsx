@@ -11,6 +11,8 @@ import {
   Heading,
   UnorderedList,
   ListItem,
+  Box,
+  Flex,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
@@ -23,33 +25,57 @@ const ItemInfo = ({ items, isAccepted = false }) => {
         Preview Item List
       </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Furniture Pickup</ModalHeader>
+        <ModalContent padding="2em">
+          <ModalHeader>
+            <Heading as="h1" size="lg">
+              Furniture Pickup
+            </Heading>
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Heading as="h2" size="m">
+            <Heading as="h2" size="md">
               Items We Accept
             </Heading>
-            <UnorderedList>
-              {items
-                .filter(({ accepted }) => accepted === isAccepted)
-                .map(({ name }) => (
-                  <ListItem key={name}>{name}</ListItem>
-                ))}
-            </UnorderedList>
+            <Box paddingLeft=".5em" height="15em" overflowY="auto" marginY=".5em">
+              <UnorderedList>
+                <Flex flexWrap="wrap">
+                  {items
+                    .filter(({ accepted }) => accepted === isAccepted)
+                    .map(({ name }) => (
+                      <ListItem key={name} width="50%">
+                        {name}
+                      </ListItem>
+                    ))}
+                </Flex>
+              </UnorderedList>
+            </Box>
 
-            <Heading as="h2" size="m">
-              Items We DO NOT Accept
-            </Heading>
-            <UnorderedList>
-              {items
-                .filter(({ accepted }) => accepted === !isAccepted)
-                .map(({ name }) => (
-                  <ListItem key={name}>{name}</ListItem>
-                ))}
-            </UnorderedList>
+            <Flex>
+              <Heading as="h2" size="md">
+                Items We
+              </Heading>
+              <Heading as="h2" color="red" size="md">
+                &nbsp;DO NOT&nbsp;
+              </Heading>
+              <Heading as="h2" size="md">
+                Accept
+              </Heading>
+            </Flex>
+            <Box paddingLeft=".5em" height="15em" overflowY="auto" marginY=".5em">
+              <UnorderedList>
+                <Flex flexWrap="wrap">
+                  {items
+                    .filter(({ accepted }) => accepted === !isAccepted)
+                    .map(({ name }) => (
+                      <ListItem key={name} width="50%">
+                        {name}
+                      </ListItem>
+                    ))}
+                </Flex>
+              </UnorderedList>
+            </Box>
           </ModalBody>
         </ModalContent>
       </Modal>

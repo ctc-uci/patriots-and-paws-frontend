@@ -18,7 +18,6 @@ import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
 import uploadImage from './utils/FurnitureUtils'; // was originally 'FurnitureUtils' should probably be this
-import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import Donate from './pages/donation/Donate';
@@ -168,7 +167,7 @@ function App() {
             />
             <Route
               exact
-              path="/manage-donation-form"
+              path="/donate/edit"
               element={
                 <ProtectedRoute
                   Component={ManageDonationForm}
@@ -198,7 +197,6 @@ function App() {
                 />
               }
             />
-            <Route exact path="/donate/edit" element={<EditDonationForm />} />
             <Route exact path="/drivers/:id" element={<Drivers />} />
             <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
             <Route exact path="/inventory" element={<InventoryPage />} />
