@@ -17,10 +17,15 @@ import {
   Textarea,
   Modal,
   Tag,
+  TagLabel,
   useDisclosure,
   Select,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
-import { WarningIcon } from '@chakra-ui/icons';
+// import { WarningIcon } from '@chakra-ui/icons';
 
 import { PropTypes } from 'prop-types';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
@@ -80,9 +85,10 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
 
   const makeStatusTag = curStatus => {
     return (
-      // bgColor={colorMap[curStatus]}
-      <Tag size="sm" m={5} ml={15} color="white" bgColor={colorMap[curStatus]}>
-        {curStatus[0].toUpperCase() + curStatus.slice(1)}
+      <Tag size="sm" mt={3} ml={15} color="white" bgColor={colorMap[status]}>
+        <TagLabel fontSize={14} color="white">
+          {curStatus[0].toUpperCase() + curStatus.slice(1)}
+        </TagLabel>
       </Tag>
     );
   };
@@ -114,17 +120,19 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
             <Text ml={15} fontSize={36}>
               Donation #{id}
             </Text>
-            <Box rounded="md" bgColor="rgb(254,235,203)" ml={5}>
+            <Alert status="warning" rounded="md" ml={100} width="450px">
               <Flex direction="row" verticalAlign="center" align="center">
-                <WarningIcon color="orange.500" mr={3} ml={3} />
-                <Flex direction="column">
-                  <Text fontSize="16px" fontStyle="bold">
+                <AlertIcon ml={2} boxSize={6} />
+                <Flex direction="column" ml={2}>
+                  <AlertTitle fontSize="lg" textShadow="-1px 4px 5px #939799">
                     Donor Rejected Scheduled Date
-                  </Text>
-                  <Text fontSize="16px">Please select a new date to continue</Text>
+                  </AlertTitle>
+                  <AlertDescription fontSize="md" fontWeight="normal" mt={1}>
+                    Please select a new date to continue.
+                  </AlertDescription>
                 </Flex>
               </Flex>
-            </Box>
+            </Alert>
           </Flex>
           <Text ml={15} fontSize={16}>
             Submission Date: {makeDate(submittedDate)}

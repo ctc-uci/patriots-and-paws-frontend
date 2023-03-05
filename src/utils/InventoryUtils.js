@@ -1,7 +1,17 @@
 import { PNPBackend } from './utils';
 import { STATUSES } from './config';
 
-const { APPROVED, PENDING, CHANGES_REQUESTED, SCHEDULED, PICKED_UP, ARCHIVED } = STATUSES;
+const {
+  APPROVAL_REQUESTED,
+  // APPROVED,
+  PENDING,
+  CHANGES_REQUESTED,
+  SCHEDULING,
+  SCHEDULED,
+  // ARCHIVED,
+  PICKED_UP,
+  RESCHEDULE,
+} = STATUSES;
 
 function makeDate(dateDB) {
   const months = [
@@ -35,12 +45,16 @@ const getRoutesFromDB = async () => {
 };
 
 const colorMap = {
-  [APPROVED]: 'rgb(229,62,62)',
-  [PENDING]: 'rgb(152,155,158)',
+  // [APPROVED]: 'rgb(229,62,62)',
+  [APPROVAL_REQUESTED]: 'rgb(229,62,62)',
+  [PENDING]: 'rgb(163,163,163)',
   [CHANGES_REQUESTED]: 'rgb(49, 130, 206)',
-  [PICKED_UP]: 'green',
+  // [PICKED_UP]: 'green',
+  [SCHEDULING]: 'green',
   [SCHEDULED]: 'green',
-  [ARCHIVED]: 'rgb(152,155,158)',
+  // [ARCHIVED]: 'green',
+  [PICKED_UP]: 'green',
+  [RESCHEDULE]: 'rgb(221,107,32)',
 };
 
 const formatImageData = data => {

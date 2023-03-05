@@ -6,11 +6,14 @@ const AUTH_ROLES = {
 
 const STATUSES = {
   PENDING: 'pending',
+  // APPROVAL_REQUESTED: 'approval requested',
   APPROVED: 'approved',
   CHANGES_REQUESTED: 'changes requested',
   SCHEDULING: 'scheduling',
   SCHEDULED: 'scheduled',
-  ARCHIVED: 'archived',
+  PICKED_UP: 'picked up',
+  RESCHEDULE: 'reschedule',
+  // ARCHIVED: 'archived',
 };
 
 export { AUTH_ROLES, STATUSES };
