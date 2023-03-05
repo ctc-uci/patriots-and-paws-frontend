@@ -15,7 +15,7 @@ import {
 import { PropTypes } from 'prop-types';
 import { CheckIcon } from '@chakra-ui/icons';
 
-const TermsConditionModal = ({ onClose, isOpen }) => {
+const TermsConditionModal = ({ onClose, isOpen, isDonationForm = false }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
@@ -32,14 +32,16 @@ const TermsConditionModal = ({ onClose, isOpen }) => {
             mollit anim id est laborum
           </Text>
         </ModalBody>
+        {!isDonationForm && (
+          <ModalFooter justifyContent="space-between">
+            <Checkbox>I accept the Terms and Conditions*</Checkbox>
 
-        <ModalFooter justifyContent="space-between">
-          <Checkbox>I accept the Terms and Conditions*</Checkbox>
-          <Button bg="#319747" color="white">
-            Approve Time&nbsp;
-            <CheckIcon />
-          </Button>
-        </ModalFooter>
+            <Button bg="#319747" color="white">
+              Approve Time&nbsp;
+              <CheckIcon />
+            </Button>
+          </ModalFooter>
+        )}
       </ModalContent>
     </Modal>
   );
@@ -48,6 +50,7 @@ const TermsConditionModal = ({ onClose, isOpen }) => {
 TermsConditionModal.propTypes = {
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
+  isDonationForm: PropTypes.bool.isRequired,
 };
 
 TermsConditionModal.defaultProps = {

@@ -10,6 +10,8 @@ import {
   Flex,
   Heading,
   useDisclosure,
+  Checkbox,
+  Text,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -263,8 +265,15 @@ function DonationForm() {
           </Heading>
           <Input {...register('additional')} />
         </Box>
-        <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
-        <Button onClick={onOpen}>Open Terms Condition Modal</Button>
+        <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} isDonationForm />
+        <Flex>
+          <Checkbox />
+          <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
+          <Text cursor="pointer" onClick={onOpen} as="u">
+            terms and conditions.
+          </Text>
+        </Flex>
+
         <Button type="submit">Submit</Button>
       </form>
     </Box>
