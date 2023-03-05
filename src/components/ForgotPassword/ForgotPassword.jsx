@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Flex,
-  Stack,
   FormControl,
   FormLabel,
   Input,
@@ -10,7 +8,14 @@ import {
   Link,
   Box,
   useDisclosure,
+  Grid,
+  GridItem,
+  Flex,
+  Text,
+  VStack,
+  HStack,
 } from '@chakra-ui/react';
+import { ChevronLeftIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -58,26 +63,60 @@ const ForgotPassword = () => {
   };
 
   return (
-    <Flex minH="100vh" align="center" justify="center">
-      <Stack>
-        <Heading className={styles['forgot-password-title']}>Send Reset Email</Heading>
-        {errorMessage && <Box>{errorMessage}</Box>}
-        <form onSubmit={handleSubmit(handleForgotPassword)}>
-          <FormControl className={styles['forgot-password-form']} isRequired>
-            <FormLabel className={styles['forgot-password-label']}>Email</FormLabel>
-            <Input type="text" placeholder="Email" {...register('email')} isRequired />
-            <Box className={styles['error-box']}>{errors.email?.message}</Box>
-            <Button colorScheme="blue" className={styles['forgot-password-button']} type="submit">
-              Send Email
-            </Button>
-          </FormControl>
-        </form>
-        <EmailSentModal isOpen={isOpen} onClose={handleCloseModal} onSubmit={handleResendEmail} />;
-        <Link className={styles['login-link']} href="/login" color="teal.500">
-          Back to Login
+    <Grid templateColumns="repeat(2, 1fr)" gap={0}>
+      <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
+      <GridItem w="100%" padding={5}>
+        <Link href="/login">
+          <Button variant="unstyled" fontWeight="normal">
+            <Flex alignItems="center">
+              <ChevronLeftIcon boxSize={6} />
+              <span style={{ marginLeft: 10 }}>Return to Login</span>
+            </Flex>
+          </Button>
         </Link>
-      </Stack>
-    </Flex>
+        <Flex height="90vh" alignItems="center" justifyContent="center">
+          <VStack spacing={10}>
+            <Heading as="h1">Forgot Password</Heading>
+            <Text fontSize="xl">Enter email to gain access to password reset instructions...</Text>
+            {errorMessage && <Box>{errorMessage}</Box>}
+            <form onSubmit={handleSubmit(handleForgotPassword)}>
+              <FormControl className={styles['forgot-password-form']} isRequired>
+                <Box alignItems="center" justifyContent="center" width={{ base: '100%', xl: 500 }}>
+                  <FormLabel
+                    fontSize="xl"
+                    fontWeight="normal"
+                    textAlign="left"
+                    className={styles['forgot-password-label']}
+                  >
+                    Email
+                  </FormLabel>
+                  <Input
+                    type="text"
+                    placeholder="ex: johndoePNP@gmail.com"
+                    {...register('email')}
+                    colorScheme="gray"
+                    variant="filled"
+                    isRequired
+                  />
+                </Box>
+                <Box className={styles['error-box']}>{errors.email?.message}</Box>
+                <HStack width="100%" alignItems="center" justifyContent="center">
+                  <Button colorScheme="blue" type="submit" marginTop={10} padding={6}>
+                    Send Email
+                  </Button>
+                </HStack>
+              </FormControl>
+            </form>
+            <EmailSentModal
+              isOpen={isOpen}
+              onClose={handleCloseModal}
+              onSubmit={handleResendEmail}
+            />
+            ;
+          </VStack>
+        </Flex>
+      </GridItem>
+    </Grid>
   );
 };
 
