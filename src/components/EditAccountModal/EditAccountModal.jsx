@@ -303,9 +303,15 @@ EditAccountModal.propTypes = {
   isSuperAdmin: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  setUsers: PropTypes.func.isRequired,
-  setAdminUsers: PropTypes.func.isRequired,
-  setDriverUsers: PropTypes.func.isRequired,
+  setUsers: PropTypes.func,
+  setAdminUsers: PropTypes.func,
+  setDriverUsers: PropTypes.func,
+};
+
+EditAccountModal.defaultProps = {
+  setUsers: () => {},
+  setAdminUsers: () => {},
+  setDriverUsers: () => {},
 };
 
 export default EditAccountModal;
