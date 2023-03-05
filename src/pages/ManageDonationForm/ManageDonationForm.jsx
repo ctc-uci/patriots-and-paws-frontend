@@ -59,7 +59,7 @@ const ManageDonationForm = () => {
       </Flex>
       <Box paddingRight="70px" marginTop="1%" textAlign="right">
         <ItemInfo items={items} isAccepted />
-        <Button bg="#3182CE" color="white" onClick={updateItems}>
+        <Button marginLeft="25px" bg="#3182CE" color="white" onClick={updateItems}>
           Publish
         </Button>
       </Box>

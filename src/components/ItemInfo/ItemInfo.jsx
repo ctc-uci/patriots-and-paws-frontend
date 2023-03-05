@@ -38,7 +38,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
             <Heading as="h2" size="md">
               Items We Accept
             </Heading>
-            <Box paddingLeft=".5em" height="15em" overflowY="auto" marginY=".5em">
+            <Box paddingLeft=".5em" height="10em" overflowY="auto" marginY=".5em">
               <UnorderedList>
                 <Flex flexWrap="wrap">
                   {items
@@ -63,7 +63,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
                 Accept
               </Heading>
             </Flex>
-            <Box paddingLeft=".5em" height="15em" overflowY="auto" marginY=".5em">
+            <Box paddingLeft=".5em" height="10em" overflowY="auto" marginY=".5em">
               <UnorderedList>
                 <Flex flexWrap="wrap">
                   {items
