@@ -15,12 +15,12 @@ import {
 } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 
-const EmailSentModal = ({ isOpen, onClose }) => {
+const EmailSentModal = ({ isOpen, onClose, onSubmit }) => {
   return (
     <Modal size="sm" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <Flex>
-        <ModalContent>
+        <ModalContent p={3}>
           <ModalHeader>
             <VStack>
               <CheckCircleIcon boxSize={10} color="green.500" />
@@ -40,6 +40,7 @@ const EmailSentModal = ({ isOpen, onClose }) => {
                 paddingRight={3}
                 paddingBottom={6}
                 paddingLeft={3}
+                onClick={onSubmit}
               >
                 Resend Email
               </Button>
@@ -54,6 +55,7 @@ const EmailSentModal = ({ isOpen, onClose }) => {
 EmailSentModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
+  onSubmit: PropTypes.func,
 }.isRequired;
 
 export default EmailSentModal;

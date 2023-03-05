@@ -20,8 +20,7 @@ import styles from './ForgotPassword.module.css';
 
 const ForgotPassword = () => {
   const [errorMessage, setErrorMessage] = useState();
-  const [isOpen, setIsOpen] = useState(false);
-  const { onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const formSchema = yup.object({
     email: yup.string().email().required('Please enter your email address'),
@@ -29,6 +28,8 @@ const ForgotPassword = () => {
   const {
     register,
     handleSubmit,
+    reset,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(formSchema),
@@ -39,12 +40,23 @@ const ForgotPassword = () => {
     try {
       const { email } = data;
       await sendPasswordReset(email);
-      setIsOpen(true);
+      onOpen();
       setErrorMessage('');
     } catch (err) {
       setErrorMessage(err.message);
     }
   };
+
+  const handleResendEmail = async () => {
+    const email = getValues('email');
+    await sendPasswordReset(email);
+  };
+
+  const handleCloseModal = () => {
+    reset();
+    onClose();
+  };
+
   return (
     <Flex minH="100vh" align="center" justify="center">
       <Stack>
@@ -60,7 +72,7 @@ const ForgotPassword = () => {
             </Button>
           </FormControl>
         </form>
-        <EmailSentModal isOpen={isOpen} onClose={onClose} />;
+        <EmailSentModal isOpen={isOpen} onClose={handleCloseModal} onSubmit={handleResendEmail} />;
         <Link className={styles['login-link']} href="/login" color="teal.500">
           Back to Login
         </Link>
