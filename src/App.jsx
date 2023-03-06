@@ -17,7 +17,7 @@ import { PDFViewer, StyleSheet } from '@react-pdf/renderer';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
-import uploadImage from './utils/FurnitureUtils'; // was originally 'FurnitureUtils' should probably be this
+import uploadImage from './utils/FurnitureUtils';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import Donate from './pages/donation/Donate';

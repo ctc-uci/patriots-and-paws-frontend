@@ -18,7 +18,7 @@ import DropZone from '../DropZone/DropZone';
 import { sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
-// import uploadImage from '../../utils/furnitureUtils';
+// import uploadImage from '../../utils/FurnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
 
 const itemFieldSchema = {
