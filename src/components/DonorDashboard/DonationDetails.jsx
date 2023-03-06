@@ -1,9 +1,9 @@
 import React from 'react';
 import { Tag, Box, Text, Grid, GridItem } from '@chakra-ui/react';
+import { DeleteIcon } from '@chakra-ui/icons';
 import { PropTypes } from 'prop-types';
 import DonationFurnitureContainer from '../InventoryPage/DonationFurnitureContainer';
 import DonationImagesContainer from '../InventoryPage/DonationImagesContainer';
-// import { formatDate } from '../../utils/routesUtils';
 
 const DonationDetails = ({ data }) => {
   // const {
@@ -24,6 +24,14 @@ const DonationDetails = ({ data }) => {
   //   pickupDate,
   //   routeId,
   // } = data;
+  const formatDate = date => {
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    });
+  };
   console.log(data);
   if (data) {
     return (
@@ -32,10 +40,13 @@ const DonationDetails = ({ data }) => {
           <Tag bg="blue.50">{data.status}</Tag>
         </GridItem>
         <GridItem colSpan={2}>
-          <Text>Form # {data.id}</Text>
+          <Text as="b">Form #{data.id}</Text>
         </GridItem>
         <GridItem colSpan={2}>
-          <Text>Submitted on {data.submittedDate}</Text>
+          <Text>Submitted on {formatDate(data.submittedDate)}</Text>
+        </GridItem>
+        <GridItem>
+          <DeleteIcon color="red.500" />
         </GridItem>
         <GridItem colSpan={2}>
           <DonationImagesContainer data={data.pictures} />
