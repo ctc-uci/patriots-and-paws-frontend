@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, GridItem, Box, Text } from '@chakra-ui/react';
-import { getDonationStatus } from '../../utils/donorUtils';
+import { getDonationStatus } from '../../utils/DonorUtils';
 import DonorFooter from '../DonorFooter/DonorFooter';
 import TrackDonationSection from '../TrackDonationSection/TrackDonationSection';
 

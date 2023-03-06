@@ -11,7 +11,7 @@ import {
   Link,
 } from '@chakra-ui/react';
 import { Link as ReactLink } from 'react-router-dom';
-import { verifyDonorLogin } from '../../utils/donorUtils';
+import { verifyDonorLogin } from '../../utils/DonorUtils';
 import DonorDashboard from '../../components/DonorDashboard/DonorDashboard';
 
 const DonorLogin = () => {
