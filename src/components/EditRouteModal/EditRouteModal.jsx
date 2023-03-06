@@ -22,7 +22,7 @@ import {
   Select,
   Switch,
 } from '@chakra-ui/react';
-import { ArrowForwardIcon, DragHandleIcon, QuestionIcon } from '@chakra-ui/icons';
+import { DragHandleIcon, QuestionIcon } from '@chakra-ui/icons';
 import { Reorder } from 'framer-motion';
 import { updateDonation, getRoute, updateRoute } from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
@@ -122,14 +122,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
               <Text paddingLeft={5} fontSize="md" fontWeight="normal">
                 {convertDate(routeDate)}
               </Text>
-              <Button
-                size="xs"
-                rightIcon={<ArrowForwardIcon />}
-                onClick={() => handleNavigateToAddress(donations)}
-                marginRight={5}
-              >
-                Navigate to Address
-              </Button>{' '}
             </Flex>
             <Flex direction="row" gap={5} paddingTop={2} PaddingRight={5} justify="space-between">
               {role === ADMIN_ROLE || role === SUPERADMIN_ROLE ? (
@@ -152,7 +144,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   </Select>
                 </FormControl>
               ) : (
-                <div />
+                <FormControl justify="left"> </FormControl>
               )}
               <FormControl display="flex" PaddingRight={5} justify="right">
                 <Text fontSize="sm" fontWeight="normal" mb="0" mr={3}>
@@ -281,7 +273,11 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   <Button colorScheme="blackAlpha" type="submit" onClick={() => {}}>
                     Export PDF
                   </Button>
-                  <Button colorScheme="teal" type="submit" onClick={() => {}}>
+                  <Button
+                    colorScheme="teal"
+                    type="submit"
+                    onClick={() => handleNavigateToAddress(donations)}
+                  >
                     Navigate to Route
                   </Button>
                 </Flex>
