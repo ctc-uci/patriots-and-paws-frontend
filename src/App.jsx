@@ -18,11 +18,12 @@ import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
 import DropZone from './components/DropZone/DropZone';
 import uploadImage from './utils/FurnitureUtils';
-import EditDonationForm from './pages/Dashboard/EditDonationForm';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import Donate from './pages/donation/Donate';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
+
+import ManageDonationForm from './pages/ManageDonationForm/ManageDonationForm';
 import RoutesPage from './pages/RoutesPage/RoutesPage';
 
 import ProtectedRoute from './utils/ProtectedRoute';
@@ -166,6 +167,16 @@ function App() {
             />
             <Route
               exact
+              path="/donate/edit"
+              element={
+                <ProtectedRoute
+                  Component={ManageDonationForm}
+                  redirectPath="/login"
+                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
+                />
+              }
+            />
+            <Route
               path="/routes"
               element={
                 <ProtectedRoute
@@ -186,7 +197,6 @@ function App() {
                 />
               }
             />
-            <Route exact path="/donate/edit" element={<EditDonationForm />} />
             <Route exact path="/drivers/:id" element={<Drivers />} />
             <Route exact path="/driver-routes/:id" element={<DriverRoutes />} />
             <Route exact path="/inventory" element={<InventoryPage />} />
