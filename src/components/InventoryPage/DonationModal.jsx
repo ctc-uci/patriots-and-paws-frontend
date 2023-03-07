@@ -87,7 +87,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     return (
       <Tag size="sm" mt={3} ml={15} color="white" bgColor={colorMap[status]}>
         <TagLabel fontSize={14} color="white">
-          {curStatus[0].toUpperCase() + curStatus.slice(1)}
+          {curStatus.toUpperCase()}
         </TagLabel>
       </Tag>
     );
@@ -117,26 +117,30 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         <ModalHeader m={3}>
           {currentStatus && makeStatusTag(currentStatus)}
           <Flex direction="row">
-            <Text ml={15} fontSize={36}>
-              Donation #{id}
-            </Text>
-            <Alert status="warning" rounded="md" ml={100} width="450px">
-              <Flex direction="row" verticalAlign="center" align="center">
-                <AlertIcon ml={2} boxSize={6} />
-                <Flex direction="column" ml={2}>
-                  <AlertTitle fontSize="lg" textShadow="-1px 4px 5px #939799">
-                    Donor Rejected Scheduled Date
-                  </AlertTitle>
-                  <AlertDescription fontSize="md" fontWeight="normal" mt={1}>
-                    Please select a new date to continue.
-                  </AlertDescription>
-                </Flex>
-              </Flex>
-            </Alert>
+            <Flex direction="column">
+              <Text ml={15} fontSize={36}>
+                Donation #{id}
+              </Text>
+              <Text ml={15} fontSize={16}>
+                Submission Date: {makeDate(submittedDate)}
+              </Text>
+            </Flex>
+            {currentStatus === CHANGES_REQUESTED && (
+              <>
+                <Alert status="warning" rounded="md" ml={85} mt={-3} mb={3} width="450px">
+                  <Flex direction="row" verticalAlign="center" align="center">
+                    <AlertIcon ml={2} boxSize={6} />
+                    <Flex direction="column" ml={2}>
+                      <AlertTitle fontSize="lg">Donor Rejected Scheduled Date</AlertTitle>
+                      <AlertDescription fontSize="md" fontWeight="normal" mt={1}>
+                        Please select a new date to continue.
+                      </AlertDescription>
+                    </Flex>
+                  </Flex>
+                </Alert>
+              </>
+            )}
           </Flex>
-          <Text ml={15} fontSize={16}>
-            Submission Date: {makeDate(submittedDate)}
-          </Text>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
@@ -181,31 +185,35 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 </Box>
               </Stack>
               <Stack spacing={3} direction="row">
-                <InputGroup>
-                  <InputLeftAddon>Street Address</InputLeftAddon>
-                  <Input defaultValue={addressStreet} isReadOnly />
-                </InputGroup>
-                <InputGroup>
-                  <InputLeftAddon>Unit</InputLeftAddon>
-                  <Input defaultValue={addressUnit} isReadOnly />
-                </InputGroup>
-              </Stack>
-              <Stack spacing={3} direction="row" my={2}>
-                <InputGroup>
-                  <InputLeftAddon>City</InputLeftAddon>
-                  <Input defaultValue={addressCity} isReadOnly />
-                </InputGroup>
-                <InputGroup>
-                  <InputLeftAddon>State</InputLeftAddon>
-                  <Input defaultValue="CA" isReadOnly />
-                </InputGroup>
-                <InputGroup>
-                  <InputLeftAddon>Zip Code</InputLeftAddon>
-                  <Input defaultValue={addressZip} isReadOnly />
-                </InputGroup>
+                <Stack spacing={3} direction="column">
+                  <InputGroup>
+                    <InputLeftAddon>Street Address</InputLeftAddon>
+                    <Input defaultValue={addressStreet} isReadOnly />
+                  </InputGroup>
+                  <Stack spacing={3} direction="row">
+                    <InputGroup>
+                      <InputLeftAddon>City</InputLeftAddon>
+                      <Input defaultValue={addressCity} isReadOnly />
+                    </InputGroup>
+                    <InputGroup>
+                      <InputLeftAddon>State</InputLeftAddon>
+                      <Input defaultValue="CA" isReadOnly />
+                    </InputGroup>
+                  </Stack>
+                </Stack>
+                <Stack spacing={3} direction="column" my={2}>
+                  <InputGroup>
+                    <InputLeftAddon>Unit</InputLeftAddon>
+                    <Input defaultValue={addressUnit} isReadOnly />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon>Zip Code</InputLeftAddon>
+                    <Input defaultValue={addressZip} isReadOnly />
+                  </InputGroup>
+                </Stack>
               </Stack>
               <Text mt="60px" mb={5} fontSize="20px">
-                Additional Comments
+                Special Instructions
               </Text>
               <Textarea defaultValue={notes} isReadOnly />
 
@@ -268,13 +276,18 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
             </Box>
           </Flex>
         </ModalBody>
-
         <ModalFooter>
-          <Box justifyContent="right" mr={6}>
+          <Flex justify="left" gap={2}>
+            <Button colorScheme="red" justifyContent="left" ml={6}>
+              Delete Donation
+            </Button>
+          </Flex>
+          <Flex mr={6} justify="right">
             {(currentStatus === PENDING || currentStatus === CHANGES_REQUESTED) && (
               <>
                 <Button
                   colorScheme="blue"
+                  justify="right"
                   isDisabled={currentStatus === CHANGES_REQUESTED}
                   onClick={() => {
                     emailModalOnOpen();
@@ -308,7 +321,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 Cancel Pickup
               </Button>
             )}
-          </Box>
+          </Flex>
         </ModalFooter>
         <EmailModal
           isOpenEmailModal={emailModalIsOpen}

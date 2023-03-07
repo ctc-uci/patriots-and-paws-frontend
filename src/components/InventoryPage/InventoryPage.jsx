@@ -10,7 +10,7 @@ import {
   useDisclosure,
   Text,
   Tag,
-  Center,
+  TagLabel,
 } from '@chakra-ui/react';
 import './InventoryPage.module.css';
 
@@ -35,8 +35,10 @@ const InventoryPage = () => {
 
   function makeStatus(status) {
     return (
-      <Tag size="sm" color="white" bgColor={colorMap[status]} width="130px">
-        <Center>{status[0].toUpperCase() + status.slice(1)}</Center>
+      <Tag size="sm" mt={3} ml={15} color="white" bgColor={colorMap[status]}>
+        <TagLabel fontSize={14} color="white">
+          {status.toUpperCase()}
+        </TagLabel>
       </Tag>
     );
   }
