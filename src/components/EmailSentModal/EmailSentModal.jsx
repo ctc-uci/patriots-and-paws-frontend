@@ -12,19 +12,22 @@ import {
   VStack,
   Text,
   Flex,
+  Box,
 } from '@chakra-ui/react';
-import { CheckCircleIcon } from '@chakra-ui/icons';
+import { EmailIcon } from '@chakra-ui/icons';
 
 const EmailSentModal = ({ isOpen, onClose, onSubmit }) => {
   return (
-    <Modal size="sm" isOpen={isOpen} onClose={onClose}>
+    <Modal size="xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <Flex>
         <ModalContent p={3}>
           <ModalHeader>
             <VStack>
-              <CheckCircleIcon boxSize={10} color="green.500" />
-              <Text fontWeight="bold">Email Sent!</Text>
+              <Box bg="blue.100" borderRadius="full" p={5}>
+                <EmailIcon boxSize={12} />
+              </Box>
+              <Text fontWeight="bold">Reset Password Email has been sent!</Text>
             </VStack>
           </ModalHeader>
           <ModalCloseButton />

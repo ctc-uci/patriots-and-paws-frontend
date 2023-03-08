@@ -17,6 +17,8 @@ import {
   AlertIcon,
   Box,
   Spinner,
+  Grid,
+  GridItem,
 } from '@chakra-ui/react';
 import styles from './Login.module.css';
 import { Cookies, withCookies } from '../../utils/CookieUtils';
@@ -94,52 +96,58 @@ const Login = ({ cookies }) => {
   }
 
   return (
-    <Flex minH="100vh" align="center" justify="center">
-      <Stack align="center" spacing="2em">
-        {signup === 'success' && (
-          <Alert status="success" variant="solid">
-            <AlertIcon />
-            Account successfully created! Please verify your email.
-          </Alert>
-        )}
-        <Stack className={styles['login-stack']}>
-          <Heading className={styles['login-title']}>Login</Heading>
-          {errorMessage && <Box>{errorMessage}</Box>}
-          <form onSubmit={handleSubmit(handleLogin)}>
-            <FormControl className={styles['login-form']} isRequired>
-              <FormLabel className={styles['login-form-label']}>Email</FormLabel>
-              <Input
-                type="email"
-                id="email"
-                placeholder="Enter email"
-                {...register('email')}
-                isRequired
-              />
-              <Box className={styles['error-box']}>{errors.email?.message}</Box>
-              <FormLabel className={styles['login-form-label']}>Password</FormLabel>
-              <Input
-                type="password"
-                id="password"
-                placeholder="Enter password"
-                {...register('password')}
-                isRequired
-              />
-              <Box className={styles['error-box']}>{errors.password?.message}</Box>
-              <Button colorScheme="blue" className={styles['login-button']} type="submit">
-                Sign in
-              </Button>
+    <Grid templateColumns="repeat(2, 1fr)" gap={0}>
+      <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
+      <GridItem>
+        <Flex minH="100vh" align="center" justify="center">
+          <Stack align="center" spacing="2em">
+            {signup === 'success' && (
+              <Alert status="success" variant="solid">
+                <AlertIcon />
+                Account successfully created! Please verify your email.
+              </Alert>
+            )}
+            <Stack className={styles['login-stack']}>
+              <Heading fontSize="48px">Staff Login</Heading>
+              {errorMessage && <Box>{errorMessage}</Box>}
               <Link
                 className={styles['forgot-password-link']}
                 href="/forgot-password"
-                color="teal.500"
+                color="#3182ce"
+                fontSize="18px"
               >
-                Forgot Password
+                Forgot Password?
               </Link>
-            </FormControl>
-          </form>
-        </Stack>
-      </Stack>
-    </Flex>
+              <form onSubmit={handleSubmit(handleLogin)}>
+                <FormControl className={styles['login-form']} isRequired>
+                  <FormLabel className={styles['login-form-label']}>Email Address</FormLabel>
+                  <Input
+                    type="email"
+                    id="email"
+                    placeholder="name@domain.com"
+                    {...register('email')}
+                    isRequired
+                  />
+                  <Box className={styles['error-box']}>{errors.email?.message}</Box>
+                  <FormLabel className={styles['login-form-label']}>Password</FormLabel>
+                  <Input
+                    type="password"
+                    id="password"
+                    placeholder="##########"
+                    {...register('password')}
+                    isRequired
+                  />
+                  <Box className={styles['error-box']}>{errors.password?.message}</Box>
+                  <Button colorScheme="blue" className={styles['login-button']} type="submit">
+                    Login
+                  </Button>
+                </FormControl>
+              </form>
+            </Stack>
+          </Stack>
+        </Flex>
+      </GridItem>
+    </Grid>
   );
 };
 

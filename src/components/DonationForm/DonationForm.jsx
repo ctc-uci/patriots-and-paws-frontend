@@ -15,8 +15,8 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
-import { sendEmail, PNPBackend } from '../../utils/utils';
-import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
+import { PNPBackend } from '../../utils/utils';
+// import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
 // import uploadImage from '../../utils/furnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
@@ -93,14 +93,14 @@ function DonationForm() {
     // console.log(files);
     // await Promise.all(files.map(async file => uploadImage(file)));
     try {
-      sendEmail('OOGA BOOGA', data.email1, dconfirmemailtemplate);
+      // sendEmail('OOGA BOOGA', data.email1, dconfirmemailtemplate);
       const { additional, city, email1, firstName, lastName, streetAddress, phoneNumber } = data;
       const zip = parseInt(data.zipcode, 10);
-      const images = files.map(currentFile => ({
+      const images = await files.map(currentFile => ({
         imageURL: currentFile.file.path,
         notes: currentFile.description,
       }));
-      // console.log(pictures);
+      // console.log(images);
       await PNPBackend.post('/donations', {
         addressStreet: streetAddress,
         addressCity: city,
@@ -114,7 +114,7 @@ function DonationForm() {
         pictures: images,
       });
     } catch (err) {
-      // console.log(err.message);
+      // console.log(err);
       // to do: error message that email is invalid
     }
   };
