@@ -13,40 +13,47 @@ import {
   Text,
   Flex,
   Box,
+  HStack,
 } from '@chakra-ui/react';
 import { EmailIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
 
 const EmailSentModal = ({ isOpen, onClose, onSubmit }) => {
+  const navigate = useNavigate();
+
+  const handleClickGotIt = () => {
+    navigate('/login');
+  };
+
   return (
-    <Modal size="xl" isOpen={isOpen} onClose={onClose}>
+    <Modal size="4xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <Flex>
-        <ModalContent p={3}>
+        <ModalContent p={24}>
           <ModalHeader>
             <VStack>
-              <Box bg="blue.100" borderRadius="full" p={5}>
-                <EmailIcon boxSize={12} />
+              <Box bg="blue.100" borderRadius="full" p={10}>
+                <EmailIcon boxSize={16} />
               </Box>
-              <Text fontWeight="bold">Reset Password Email has been sent!</Text>
+              <Text fontWeight="700" fontSize="36px">
+                Reset Password Email has been sent!
+              </Text>
             </VStack>
           </ModalHeader>
           <ModalCloseButton />
           <VStack>
-            <ModalBody textAlign="center">
-              Didn&apos;t receive an email? Resend it by clicking the button below or exit out and
-              enter a different email.
+            <ModalBody mt={-5} textAlign="center" color="#2D3748" fontSize="18px">
+              You will receive an email shortly to set up your new password.
             </ModalBody>
             <ModalFooter>
-              <Button
-                colorScheme="blue"
-                paddingTop={6}
-                paddingRight={3}
-                paddingBottom={6}
-                paddingLeft={3}
-                onClick={onSubmit}
-              >
-                Resend Email
-              </Button>
+              <HStack width="100%" gap={5} marginTop={10}>
+                <Button variant="outline" onClick={onSubmit} flex={1} px={10}>
+                  Resend email
+                </Button>
+                <Button colorScheme="blue" flex={1} px={10} onClick={handleClickGotIt}>
+                  Got it
+                </Button>
+              </HStack>
             </ModalFooter>
           </VStack>
         </ModalContent>

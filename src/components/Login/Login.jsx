@@ -20,7 +20,6 @@ import {
   Grid,
   GridItem,
 } from '@chakra-ui/react';
-import styles from './Login.module.css';
 import { Cookies, withCookies } from '../../utils/CookieUtils';
 import { logInWithEmailAndPassword, useNavigate, userIsAuthenticated } from '../../utils/AuthUtils';
 
@@ -100,49 +99,50 @@ const Login = ({ cookies }) => {
       <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
       <GridItem>
         <Flex minH="100vh" align="center" justify="center">
-          <Stack align="center" spacing="2em">
+          <Stack align="center" width="100%" margin="auto">
             {signup === 'success' && (
               <Alert status="success" variant="solid">
                 <AlertIcon />
                 Account successfully created! Please verify your email.
               </Alert>
             )}
-            <Stack className={styles['login-stack']}>
+            <Stack width="70%" padding={20}>
               <Heading fontSize="48px">Staff Login</Heading>
               {errorMessage && <Box>{errorMessage}</Box>}
-              <Link
-                className={styles['forgot-password-link']}
-                href="/forgot-password"
-                color="#3182ce"
-                fontSize="18px"
-              >
+              <Link href="/forgot-password" color="#3182ce" fontSize="18px">
                 Forgot Password?
               </Link>
-              <form onSubmit={handleSubmit(handleLogin)}>
-                <FormControl className={styles['login-form']} isRequired>
-                  <FormLabel className={styles['login-form-label']}>Email Address</FormLabel>
-                  <Input
-                    type="email"
-                    id="email"
-                    placeholder="name@domain.com"
-                    {...register('email')}
-                    isRequired
-                  />
-                  <Box className={styles['error-box']}>{errors.email?.message}</Box>
-                  <FormLabel className={styles['login-form-label']}>Password</FormLabel>
-                  <Input
-                    type="password"
-                    id="password"
-                    placeholder="##########"
-                    {...register('password')}
-                    isRequired
-                  />
-                  <Box className={styles['error-box']}>{errors.password?.message}</Box>
-                  <Button colorScheme="blue" className={styles['login-button']} type="submit">
-                    Login
-                  </Button>
-                </FormControl>
-              </form>
+              <Stack width="100%">
+                <form onSubmit={handleSubmit(handleLogin)}>
+                  <FormControl isRequired>
+                    <FormLabel fontSize="16px" fontWeight="500" mt={10}>
+                      Email Address
+                    </FormLabel>
+                    <Input
+                      type="email"
+                      id="email"
+                      placeholder="name@domain.com"
+                      {...register('email')}
+                      isRequired
+                    />
+                    <Box>{errors.email?.message}</Box>
+                    <FormLabel fontSize="16px" fontWeight="500" mt={10}>
+                      Password
+                    </FormLabel>
+                    <Input
+                      type="password"
+                      id="password"
+                      placeholder="##########"
+                      {...register('password')}
+                      isRequired
+                    />
+                    <Box>{errors.password?.message}</Box>
+                    <Button colorScheme="blue" type="submit" width="100%" mt={14}>
+                      Login
+                    </Button>
+                  </FormControl>
+                </form>
+              </Stack>
             </Stack>
           </Stack>
         </Flex>

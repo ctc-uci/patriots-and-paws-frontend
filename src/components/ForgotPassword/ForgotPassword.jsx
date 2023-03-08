@@ -18,10 +18,12 @@ import { ChevronLeftIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useNavigate } from 'react-router-dom';
 import { sendPasswordReset } from '../../utils/AuthUtils';
 import EmailSentModal from '../EmailSentModal/EmailSentModal';
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -53,6 +55,7 @@ const ForgotPassword = () => {
   const handleResendEmail = async () => {
     const email = getValues('email');
     await sendPasswordReset(email);
+    navigate('/login');
   };
 
   const handleCloseModal = () => {
