@@ -21,14 +21,15 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
-import { confirmNewPassword } from '../../utils/AuthUtils';
+import { confirmNewPassword, useNavigate } from '../../utils/AuthUtils';
 import PasswordConfirmationModal from '../PasswordConfirmationModal/PasswordConfirmationModal';
 
 const ResetPassword = ({ code }) => {
   const [errorMessage, setErrorMessage] = useState();
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen } = useDisclosure();
+  const navigate = useNavigate();
 
   const formSchema = yup.object({
     newPassword: yup.string().required('Please enter your new password'),
@@ -71,6 +72,11 @@ const ResetPassword = ({ code }) => {
       setErrorMessage(err.message);
     }
   };
+
+  const handleOnClose = () => {
+    navigate('/login');
+  };
+
   return (
     <Grid templateColumns="repeat(2, 1fr)" gap={0}>
       <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
@@ -80,7 +86,7 @@ const ResetPassword = ({ code }) => {
             <Heading fontSize="48px" mb={10}>
               Reset Password
             </Heading>
-            <PasswordConfirmationModal isOpen={isOpen} onClose={onClose} />
+            <PasswordConfirmationModal isOpen={isOpen} onClose={handleOnClose} />
             <form onSubmit={handleSubmit(handleResetPassword)}>
               <FormControl onSubmit={handleResetPassword}>
                 <FormLabel fontSize="16px" fontWeight="500">
@@ -92,7 +98,7 @@ const ResetPassword = ({ code }) => {
                     {...register('newPassword')}
                     placeholder="● ● ● ● ● ● ● ● ●"
                     _placeholder={{ fontSize: '10px' }}
-                    borderColor={errors.confirmNewPassword ? 'red.500' : 'gray.300'}
+                    borderColor={errors.newPassword ? 'red.500' : 'gray.300'}
                     isRequired
                   />
                   <InputRightElement>
