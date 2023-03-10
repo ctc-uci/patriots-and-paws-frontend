@@ -1,6 +1,6 @@
 import React from 'react';
-import { Tag, Box, Text, Grid, GridItem } from '@chakra-ui/react';
-import { DeleteIcon } from '@chakra-ui/icons';
+import { Tag, TagLabel, Box, Text, Grid, GridItem, IconButton, Divider } from '@chakra-ui/react';
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { PropTypes } from 'prop-types';
 import DonationFurnitureContainer from '../InventoryPage/DonationFurnitureContainer';
 import DonationImagesContainer from '../InventoryPage/DonationImagesContainer';
@@ -32,13 +32,54 @@ const DonationDetails = ({ data }) => {
       day: 'numeric',
     });
   };
-  console.log(data);
+
+  // const [donation, setDonation] = useState();
+  const displayStatusTag = () => {
+    // pending
+    if (data) {
+      if (data.status === 'pending') {
+        return (
+          <Tag bg="blue.500">
+            <TagLabel color="white"> Submitted </TagLabel>
+          </Tag>
+        );
+      }
+      // approved
+      if (data.status === 'scheduling') {
+        return (
+          <Tag bg="green.500">
+            <TagLabel color="white"> Approved </TagLabel>
+          </Tag>
+        );
+      }
+      // flagged
+      if (data.status === 'changes requested') {
+        // eslint-disable-next-line consistent-return
+        return (
+          <Tag bg="orange.500">
+            <TagLabel color="white"> Changes Needed </TagLabel>
+          </Tag>
+        );
+      }
+    }
+    return (
+      <Tag bg="gray.50">
+        <TagLabel color="black"> Invalid Status </TagLabel>
+      </Tag>
+    );
+  };
+
+  // eslint-disable-next-line consistent-return
+  const displayEditIcon = () => {
+    if (data.status === 'changes requested') {
+      return <IconButton icon={<EditIcon />} />;
+    }
+  };
+  // console.log(data);
   if (data) {
     return (
       <Grid h="200px" templateRows="repeat(2, 1fr)" templateColumns="repeat(6, 1fr)" gap={4}>
-        <GridItem colSpan={2}>
-          <Tag bg="blue.50">{data.status}</Tag>
-        </GridItem>
+        <GridItem colSpan={2}>{displayStatusTag()}</GridItem>
         <GridItem colSpan={2}>
           <Text as="b">Form #{data.id}</Text>
         </GridItem>
@@ -46,10 +87,14 @@ const DonationDetails = ({ data }) => {
           <Text>Submitted on {formatDate(data.submittedDate)}</Text>
         </GridItem>
         <GridItem>
-          <DeleteIcon color="red.500" />
+          {displayEditIcon()}
+          <IconButton colorScheme="white" icon={<DeleteIcon color="red.500" />} />
         </GridItem>
+        <Divider size="md" variant="thick" />
         <GridItem colSpan={2}>
-          <DonationImagesContainer data={data.pictures} />
+          <Box borderRadius="6px">
+            <DonationImagesContainer data={data.pictures} />
+          </Box>
         </GridItem>
         <GridItem colStart={4} colSpan={4} rowSpan={2}>
           <Box overflow="scroll" maxH="sm">
