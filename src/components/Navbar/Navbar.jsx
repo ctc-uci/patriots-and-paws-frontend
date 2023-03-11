@@ -78,6 +78,7 @@ const Navbar = ({ cookies }) => {
             />
           </LinkOverlay>
         </LinkBox>
+
         {role && (
           <>
             <Link as={NavLink} to="/">

@@ -37,7 +37,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose }) => {
     const routeFromDB = await getRoute(routeId);
     setRoute(routeFromDB);
     setAssignedDriverId(routeFromDB.driverId);
-    setDonations(routeFromDB.donations);
+    setDonations(routeFromDB.donations ?? []);
   };
 
   useEffect(() => {
@@ -176,7 +176,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose }) => {
             <FormControl isRequired>
               <FormLabel paddingTop={6}>Assigned Driver</FormLabel>
               <Select
-                value={assignedDriverId}
+                value={assignedDriverId ?? ''}
                 placeholder="Select Driver"
                 onChange={handleDriverChange}
               >

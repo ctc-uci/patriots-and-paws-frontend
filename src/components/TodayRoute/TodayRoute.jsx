@@ -22,11 +22,15 @@ import { makeDate } from '../../utils/InventoryUtils';
 
 import { getCurrentUserId } from '../../utils/AuthUtils';
 import DonationModal from '../InventoryPage/DonationModal';
+import { STATUSES } from '../../utils/config';
+
+const { PICKED_UP } = STATUSES;
 
 const TodayRoute = () => {
   const [donations, setDonations] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
+  const [route, setRoute] = useState();
 
   const handleRowClick = data => {
     setDonationData(data);
@@ -39,7 +43,6 @@ const TodayRoute = () => {
     }, 0);
   };
 
-  const [route, setRoute] = useState();
   const getDonationsForToday = async () => {
     const userId = getCurrentUserId();
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
@@ -60,7 +63,7 @@ const TodayRoute = () => {
 
   const pickupComplete = id => {
     PNPBackend.put(`/donations/${id}`, {
-      status: 'archived',
+      status: PICKED_UP,
     });
   };
 
@@ -82,32 +85,34 @@ const TodayRoute = () => {
               </Thead>
               <Tbody>
                 {donations ? (
-                  donations.map(d => (
-                    <Tr key={d.id}>
-                      <Td>#{d.id}</Td>
-                      <Td>{getFurnitureCount(d.furniture)}</Td>
-                      <Td>
-                        {d.status === 'archived' ? (
-                          <Tag>
-                            <Checkbox defaultChecked />
-                          </Tag>
-                        ) : (
-                          <Tag>
-                            <Checkbox
-                              onChange={() => {
-                                pickupComplete(d.id);
-                              }}
-                            />
-                          </Tag>
-                        )}
-                      </Td>
-                      <Td>
-                        <Button mr={5} ml={5} onClick={() => handleRowClick(d)}>
-                          INFO
-                        </Button>
-                      </Td>
-                    </Tr>
-                  ))
+                  donations.map(d => {
+                    return (
+                      <Tr key={d.id}>
+                        <Td>#{d.id}</Td>
+                        <Td>{getFurnitureCount(d.furniture)}</Td>
+                        <Td>
+                          {d.status === PICKED_UP ? (
+                            <Tag>
+                              <Checkbox defaultChecked />
+                            </Tag>
+                          ) : (
+                            <Tag>
+                              <Checkbox
+                                onChange={() => {
+                                  pickupComplete(d.id);
+                                }}
+                              />
+                            </Tag>
+                          )}
+                        </Td>
+                        <Td>
+                          <Button mr={5} ml={5} onClick={() => handleRowClick(d)}>
+                            INFO
+                          </Button>
+                        </Td>
+                      </Tr>
+                    );
+                  })
                 ) : (
                   <Center>
                     <Text>No Routes to Display for Today&apos;s Date</Text>

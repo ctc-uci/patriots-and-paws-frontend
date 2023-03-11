@@ -27,8 +27,8 @@ import DropZone from '../DropZone/DropZone';
 import { PNPBackend, sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
+// import uploadImage from '../../utils/FurnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
-// import uploadImage from '../../utils/furnitureUtils';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
