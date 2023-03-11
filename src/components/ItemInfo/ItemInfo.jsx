@@ -7,13 +7,14 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  Button,
+  // Button,
   Heading,
   UnorderedList,
   ListItem,
   Box,
   Flex,
 } from '@chakra-ui/react';
+import { InfoIcon } from '@chakra-ui/icons';
 
 import { PropTypes } from 'prop-types';
 
@@ -21,9 +22,10 @@ const ItemInfo = ({ items, isAccepted = false }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <Button bg="white" border="1px solid #E2E8F0;" onClick={onOpen}>
+      {/* <Button bg="white" border="1px solid #E2E8F0;" onClick={onOpen}>
         Preview Item List
-      </Button>
+      </Button> */}
+      <InfoIcon onClick={onOpen} />
 
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />

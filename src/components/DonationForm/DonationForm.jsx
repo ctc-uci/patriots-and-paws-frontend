@@ -10,14 +10,7 @@ import {
   Flex,
   Heading,
   useToast,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  useDisclosure,
 } from '@chakra-ui/react';
-import { QuestionIcon } from '@chakra-ui/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -29,6 +22,7 @@ import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
 // import uploadImage from '../../utils/FurnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
+import ItemInfo from '../ItemInfo/ItemInfo';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
@@ -85,8 +79,6 @@ function DonationForm() {
   const [files, setFiles] = useState([]);
 
   const toast = useToast();
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const removeFile = index => {
     setFiles(prev => prev.filter((item, idx) => idx !== index));
@@ -249,18 +241,12 @@ function DonationForm() {
         </Box>
 
         <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title} marginBottom="1em">
-            Item
-          </Heading>
-          <QuestionIcon onClick={onOpen} />
-          <Modal isOpen={isOpen} onClose={onClose}>
-            <ModalOverlay />
-            <ModalContent>
-              <ModalHeader>Item Info</ModalHeader>
-              {/* Insert ItemInfo here */}
-              <ModalCloseButton />
-            </ModalContent>
-          </Modal>
+          <Flex marginBottom="1em" align="center">
+            <Heading size="md" className={styles.title} marginRight="1">
+              Item
+            </Heading>
+            <ItemInfo items={furnitureOptions} />
+          </Flex>
           <Select
             placeholder="Select Furniture"
             value={selectedFurnitureValue}
