@@ -9,17 +9,26 @@ import {
   Button,
   Flex,
   Heading,
+  useToast,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  useDisclosure,
 } from '@chakra-ui/react';
+import { QuestionIcon } from '@chakra-ui/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
-import { PNPBackend } from '../../utils/utils';
-// import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
+import { PNPBackend, sendEmail } from '../../utils/utils';
+import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
-// import uploadImage from '../../utils/furnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
+// import uploadImage from '../../utils/furnitureUtils';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
@@ -57,6 +66,7 @@ function DonationForm() {
     resolver: yupResolver(schema),
   });
 
+  const navigate = useNavigate();
   const [furnitureOptions, setFurnitureOptions] = useState([
     'Dressers',
     'Clean Housewares',
@@ -74,6 +84,10 @@ function DonationForm() {
 
   const [files, setFiles] = useState([]);
 
+  const toast = useToast();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const removeFile = index => {
     setFiles(prev => prev.filter((item, idx) => idx !== index));
   };
@@ -89,19 +103,15 @@ function DonationForm() {
   };
 
   const onSubmit = async data => {
-    // console.log(donatedFurnitureList);
-    // console.log(files);
-    // await Promise.all(files.map(async file => uploadImage(file)));
     try {
-      // sendEmail('OOGA BOOGA', data.email1, dconfirmemailtemplate);
       const { additional, city, email1, firstName, lastName, streetAddress, phoneNumber } = data;
       const zip = parseInt(data.zipcode, 10);
+      // TODO: Make files uploaded to s3 (look at playground)
       const images = await files.map(currentFile => ({
-        imageURL: currentFile.file.path,
+        image_url: currentFile.file.path,
         notes: currentFile.description,
       }));
-      // console.log(images);
-      await PNPBackend.post('/donations', {
+      const donation = await PNPBackend.post('/donations', {
         addressStreet: streetAddress,
         addressCity: city,
         addressZip: zip,
@@ -113,8 +123,19 @@ function DonationForm() {
         furniture: donatedFurnitureList,
         pictures: images,
       });
+      sendEmail('Thank You For Donating!', data.email1, dconfirmemailtemplate(donation.data[0]));
+      navigate('/donate/status', {
+        state: { isLoggedIn: true, email: data.email1, donationId: donation.data[0].id },
+      });
+      toast({
+        title: 'Your Donation Has Been Succesfully Submitted!',
+        description: 'An email has been sent with your donation ID',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
     } catch (err) {
-      // console.log(err);
+      console.log(err);
       // to do: error message that email is invalid
     }
   };
@@ -229,8 +250,17 @@ function DonationForm() {
 
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title} marginBottom="1em">
-            Furniture
+            Item
           </Heading>
+          <QuestionIcon onClick={onOpen} />
+          <Modal isOpen={isOpen} onClose={onClose}>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>Item Info</ModalHeader>
+              {/* Insert ItemInfo here */}
+              <ModalCloseButton />
+            </ModalContent>
+          </Modal>
           <Select
             placeholder="Select Furniture"
             value={selectedFurnitureValue}
