@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   FormLabel,
@@ -20,7 +20,7 @@ import DropZone from '../DropZone/DropZone';
 import { PNPBackend, sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
-// import uploadImage from '../../utils/FurnitureUtils';
+import uploadImage from '../../utils/FurnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
 import ItemInfo from '../ItemInfo/ItemInfo';
 
@@ -98,11 +98,12 @@ function DonationForm() {
     try {
       const { additional, city, email1, firstName, lastName, streetAddress, phoneNumber } = data;
       const zip = parseInt(data.zipcode, 10);
-      // TODO: Make files uploaded to s3 (look at playground)
-      const images = await files.map(currentFile => ({
-        image_url: currentFile.file.path,
-        notes: currentFile.description,
-      }));
+      const images = await Promise.all(
+        files.map(async ({ file, description }) => {
+          const url = await uploadImage(file);
+          return { image_url: url, notes: description };
+        }),
+      );
       const donation = await PNPBackend.post('/donations', {
         addressStreet: streetAddress,
         addressCity: city,
@@ -127,7 +128,7 @@ function DonationForm() {
         isClosable: true,
       });
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       // to do: error message that email is invalid
     }
   };
@@ -148,6 +149,17 @@ function DonationForm() {
     const furniture = donatedFurnitureList.find(e => e.name === furnitureName);
     furniture.count = +ev;
   };
+
+  const [itemsInfoList, setItemsInfoList] = useState([]);
+
+  useEffect(() => {
+    const fetchItemsInfoOptions = async () => {
+      const { data } = await PNPBackend.get(`furnitureOptions`);
+      const itemsInfoOptions = await Promise.all(data);
+      setItemsInfoList(itemsInfoOptions);
+    };
+    fetchItemsInfoOptions();
+  }, []);
 
   return (
     <Box className={styles['form-padding']}>
@@ -245,7 +257,7 @@ function DonationForm() {
             <Heading size="md" className={styles.title} marginRight="1">
               Item
             </Heading>
-            <ItemInfo items={furnitureOptions} />
+            <ItemInfo items={itemsInfoList} isAccepted />
           </Flex>
           <Select
             placeholder="Select Furniture"
