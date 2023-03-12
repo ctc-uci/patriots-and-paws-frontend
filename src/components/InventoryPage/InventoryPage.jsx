@@ -84,6 +84,10 @@ const InventoryPage = () => {
     );
   });
 
+  // useEffect(() => {
+  //   makeUserRows;
+  // }, [allDonations]);
+
   return (
     <>
       <TableContainer p="122px">
@@ -106,6 +110,7 @@ const InventoryPage = () => {
         onOpen={onOpen}
         isOpen={isOpen}
         routes={routes}
+        // deleteDonation={deleteDonation}
       />
     </>
   );

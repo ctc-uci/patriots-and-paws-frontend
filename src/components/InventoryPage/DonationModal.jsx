@@ -103,6 +103,22 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     resetScheduledRoute();
   }, [data]);
 
+  // const deletePicture = async pictureID => {
+  //   await PNPBackend.delete(`/pictures/${pictureID}`);
+  // };
+
+  // const deleteFurniture = async furnitureID => {
+  //   await PNPBackend.delete(`/furniture/${furnitureID}`);
+  // };
+
+  const deleteDonation = async () => {
+    // pictures.map(picture => deletePicture(picture.id));
+    // furniture.map(f => deleteFurniture(f.id));
+    await PNPBackend.delete(`/donations/${id}`);
+    setAllDonations(prev => prev.filter(donation => donation.id !== id));
+    onClose();
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -111,6 +127,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         onClose();
       }}
       size="full"
+      minWidth="80em"
     >
       <ModalOverlay />
       <ModalContent>
@@ -278,7 +295,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         </ModalBody>
         <ModalFooter>
           <Flex justify="left" gap={2}>
-            <Button colorScheme="red" justifyContent="left" ml={6}>
+            <Button colorScheme="red" justifyContent="left" ml={6} onClick={deleteDonation}>
               Delete Donation
             </Button>
           </Flex>
