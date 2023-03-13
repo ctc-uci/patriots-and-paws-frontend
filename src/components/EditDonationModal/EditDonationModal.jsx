@@ -7,8 +7,6 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-  ModalFooter,
-  Button,
 } from '@chakra-ui/react';
 import DonationForm from '../DonationForm/DonationForm';
 
@@ -21,14 +19,14 @@ const EditDonationModal = ({ donationData, isOpen, onClose }) => {
           <ModalHeader>Edit Donation</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <DonationForm donationData={donationData} />
+            <DonationForm donationData={donationData} onClose={onClose} />
           </ModalBody>
 
-          <ModalFooter>
+          {/* <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={onClose}>
               Close
             </Button>
-          </ModalFooter>
+          </ModalFooter> */}
         </ModalContent>
       </Modal>
     </>

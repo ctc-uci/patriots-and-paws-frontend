@@ -17,6 +17,8 @@ import * as yup from 'yup';
 import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
 import { sendEmail } from '../../utils/utils';
+import { createNewDonation, updateDonation } from '../../utils/donorUtils';
+import uploadImage, { createNewFurniture, updateFurniture } from '../../utils/furnitureUtils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
 // import uploadImage from '../../utils/furnitureUtils';
@@ -49,7 +51,7 @@ const schema = yup.object({
   Items: yup.array().of(yup.object().shape(itemFieldSchema), 'A Furniture Selection is Required'),
 });
 
-function DonationForm({ donationData }) {
+function DonationForm({ donationData, onClose }) {
   const {
     handleSubmit,
     register,
@@ -70,6 +72,7 @@ function DonationForm({ donationData }) {
   ]);
 
   const [donatedFurnitureList, setDonatedFurniture] = useState([]);
+  const [isNewDonation, setIsNewDonation] = useState(true);
 
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
@@ -77,6 +80,20 @@ function DonationForm({ donationData }) {
 
   useEffect(() => {
     setDonatedFurniture(donationData.furniture);
+    const empty = {
+      id: '',
+      firstName: '',
+      lastName: '',
+      addressStreet: '',
+      addressCity: '',
+      addressUnit: '',
+      addressZip: '',
+      phoneNum: '',
+      email: '',
+      notes: '',
+      furniture: [],
+    };
+    setIsNewDonation(donationData === empty);
   }, []);
 
   const removeFile = index => {
@@ -99,7 +116,36 @@ function DonationForm({ donationData }) {
     // console.log(files);
     // await Promise.all(files.map(async file => uploadImage(file)));
     try {
-      sendEmail(data.email1, dconfirmemailtemplate);
+      // rename email1 to email
+      const formData = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        addressStreet: data.streetAddress,
+        addressCity: data.city,
+        // addressUnit: data.,
+        addressZip: data.zipcode,
+        phoneNum: data.phoneNumber,
+        email: data.email1,
+        notes: data.additional,
+      };
+
+      if (isNewDonation) {
+        sendEmail(data.email1, dconfirmemailtemplate);
+        createNewDonation(formData);
+        donatedFurnitureList.forEach(f => createNewFurniture(f));
+        files.forEach(f => uploadImage(f));
+      } else {
+        updateDonation(donationData.id, formData);
+        donatedFurnitureList.forEach(f => {
+          if (f.id) {
+            updateFurniture(f.id, f);
+          } else {
+            createNewFurniture(f);
+          }
+        });
+        // closes the editDonationModal
+        onClose();
+      }
     } catch (err) {
       // console.log(err.message);
       // to do: error message that email is invalid
@@ -270,8 +316,11 @@ function DonationForm({ donationData }) {
           </Heading>
           <Input {...register('additional')} defaultValue={donationData.notes} />
         </Box>
-
-        <Button type="submit">Submit</Button>
+        {isNewDonation ? (
+          <Button type="submit">Submit</Button>
+        ) : (
+          <Button type="submit">Save</Button>
+        )}
       </form>
     </Box>
   );
@@ -279,6 +328,7 @@ function DonationForm({ donationData }) {
 
 DonationForm.propTypes = {
   donationData: PropTypes.shape({
+    id: PropTypes.string,
     firstName: PropTypes.string,
     lastName: PropTypes.string,
     addressStreet: PropTypes.string,
@@ -296,10 +346,12 @@ DonationForm.propTypes = {
       }),
     ),
   }),
+  onClose: PropTypes.func,
 };
 
 DonationForm.defaultProps = {
   donationData: {
+    id: '',
     firstName: '',
     lastName: '',
     addressStreet: '',
@@ -311,6 +363,7 @@ DonationForm.defaultProps = {
     notes: '',
     furniture: [],
   },
+  onClose: () => {},
 };
 
 export default DonationForm;
