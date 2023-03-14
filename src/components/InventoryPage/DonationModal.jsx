@@ -103,17 +103,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     resetScheduledRoute();
   }, [data]);
 
-  // const deletePicture = async pictureID => {
-  //   await PNPBackend.delete(`/pictures/${pictureID}`);
-  // };
-
-  // const deleteFurniture = async furnitureID => {
-  //   await PNPBackend.delete(`/furniture/${furnitureID}`);
-  // };
-
   const deleteDonation = async () => {
-    // pictures.map(picture => deletePicture(picture.id));
-    // furniture.map(f => deleteFurniture(f.id));
     await PNPBackend.delete(`/donations/${id}`);
     setAllDonations(prev => prev.filter(donation => donation.id !== id));
     onClose();
@@ -131,7 +121,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader m={3}>
+        <ModalHeader mt={3} mr={3} ml={3}>
           {currentStatus && makeStatusTag(currentStatus)}
           <Flex direction="row">
             <Flex direction="column">
@@ -163,7 +153,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         <ModalBody>
           <Flex flexDirection="row" m={3}>
             <Box h="100%" w="60%" m={5}>
-              <Text mb={5} fontSize="20px">
+              <Text mb={5} fontSize="1.25em">
                 Basic Information
               </Text>
               <Stack spacing={3}>
@@ -182,13 +172,12 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   <Input type="tel" defaultValue={phoneNum} isReadOnly />
                 </InputGroup>
               </Stack>
-              <Stack direction="row" my={2}>
-                <Text mt="60px" mb={5} fontSize="20px">
+              <Stack direction="row" mt={5} my={2}>
+                <Text mb={5} fontSize="1.25em">
                   Address
                 </Text>
                 <Box>
                   <Button
-                    mt="60px"
                     ml={4}
                     colorScheme="teal"
                     size="sm"
@@ -229,7 +218,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   </InputGroup>
                 </Stack>
               </Stack>
-              <Text mt="60px" mb={5} fontSize="20px">
+              <Text mt={5} mb={5} fontSize="20px">
                 Special Instructions
               </Text>
               <Textarea defaultValue={notes} isReadOnly />
@@ -293,7 +282,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
             </Box>
           </Flex>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter justifyContent="space-between">
           <Flex justify="left" gap={2}>
             <Button colorScheme="red" justifyContent="left" ml={6} onClick={deleteDonation}>
               Delete Donation
