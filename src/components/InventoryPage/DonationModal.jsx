@@ -85,7 +85,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
 
   const makeStatusTag = curStatus => {
     return (
-      <Tag size="sm" mt={3} ml={15} color="white" bgColor={colorMap[status]}>
+      <Tag size="sm" mt="1%" ml="1%" color="white" bgColor={colorMap[status]}>
         <TagLabel fontSize={14} color="white">
           {curStatus.toUpperCase()}
         </TagLabel>
@@ -117,29 +117,28 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         onClose();
       }}
       size="full"
-      minWidth="80em"
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader mt={3} mr={3} ml={3}>
+        <ModalHeader mr="1%" ml="1%" mb="0%">
           {currentStatus && makeStatusTag(currentStatus)}
           <Flex direction="row">
             <Flex direction="column">
-              <Text ml={15} fontSize={36}>
+              <Text ml="0.5em" fontSize="1.5em">
                 Donation #{id}
               </Text>
-              <Text ml={15} fontSize={16}>
+              <Text ml="1em" fontSize="0.75em">
                 Submission Date: {makeDate(submittedDate)}
               </Text>
             </Flex>
             {currentStatus === CHANGES_REQUESTED && (
               <>
-                <Alert status="warning" rounded="md" ml={85} mt={-3} mb={3} width="450px">
+                <Alert status="warning" rounded="md" ml="10%" mt="-1%" mb="1%" width="45%">
                   <Flex direction="row" verticalAlign="center" align="center">
-                    <AlertIcon ml={2} boxSize={6} />
-                    <Flex direction="column" ml={2}>
-                      <AlertTitle fontSize="lg">Donor Rejected Scheduled Date</AlertTitle>
-                      <AlertDescription fontSize="md" fontWeight="normal" mt={1}>
+                    <AlertIcon ml="0.75%" boxSize="5.5%" />
+                    <Flex direction="column" ml="0.75%">
+                      <AlertTitle fontSize="md">Donor Rejected Scheduled Date</AlertTitle>
+                      <AlertDescription fontSize="md" fontWeight="normal" mt="0.25%">
                         Please select a new date to continue.
                       </AlertDescription>
                     </Flex>
@@ -152,17 +151,17 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         <ModalCloseButton />
         <ModalBody>
           <Flex flexDirection="row" m={3}>
-            <Box h="100%" w="60%" m={5}>
-              <Text mb={5} fontSize="1.25em">
+            <Box h="100%" w="60%" ml="1em" mr="1em" mb="1em" mt="-1.5em">
+              <Text mb="1%" fontSize="1.25em" fontWeight="medium">
                 Basic Information
               </Text>
-              <Stack spacing={3}>
+              <Stack spacing="1%">
                 <InputGroup>
                   <InputLeftAddon>Name</InputLeftAddon>
                   <Input defaultValue={`${firstName} ${lastName}`} isReadOnly />
                 </InputGroup>
               </Stack>
-              <Stack direction="row" my={2}>
+              <Stack direction="row" my="1%">
                 <InputGroup>
                   <InputLeftAddon>Email</InputLeftAddon>
                   <Input defaultValue={email} isReadOnly />
@@ -172,13 +171,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   <Input type="tel" defaultValue={phoneNum} isReadOnly />
                 </InputGroup>
               </Stack>
-              <Stack direction="row" mt={5} my={2}>
-                <Text mb={5} fontSize="1.25em">
+              <Stack direction="row" mt="3%" mb="0.75%">
+                <Text mb="1%" fontSize="1.25em" fontWeight="medium">
                   Address
                 </Text>
                 <Box>
                   <Button
-                    ml={4}
+                    ml="15%"
                     colorScheme="teal"
                     size="sm"
                     type="submit"
@@ -190,13 +189,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   </Button>
                 </Box>
               </Stack>
-              <Stack spacing={3} direction="row">
-                <Stack spacing={3} direction="column">
+              <Stack spacing="1%" direction="row">
+                <Stack spacing="1%" direction="column">
                   <InputGroup>
                     <InputLeftAddon>Street Address</InputLeftAddon>
                     <Input defaultValue={addressStreet} isReadOnly />
                   </InputGroup>
-                  <Stack spacing={3} direction="row">
+                  <Stack spacing="1%" direction="row">
                     <InputGroup>
                       <InputLeftAddon>City</InputLeftAddon>
                       <Input defaultValue={addressCity} isReadOnly />
@@ -207,7 +206,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                     </InputGroup>
                   </Stack>
                 </Stack>
-                <Stack spacing={3} direction="column" my={2}>
+                <Stack spacing="1%" direction="column">
                   <InputGroup>
                     <InputLeftAddon>Unit</InputLeftAddon>
                     <Input defaultValue={addressUnit} isReadOnly />
@@ -218,7 +217,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   </InputGroup>
                 </Stack>
               </Stack>
-              <Text mt={5} mb={5} fontSize="20px">
+              <Text mt="2.5%" mb="0.75%" fontSize="1.25em" fontWeight="medium">
                 Special Instructions
               </Text>
               <Textarea defaultValue={notes} isReadOnly />
@@ -227,13 +226,15 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 direction="row"
                 bg="#E2E8F0"
                 align="center"
-                mt="2em"
+                mt="1em"
+                mv="0%"
                 borderRadius={6}
                 gap={5}
-                px={5}
-                py={3}
+                px="3%"
+                py="1%"
+                mb="0%"
               >
-                <Text fontSize="20px">Schedule</Text>
+                <Text fontSize="1.25em">Schedule</Text>
                 <Select
                   placeholder={!pickupDate && 'Choose a date'}
                   onChange={e => {
@@ -265,16 +266,16 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
               </Flex>
             </Box>
 
-            <Box h="50%" w="40%" m={5}>
+            <Box h="50%" w="40%" mb="1%" ml="1%" mr="1%">
               <Box>
-                <Text mb={5} fontSize="20px">
+                <Text mb="1%" fontSize="1.25em">
                   Images
                 </Text>
                 <DonationImagesContainer data={pictures} />
               </Box>
 
               <Box h="50%" w="100%">
-                <Text mt="45px" mb={5} fontSize="20px">
+                <Text mt="1%" mb="1%" fontSize="1.25em">
                   Furniture Items
                 </Text>
                 <DonationFurnitureContainer data={furniture} />
@@ -282,13 +283,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
             </Box>
           </Flex>
         </ModalBody>
-        <ModalFooter justifyContent="space-between">
-          <Flex justify="left" gap={2}>
-            <Button colorScheme="red" justifyContent="left" ml={6} onClick={deleteDonation}>
+        <ModalFooter justifyContent="space-between" ml="2%" mt="-1em">
+          <Flex justify="left">
+            <Button colorScheme="red" justifyContent="left" onClick={deleteDonation}>
               Delete Donation
             </Button>
           </Flex>
-          <Flex mr={6} justify="right">
+          <Flex mr="1%" justify="right">
             {(currentStatus === PENDING || currentStatus === CHANGES_REQUESTED) && (
               <>
                 <Button
@@ -303,7 +304,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   Request Changes
                 </Button>
                 <Button
-                  ml={3}
+                  ml="2%"
                   colorScheme="green"
                   onClick={() => {
                     emailModalOnOpen();
@@ -317,7 +318,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
             )}
             {currentStatus === SCHEDULED && (
               <Button
-                ml={3}
+                ml="2%"
                 colorScheme="red"
                 onClick={() => {
                   emailModalOnOpen();
