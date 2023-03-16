@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+/* eslint-disable import/no-extraneous-dependencies */
 import { PDFViewer, StyleSheet } from '@react-pdf/renderer';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
@@ -20,7 +21,6 @@ import DropZone from './components/DropZone/DropZone';
 import uploadImage from './utils/FurnitureUtils';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
-import Donate from './pages/donation/Donate';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
 
 import ManageDonationForm from './pages/ManageDonationForm/ManageDonationForm';
@@ -205,7 +205,7 @@ function App() {
           <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 
-          <Route exact path="/donate" element={<Donate />} />
+          <Route exact path="/donate" element={<DonorLogin />} />
           <Route exact path="/donate/form" element={<DonationForm />} />
           <Route exact path="/donate/status" element={<DonorLogin />} />
         </Routes>

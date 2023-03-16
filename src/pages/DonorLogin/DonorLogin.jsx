@@ -10,14 +10,15 @@ import {
   Box,
   Link,
 } from '@chakra-ui/react';
-import { Link as ReactLink } from 'react-router-dom';
+import { Link as ReactLink, useLocation } from 'react-router-dom';
 import { verifyDonorLogin } from '../../utils/DonorUtils';
 import DonorDashboard from '../../components/DonorDashboard/DonorDashboard';
 
 const DonorLogin = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setEmail] = useState('');
-  const [donationId, setDonationId] = useState('');
+  const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(location.state?.isLoggedIn || false);
+  const [email, setEmail] = useState(location.state?.email || '');
+  const [donationId, setDonationId] = useState(location.state?.donationId || '');
   const [loginFailed, setLoginFail] = useState(false);
 
   const handleSubmit = async event => {
