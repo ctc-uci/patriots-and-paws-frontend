@@ -22,7 +22,7 @@ import {
   Select,
   Switch,
 } from '@chakra-ui/react';
-import { DragHandleIcon, QuestionIcon } from '@chakra-ui/icons';
+import { DragHandleIcon } from '@chakra-ui/icons';
 import { Reorder } from 'framer-motion';
 import { updateDonation, getRoute, updateRoute } from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
@@ -72,11 +72,11 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
     setAssignedDriverId(e.target.value);
   };
 
-  const clearState = () => {
-    setAssignedDriverId('');
-    setDonations([]);
-    setErrorMessage('');
-  };
+  // const clearState = () => {
+  //   setAssignedDriverId('');
+  //   setDonations([]);
+  //   setErrorMessage('');
+  // };
 
   const handleSave = async () => {
     setModalState('view');
@@ -92,8 +92,8 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
       const updateDonationPromises = updatedDonations.map(donation => updateDonation(donation));
       await Promise.all(updateDonationPromises);
 
-      clearState();
-      onClose();
+      // clearState();
+      // onClose();
     } catch (err) {
       setErrorMessage(err.message);
     }
@@ -101,8 +101,8 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
 
   const handleCancel = () => {
     setModalState('view');
-    clearState();
-    onClose();
+    // clearState();
+    // onClose();
   };
 
   const handleChangeToEdit = () => {
@@ -110,7 +110,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   };
 
   return (
-    <Modal size="xl" isOpen={isOpen} onClose={handleCancel} scrollBehavior="outside">
+    <Modal size="xl" isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -157,7 +157,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Stack pl={5} pr={5}>
+          <Stack pl={5} pr={5} height="39vh" overflow="scroll">
             {donations.length === 0 && <Text fontWeight="bold">No pickups scheduled.</Text>}
             {modalState === 'edit' && (
               <List
@@ -173,7 +173,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                     margin="0"
                     padding="0"
                     as={Reorder.Item}
-                    key={donation.orderNum}
+                    key={donation.id}
                     value={donation}
                     dragTransition={{
                       bounceStiffness: 600,
@@ -244,56 +244,63 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
           <Box>{errorMessage}</Box>
         </ModalBody>
         <ModalFooter>
-          <Flex
-            direction="row"
-            justify="space-between"
-            alignItems="center"
-            width="100%"
-            spacing={5}
-            paddingBottom={5}
-            paddingLeft={5}
-            paddingRight={5}
-          >
-            {modalState === 'edit' && (
-              <>
-                <QuestionIcon h={5} w={5} color="#718096" />
-                <Flex justify="left" gap={2}>
-                  <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
-                    Cancel
-                  </Button>
-                  <Button colorScheme="blue" type="submit" onClick={handleSave}>
-                    Save changes
-                  </Button>
-                </Flex>
-              </>
-            )}
-            {modalState === 'view' && (
-              <>
-                <Flex justify="left" gap={2}>
-                  <Button colorScheme="blackAlpha" type="submit" onClick={() => {}}>
-                    Export PDF
-                  </Button>
-                  <Button
-                    colorScheme="teal"
-                    type="submit"
-                    onClick={() => handleNavigateToAddress(donations)}
-                  >
-                    Navigate to Route
-                  </Button>
-                </Flex>
-                {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
-                  <Button
-                    colorScheme="blue"
-                    type="submit"
-                    justify="right"
-                    onClick={handleChangeToEdit}
-                  >
-                    Reorder Routes
-                  </Button>
-                )}
-              </>
-            )}
-          </Flex>
+          {modalState === 'edit' && (
+            <Flex
+              direction="row"
+              justify="right"
+              alignItems="center"
+              width="100%"
+              spacing={5}
+              paddingBottom={5}
+              paddingLeft={5}
+              paddingRight={5}
+            >
+              {/* <QuestionIcon h={5} w={5} color="#718096" /> */}
+              <Flex justify="left" gap={2}>
+                <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button colorScheme="blue" type="submit" onClick={handleSave}>
+                  Save changes
+                </Button>
+              </Flex>
+            </Flex>
+          )}
+          {modalState === 'view' && (
+            <Flex
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+              width="100%"
+              spacing={5}
+              paddingBottom={5}
+              paddingLeft={5}
+              paddingRight={5}
+            >
+              <Flex justify="left" gap={2}>
+                <Button colorScheme="blackAlpha" type="submit" onClick={() => {}}>
+                  Export PDF
+                </Button>
+                <Button
+                  colorScheme="teal"
+                  type="submit"
+                  onClick={() => handleNavigateToAddress(donations)}
+                >
+                  Navigate to Route
+                </Button>
+              </Flex>
+              {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
+                <Button
+                  colorScheme="blue"
+                  type="submit"
+                  justify="right"
+                  onClick={handleChangeToEdit}
+                >
+                  Reorder Routes
+                </Button>
+              )}
+            </Flex>
+          )}
         </ModalFooter>
       </ModalContent>
     </Modal>
