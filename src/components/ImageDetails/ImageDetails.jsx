@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Input, CloseButton, Image, Text, Flex } from '@chakra-ui/react';
 
-function ImageDetails({ index, name, preview, removeImage, updateDescription }) {
+function ImageDetails({ index, name, preview, removeImage, description, updateDescription }) {
   return (
     <Flex
       w="15em"
@@ -34,6 +34,7 @@ function ImageDetails({ index, name, preview, removeImage, updateDescription }) 
       </Flex>
       <Input
         placeholder="Add description"
+        defaultValue={description}
         onChange={ev => {
           updateDescription(index, ev.target.value);
         }}
@@ -47,7 +48,12 @@ ImageDetails.propTypes = {
   name: PropTypes.string.isRequired,
   preview: PropTypes.string.isRequired,
   removeImage: PropTypes.func.isRequired,
+  description: PropTypes.string,
   updateDescription: PropTypes.func.isRequired,
+};
+
+ImageDetails.defaultProps = {
+  description: '',
 };
 
 export default ImageDetails;

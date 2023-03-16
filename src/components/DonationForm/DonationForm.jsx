@@ -21,11 +21,11 @@ import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
+import { PNPBackend, sendEmail } from '../../utils/utils';
 import { createNewDonation, updateDonation } from '../../utils/DonorUtils';
+import uploadImage from '../../utils/FurnitureUtils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
-import { PNPBackend, sendEmail } from '../../utils/utils';
-import uploadImage from '../../utils/FurnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
 import ItemInfo from '../ItemInfo/ItemInfo';
@@ -37,13 +37,13 @@ const itemFieldSchema = {
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
   lastName: yup.string().required('Invalid last name'),
-  phoneNumber: yup
+  phoneNum: yup
     .string()
     .required('Phone number is required')
     .matches(/[0-9]{10}/, 'Phone number must be 10 digits'),
-  streetAddress: yup.string().required('Street Address is required'),
-  city: yup.string().required('City is required'),
-  zipcode: yup
+  addressStreet: yup.string().required('Street Address is required'),
+  addressCity: yup.string().required('City is required'),
+  addressZip: yup
     .string()
     .required('ZIP Code is required')
     .matches(/^[0-9]{5}$/, 'ZIP Code must be a number and exactly 5 digits'),
@@ -56,7 +56,7 @@ const schema = yup.object({
   termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
 
-function DonationForm({ donationData, closeEditDonationModal }) {
+function DonationForm({ donationData, setDonationData, closeEditDonationModal }) {
   const {
     handleSubmit,
     register,
@@ -68,82 +68,92 @@ function DonationForm({ donationData, closeEditDonationModal }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const navigate = useNavigate();
-  const [furnitureOptions, setFurnitureOptions] = useState([
-    'Dressers',
-    'Clean Housewares',
-    'Antiques',
-    'Art',
-    'Clean rugs',
-    'Home Decor items',
-    'Pet care items',
-    'Patio Furniture',
-  ]);
+  const [furnitureOptions, setFurnitureOptions] = useState([]);
 
-  const [donatedFurnitureList, setDonatedFurniture] = useState([]);
+  const [donatedFurnitureList, setDonatedFurniture] = useState(donationData?.furniture ?? []);
 
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState(donationData?.pictures ?? []);
 
   useEffect(() => {
-    setDonatedFurniture(donationData.furniture);
-    // setFiles(donationData.pictures);
+    const loadData = async () => {
+      const { data } = await PNPBackend.get('/furnitureOptions');
+      const options = data.filter(({ accepted }) => accepted).map(({ name }) => name);
+      if (donationData) {
+        const furniture = new Set(donationData.furniture.map(({ name }) => name));
+        const newOptions = options.filter(option => !furniture.has(option));
+        setFurnitureOptions(newOptions);
+      } else {
+        setFurnitureOptions(options);
+      }
+    };
+    loadData();
   }, []);
   const toast = useToast();
 
   const removeFile = index => {
-    setFiles(prev => prev.filter((item, idx) => idx !== index));
+    setFiles(prev => prev.filter((_, idx) => idx !== index));
   };
 
-  const updateDescription = (index, newDescription) => {
+  const updateDescription = (index, newNotes) => {
     setFiles(prev => {
       return prev
         .slice(0, index)
         .concat(
-          [{ file: prev[index].file, description: newDescription }].concat(prev.slice(index + 1)),
+          [{ ...prev[index], file: prev[index].file, notes: newNotes }].concat(
+            prev.slice(index + 1),
+          ),
         );
     });
   };
 
   const onSubmit = async data => {
-    // await Promise.all(files.map(async file => uploadImage(file)));
-    try {
-      const formData = {
-        ...donationData,
-        ...data,
-        zip: parseInt(data.zipcode, 10),
-        furniture: donatedFurnitureList,
-        // pictures: files,
-      };
-      console.log(formData);
+    const newUrls = await Promise.all(
+      files
+        .filter(file => file?.file)
+        .map(async ({ file, notes }) => {
+          const url = await uploadImage(file);
+          return { imageUrl: url, notes };
+        }),
+    );
 
-      if (!donationData) {
-        sendEmail(data.email, dconfirmemailtemplate);
-        const { donationId, email } = createNewDonation(formData);
-        files.forEach(f => uploadImage(f));
+    const formData = {
+      ...donationData,
+      ...data,
+      zip: parseInt(data.zipcode, 10),
+      furniture: donatedFurnitureList,
+      pictures: [...newUrls, ...files.filter(file => file?.imageUrl)],
+    };
+
+    if (!donationData) {
+      const { id: donationId, email } = await createNewDonation(formData);
+      try {
         sendEmail(
           'Thank You For Donating!',
           formData.email,
           dconfirmemailtemplate(donationId, email),
         );
-        navigate('/donate/status', {
-          state: { isLoggedIn: true, email: formData.email, donationId },
-        });
-        toast({
-          title: 'Your Donation Has Been Succesfully Submitted!',
-          description: 'An email has been sent with your donation ID',
-          status: 'success',
-          duration: 9000,
-          isClosable: true,
-        });
-      } else {
-        updateDonation(donationData.id, formData);
-        // closes the editDonationModal
-        closeEditDonationModal();
+      } catch (err) {
+        // TODO: error message that email is invalid
+        console.log(err.message);
+        return;
       }
-    } catch (err) {
-      console.log(err.message);
-      // to do: error message that email is invalid
+      navigate('/donate/status', {
+        state: { isLoggedIn: true, email: formData.email, donationId },
+      });
+      toast({
+        title: 'Your Donation Has Been Succesfully Submitted!',
+        description: 'An email has been sent with your donation ID',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
+    } else {
+      const newData = await updateDonation(donationData.id, formData);
+      setDonationData(newData);
+      // closes the editDonationModal
+      closeEditDonationModal();
     }
   };
 
@@ -184,13 +194,13 @@ function DonationForm({ donationData, closeEditDonationModal }) {
           <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.firstName} width="47%">
               <FormLabel>First</FormLabel>
-              <Input {...register('firstName')} defaultValue={donationData.firstName} />
+              <Input {...register('firstName')} defaultValue={donationData?.firstName} />
               <FormErrorMessage>{errors.firstName && errors.firstName.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors && errors.lastName} width="47%">
               <FormLabel>Last</FormLabel>
-              <Input {...register('lastName')} defaultValue={donationData.lastName} />
+              <Input {...register('lastName')} defaultValue={donationData?.lastName} />
               <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
             </FormControl>
           </Box>
@@ -200,24 +210,26 @@ function DonationForm({ donationData, closeEditDonationModal }) {
             Address
           </Heading>
 
-          <FormControl isInvalid={errors && errors.streetAddress}>
+          <FormControl isInvalid={errors && errors.addressStreet}>
             <FormLabel>Street Address</FormLabel>
-            <Input {...register('streetAddress')} defaultValue={donationData.addressStreet} />
+            <Input {...register('addressStreet')} defaultValue={donationData?.addressStreet} />
             <FormErrorMessage>
-              {errors.streetAddress && errors.streetAddress.message}
+              {errors.addressStreet && errors.addressStreet.message}
             </FormErrorMessage>
           </FormControl>
 
           <FormControl>
             <FormLabel>Address Line 2</FormLabel>
-            <Input {...register('streetAddress2')} />
+            <Input {...register('addressUnit')} />
           </FormControl>
 
           <Box className={styles.form}>
-            <FormControl width="47%" isInvalid={errors && errors.city}>
+            <FormControl width="47%" isInvalid={errors && errors.addressCity}>
               <FormLabel>City </FormLabel>
-              <Input {...register('city')} defaultValue={donationData.addressCity} />
-              <FormErrorMessage>{errors.city && errors.city.message}</FormErrorMessage>
+              <Input {...register('addressCity')} defaultValue={donationData?.addressCity} />
+              <FormErrorMessage>
+                {errors.addressCity && errors.addressCity.message}
+              </FormErrorMessage>
             </FormControl>
 
             <FormControl width="47%">
@@ -228,19 +240,19 @@ function DonationForm({ donationData, closeEditDonationModal }) {
             </FormControl>
           </Box>
 
-          <FormControl isInvalid={errors && errors.zipcode}>
+          <FormControl isInvalid={errors && errors.addressZip}>
             <FormLabel>ZIP Code</FormLabel>
-            <Input {...register('zipcode')} defaultValue={donationData.addressZip} />
-            <FormErrorMessage>{errors.zipcode && errors.zipcode.message}</FormErrorMessage>
+            <Input {...register('addressZip')} defaultValue={donationData?.addressZip} />
+            <FormErrorMessage>{errors.addressZip && errors.addressZip.message}</FormErrorMessage>
           </FormControl>
         </Box>
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Phone
           </Heading>
-          <FormControl isInvalid={errors && errors.phoneNumber}>
-            <Input type="tel" {...register('phoneNumber')} defaultValue={donationData.phoneNum} />
-            <FormErrorMessage>{errors.phoneNumber && errors.phoneNumber.message}</FormErrorMessage>
+          <FormControl isInvalid={errors && errors.phoneNum}>
+            <Input type="tel" {...register('phoneNum')} defaultValue={donationData?.phoneNum} />
+            <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
           </FormControl>
         </Box>
         <Box className={styles['field-section']}>
@@ -250,13 +262,21 @@ function DonationForm({ donationData, closeEditDonationModal }) {
           <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.email} width="47%">
               <FormLabel>Enter Email </FormLabel>
-              <Input {...register('email')} defaultValue={donationData.email} />
+              <Input
+                {...register('email')}
+                defaultValue={donationData?.email}
+                disabled={donationData?.email}
+              />
               <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors && errors.email2} width="47%">
               <FormLabel>Confirm Email </FormLabel>
-              <Input {...register('email2')} defaultValue={donationData.email} />
+              <Input
+                {...register('email2')}
+                defaultValue={donationData?.email}
+                disabled={donationData?.email}
+              />
               <FormErrorMessage>{errors.email2 && errors.email2.message}</FormErrorMessage>
             </FormControl>
           </Box>
@@ -296,14 +316,14 @@ function DonationForm({ donationData, closeEditDonationModal }) {
           <Box w="80%">
             <DropZone setFiles={setFiles} />
             <Flex wrap="wrap">
-              {files.map(({ file: { name, preview }, description }, index) => {
+              {files.map(({ file, id, imageUrl, notes }, index) => {
                 return (
                   <ImageDetails
-                    key={name}
+                    key={file?.preview ?? id}
                     index={index}
-                    name={name}
-                    preview={preview}
-                    description={description}
+                    name={file?.name ?? imageUrl.slice(-10)}
+                    preview={file?.preview ?? imageUrl}
+                    description={notes}
                     removeImage={removeFile}
                     updateDescription={updateDescription}
                   />
@@ -316,19 +336,21 @@ function DonationForm({ donationData, closeEditDonationModal }) {
           <Heading size="md" className={styles.title}>
             Do you Have any Questions or Comments
           </Heading>
-          <Input {...register('additional')} defaultValue={donationData.notes} />
+          <Input {...register('notes')} defaultValue={donationData?.notes} />
         </Box>
 
-        <FormControl isInvalid={errors && errors.termsCond}>
-          <Flex>
-            <Checkbox {...register('termsCond')} />
-            <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
-            <Text cursor="pointer" onClick={onOpen} as="u">
-              terms and conditions.
-            </Text>
-          </Flex>
-          <FormErrorMessage>{errors.termsCond && errors.termsCond.message}</FormErrorMessage>
-        </FormControl>
+        {!donationData && (
+          <FormControl isInvalid={errors && errors.termsCond}>
+            <Flex>
+              <Checkbox {...register('termsCond')} />
+              <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
+              <Text cursor="pointer" onClick={onOpen} as="u">
+                terms and conditions.
+              </Text>
+            </Flex>
+            <FormErrorMessage>{errors.termsCond && errors.termsCond.message}</FormErrorMessage>
+          </FormControl>
+        )}
 
         <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} isDonationForm />
 
@@ -365,24 +387,13 @@ DonationForm.propTypes = {
       }),
     ),
   }),
+  setDonationData: PropTypes.func,
   closeEditDonationModal: PropTypes.func,
 };
 
 DonationForm.defaultProps = {
-  donationData: {
-    id: '',
-    firstName: '',
-    lastName: '',
-    addressStreet: '',
-    addressCity: '',
-    addressUnit: '',
-    addressZip: '',
-    phoneNum: '',
-    email: '',
-    notes: '',
-    furniture: [],
-    pictures: [],
-  },
+  donationData: undefined,
+  setDonationData: () => {},
   closeEditDonationModal: () => {},
 };
 

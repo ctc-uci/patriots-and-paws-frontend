@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react';
 import DonationForm from '../DonationForm/DonationForm';
 
-const EditDonationModal = ({ donationData, isOpen, onClose }) => {
+const EditDonationModal = ({ donationData, setDonationData, isOpen, onClose }) => {
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="full">
@@ -19,7 +19,11 @@ const EditDonationModal = ({ donationData, isOpen, onClose }) => {
           <ModalHeader>Edit Donation</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <DonationForm donationData={donationData} onClose={onClose} />
+            <DonationForm
+              donationData={donationData}
+              setDonationData={setDonationData}
+              onClose={onClose}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -46,6 +50,7 @@ EditDonationModal.propTypes = {
       }),
     ),
   }).isRequired,
+  setDonationData: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };

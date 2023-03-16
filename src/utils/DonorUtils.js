@@ -12,8 +12,7 @@ const verifyDonorLogin = async (donationId, email) => {
 
 const createNewDonation = async data => {
   try {
-    const res = await PNPBackend.post(`donations`, data);
-    const donation = res.data;
+    const { data: donation } = await PNPBackend.post(`donations`, data);
     return donation[0];
   } catch {
     return 'something went wrong';
@@ -22,8 +21,7 @@ const createNewDonation = async data => {
 
 const updateDonation = async (donationId, data) => {
   try {
-    const res = await PNPBackend.put(`donations/${donationId}`, data);
-    const donation = res.data;
+    const { data: donation } = await PNPBackend.put(`donations/${donationId}`, data);
     return donation[0];
   } catch {
     return 'something went wrong';

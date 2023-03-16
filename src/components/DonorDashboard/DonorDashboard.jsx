@@ -25,7 +25,7 @@ const DonorDashboard = ({ donationId }) => {
         'changes requested': 1,
       };
       setStage(donationStage[donationStatus] ?? 1);
-      // console.log(data);
+      console.log(data);
       setDonationData(data);
     };
     fetchData();
@@ -60,7 +60,12 @@ const DonorDashboard = ({ donationId }) => {
         {/* BUG: If window too small height, overflow occurs & screen becomes scrollable */}
         <DonorFooter />
       </Box>
-      <EditDonationModal donationData={donationData} isOpen={isOpen} onClose={onClose} />
+      <EditDonationModal
+        donationData={donationData}
+        setDonationData={setDonationData}
+        isOpen={isOpen}
+        onClose={onClose}
+      />
     </>
   );
 };

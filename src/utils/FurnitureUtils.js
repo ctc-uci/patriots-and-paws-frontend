@@ -25,25 +25,4 @@ const uploadImage = async file => {
   return imageUrl;
 };
 
-const createNewFurniture = async donatedFurniture => {
-  try {
-    const res = await PNPBackend.post(`furniture`, donatedFurniture);
-    const donation = res.data;
-    return donation[0];
-  } catch {
-    return 'something went wrong';
-  }
-};
-
-const updateFurniture = async (furnitureId, donatedFurniture) => {
-  try {
-    const res = await PNPBackend.put(`furniture/${furnitureId}`, donatedFurniture);
-    const donation = res.data;
-    return donation[0];
-  } catch {
-    return 'something went wrong';
-  }
-};
-
 export default uploadImage;
-export { createNewFurniture, updateFurniture };
