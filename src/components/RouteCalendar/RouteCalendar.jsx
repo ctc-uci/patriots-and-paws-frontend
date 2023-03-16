@@ -96,6 +96,7 @@ const RouteCalendar = () => {
         drivers={drivers}
         isOpen={editRouteIsOpen}
         onClose={handleEditRouteOnClose}
+        role={role}
       />
       <CreateRouteModal
         routeDate={selectedCalendarDate.start}
