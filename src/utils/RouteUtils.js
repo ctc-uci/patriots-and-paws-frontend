@@ -4,24 +4,24 @@ import { AUTH_ROLES } from './config';
 const { DRIVER_ROLE } = AUTH_ROLES;
 
 const getAllRoutes = async () => {
-  const res = await PNPBackend.get(`/routes/`);
-  return res.data;
+  const { data } = await PNPBackend.get(`/routes`);
+  return data;
 };
 
 const getRoute = async routeId => {
-  const res = await PNPBackend.get(`/routes/${routeId}`);
-  return res.data[0];
+  const { data } = await PNPBackend.get(`/routes/${routeId}`);
+  return data[0];
 };
 
 const createRoute = async route => {
   const { driverId, name, date } = route;
   try {
-    const res = await PNPBackend.post('/routes/', {
+    const { data } = await PNPBackend.post('/routes', {
       driverId,
       name,
       date,
     });
-    return res.data[0];
+    return data[0];
   } catch (err) {
     throw new Error(err.message);
   }
@@ -87,6 +87,27 @@ const updateDonation = async donation => {
   }
 };
 
+const getRouteDonations = async routeId => {
+  const { data } = await PNPBackend.get(`/routes/${routeId}`);
+  return data[0];
+};
+
+const getDriverName = async driverId => {
+  const { data } = await PNPBackend.get(`/users/${driverId}`);
+  const user = data[0];
+  return `${user.firstName} ${user.lastName}`;
+};
+
+const formatDate = date =>
+  date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+const A4_WIDTH = 595.28; // can use instead of "A4" for page size to get one long page
+
 export {
   getAllRoutes,
   getRoute,
@@ -95,4 +116,8 @@ export {
   getDrivers,
   getDonations,
   updateDonation,
+  getRouteDonations,
+  getDriverName,
+  formatDate,
+  A4_WIDTH,
 };

@@ -32,7 +32,6 @@ import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
 import { makeDate, colorMap, EMAIL_TYPE } from '../../utils/InventoryUtils';
 import DonationImagesContainer from './DonationImagesContainer';
 import DonationFurnitureContainer from './DonationFurnitureContainer';
-import './InventoryPage.module.css';
 import EmailModal from './EmailModal';
 import { STATUSES } from '../../utils/config';
 
@@ -241,6 +240,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                     setScheduledDate(e.target.value);
                     setScheduledRouteId('');
                   }}
+                  defaultValue={scheduledDate}
                   bg="white"
                   isDisabled={![PENDING].includes(currentStatus)}
                 >

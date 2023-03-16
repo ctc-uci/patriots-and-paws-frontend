@@ -45,16 +45,13 @@ const getRoutesFromDB = async () => {
 };
 
 const colorMap = {
-  // [APPROVED]: 'rgb(229,62,62)',
-  [APPROVAL_REQUESTED]: 'rgb(229,62,62)',
-  [PENDING]: 'rgb(163,163,163)',
-  [CHANGES_REQUESTED]: 'rgb(49, 130, 206)',
-  // [PICKED_UP]: 'green',
+  [APPROVAL_REQUESTED]: 'red',
+  [PENDING]: 'blackAlpha',
+  [CHANGES_REQUESTED]: 'blue',
   [SCHEDULING]: 'green',
   [SCHEDULED]: 'green',
-  // [ARCHIVED]: 'green',
   [PICKED_UP]: 'green',
-  [RESCHEDULE]: 'rgb(221,107,32)',
+  [RESCHEDULE]: 'orange',
 };
 
 const formatImageData = data => {
