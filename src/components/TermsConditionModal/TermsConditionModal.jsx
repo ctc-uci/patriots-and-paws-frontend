@@ -9,7 +9,6 @@ import {
   ModalCloseButton,
   Button,
   Text,
-  Checkbox,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
@@ -32,16 +31,14 @@ const TermsConditionModal = ({ onClose, isOpen, isDonationForm = false }) => {
             mollit anim id est laborum
           </Text>
         </ModalBody>
-        {!isDonationForm && (
-          <ModalFooter justifyContent="space-between">
-            <Checkbox>I accept the Terms and Conditions*</Checkbox>
-
+        <ModalFooter justifyContent="space-between">
+          {!isDonationForm && (
             <Button bg="#319747" color="white">
               Approve Time&nbsp;
               <CheckIcon />
             </Button>
-          </ModalFooter>
-        )}
+          )}
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

@@ -50,6 +50,7 @@ const schema = yup.object({
     .required('Email required')
     .oneOf([yup.ref('email1'), null], 'Emails must both match'),
   Items: yup.array().of(yup.object().shape(itemFieldSchema), 'A Furniture Selection is Required'),
+  termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
 
 function DonationForm() {
@@ -265,14 +266,19 @@ function DonationForm() {
           </Heading>
           <Input {...register('additional')} />
         </Box>
+
+        <FormControl isInvalid={errors && errors.termsCond}>
+          <Flex>
+            <Checkbox {...register('termsCond')} />
+            <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
+            <Text cursor="pointer" onClick={onOpen} as="u">
+              terms and conditions.
+            </Text>
+          </Flex>
+          <FormErrorMessage>{errors.termsCond && errors.termsCond.message}</FormErrorMessage>
+        </FormControl>
+
         <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} isDonationForm />
-        <Flex>
-          <Checkbox />
-          <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
-          <Text cursor="pointer" onClick={onOpen} as="u">
-            terms and conditions.
-          </Text>
-        </Flex>
 
         <Button type="submit">Submit</Button>
       </form>
