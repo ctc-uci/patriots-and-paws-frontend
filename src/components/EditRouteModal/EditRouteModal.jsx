@@ -50,13 +50,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
     }
   }, [routeId]);
 
-  // create red circle icon
-  // const CircleIcon = props => (
-  //   <Icon viewBox="0 0 200 200" {...props}>
-  //     <path fill="currentColor" d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0" />
-  //   </Icon>
-  // );
-
   // convert date to 'Weekday, Month Day' format
   const convertDate = date => {
     const formattedDate = new Date(date).toLocaleDateString('en-US', {
@@ -71,12 +64,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   const handleDriverChange = e => {
     setAssignedDriverId(e.target.value);
   };
-
-  // const clearState = () => {
-  //   setAssignedDriverId('');
-  //   setDonations([]);
-  //   setErrorMessage('');
-  // };
 
   const handleSave = async () => {
     setModalState('view');
