@@ -18,10 +18,9 @@ import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
 import { sendEmail } from '../../utils/utils';
 import { createNewDonation, updateDonation } from '../../utils/donorUtils';
-import uploadImage, { createNewFurniture, updateFurniture } from '../../utils/furnitureUtils';
+import uploadImage, { createNewFurniture } from '../../utils/furnitureUtils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
-// import uploadImage from '../../utils/furnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
 
 const itemFieldSchema = {
@@ -40,14 +39,12 @@ const schema = yup.object({
   zipcode: yup
     .string()
     .required('ZIP Code is required')
-    .matches(/^[0-9]+$/, 'ZIP Code must be a number')
-    .min(5, 'ZIP Code must be exactly 5 digits')
-    .max(5, 'ZIP Code must be exactly 5 digits'),
-  email1: yup.string().email('Invalid email').required('Email required'),
+    .matches(/^[0-9]{5}$/, 'ZIP Code must be a number and exactly 5 digits'),
+  email: yup.string().email('Invalid email').required('Email required'),
   email2: yup
     .string()
     .required('Email required')
-    .oneOf([yup.ref('email1'), null], 'Emails must both match'),
+    .oneOf([yup.ref('email'), null], 'Emails must both match'),
   Items: yup.array().of(yup.object().shape(itemFieldSchema), 'A Furniture Selection is Required'),
 });
 
@@ -72,7 +69,6 @@ function DonationForm({ donationData, onClose }) {
   ]);
 
   const [donatedFurnitureList, setDonatedFurniture] = useState([]);
-  const [isNewDonation, setIsNewDonation] = useState(true);
 
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
@@ -80,20 +76,7 @@ function DonationForm({ donationData, onClose }) {
 
   useEffect(() => {
     setDonatedFurniture(donationData.furniture);
-    const empty = {
-      id: '',
-      firstName: '',
-      lastName: '',
-      addressStreet: '',
-      addressCity: '',
-      addressUnit: '',
-      addressZip: '',
-      phoneNum: '',
-      email: '',
-      notes: '',
-      furniture: [],
-    };
-    setIsNewDonation(donationData === empty);
+    // setFiles(donationData.pictures);
   }, []);
 
   const removeFile = index => {
@@ -111,43 +94,28 @@ function DonationForm({ donationData, onClose }) {
   };
 
   const onSubmit = async data => {
-    // console.log(data);
-    // console.log(donatedFurnitureList);
-    // console.log(files);
     // await Promise.all(files.map(async file => uploadImage(file)));
     try {
-      // rename email1 to email
       const formData = {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        addressStreet: data.streetAddress,
-        addressCity: data.city,
-        // addressUnit: data.,
-        addressZip: data.zipcode,
-        phoneNum: data.phoneNumber,
-        email: data.email1,
-        notes: data.additional,
+        ...donationData,
+        ...data,
+        furniture: donatedFurnitureList,
+        // pictures: files,
       };
+      console.log(formData);
 
-      if (isNewDonation) {
-        sendEmail(data.email1, dconfirmemailtemplate);
+      if (!donationData) {
+        sendEmail(data.email, dconfirmemailtemplate);
         createNewDonation(formData);
         donatedFurnitureList.forEach(f => createNewFurniture(f));
         files.forEach(f => uploadImage(f));
       } else {
         updateDonation(donationData.id, formData);
-        donatedFurnitureList.forEach(f => {
-          if (f.id) {
-            updateFurniture(f.id, f);
-          } else {
-            createNewFurniture(f);
-          }
-        });
         // closes the editDonationModal
         onClose();
       }
     } catch (err) {
-      // console.log(err.message);
+      console.log(err.message);
       // to do: error message that email is invalid
     }
   };
@@ -246,10 +214,10 @@ function DonationForm({ donationData, onClose }) {
             Email
           </Heading>
           <Box className={styles.form}>
-            <FormControl isInvalid={errors && errors.email1} width="47%">
+            <FormControl isInvalid={errors && errors.email} width="47%">
               <FormLabel>Enter Email </FormLabel>
-              <Input {...register('email1')} defaultValue={donationData.email} />
-              <FormErrorMessage>{errors.email1 && errors.email1.message}</FormErrorMessage>
+              <Input {...register('email')} defaultValue={donationData.email} />
+              <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors && errors.email2} width="47%">
@@ -316,11 +284,7 @@ function DonationForm({ donationData, onClose }) {
           </Heading>
           <Input {...register('additional')} defaultValue={donationData.notes} />
         </Box>
-        {isNewDonation ? (
-          <Button type="submit">Submit</Button>
-        ) : (
-          <Button type="submit">Save</Button>
-        )}
+        <Button type="submit">{!donationData ? 'Submit' : 'Save'}</Button>
       </form>
     </Box>
   );
@@ -345,6 +309,13 @@ DonationForm.propTypes = {
         count: PropTypes.number,
       }),
     ),
+    pictures: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        imageURL: PropTypes.string,
+        notes: PropTypes.string,
+      }),
+    ),
   }),
   onClose: PropTypes.func,
 };
@@ -362,6 +333,7 @@ DonationForm.defaultProps = {
     email: '',
     notes: '',
     furniture: [],
+    pictures: [],
   },
   onClose: () => {},
 };
