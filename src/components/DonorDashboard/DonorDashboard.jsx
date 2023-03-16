@@ -67,7 +67,7 @@ const DonorDashboard = ({ donationId }) => {
     if (donation) {
       // pending
       if (donation.status === 'pending') {
-        return <Box>Sit Tight! We`&apos`ll be scheduling a pickup date with you soon.</Box>;
+        return <Box>Sit Tight! We&apos;ll be scheduling a pickup date with you soon.</Box>;
       }
 
       // approved
@@ -100,7 +100,7 @@ const DonorDashboard = ({ donationId }) => {
       if (donation.status === 'changes requested') {
         return (
           <Box>
-            After submitting your changes, we`&apos`ll be scheduling a pickup date with you soon.{' '}
+            After submitting your changes, we&apos;ll be scheduling a pickup date with you soon.{' '}
           </Box>
         );
       }
