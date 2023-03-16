@@ -56,10 +56,8 @@ const InventoryPage = () => {
 
   const makeStatus = status => {
     return (
-      <Tag size="sm" mt={3} ml={15} color="white" bgColor={colorMap[status]}>
-        <TagLabel fontSize={14} color="white">
-          {status.toUpperCase()}
-        </TagLabel>
+      <Tag size="sm" variant="solid" mt={3} ml={15} bgColor={colorMap[status]}>
+        <TagLabel fontSize={14}>{status.toUpperCase()}</TagLabel>
       </Tag>
     );
   };

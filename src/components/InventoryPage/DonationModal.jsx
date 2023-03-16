@@ -17,7 +17,6 @@ import {
   Textarea,
   Modal,
   Tag,
-  TagLabel,
   useDisclosure,
   Select,
   Alert,
@@ -35,7 +34,7 @@ import DonationFurnitureContainer from './DonationFurnitureContainer';
 import EmailModal from './EmailModal';
 import { STATUSES } from '../../utils/config';
 
-const { PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES;
+const { RESCHEDULE, PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES;
 const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES } = EMAIL_TYPE;
 
 const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
@@ -84,10 +83,16 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
 
   const makeStatusTag = curStatus => {
     return (
-      <Tag size="sm" mt="1%" ml="1%" color="white" bgColor={colorMap[status]}>
-        <TagLabel fontSize={14} color="white">
-          {curStatus.toUpperCase()}
-        </TagLabel>
+      <Tag
+        visibility={curStatus === RESCHEDULE && 'hidden'}
+        size="sm"
+        mt="1%"
+        ml="1%"
+        variant="solid"
+        bgColor={colorMap[status]}
+      >
+        {/* <TagLabel fontSize={14}>{curStatus.toUpperCase()}</TagLabel> */}
+        {curStatus.toUpperCase()}
       </Tag>
     );
   };
@@ -130,7 +135,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 Submission Date: {makeDate(submittedDate)}
               </Text>
             </Flex>
-            {currentStatus === CHANGES_REQUESTED && (
+            {currentStatus === RESCHEDULE && (
               <>
                 <Alert status="warning" rounded="md" ml="10%" mt="-1%" mb="1%" width="45%">
                   <Flex direction="row" verticalAlign="center" align="center">
@@ -155,7 +160,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 Basic Information
               </Text>
               <Stack spacing="1%">
-                <InputGroup>
+                <InputGroup width="50%">
                   <InputLeftAddon>Name</InputLeftAddon>
                   <Input defaultValue={`${firstName} ${lastName}`} isReadOnly />
                 </InputGroup>
@@ -266,7 +271,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
               </Flex>
             </Box>
 
-            <Box h="50%" w="40%" mb="1%" ml="1%" mr="1%">
+            <Box h="50%" w="40%" ml="1%" mr="1%">
               <Box>
                 <Text mb="1%" fontSize="1.25em">
                   Images
