@@ -63,6 +63,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: { ...donationData, email2: donationData?.email },
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -109,6 +110,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   };
 
   const onSubmit = async data => {
+    // TODO: handle 0 furniture item validation
     const newUrls = await Promise.all(
       files
         .filter(file => file?.file)
@@ -136,7 +138,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
         );
       } catch (err) {
         // TODO: error message that email is invalid
-        console.log(err.message);
+        // console.log(err.message);
         return;
       }
       navigate('/donate/status', {
@@ -151,7 +153,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
       });
     } else {
       const newData = await updateDonation(donationData.id, formData);
-      setDonationData(newData);
+      setDonationData(prev => newData ?? prev);
       // closes the editDonationModal
       closeEditDonationModal();
     }
@@ -194,13 +196,13 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.firstName} width="47%">
               <FormLabel>First</FormLabel>
-              <Input {...register('firstName')} defaultValue={donationData?.firstName} />
+              <Input {...register('firstName')} />
               <FormErrorMessage>{errors.firstName && errors.firstName.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors && errors.lastName} width="47%">
               <FormLabel>Last</FormLabel>
-              <Input {...register('lastName')} defaultValue={donationData?.lastName} />
+              <Input {...register('lastName')} />
               <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
             </FormControl>
           </Box>
@@ -212,7 +214,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
           <FormControl isInvalid={errors && errors.addressStreet}>
             <FormLabel>Street Address</FormLabel>
-            <Input {...register('addressStreet')} defaultValue={donationData?.addressStreet} />
+            <Input {...register('addressStreet')} />
             <FormErrorMessage>
               {errors.addressStreet && errors.addressStreet.message}
             </FormErrorMessage>
@@ -226,7 +228,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           <Box className={styles.form}>
             <FormControl width="47%" isInvalid={errors && errors.addressCity}>
               <FormLabel>City </FormLabel>
-              <Input {...register('addressCity')} defaultValue={donationData?.addressCity} />
+              <Input {...register('addressCity')} />
               <FormErrorMessage>
                 {errors.addressCity && errors.addressCity.message}
               </FormErrorMessage>
@@ -242,7 +244,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
           <FormControl isInvalid={errors && errors.addressZip}>
             <FormLabel>ZIP Code</FormLabel>
-            <Input {...register('addressZip')} defaultValue={donationData?.addressZip} />
+            <Input {...register('addressZip')} />
             <FormErrorMessage>{errors.addressZip && errors.addressZip.message}</FormErrorMessage>
           </FormControl>
         </Box>
@@ -251,7 +253,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
             Phone
           </Heading>
           <FormControl isInvalid={errors && errors.phoneNum}>
-            <Input type="tel" {...register('phoneNum')} defaultValue={donationData?.phoneNum} />
+            <Input type="tel" {...register('phoneNum')} />
             <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
           </FormControl>
         </Box>
@@ -262,21 +264,13 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           <Box className={styles.form}>
             <FormControl isInvalid={errors && errors.email} width="47%">
               <FormLabel>Enter Email </FormLabel>
-              <Input
-                {...register('email')}
-                defaultValue={donationData?.email}
-                disabled={donationData?.email}
-              />
+              <Input {...register('email')} disabled={donationData?.email} />
               <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors && errors.email2} width="47%">
               <FormLabel>Confirm Email </FormLabel>
-              <Input
-                {...register('email2')}
-                defaultValue={donationData?.email}
-                disabled={donationData?.email}
-              />
+              <Input {...register('email2')} disabled={donationData?.email} />
               <FormErrorMessage>{errors.email2 && errors.email2.message}</FormErrorMessage>
             </FormControl>
           </Box>
@@ -336,7 +330,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           <Heading size="md" className={styles.title}>
             Do you Have any Questions or Comments
           </Heading>
-          <Input {...register('notes')} defaultValue={donationData?.notes} />
+          <Input {...register('notes')} />
         </Box>
 
         {!donationData && (

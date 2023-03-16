@@ -22,7 +22,7 @@ const EditDonationModal = ({ donationData, setDonationData, isOpen, onClose }) =
             <DonationForm
               donationData={donationData}
               setDonationData={setDonationData}
-              onClose={onClose}
+              closeEditDonationModal={onClose}
             />
           </ModalBody>
         </ModalContent>

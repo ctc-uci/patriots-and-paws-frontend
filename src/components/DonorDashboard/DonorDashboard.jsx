@@ -25,7 +25,6 @@ const DonorDashboard = ({ donationId }) => {
         'changes requested': 1,
       };
       setStage(donationStage[donationStatus] ?? 1);
-      console.log(data);
       setDonationData(data);
     };
     fetchData();
