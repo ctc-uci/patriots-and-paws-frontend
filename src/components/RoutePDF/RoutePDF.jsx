@@ -11,7 +11,7 @@ import {
   Image,
   Font,
 } from '@react-pdf/renderer';
-import { getRouteDonations, formatDate, getDriverName } from '../../utils/routesUtils';
+import { getRouteDonations, formatDate, getDriverName } from '../../utils/RouteUtils';
 import { formatPhone } from '../../utils/utils';
 import deliveryIcon from '../../assets/delivery.png';
 import itemIcon from '../../assets/item.png';
@@ -41,7 +41,7 @@ const RoutePDF = ({ routeID }) => {
       const { donations: donationsList, date, driverId } = await getRouteDonations(routeID);
       setDonations(donationsList);
       setDateStr(formatDate(new Date(date)));
-
+      // TODO: return driver name in donation request
       const driverName = await getDriverName(driverId);
       setDriver(driverName);
     };

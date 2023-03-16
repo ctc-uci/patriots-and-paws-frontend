@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   FormLabel,
@@ -12,18 +12,21 @@ import {
   useDisclosure,
   Checkbox,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
-import { sendEmail } from '../../utils/utils';
+import { PNPBackend, sendEmail } from '../../utils/utils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
-// import uploadImage from '../../utils/furnitureUtils';
+import uploadImage from '../../utils/FurnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
+import ItemInfo from '../ItemInfo/ItemInfo';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
@@ -64,6 +67,7 @@ function DonationForm() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const navigate = useNavigate();
   const [furnitureOptions, setFurnitureOptions] = useState([
     'Dressers',
     'Clean Housewares',
@@ -81,6 +85,8 @@ function DonationForm() {
 
   const [files, setFiles] = useState([]);
 
+  const toast = useToast();
+
   const removeFile = index => {
     setFiles(prev => prev.filter((item, idx) => idx !== index));
   };
@@ -96,14 +102,40 @@ function DonationForm() {
   };
 
   const onSubmit = async data => {
-    // console.log(data);
-    // console.log(donatedFurnitureList);
-    // console.log(files);
-    // await Promise.all(files.map(async file => uploadImage(file)));
     try {
-      sendEmail(data.email1, dconfirmemailtemplate);
+      const { additional, city, email1, firstName, lastName, streetAddress, phoneNumber } = data;
+      const zip = parseInt(data.zipcode, 10);
+      const images = await Promise.all(
+        files.map(async ({ file, description }) => {
+          const url = await uploadImage(file);
+          return { imageUrl: url, notes: description };
+        }),
+      );
+      const donation = await PNPBackend.post('/donations', {
+        addressStreet: streetAddress,
+        addressCity: city,
+        addressZip: zip,
+        firstName,
+        lastName,
+        email: email1,
+        phoneNum: phoneNumber,
+        notes: additional,
+        furniture: donatedFurnitureList,
+        pictures: images,
+      });
+      sendEmail('Thank You For Donating!', data.email1, dconfirmemailtemplate(donation.data[0]));
+      navigate('/donate/status', {
+        state: { isLoggedIn: true, email: data.email1, donationId: donation.data[0].id },
+      });
+      toast({
+        title: 'Your Donation Has Been Succesfully Submitted!',
+        description: 'An email has been sent with your donation ID',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
     } catch (err) {
-      // console.log(err.message);
+      // console.log(err);
       // to do: error message that email is invalid
     }
   };
@@ -115,15 +147,25 @@ function DonationForm() {
   };
 
   const addDonation = async ev => {
-    setDonatedFurniture(prev => [...prev, { name: ev.target.value, num: 1 }]);
+    setDonatedFurniture(prev => [...prev, { name: ev.target.value, count: 1 }]);
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
     setSelectedFurnitureValue('Select Furniture');
   };
 
   const changeDonation = (furnitureName, ev) => {
     const furniture = donatedFurnitureList.find(e => e.name === furnitureName);
-    furniture.num = +ev;
+    furniture.count = +ev;
   };
+
+  const [itemsInfoList, setItemsInfoList] = useState([]);
+
+  useEffect(() => {
+    const fetchItemsInfoOptions = async () => {
+      const { data } = await PNPBackend.get(`furnitureOptions`);
+      setItemsInfoList(data);
+    };
+    fetchItemsInfoOptions();
+  }, []);
 
   return (
     <Box className={styles['form-padding']}>
@@ -213,9 +255,12 @@ function DonationForm() {
           </Box>
         </Box>
         <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title} marginBottom="1em">
-            Furniture
-          </Heading>
+          <Flex marginBottom="1em" align="center">
+            <Heading size="md" className={styles.title} marginRight="1">
+              Item
+            </Heading>
+            <ItemInfo items={itemsInfoList} isAccepted />
+          </Flex>
           <Select
             placeholder="Select Furniture"
             value={selectedFurnitureValue}
