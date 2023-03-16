@@ -10,18 +10,25 @@ import {
   Button,
   Flex,
   Heading,
+  useDisclosure,
+  Checkbox,
+  Text,
+  useToast,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
-import { sendEmail } from '../../utils/utils';
-import { createNewDonation, updateDonation } from '../../utils/donorUtils';
-import uploadImage, { createNewFurniture } from '../../utils/furnitureUtils';
+import { createNewDonation, updateDonation } from '../../utils/DonorUtils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
+import { PNPBackend, sendEmail } from '../../utils/utils';
+import uploadImage from '../../utils/FurnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
+import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
+import ItemInfo from '../ItemInfo/ItemInfo';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
@@ -46,9 +53,10 @@ const schema = yup.object({
     .required('Email required')
     .oneOf([yup.ref('email'), null], 'Emails must both match'),
   Items: yup.array().of(yup.object().shape(itemFieldSchema), 'A Furniture Selection is Required'),
+  termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
 
-function DonationForm({ donationData, onClose }) {
+function DonationForm({ donationData, closeEditDonationModal }) {
   const {
     handleSubmit,
     register,
@@ -57,6 +65,9 @@ function DonationForm({ donationData, onClose }) {
     resolver: yupResolver(schema),
   });
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const navigate = useNavigate();
   const [furnitureOptions, setFurnitureOptions] = useState([
     'Dressers',
     'Clean Housewares',
@@ -78,6 +89,7 @@ function DonationForm({ donationData, onClose }) {
     setDonatedFurniture(donationData.furniture);
     // setFiles(donationData.pictures);
   }, []);
+  const toast = useToast();
 
   const removeFile = index => {
     setFiles(prev => prev.filter((item, idx) => idx !== index));
@@ -99,6 +111,7 @@ function DonationForm({ donationData, onClose }) {
       const formData = {
         ...donationData,
         ...data,
+        zip: parseInt(data.zipcode, 10),
         furniture: donatedFurnitureList,
         // pictures: files,
       };
@@ -106,13 +119,27 @@ function DonationForm({ donationData, onClose }) {
 
       if (!donationData) {
         sendEmail(data.email, dconfirmemailtemplate);
-        createNewDonation(formData);
-        donatedFurnitureList.forEach(f => createNewFurniture(f));
+        const { donationId, email } = createNewDonation(formData);
         files.forEach(f => uploadImage(f));
+        sendEmail(
+          'Thank You For Donating!',
+          formData.email,
+          dconfirmemailtemplate(donationId, email),
+        );
+        navigate('/donate/status', {
+          state: { isLoggedIn: true, email: formData.email, donationId },
+        });
+        toast({
+          title: 'Your Donation Has Been Succesfully Submitted!',
+          description: 'An email has been sent with your donation ID',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        });
       } else {
         updateDonation(donationData.id, formData);
         // closes the editDonationModal
-        onClose();
+        closeEditDonationModal();
       }
     } catch (err) {
       console.log(err.message);
@@ -137,6 +164,16 @@ function DonationForm({ donationData, onClose }) {
     furniture.count = +ev;
   };
 
+  const [itemsInfoList, setItemsInfoList] = useState([]);
+
+  useEffect(() => {
+    const fetchItemsInfoOptions = async () => {
+      const { data } = await PNPBackend.get(`furnitureOptions`);
+      setItemsInfoList(data);
+    };
+    fetchItemsInfoOptions();
+  }, []);
+
   return (
     <Box className={styles['form-padding']}>
       <form onSubmit={handleSubmit(data => onSubmit(data))}>
@@ -158,7 +195,6 @@ function DonationForm({ donationData, onClose }) {
             </FormControl>
           </Box>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Address
@@ -198,7 +234,6 @@ function DonationForm({ donationData, onClose }) {
             <FormErrorMessage>{errors.zipcode && errors.zipcode.message}</FormErrorMessage>
           </FormControl>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Phone
@@ -208,7 +243,6 @@ function DonationForm({ donationData, onClose }) {
             <FormErrorMessage>{errors.phoneNumber && errors.phoneNumber.message}</FormErrorMessage>
           </FormControl>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Email
@@ -227,11 +261,13 @@ function DonationForm({ donationData, onClose }) {
             </FormControl>
           </Box>
         </Box>
-
         <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title} marginBottom="1em">
-            Furniture
-          </Heading>
+          <Flex marginBottom="1em" align="center">
+            <Heading size="md" className={styles.title} marginRight="1">
+              Item
+            </Heading>
+            <ItemInfo items={itemsInfoList} isAccepted />
+          </Flex>
           <Select
             placeholder="Select Furniture"
             value={selectedFurnitureValue}
@@ -252,7 +288,6 @@ function DonationForm({ donationData, onClose }) {
             />
           ))}
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title} marginBottom="1em">
             Images
@@ -277,13 +312,26 @@ function DonationForm({ donationData, onClose }) {
             </Flex>
           </Box>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Do you Have any Questions or Comments
           </Heading>
           <Input {...register('additional')} defaultValue={donationData.notes} />
         </Box>
+
+        <FormControl isInvalid={errors && errors.termsCond}>
+          <Flex>
+            <Checkbox {...register('termsCond')} />
+            <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
+            <Text cursor="pointer" onClick={onOpen} as="u">
+              terms and conditions.
+            </Text>
+          </Flex>
+          <FormErrorMessage>{errors.termsCond && errors.termsCond.message}</FormErrorMessage>
+        </FormControl>
+
+        <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} isDonationForm />
+
         <Button type="submit">{!donationData ? 'Submit' : 'Save'}</Button>
       </form>
     </Box>
@@ -317,7 +365,7 @@ DonationForm.propTypes = {
       }),
     ),
   }),
-  onClose: PropTypes.func,
+  closeEditDonationModal: PropTypes.func,
 };
 
 DonationForm.defaultProps = {
@@ -335,7 +383,7 @@ DonationForm.defaultProps = {
     furniture: [],
     pictures: [],
   },
-  onClose: () => {},
+  closeEditDonationModal: () => {},
 };
 
 export default DonationForm;

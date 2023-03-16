@@ -18,7 +18,7 @@ const Dashboard = () => {
     fetchUserFromDB();
   }, []);
 
-  return <>{user?.role === DRIVER_ROLE ? <DriverDashboard /> : <InventoryPage />}</>;
+  return <>{user?.role && (user.role === DRIVER_ROLE ? <DriverDashboard /> : <InventoryPage />)}</>;
 };
 
 export default Dashboard;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, GridItem, Box, Text, IconButton, useDisclosure } from '@chakra-ui/react';
 import { EditIcon } from '@chakra-ui/icons';
-import { getDonationData } from '../../utils/donorUtils';
+import { getDonationData } from '../../utils/DonorUtils';
 import DonorFooter from '../DonorFooter/DonorFooter';
 import TrackDonationSection from '../TrackDonationSection/TrackDonationSection';
 import EditDonationModal from '../EditDonationModal/EditDonationModal';
@@ -25,7 +25,7 @@ const DonorDashboard = ({ donationId }) => {
         'changes requested': 1,
       };
       setStage(donationStage[donationStatus] ?? 1);
-      console.log(data);
+      // console.log(data);
       setDonationData(data);
     };
     fetchData();
