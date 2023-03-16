@@ -41,7 +41,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
     const routeFromDB = await getRoute(routeId);
     setRoute(routeFromDB);
     setAssignedDriverId(routeFromDB.driverId);
-    setDonations(routeFromDB.donations);
+    setDonations(routeFromDB.donations ?? []);
   };
 
   useEffect(() => {

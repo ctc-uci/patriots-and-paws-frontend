@@ -27,15 +27,10 @@ import DonationModal from './DonationModal';
 import RouteCalendar from '../RouteCalendar/RouteCalendar';
 import PaginationFooter from '../PaginationFooter/PaginationFooter';
 import { PNPBackend } from '../../utils/utils';
-import {
-  getDonationsFromDB,
-  getRoutesFromDB,
-  makeDate,
-  colorMap,
-} from '../../utils/InventoryUtils';
+import { getRoutesFromDB, makeDate, colorMap } from '../../utils/InventoryUtils';
 import { STATUSES } from '../../utils/config';
 
-const { PENDING, APPROVED, CHANGES_REQUESTED, SCHEDULING, SCHEDULED, ARCHIVED } = STATUSES;
+const { PENDING, CHANGES_REQUESTED, SCHEDULING, SCHEDULED, PICKED_UP, RESCHEDULE } = STATUSES;
 
 const InventoryPage = () => {
   const [allDonations, setAllDonations] = useState([]);
@@ -47,10 +42,10 @@ const InventoryPage = () => {
   const [tabIndex, setTabIndex] = useState(0);
 
   const tabStatuses = [
-    [PENDING, CHANGES_REQUESTED],
-    [APPROVED, SCHEDULING],
+    [PENDING, CHANGES_REQUESTED, RESCHEDULE],
+    [SCHEDULING],
     [SCHEDULED],
-    [ARCHIVED],
+    [PICKED_UP],
   ];
 
   const handleRowClick = data => {
@@ -60,7 +55,7 @@ const InventoryPage = () => {
 
   const makeStatus = status => {
     return (
-      <Tag size="lg" colorScheme={colorMap[status]}>
+      <Tag variant="solid" colorScheme={colorMap[status]}>
         {status[0].toUpperCase() + status.slice(1)}
       </Tag>
     );
@@ -74,14 +69,6 @@ const InventoryPage = () => {
 
   useEffect(() => {
     getTotalCount();
-  }, []);
-
-  useEffect(() => {
-    const fetchDonationsFromDB = async () => {
-      const donationsFromDB = await getDonationsFromDB();
-      setAllDonations(donationsFromDB);
-    };
-    fetchDonationsFromDB();
   }, []);
 
   useEffect(() => {

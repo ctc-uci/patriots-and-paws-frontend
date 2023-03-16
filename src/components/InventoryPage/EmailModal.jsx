@@ -23,7 +23,7 @@ import { EMAIL_TYPE, makeDate } from '../../utils/InventoryUtils';
 import { STATUSES } from '../../utils/config';
 
 const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, SCHEDULED } = EMAIL_TYPE;
-const { APPROVED, CHANGES_REQUESTED } = STATUSES;
+const { SCHEDULING, CHANGES_REQUESTED } = STATUSES;
 
 const makeSendButton = (
   status,
@@ -39,8 +39,8 @@ const makeSendButton = (
   const handleApproveDonation = async e => {
     handleSubmit(e);
     await PNPBackend.post('/donations/assign-route', { donationId, routeId });
-    updateDonation({ newStatus: APPROVED, newPickupDate: pickupDate, newRouteId: routeId });
-    setCurrentStatus(APPROVED);
+    updateDonation({ newStatus: SCHEDULING, newPickupDate: pickupDate, newRouteId: routeId });
+    setCurrentStatus(SCHEDULING);
     onCloseEmailModal();
   };
 
@@ -50,8 +50,8 @@ const makeSendButton = (
         colorScheme={isConfirmationSendEmail ? 'green' : 'red'}
         onClick={e => {
           handleSubmit(e);
-          updateDonation({ newStatus: APPROVED });
-          setCurrentStatus(APPROVED);
+          updateDonation({ newStatus: SCHEDULING });
+          setCurrentStatus(SCHEDULING);
           onCloseEmailModal();
         }}
       >

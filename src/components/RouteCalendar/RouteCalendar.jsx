@@ -9,7 +9,6 @@ import interactionPlugin from '@fullcalendar/interaction';
 import CreateRouteModal from '../CreateRouteModal/CreateRouteModal';
 import { getCurrentUserId, getUserFromDB } from '../../utils/AuthUtils';
 import EditRouteModal from '../EditRouteModal/EditRouteModal';
-import { PNPBackend } from '../../utils/utils';
 import { AUTH_ROLES } from '../../utils/config';
 import { getAllRoutes, getDrivers } from '../../utils/RouteUtils';
 
@@ -43,33 +42,18 @@ const RouteCalendar = () => {
       const currentUser = await getUserFromDB(currentUserId);
       const { role: userRole } = currentUser;
       setRole(userRole);
-      if (role === DRIVER_ROLE) {
-        const { data } = await PNPBackend.get(`/routes/driver/${currentUserId}`);
+      // TODO: add color indication for driver logged in
+      const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
+      const eventsList = routesFromDB.map(({ id, name, date }) => ({
+        id,
+        title: name,
+        start: new Date(date).toISOString().replace(/T.*$/, ''),
+        allDay: true,
+      }));
+      setDrivers(driversFromDB);
 
-        const eventsList = data.map(({ id, name, date }) => ({
-          id,
-          title: name,
-          start: new Date(date).toISOString().replace(/T.*$/, ''),
-          allDay: true,
-        }));
-
-        const d = [currentUser];
-        setDrivers(d);
-        calendarRef.current.getApi().removeAllEventSources();
-        calendarRef.current.getApi().addEventSource(eventsList);
-      } else {
-        const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-        const eventsList = routesFromDB.map(({ id, name, date }) => ({
-          id,
-          title: name,
-          start: new Date(date).toISOString().replace(/T.*$/, ''),
-          allDay: true,
-        }));
-        setDrivers(driversFromDB);
-
-        calendarRef.current.getApi().removeAllEventSources();
-        calendarRef.current.getApi().addEventSource(eventsList);
-      }
+      calendarRef.current.getApi().removeAllEventSources();
+      calendarRef.current.getApi().addEventSource(eventsList);
     };
     fetchAllRoutesAndDrivers();
   }, []);
