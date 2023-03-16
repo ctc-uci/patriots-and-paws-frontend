@@ -101,7 +101,7 @@ function DonationForm() {
       const images = await Promise.all(
         files.map(async ({ file, description }) => {
           const url = await uploadImage(file);
-          return { image_url: url, notes: description };
+          return { imageUrl: url, notes: description };
         }),
       );
       const donation = await PNPBackend.post('/donations', {
@@ -155,8 +155,7 @@ function DonationForm() {
   useEffect(() => {
     const fetchItemsInfoOptions = async () => {
       const { data } = await PNPBackend.get(`furnitureOptions`);
-      const itemsInfoOptions = await Promise.all(data);
-      setItemsInfoList(itemsInfoOptions);
+      setItemsInfoList(data);
     };
     fetchItemsInfoOptions();
   }, []);

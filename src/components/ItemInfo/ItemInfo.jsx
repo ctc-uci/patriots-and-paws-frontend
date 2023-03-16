@@ -22,9 +22,6 @@ const ItemInfo = ({ items, isAccepted = false }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      {/* <Button bg="white" border="1px solid #E2E8F0;" onClick={onOpen}>
-        Preview Item List
-      </Button> */}
       <InfoIcon onClick={onOpen} />
 
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
