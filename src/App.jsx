@@ -25,6 +25,7 @@ import ManageStaff from './pages/ManageStaff/ManageStaff';
 
 import ManageDonationForm from './pages/ManageDonationForm/ManageDonationForm';
 import RoutesPage from './pages/RoutesPage/RoutesPage';
+import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 import EmailAction from './components/EmailAction/EmailAction';
@@ -119,6 +120,8 @@ function App() {
       <Router>
         <Routes>
           <Route exact path="/playground" element={<Playground />} />
+
+          <Route path="*" element={<NotFoundPage />} />
 
           <Route element={<NavBarWrapper />}>
             <Route
