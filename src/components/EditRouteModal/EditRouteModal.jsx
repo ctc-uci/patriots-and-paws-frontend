@@ -243,65 +243,67 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
           </Stack>
           <Box>{errorMessage}</Box>
         </ModalBody>
-        <ModalFooter>
-          {modalState === 'edit' && (
-            <Flex
-              direction="row"
-              justify="right"
-              alignItems="center"
-              width="100%"
-              spacing={5}
-              paddingBottom={5}
-              paddingLeft={5}
-              paddingRight={5}
-            >
-              {/* <QuestionIcon h={5} w={5} color="#718096" /> */}
-              <Flex justify="left" gap={2}>
-                <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button colorScheme="blue" type="submit" onClick={handleSave}>
-                  Save changes
-                </Button>
+        {donations.length !== 0 && (
+          <ModalFooter>
+            {modalState === 'edit' && (
+              <Flex
+                direction="row"
+                justify="right"
+                alignItems="center"
+                width="100%"
+                spacing={5}
+                paddingBottom={5}
+                paddingLeft={5}
+                paddingRight={5}
+              >
+                {/* <QuestionIcon h={5} w={5} color="#718096" /> */}
+                <Flex justify="left" gap={2}>
+                  <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
+                    Cancel
+                  </Button>
+                  <Button colorScheme="blue" type="submit" onClick={handleSave}>
+                    Save changes
+                  </Button>
+                </Flex>
               </Flex>
-            </Flex>
-          )}
-          {modalState === 'view' && (
-            <Flex
-              direction="row"
-              justify="space-between"
-              alignItems="center"
-              width="100%"
-              spacing={5}
-              paddingBottom={5}
-              paddingLeft={5}
-              paddingRight={5}
-            >
-              <Flex justify="left" gap={2}>
-                <Button colorScheme="blackAlpha" type="submit" onClick={() => {}}>
-                  Export PDF
-                </Button>
-                <Button
-                  colorScheme="teal"
-                  type="submit"
-                  onClick={() => handleNavigateToAddress(donations)}
-                >
-                  Navigate to Route
-                </Button>
+            )}
+            {modalState === 'view' && (
+              <Flex
+                direction="row"
+                justify="space-between"
+                alignItems="center"
+                width="100%"
+                spacing={5}
+                paddingBottom={5}
+                paddingLeft={5}
+                paddingRight={5}
+              >
+                <Flex justify="left" gap={2}>
+                  <Button colorScheme="blackAlpha" type="submit" onClick={() => {}}>
+                    Export PDF
+                  </Button>
+                  <Button
+                    colorScheme="teal"
+                    type="submit"
+                    onClick={() => handleNavigateToAddress(donations)}
+                  >
+                    Navigate to Route
+                  </Button>
+                </Flex>
+                {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
+                  <Button
+                    colorScheme="blue"
+                    type="submit"
+                    justify="right"
+                    onClick={handleChangeToEdit}
+                  >
+                    Reorder Routes
+                  </Button>
+                )}
               </Flex>
-              {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
-                <Button
-                  colorScheme="blue"
-                  type="submit"
-                  justify="right"
-                  onClick={handleChangeToEdit}
-                >
-                  Reorder Routes
-                </Button>
-              )}
-            </Flex>
-          )}
-        </ModalFooter>
+            )}
+          </ModalFooter>
+        )}
       </ModalContent>
     </Modal>
   );
