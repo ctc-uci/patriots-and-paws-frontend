@@ -3,12 +3,10 @@ import { STATUSES } from './config';
 
 const {
   APPROVAL_REQUESTED,
-  // APPROVED,
   PENDING,
   CHANGES_REQUESTED,
   SCHEDULING,
   SCHEDULED,
-  // ARCHIVED,
   PICKED_UP,
   RESCHEDULE,
 } = STATUSES;
@@ -44,14 +42,24 @@ const getRoutesFromDB = async () => {
   return routes;
 };
 
-const colorMap = {
+const statusColorMap = {
   [APPROVAL_REQUESTED]: 'red',
   [PENDING]: 'blackAlpha',
   [CHANGES_REQUESTED]: 'blue',
-  [SCHEDULING]: 'green',
-  [SCHEDULED]: 'green',
-  [PICKED_UP]: 'green',
+  [SCHEDULING]: 'blue',
+  [SCHEDULED]: 'blue',
+  [PICKED_UP]: 'blackAlpha',
   [RESCHEDULE]: 'orange',
+};
+
+const displayStatuses = {
+  [APPROVAL_REQUESTED]: 'APPROVAL REQUESTED',
+  [PENDING]: 'PENDING',
+  [CHANGES_REQUESTED]: 'CHANGES REQUESTED',
+  [SCHEDULING]: 'PENDING DONOR APPROVAL',
+  [SCHEDULED]: 'AWAITING PICKUP',
+  [PICKED_UP]: 'PICKUP COMPLETE',
+  [RESCHEDULE]: 'RESCHEDULE',
 };
 
 const formatImageData = data => {
@@ -104,6 +112,7 @@ export {
   makeDate,
   formatImageData,
   formatFurnitureData,
-  colorMap,
+  statusColorMap,
+  displayStatuses,
   EMAIL_TYPE,
 };

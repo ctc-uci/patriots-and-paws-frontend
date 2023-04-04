@@ -28,13 +28,13 @@ import {
 
 import { PropTypes } from 'prop-types';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
-import { makeDate, colorMap, EMAIL_TYPE } from '../../utils/InventoryUtils';
+import { makeDate, displayStatuses, statusColorMap, EMAIL_TYPE } from '../../utils/InventoryUtils';
 import DonationImagesContainer from './DonationImagesContainer';
 import DonationFurnitureContainer from './DonationFurnitureContainer';
 import EmailModal from './EmailModal';
 import { STATUSES } from '../../utils/config';
 
-const { RESCHEDULE, PENDING, CHANGES_REQUESTED, SCHEDULED } = STATUSES;
+const { RESCHEDULE, PENDING, CHANGES_REQUESTED, SCHEDULED, SCHEDULING, PICKED_UP } = STATUSES;
 const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES } = EMAIL_TYPE;
 
 const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
@@ -89,9 +89,9 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         mt="1%"
         ml="1%"
         variant="solid"
-        bgColor={colorMap[status]}
+        colorScheme={statusColorMap[curStatus]}
       >
-        {curStatus.toUpperCase()}
+        {displayStatuses[curStatus]}
       </Tag>
     );
   };
@@ -100,6 +100,9 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     if (currentStatus !== RESCHEDULE) {
       setScheduledDate(pickupDate?.replace(/T.*$/, '') ?? '');
       setScheduledRouteId(routeId ?? '');
+    } else {
+      setScheduledDate('');
+      setScheduledRouteId('');
     }
   };
 
@@ -136,7 +139,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader mr="1%" ml="1%" mb="0%">
+        <ModalHeader mr="1%" ml="1%">
           {currentStatus && makeStatusTag(currentStatus)}
           <Flex direction="row">
             <Flex direction="column">
@@ -149,7 +152,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
             </Flex>
             {currentStatus === RESCHEDULE && (
               <>
-                <Alert status="warning" rounded="md" ml="10%" mt="-1%" mb="1%" width="45%">
+                <Alert status="warning" rounded="md" ml="10%" mb="1%" width="45%">
                   <Flex direction="row" verticalAlign="center" align="center">
                     <AlertIcon ml="0.75%" boxSize="5.5%" />
                     <Flex direction="column" ml="0.75%">
@@ -268,8 +271,8 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   ))}
                 </Select>
                 <Select
-                  placeholder={!routeId && 'Choose a route'}
-                  isDisabled={![PENDING, RESCHEDULE].includes(currentStatus) || !scheduledDate}
+                  placeholder={(!routeId || currentStatus === RESCHEDULE) && 'Choose a route'}
+                  isDisabled={![PENDING].includes(currentStatus) || !scheduledDate}
                   onChange={e => setScheduledRouteId(e.target.value)}
                   bg="white"
                 >
@@ -302,9 +305,11 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         </ModalBody>
         <ModalFooter justifyContent="space-between" ml="2%" mt="-1em">
           <Flex justify="left">
-            <Button colorScheme="red" justifyContent="left" onClick={deleteDonation}>
-              Delete Donation
-            </Button>
+            {![SCHEDULED, SCHEDULING, PICKED_UP].includes(currentStatus) && (
+              <Button colorScheme="red" justifyContent="left" onClick={deleteDonation}>
+                Delete Donation
+              </Button>
+            )}
           </Flex>
           <Flex mr="1%" justify="right">
             {[PENDING, RESCHEDULE, CHANGES_REQUESTED].includes(currentStatus) && (
@@ -333,9 +338,8 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 </Button>
               </>
             )}
-            {currentStatus === SCHEDULED && (
+            {[SCHEDULING, SCHEDULED].includes(currentStatus) && (
               <Button
-                ml="2%"
                 colorScheme="red"
                 onClick={() => {
                   emailModalOnOpen();
@@ -375,7 +379,7 @@ DonationModal.propTypes = {
   ),
   data: PropTypes.shape({
     status: PropTypes.string,
-    id: PropTypes.number,
+    id: PropTypes.string,
     addressStreet: PropTypes.string,
     addressUnit: PropTypes.string,
     addressCity: PropTypes.string,

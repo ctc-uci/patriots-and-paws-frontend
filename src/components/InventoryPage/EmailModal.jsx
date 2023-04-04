@@ -13,6 +13,7 @@ import {
   Textarea,
   Flex,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 
 import { Email, Item, Span } from 'react-html-email';
@@ -35,6 +36,7 @@ const makeSendButton = (
   isConfirmationSendEmail = false,
 ) => {
   const { id: donationId, scheduledRouteId: routeId, scheduledDate: pickupDate } = routeInfo;
+  const toast = useToast();
 
   const handleApproveDonation = async e => {
     handleSubmit(e);
@@ -42,6 +44,15 @@ const makeSendButton = (
     updateDonation({ newStatus: SCHEDULING, newPickupDate: pickupDate, newRouteId: routeId });
     setCurrentStatus(SCHEDULING);
     onCloseEmailModal();
+    toast({
+      title: `Scheduled #${donationId}.`,
+      description: 'Successfully scheduled donation for pickup.',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+      position: 'top',
+      variant: 'solid',
+    });
   };
 
   if (status === CANCEL_PICKUP) {
@@ -53,6 +64,15 @@ const makeSendButton = (
           updateDonation({ newStatus: SCHEDULING });
           setCurrentStatus(SCHEDULING);
           onCloseEmailModal();
+          toast({
+            title: `Cancelled #${donationId}.`,
+            description: "You've cancelled this pickup.",
+            status: 'info',
+            duration: 2000,
+            isClosable: true,
+            position: 'top',
+            variant: 'solid',
+          });
         }}
       >
         {isConfirmationSendEmail ? 'Send Email' : 'Send Cancellation Email'}
@@ -68,6 +88,15 @@ const makeSendButton = (
           updateDonation({ newStatus: CHANGES_REQUESTED });
           setCurrentStatus(CHANGES_REQUESTED);
           onCloseEmailModal();
+          toast({
+            title: `Changes Requested for #${donationId}.`,
+            description: 'Email has been sent for changes to be made by the Donor.',
+            status: 'info',
+            duration: 2000,
+            isClosable: true,
+            position: 'top',
+            variant: 'solid',
+          });
         }}
       >
         Send Email
@@ -77,7 +106,12 @@ const makeSendButton = (
 
   if (status === APPROVE) {
     return (
-      <Button colorScheme="green" onClick={e => handleApproveDonation(e)}>
+      <Button
+        colorScheme="green"
+        onClick={e => {
+          handleApproveDonation(e);
+        }}
+      >
         {isConfirmationSendEmail ? 'Send Email' : 'Send Approval Email'}
       </Button>
     );
@@ -180,7 +214,7 @@ const EmailModal = ({
         header: '[ACTION REQUIRED] Changes Requested',
         body: (
           <Text>
-            We have requested changes to your donation form due to reasons listed before. We have
+            We have requested changes to your donation form due to reasons listed below. We have
             listed the items that we don’t accept below. Please remove these items from your
             donation form so that we can proceed with the donation pickup. Feel free to email us at
             patriotsandpaws@gmail.com or call us at [pnp number] for more information or assistance.

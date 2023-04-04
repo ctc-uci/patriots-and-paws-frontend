@@ -28,7 +28,12 @@ import DonationModal from './DonationModal';
 import RouteCalendar from '../RouteCalendar/RouteCalendar';
 import PaginationFooter from '../PaginationFooter/PaginationFooter';
 import { PNPBackend } from '../../utils/utils';
-import { getRoutesFromDB, makeDate, colorMap } from '../../utils/InventoryUtils';
+import {
+  getRoutesFromDB,
+  makeDate,
+  statusColorMap,
+  displayStatuses,
+} from '../../utils/InventoryUtils';
 import { STATUSES } from '../../utils/config';
 
 const { PENDING, CHANGES_REQUESTED, SCHEDULING, SCHEDULED, PICKED_UP, RESCHEDULE } = STATUSES;
@@ -56,8 +61,8 @@ const InventoryPage = () => {
 
   const makeStatus = status => {
     return (
-      <Tag size="sm" variant="solid" mt={3} ml={15} bgColor={colorMap[status]}>
-        <TagLabel fontSize={14}>{status.toUpperCase()}</TagLabel>
+      <Tag size="sm" variant="solid" mt={3} ml={15} colorScheme={statusColorMap[status]}>
+        <TagLabel fontSize={14}>{displayStatuses[status]}</TagLabel>
       </Tag>
     );
   };
