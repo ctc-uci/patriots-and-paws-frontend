@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+/* eslint-disable import/no-extraneous-dependencies */
 import { PDFViewer, StyleSheet } from '@react-pdf/renderer';
 import './App.css';
 import DonationForm from './components/DonationForm/DonationForm';
@@ -20,11 +21,11 @@ import DropZone from './components/DropZone/DropZone';
 import uploadImage from './utils/FurnitureUtils';
 import Drivers from './pages/Dashboard/Drivers';
 import DriverRoutes from './pages/Dashboard/DriverRoutes';
-import Donate from './pages/donation/Donate';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
 
 import ManageDonationForm from './pages/ManageDonationForm/ManageDonationForm';
 import RoutesPage from './pages/RoutesPage/RoutesPage';
+import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 
 import ProtectedRoute from './utils/ProtectedRoute';
 import EmailAction from './components/EmailAction/EmailAction';
@@ -120,6 +121,8 @@ function App() {
         <Routes>
           <Route exact path="/playground" element={<Playground />} />
 
+          <Route path="*" element={<NotFoundPage />} />
+
           <Route element={<NavBarWrapper />}>
             <Route
               exact
@@ -205,7 +208,7 @@ function App() {
           <Route exact path="/email-action" element={<EmailAction redirectPath="/login" />} />
           <Route exact path="/forgot-password" element={<ForgotPassword />} />
 
-          <Route exact path="/donate" element={<Donate />} />
+          <Route exact path="/donate" element={<DonorLogin />} />
           <Route exact path="/donate/form" element={<DonationForm />} />
           <Route exact path="/donate/status" element={<DonorLogin />} />
         </Routes>

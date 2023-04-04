@@ -13,8 +13,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 function DonationCard({ donatedFurniture, changeDon, removeDon }) {
-  const { name, num } = donatedFurniture;
-  const [value, setValue] = useState(num);
+  const { name, count } = donatedFurniture;
+  const [value, setValue] = useState(count);
 
   const handleChange = val => {
     setValue(val);
@@ -22,8 +22,8 @@ function DonationCard({ donatedFurniture, changeDon, removeDon }) {
   };
 
   useEffect(() => {
-    handleChange(num);
-  }, [num]);
+    handleChange(count);
+  }, [count]);
 
   return (
     <Stat
@@ -60,7 +60,7 @@ function DonationCard({ donatedFurniture, changeDon, removeDon }) {
 DonationCard.propTypes = {
   donatedFurniture: PropTypes.shape({
     name: PropTypes.string.isRequired,
-    num: PropTypes.number.isRequired,
+    count: PropTypes.number.isRequired,
   }).isRequired,
   changeDon: PropTypes.func.isRequired,
   removeDon: PropTypes.func.isRequired,
