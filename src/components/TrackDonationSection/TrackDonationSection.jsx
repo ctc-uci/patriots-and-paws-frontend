@@ -8,7 +8,7 @@ const TrackDonationSection = ({ stage }) => {
     {
       checked: stage >= 1,
       curr: stage === 1,
-      heading: 'From Submitted',
+      heading: 'Form Submitted',
       body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do',
     },
     {

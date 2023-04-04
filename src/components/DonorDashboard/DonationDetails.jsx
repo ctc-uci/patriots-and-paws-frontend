@@ -4,37 +4,33 @@ import {
   TagLabel,
   Box,
   Text,
-  Grid,
-  GridItem,
-  IconButton,
+  Flex,
   Divider,
   useDisclosure,
+  Button,
+  Image,
+  Grid,
 } from '@chakra-ui/react';
-import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import { DeleteIcon } from '@chakra-ui/icons';
 import { PropTypes } from 'prop-types';
 import DonationFurnitureContainer from '../InventoryPage/DonationFurnitureContainer';
 import DonationImagesContainer from '../InventoryPage/DonationImagesContainer';
 import EditDonationModal from '../EditDonationModal/EditDonationModal';
+import { STATUSES } from '../../utils/config';
+import pencilIcon from '../../assets/pencil.svg';
+
+const {
+  PENDING,
+  // SCHEDULING,
+  // SCHEDULED,
+  CHANGES_REQUESTED,
+  PICKED_UP,
+  APPROVAL_REQUESTED,
+  // RESCHEDULE,
+} = STATUSES;
 
 const DonationDetails = ({ data, setDonationData }) => {
-  // const {
-  //   id,
-  //   status,
-  //   firstName,
-  //   lastName,
-  //   submittedDate,
-  //   addressStreet,
-  //   addressUnit,
-  //   addressCity,
-  //   addressZip,
-  //   email,
-  //   phoneNum,
-  //   notes,
-  //   pictures,
-  //   furniture,
-  //   pickupDate,
-  //   routeId,
-  // } = data;
+  const { status, id, submittedDate, pictures, furniture } = data;
   const formatDate = date => {
     const d = new Date(date);
     return d.toLocaleDateString('en-US', {
@@ -46,86 +42,79 @@ const DonationDetails = ({ data, setDonationData }) => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // const [donation, setDonation] = useState();
   const displayStatusTag = () => {
-    // pending
-    if (data) {
-      if (data.status === 'pending') {
-        return (
-          <Tag bg="blue.500">
-            <TagLabel color="white"> Submitted </TagLabel>
-          </Tag>
-        );
-      }
-      // approved
-      if (data.status === 'scheduling') {
-        return (
-          <Tag bg="green.500">
-            <TagLabel color="white"> Approved </TagLabel>
-          </Tag>
-        );
-      }
-      // flagged
-      if (data.status === 'changes requested') {
-        // eslint-disable-next-line consistent-return
-        return (
-          <Tag bg="orange.500">
-            <TagLabel color="white"> Changes Needed </TagLabel>
-          </Tag>
-        );
-      }
+    if (status === PENDING || status === APPROVAL_REQUESTED) {
+      return (
+        <Tag variant="solid" colorScheme="blue">
+          Submitted
+        </Tag>
+      );
+    }
+    if (status === CHANGES_REQUESTED) {
+      return (
+        <Tag bg="orange.100">
+          <TagLabel color="orange.600"> Changes Needed </TagLabel>
+        </Tag>
+      );
+    }
+    if (status === PICKED_UP) {
+      return (
+        <Tag variant="solid" colorScheme="green">
+          Received
+        </Tag>
+      );
     }
     return (
-      <Tag bg="gray.50">
-        <TagLabel color="black"> Invalid Status </TagLabel>
+      <Tag variant="solid" colorScheme="green">
+        Approved
       </Tag>
     );
   };
 
-  // eslint-disable-next-line consistent-return
-  const displayEditIcon = () => {
-    if (data.status === 'changes requested') {
-      return <IconButton icon={<EditIcon />} float="right" onClick={onOpen} />;
-    }
+  const editButton = (
+    <Button size="sm" onClick={onOpen} colorScheme="orange">
+      Edit Form <Image src={pencilIcon} ml={2} />
+    </Button>
+  );
+
+  const handleDelete = () => {
+    console.log('delete icon clicked');
   };
-  // console.log(data);
-  if (data) {
-    return (
-      <>
-        <Grid h="200px" templateRows="repeat(2, 1fr)" templateColumns="repeat(6, 1fr)" gap={4}>
-          <GridItem colSpan={2}>{displayStatusTag()}</GridItem>
-          <GridItem colSpan={2}>
-            <Text as="b">Form #{data.id}</Text>
-          </GridItem>
-          <GridItem colSpan={2}>
-            <Text>Submitted on {formatDate(data.submittedDate)}</Text>
-          </GridItem>
-          <GridItem>
-            {displayEditIcon()}
-            <IconButton colorScheme="white" icon={<DeleteIcon color="red.500" />} />
-          </GridItem>
-          <Divider size="md" variant="thick" />
-          <GridItem colSpan={2}>
-            <Box borderRadius="6px">
-              <DonationImagesContainer data={data.pictures} />
-            </Box>
-          </GridItem>
-          <GridItem colStart={4} colSpan={4} rowSpan={2}>
-            <Box overflow="scroll" maxH="sm">
-              <DonationFurnitureContainer data={data.furniture} />
-            </Box>
-          </GridItem>
+
+  return (
+    <>
+      <Flex direction="column">
+        <Flex alignItems="center" justifyContent="space-between" px={3} pb={4}>
+          <Flex gap={5}>
+            {displayStatusTag()}
+            <Text fontWeight={700}>Form #{id}</Text>
+          </Flex>
+          <Flex alignItems="center" gap={5}>
+            <Text>Submitted on {formatDate(submittedDate)}</Text>
+            {status === CHANGES_REQUESTED && editButton}
+            {status !== PICKED_UP && (
+              <DeleteIcon color="red.500" _hover={{ cursor: 'pointer' }} onClick={handleDelete} />
+            )}
+          </Flex>
+        </Flex>
+        <Divider size="md" variant="solid" />
+        <Grid templateColumns="1fr 1fr" alignItems="center">
+          <Box borderRadius="6px">
+            <DonationImagesContainer data={pictures} />
+          </Box>
+          <Box overflow="scroll" maxH="sm">
+            <DonationFurnitureContainer data={furniture} />
+          </Box>
         </Grid>
-        <EditDonationModal
-          donationData={data}
-          setDonationData={setDonationData}
-          isOpen={isOpen}
-          onClose={onClose}
-        />
-      </>
-    );
-  }
-  return <Text>Hi!</Text>;
+      </Flex>
+      <EditDonationModal
+        donationData={data}
+        setDonationData={setDonationData}
+        isOpen={isOpen}
+        onClose={onClose}
+      />
+    </>
+  );
 };
 
 DonationDetails.propTypes = {
