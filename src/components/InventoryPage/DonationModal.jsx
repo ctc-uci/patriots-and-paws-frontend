@@ -91,20 +91,32 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         variant="solid"
         bgColor={colorMap[status]}
       >
-        {/* <TagLabel fontSize={14}>{curStatus.toUpperCase()}</TagLabel> */}
         {curStatus.toUpperCase()}
       </Tag>
     );
   };
 
   const resetScheduledRoute = () => {
-    setScheduledDate(pickupDate?.replace(/T.*$/, '') ?? '');
-    setScheduledRouteId(routeId ?? '');
+    if (currentStatus !== RESCHEDULE) {
+      setScheduledDate(pickupDate?.replace(/T.*$/, '') ?? '');
+      setScheduledRouteId(routeId ?? '');
+    }
   };
+
+  const removeSelectedRouteOption = allRoutes => {
+    return Object.fromEntries(
+      Object.entries(allRoutes).filter(route => route[0] !== pickupDate?.replace(/T.*$/, '') ?? ''),
+    );
+  };
+
+  const displayedRouteOptions = status === RESCHEDULE ? removeSelectedRouteOption(routes) : routes;
 
   useEffect(() => {
     setCurrentStatus(status);
     resetScheduledRoute();
+    console.log(routes);
+    console.log(data);
+    console.log(displayedRouteOptions);
   }, [data]);
 
   const deleteDonation = async () => {
@@ -240,16 +252,16 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
               >
                 <Text fontSize="1.25em">Schedule</Text>
                 <Select
-                  placeholder={!pickupDate && 'Choose a date'}
+                  placeholder={(!pickupDate || currentStatus === RESCHEDULE) && 'Choose a date'}
                   onChange={e => {
                     setScheduledDate(e.target.value);
                     setScheduledRouteId('');
                   }}
                   defaultValue={scheduledDate}
                   bg="white"
-                  isDisabled={![PENDING].includes(currentStatus)}
+                  isDisabled={![PENDING, RESCHEDULE].includes(currentStatus)}
                 >
-                  {Object.keys(routes).map(day => (
+                  {Object.keys(displayedRouteOptions).map(day => (
                     <option key={day} value={day}>
                       {day}
                     </option>
@@ -257,12 +269,12 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 </Select>
                 <Select
                   placeholder={!routeId && 'Choose a route'}
-                  isDisabled={![PENDING].includes(currentStatus) || !scheduledDate}
+                  isDisabled={![PENDING, RESCHEDULE].includes(currentStatus) || !scheduledDate}
                   onChange={e => setScheduledRouteId(e.target.value)}
                   bg="white"
                 >
                   {scheduledDate &&
-                    routes[scheduledDate]?.map(({ id: optionId, name }) => (
+                    displayedRouteOptions[scheduledDate]?.map(({ id: optionId, name }) => (
                       <option key={optionId} value={optionId}>
                         {name}
                       </option>
@@ -276,7 +288,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 <Text mb="1%" fontSize="1.25em">
                   Images
                 </Text>
-                <DonationImagesContainer data={pictures} />
+                <DonationImagesContainer pictures={pictures} />
               </Box>
 
               <Box h="50%" w="100%">
@@ -295,7 +307,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
             </Button>
           </Flex>
           <Flex mr="1%" justify="right">
-            {(currentStatus === PENDING || currentStatus === CHANGES_REQUESTED) && (
+            {[PENDING, RESCHEDULE, CHANGES_REQUESTED].includes(currentStatus) && (
               <>
                 <Button
                   colorScheme="blue"

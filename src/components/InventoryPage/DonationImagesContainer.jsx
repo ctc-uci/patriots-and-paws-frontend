@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SimpleGrid, Image, useDisclosure } from '@chakra-ui/react';
+import { SimpleGrid, Image, useDisclosure, Box, Text, Flex } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
   Pagination,
@@ -8,18 +8,18 @@ import {
   PaginationPrevious,
   PaginationContainer,
 } from '@ajna/pagination';
-
 import ImageModal from './ImageModal';
 import { formatImageData } from '../../utils/InventoryUtils';
+import imageIcon from '../../assets/InsertPhoto.svg';
 
-const DonationImagesContainer = ({ data }) => {
+const DonationImagesContainer = ({ pictures }) => {
   const {
     isOpen: isOpenImageModal,
     onOpen: onOpenImageModal,
     onClose: onCloseImageModal,
   } = useDisclosure();
 
-  const numPictures = data.length;
+  const numPictures = pictures.length;
   const itemsPerPage = numPictures < 4 ? 1 : 4;
 
   const [currentImage, setCurrentImage] = useState();
@@ -30,7 +30,7 @@ const DonationImagesContainer = ({ data }) => {
     initialState: { currentPage: 1 },
   });
 
-  const formattedData = formatImageData(data);
+  const formattedData = formatImageData(pictures);
 
   useEffect(() => {
     setDisplayedData(formattedData[currentPage - 1]);
@@ -42,36 +42,48 @@ const DonationImagesContainer = ({ data }) => {
   };
 
   return (
-    <>
-      <SimpleGrid columns={2} gap={1}>
-        {displayedData?.map(image => (
-          <Image
-            key={image.id}
-            alt={image.notes}
-            src={image.imageUrl}
-            onClick={() => handleImageClick(image)}
+    <Box p="2em">
+      {numPictures > 0 ? (
+        <>
+          <ImageModal
+            isOpenImageModal={isOpenImageModal}
+            onOpenImageModal={onOpenImageModal}
+            onCloseImageModal={onCloseImageModal}
+            image={currentImage}
           />
-        ))}
-      </SimpleGrid>
-      <ImageModal
-        isOpenImageModal={isOpenImageModal}
-        onOpenImageModal={onOpenImageModal}
-        onCloseImageModal={onCloseImageModal}
-        image={currentImage}
-      />
-      <br />
-      <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
-        <PaginationContainer justify="right">
-          <PaginationPrevious>&lsaquo;</PaginationPrevious>
-          <PaginationNext>&rsaquo;</PaginationNext>
-        </PaginationContainer>
-      </Pagination>
-    </>
+          <Pagination
+            pagesCount={pagesCount}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          >
+            <PaginationContainer alignItems="center" justify="space-between" gap={5}>
+              <PaginationPrevious>&lsaquo;</PaginationPrevious>
+              <SimpleGrid columns={itemsPerPage === 1 ? 1 : 2} spacing={1} w="100%">
+                {displayedData?.map(image => (
+                  <Image
+                    key={image.id}
+                    alt={image.notes}
+                    src={image.imageUrl}
+                    onClick={() => handleImageClick(image)}
+                  />
+                ))}
+              </SimpleGrid>
+              <PaginationNext>&rsaquo;</PaginationNext>
+            </PaginationContainer>
+          </Pagination>
+        </>
+      ) : (
+        <Flex p="3em" direction="column" alignItems="center">
+          <Image src={imageIcon} h="3em" w="3em" />
+          <Text color="gray.500">No Images Uploaded</Text>
+        </Flex>
+      )}
+    </Box>
   );
 };
 
 DonationImagesContainer.propTypes = {
-  data: PropTypes.arrayOf(
+  pictures: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number,
       imageURL: PropTypes.string,
@@ -81,7 +93,7 @@ DonationImagesContainer.propTypes = {
 };
 
 DonationImagesContainer.defaultProps = {
-  data: [],
+  pictures: [],
 };
 
 export default DonationImagesContainer;
