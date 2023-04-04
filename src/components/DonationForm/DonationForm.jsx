@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   FormLabel,
@@ -9,17 +10,25 @@ import {
   Button,
   Flex,
   Heading,
+  useDisclosure,
+  Checkbox,
+  Text,
+  useToast,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { useNavigate } from 'react-router-dom';
 import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
-import { sendEmail } from '../../utils/utils';
+import { PNPBackend, sendEmail } from '../../utils/utils';
+import { createNewDonation, updateDonation } from '../../utils/DonorUtils';
+import uploadImage from '../../utils/FurnitureUtils';
 import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
-// import uploadImage from '../../utils/furnitureUtils';
 import DonationCard from '../DonationCard/DonationCard';
+import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
+import ItemInfo from '../ItemInfo/ItemInfo';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
@@ -28,76 +37,125 @@ const itemFieldSchema = {
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
   lastName: yup.string().required('Invalid last name'),
-  phoneNumber: yup
+  phoneNum: yup
     .string()
     .required('Phone number is required')
     .matches(/[0-9]{10}/, 'Phone number must be 10 digits'),
-  streetAddress: yup.string().required('Street Address is required'),
-  city: yup.string().required('City is required'),
-  zipcode: yup
+  addressStreet: yup.string().required('Street Address is required'),
+  addressCity: yup.string().required('City is required'),
+  addressZip: yup
     .string()
     .required('ZIP Code is required')
-    .matches(/^[0-9]+$/, 'ZIP Code must be a number')
-    .min(5, 'ZIP Code must be exactly 5 digits')
-    .max(5, 'ZIP Code must be exactly 5 digits'),
-  email1: yup.string().email('Invalid email').required('Email required'),
+    .matches(/^[0-9]{5}$/, 'ZIP Code must be a number and exactly 5 digits'),
+  email: yup.string().email('Invalid email').required('Email required'),
   email2: yup
     .string()
     .required('Email required')
-    .oneOf([yup.ref('email1'), null], 'Emails must both match'),
+    .oneOf([yup.ref('email'), null], 'Emails must both match'),
   Items: yup.array().of(yup.object().shape(itemFieldSchema), 'A Furniture Selection is Required'),
+  termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
 
-function DonationForm() {
+function DonationForm({ donationData, setDonationData, closeEditDonationModal }) {
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
+    defaultValues: { ...donationData, email2: donationData?.email },
   });
 
-  const [furnitureOptions, setFurnitureOptions] = useState([
-    'Dressers',
-    'Clean Housewares',
-    'Antiques',
-    'Art',
-    'Clean rugs',
-    'Home Decor items',
-    'Pet care items',
-    'Patio Furniture',
-  ]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const [donatedFurnitureList, setDonatedFurniture] = useState([]);
+  const navigate = useNavigate();
+  const [furnitureOptions, setFurnitureOptions] = useState([]);
+
+  const [donatedFurnitureList, setDonatedFurniture] = useState(donationData?.furniture ?? []);
 
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState(donationData?.pictures ?? []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const { data } = await PNPBackend.get('/furnitureOptions');
+      const options = data.filter(({ accepted }) => accepted).map(({ name }) => name);
+      if (donationData) {
+        const furniture = new Set(donationData.furniture.map(({ name }) => name));
+        const newOptions = options.filter(option => !furniture.has(option));
+        setFurnitureOptions(newOptions);
+      } else {
+        setFurnitureOptions(options);
+      }
+    };
+    loadData();
+  }, []);
+  const toast = useToast();
 
   const removeFile = index => {
-    setFiles(prev => prev.filter((item, idx) => idx !== index));
+    setFiles(prev => prev.filter((_, idx) => idx !== index));
   };
 
-  const updateDescription = (index, newDescription) => {
+  const updateDescription = (index, newNotes) => {
     setFiles(prev => {
       return prev
         .slice(0, index)
         .concat(
-          [{ file: prev[index].file, description: newDescription }].concat(prev.slice(index + 1)),
+          [{ ...prev[index], file: prev[index].file, notes: newNotes }].concat(
+            prev.slice(index + 1),
+          ),
         );
     });
   };
 
   const onSubmit = async data => {
-    // console.log(data);
-    // console.log(donatedFurnitureList);
-    // console.log(files);
-    // await Promise.all(files.map(async file => uploadImage(file)));
-    try {
-      sendEmail(data.email1, dconfirmemailtemplate);
-    } catch (err) {
-      // console.log(err.message);
-      // to do: error message that email is invalid
+    // TODO: handle 0 furniture item validation
+    const newUrls = await Promise.all(
+      files
+        .filter(file => file?.file)
+        .map(async ({ file, notes }) => {
+          const url = await uploadImage(file);
+          return { imageUrl: url, notes };
+        }),
+    );
+
+    const formData = {
+      ...donationData,
+      ...data,
+      zip: parseInt(data.zipcode, 10),
+      furniture: donatedFurnitureList,
+      pictures: [...newUrls, ...files.filter(file => file?.imageUrl)],
+    };
+
+    if (!donationData) {
+      const { id: donationId, email } = await createNewDonation(formData);
+      try {
+        sendEmail(
+          'Thank You For Donating!',
+          formData.email,
+          dconfirmemailtemplate(donationId, email),
+        );
+      } catch (err) {
+        // TODO: error message that email is invalid
+        // console.log(err.message);
+        return;
+      }
+      navigate('/donate/status', {
+        state: { isLoggedIn: true, email: formData.email, donationId },
+      });
+      toast({
+        title: 'Your Donation Has Been Succesfully Submitted!',
+        description: 'An email has been sent with your donation ID',
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      });
+    } else {
+      const newData = await updateDonation(donationData.id, formData);
+      setDonationData(prev => newData ?? prev);
+      // closes the editDonationModal
+      closeEditDonationModal();
     }
   };
 
@@ -108,15 +166,25 @@ function DonationForm() {
   };
 
   const addDonation = async ev => {
-    setDonatedFurniture(prev => [...prev, { name: ev.target.value, num: 1 }]);
+    setDonatedFurniture(prev => [...prev, { name: ev.target.value, count: 1 }]);
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
     setSelectedFurnitureValue('Select Furniture');
   };
 
   const changeDonation = (furnitureName, ev) => {
     const furniture = donatedFurnitureList.find(e => e.name === furnitureName);
-    furniture.num = +ev;
+    furniture.count = +ev;
   };
+
+  const [itemsInfoList, setItemsInfoList] = useState([]);
+
+  useEffect(() => {
+    const fetchItemsInfoOptions = async () => {
+      const { data } = await PNPBackend.get(`furnitureOptions`);
+      setItemsInfoList(data);
+    };
+    fetchItemsInfoOptions();
+  }, []);
 
   return (
     <Box className={styles['form-padding']}>
@@ -139,30 +207,31 @@ function DonationForm() {
             </FormControl>
           </Box>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Address
           </Heading>
 
-          <FormControl isInvalid={errors && errors.streetAddress}>
+          <FormControl isInvalid={errors && errors.addressStreet}>
             <FormLabel>Street Address</FormLabel>
-            <Input {...register('streetAddress')} />
+            <Input {...register('addressStreet')} />
             <FormErrorMessage>
-              {errors.streetAddress && errors.streetAddress.message}
+              {errors.addressStreet && errors.addressStreet.message}
             </FormErrorMessage>
           </FormControl>
 
           <FormControl>
             <FormLabel>Address Line 2</FormLabel>
-            <Input {...register('streetAddress2')} />
+            <Input {...register('addressUnit')} />
           </FormControl>
 
           <Box className={styles.form}>
-            <FormControl width="47%" isInvalid={errors && errors.city}>
+            <FormControl width="47%" isInvalid={errors && errors.addressCity}>
               <FormLabel>City </FormLabel>
-              <Input {...register('city')} />
-              <FormErrorMessage>{errors.city && errors.city.message}</FormErrorMessage>
+              <Input {...register('addressCity')} />
+              <FormErrorMessage>
+                {errors.addressCity && errors.addressCity.message}
+              </FormErrorMessage>
             </FormControl>
 
             <FormControl width="47%">
@@ -173,46 +242,46 @@ function DonationForm() {
             </FormControl>
           </Box>
 
-          <FormControl isInvalid={errors && errors.zipcode}>
+          <FormControl isInvalid={errors && errors.addressZip}>
             <FormLabel>ZIP Code</FormLabel>
-            <Input {...register('zipcode')} />
-            <FormErrorMessage>{errors.zipcode && errors.zipcode.message}</FormErrorMessage>
+            <Input {...register('addressZip')} />
+            <FormErrorMessage>{errors.addressZip && errors.addressZip.message}</FormErrorMessage>
           </FormControl>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Phone
           </Heading>
-          <FormControl isInvalid={errors && errors.phoneNumber}>
-            <Input type="tel" {...register('phoneNumber')} />
-            <FormErrorMessage>{errors.phoneNumber && errors.phoneNumber.message}</FormErrorMessage>
+          <FormControl isInvalid={errors && errors.phoneNum}>
+            <Input type="tel" {...register('phoneNum')} />
+            <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
           </FormControl>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Email
           </Heading>
           <Box className={styles.form}>
-            <FormControl isInvalid={errors && errors.email1} width="47%">
+            <FormControl isInvalid={errors && errors.email} width="47%">
               <FormLabel>Enter Email </FormLabel>
-              <Input {...register('email1')} />
-              <FormErrorMessage>{errors.email1 && errors.email1.message}</FormErrorMessage>
+              <Input {...register('email')} disabled={donationData?.email} />
+              <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
             </FormControl>
 
             <FormControl isInvalid={errors && errors.email2} width="47%">
               <FormLabel>Confirm Email </FormLabel>
-              <Input {...register('email2')} />
+              <Input {...register('email2')} disabled={donationData?.email} />
               <FormErrorMessage>{errors.email2 && errors.email2.message}</FormErrorMessage>
             </FormControl>
           </Box>
         </Box>
-
         <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title} marginBottom="1em">
-            Furniture
-          </Heading>
+          <Flex marginBottom="1em" align="center">
+            <Heading size="md" className={styles.title} marginRight="1">
+              Item
+            </Heading>
+            <ItemInfo items={itemsInfoList} isAccepted />
+          </Flex>
           <Select
             placeholder="Select Furniture"
             value={selectedFurnitureValue}
@@ -233,7 +302,6 @@ function DonationForm() {
             />
           ))}
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title} marginBottom="1em">
             Images
@@ -242,14 +310,14 @@ function DonationForm() {
           <Box w="80%">
             <DropZone setFiles={setFiles} />
             <Flex wrap="wrap">
-              {files.map(({ file: { name, preview }, description }, index) => {
+              {files.map(({ file, id, imageUrl, notes }, index) => {
                 return (
                   <ImageDetails
-                    key={name}
+                    key={file?.preview ?? id}
                     index={index}
-                    name={name}
-                    preview={preview}
-                    description={description}
+                    name={file?.name ?? imageUrl.slice(-10)}
+                    preview={file?.preview ?? imageUrl}
+                    description={notes}
                     removeImage={removeFile}
                     updateDescription={updateDescription}
                   />
@@ -258,18 +326,69 @@ function DonationForm() {
             </Flex>
           </Box>
         </Box>
-
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Do you Have any Questions or Comments
           </Heading>
-          <Input {...register('additional')} />
+          <Input {...register('notes')} />
         </Box>
 
-        <Button type="submit">Submit</Button>
+        {!donationData && (
+          <FormControl isInvalid={errors && errors.termsCond}>
+            <Flex>
+              <Checkbox {...register('termsCond')} />
+              <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
+              <Text cursor="pointer" onClick={onOpen} as="u">
+                terms and conditions.
+              </Text>
+            </Flex>
+            <FormErrorMessage>{errors.termsCond && errors.termsCond.message}</FormErrorMessage>
+          </FormControl>
+        )}
+
+        <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} isDonationForm />
+
+        <Button type="submit">{!donationData ? 'Submit' : 'Save'}</Button>
       </form>
     </Box>
   );
 }
+
+DonationForm.propTypes = {
+  donationData: PropTypes.shape({
+    id: PropTypes.string,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    addressStreet: PropTypes.string,
+    addressCity: PropTypes.string,
+    addressUnit: PropTypes.string,
+    addressZip: PropTypes.number,
+    phoneNum: PropTypes.string,
+    email: PropTypes.string,
+    notes: PropTypes.string,
+    furniture: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string,
+        count: PropTypes.number,
+      }),
+    ),
+    pictures: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        imageURL: PropTypes.string,
+        notes: PropTypes.string,
+      }),
+    ),
+  }),
+  setDonationData: PropTypes.func,
+  closeEditDonationModal: PropTypes.func,
+};
+
+DonationForm.defaultProps = {
+  donationData: undefined,
+  setDonationData: () => {},
+  closeEditDonationModal: () => {},
+};
 
 export default DonationForm;

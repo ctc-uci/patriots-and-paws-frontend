@@ -1,11 +1,22 @@
 import React from 'react';
-import { Tag, TagLabel, Box, Text, Grid, GridItem, IconButton, Divider } from '@chakra-ui/react';
+import {
+  Tag,
+  TagLabel,
+  Box,
+  Text,
+  Grid,
+  GridItem,
+  IconButton,
+  Divider,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { PropTypes } from 'prop-types';
 import DonationFurnitureContainer from '../InventoryPage/DonationFurnitureContainer';
 import DonationImagesContainer from '../InventoryPage/DonationImagesContainer';
+import EditDonationModal from '../EditDonationModal/EditDonationModal';
 
-const DonationDetails = ({ data }) => {
+const DonationDetails = ({ data, setDonationData }) => {
   // const {
   //   id,
   //   status,
@@ -32,6 +43,8 @@ const DonationDetails = ({ data }) => {
       day: 'numeric',
     });
   };
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   // const [donation, setDonation] = useState();
   const displayStatusTag = () => {
@@ -72,36 +85,44 @@ const DonationDetails = ({ data }) => {
   // eslint-disable-next-line consistent-return
   const displayEditIcon = () => {
     if (data.status === 'changes requested') {
-      return <IconButton icon={<EditIcon />} />;
+      return <IconButton icon={<EditIcon />} float="right" onClick={onOpen} />;
     }
   };
   // console.log(data);
   if (data) {
     return (
-      <Grid h="200px" templateRows="repeat(2, 1fr)" templateColumns="repeat(6, 1fr)" gap={4}>
-        <GridItem colSpan={2}>{displayStatusTag()}</GridItem>
-        <GridItem colSpan={2}>
-          <Text as="b">Form #{data.id}</Text>
-        </GridItem>
-        <GridItem colSpan={2}>
-          <Text>Submitted on {formatDate(data.submittedDate)}</Text>
-        </GridItem>
-        <GridItem>
-          {displayEditIcon()}
-          <IconButton colorScheme="white" icon={<DeleteIcon color="red.500" />} />
-        </GridItem>
-        <Divider size="md" variant="thick" />
-        <GridItem colSpan={2}>
-          <Box borderRadius="6px">
-            <DonationImagesContainer data={data.pictures} />
-          </Box>
-        </GridItem>
-        <GridItem colStart={4} colSpan={4} rowSpan={2}>
-          <Box overflow="scroll" maxH="sm">
-            <DonationFurnitureContainer data={data.furniture} />
-          </Box>
-        </GridItem>
-      </Grid>
+      <>
+        <Grid h="200px" templateRows="repeat(2, 1fr)" templateColumns="repeat(6, 1fr)" gap={4}>
+          <GridItem colSpan={2}>{displayStatusTag()}</GridItem>
+          <GridItem colSpan={2}>
+            <Text as="b">Form #{data.id}</Text>
+          </GridItem>
+          <GridItem colSpan={2}>
+            <Text>Submitted on {formatDate(data.submittedDate)}</Text>
+          </GridItem>
+          <GridItem>
+            {displayEditIcon()}
+            <IconButton colorScheme="white" icon={<DeleteIcon color="red.500" />} />
+          </GridItem>
+          <Divider size="md" variant="thick" />
+          <GridItem colSpan={2}>
+            <Box borderRadius="6px">
+              <DonationImagesContainer data={data.pictures} />
+            </Box>
+          </GridItem>
+          <GridItem colStart={4} colSpan={4} rowSpan={2}>
+            <Box overflow="scroll" maxH="sm">
+              <DonationFurnitureContainer data={data.furniture} />
+            </Box>
+          </GridItem>
+        </Grid>
+        <EditDonationModal
+          donationData={data}
+          setDonationData={setDonationData}
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      </>
     );
   }
   return <Text>Hi!</Text>;
@@ -110,7 +131,7 @@ const DonationDetails = ({ data }) => {
 DonationDetails.propTypes = {
   data: PropTypes.shape({
     status: PropTypes.string,
-    id: PropTypes.number,
+    id: PropTypes.string,
     addressStreet: PropTypes.string,
     addressUnit: PropTypes.string,
     addressCity: PropTypes.string,
@@ -132,6 +153,7 @@ DonationDetails.propTypes = {
       }),
     ),
   }).isRequired,
+  setDonationData: PropTypes.func.isRequired,
 };
 
 export default DonationDetails;

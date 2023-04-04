@@ -10,14 +10,15 @@ import {
   Box,
   Link,
 } from '@chakra-ui/react';
-import { Link as ReactLink } from 'react-router-dom';
-import { verifyDonorLogin } from '../../utils/donorUtils';
+import { Link as ReactLink, useLocation } from 'react-router-dom';
+import { verifyDonorLogin } from '../../utils/DonorUtils';
 import DonorDashboard from '../../components/DonorDashboard/DonorDashboard';
 
 const DonorLogin = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setEmail] = useState('');
-  const [donationId, setDonationId] = useState('');
+  const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(location.state?.isLoggedIn || false);
+  const [email, setEmail] = useState(location.state?.email || '');
+  const [donationId, setDonationId] = useState(location.state?.donationId || '');
   const [loginFailed, setLoginFail] = useState(false);
 
   const handleSubmit = async event => {
@@ -54,6 +55,16 @@ const DonorLogin = () => {
                 </Text>
 
                 <form onSubmit={handleSubmit}>
+                  <FormControl isRequired mb="10px">
+                    <FormLabel>Email Address</FormLabel>
+                    <Input
+                      type="email"
+                      placeholder="name@domain.com"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                    />
+                  </FormControl>
+
                   <FormControl isRequired mb="40px">
                     <FormLabel>Donation ID</FormLabel>
                     <Input
@@ -64,15 +75,6 @@ const DonorLogin = () => {
                     />
                   </FormControl>
 
-                  <FormControl isRequired mb="10px">
-                    <FormLabel>Email Address</FormLabel>
-                    <Input
-                      type="email"
-                      placeholder="name@domain.com"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                    />
-                  </FormControl>
                   {loginFailed && (
                     <Text color="red" fontSize="14px">
                       Donation ID and email do not match

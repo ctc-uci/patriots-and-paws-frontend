@@ -19,7 +19,7 @@ const DropZone = ({ setFiles }) => {
           file: Object.assign(file, {
             preview: URL.createObjectURL(file),
           }),
-          description: '',
+          notes: '',
         })),
       ]);
     },

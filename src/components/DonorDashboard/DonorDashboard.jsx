@@ -2,14 +2,17 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Grid, GridItem, Box, Text, Button, Tag, HStack } from '@chakra-ui/react';
 import { CheckCircleIcon, CloseIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons';
-import { getDonationStatus, getDonation } from '../../utils/donorUtils';
+import { getDonationData } from '../../utils/DonorUtils';
 import DonorFooter from '../DonorFooter/DonorFooter';
 import TrackDonationSection from '../TrackDonationSection/TrackDonationSection';
 import DonationDetails from './DonationDetails';
+// import { STATUSES } from '../../utils/config';
+
+// const { PENDING, SCHEDULING, SCHEDULED, CHANGES_REQUESTED, PICKED_UP } = STATUSES;
 
 const DonorDashboard = ({ donationId }) => {
   const [stage, setStage] = useState(0);
-  const [donation, setDonation] = useState();
+  const [donation, setDonation] = useState({});
 
   // eslint-disable-next-line consistent-return
   const displayNewTag = () => {
@@ -108,17 +111,24 @@ const DonorDashboard = ({ donationId }) => {
     return <Box>No pickup</Box>;
   };
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const donationStatus = await getDonationStatus(donationId);
+  //     // const donation = await getDonation(donationId);
+  //     getDonation(donationId).then(res => {
+  //       if (res != null) {
+  //         setDonation(res);
+  //         // console.log(res);
+  //       }
+  //     });
+  //   };
+  // });
+  // console.log(getDonation(donationId));
+
   useEffect(() => {
     const fetchData = async () => {
-      const donationStatus = await getDonationStatus(donationId);
-      // const donation = await getDonation(donationId);
-      getDonation(donationId).then(res => {
-        if (res != null) {
-          setDonation(res);
-          // console.log(res);
-        }
-      });
-      // console.log(getDonation(donationId));
+      const data = await getDonationData(donationId);
+      const donationStatus = data.status;
       const donationStage = {
         archieved: 4,
         scheduled: 3,
@@ -128,44 +138,47 @@ const DonorDashboard = ({ donationId }) => {
         'changes requested': 1,
       };
       setStage(donationStage[donationStatus] ?? 1);
+      setDonation(data);
     };
     fetchData();
   }, [donationId]);
 
   return (
-    <Box bg="#edf1f9" maxH="100%">
-      <Grid templateColumns="repeat(3, 1fr)" gap={10} p="20px 40px 40px 40px">
-        <GridItem colSpan={2}>
-          <Text fontSize="30px" fontWeight="700" mb="20px">
-            My Donation
-          </Text>
-          {displayBanner()}
-          <Box borderRadius="6px" bg="white" w="100%" h="500" p={4}>
-            <DonationDetails data={donation} />
-          </Box>
-        </GridItem>
-        <GridItem colSpan={1}>
-          <HStack mb="20px">
-            <Text fontSize="30px" fontWeight="700" mr="10px">
-              Pick Up
+    <>
+      <Box bg="#edf1f9" maxH="100%">
+        <Grid templateColumns="repeat(3, 1fr)" gap={10} p="20px 40px 40px 40px">
+          <GridItem colSpan={2}>
+            <Text fontSize="30px" fontWeight="700" mb="20px">
+              My Donation
             </Text>
-            {displayNewTag()}
-          </HStack>
-          <Box borderRadius="6px" bg="white" w="100%" h="500" p={4}>
-            {displayPickup()}
-          </Box>
-        </GridItem>
-        <GridItem colSpan={3}>
-          <Text fontSize="30px" fontWeight="700" mb="20px">
-            Track your donation
-          </Text>
-          <TrackDonationSection stage={stage} />
-        </GridItem>
-      </Grid>
+            {displayBanner()}
+            <Box borderRadius="6px" bg="white" w="100%" h="500" p={4}>
+              <DonationDetails data={donation} setDonationData={setDonation} />
+            </Box>
+          </GridItem>
+          <GridItem colSpan={1}>
+            <HStack mb="20px">
+              <Text fontSize="30px" fontWeight="700" mr="10px">
+                Pick Up
+              </Text>
+              {displayNewTag()}
+            </HStack>
+            <Box borderRadius="6px" bg="white" w="100%" h="500" p={4}>
+              {displayPickup()}
+            </Box>
+          </GridItem>
+          <GridItem colSpan={3}>
+            <Text fontSize="30px" fontWeight="700" mb="20px">
+              Track your donation
+            </Text>
+            <TrackDonationSection stage={stage} />
+          </GridItem>
+        </Grid>
 
-      {/* BUG: If window too small height, overflow occurs & screen becomes scrollable */}
-      <DonorFooter />
-    </Box>
+        {/* BUG: If window too small height, overflow occurs & screen becomes scrollable */}
+        <DonorFooter />
+      </Box>
+    </>
   );
 };
 

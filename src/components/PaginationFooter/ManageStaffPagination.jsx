@@ -9,7 +9,7 @@ import {
   PaginationContainer,
 } from '@ajna/pagination';
 
-import formatStaffData from '../../utils/manageStaffUtils';
+import formatStaffData from '../../utils/ManageStaffUtils';
 
 const ManageStaffPagination = ({ data, setData }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);

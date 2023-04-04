@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Flex,
-  Stack,
   FormControl,
   FormLabel,
   Input,
@@ -9,16 +7,25 @@ import {
   Heading,
   Link,
   Box,
+  useDisclosure,
+  Grid,
+  GridItem,
+  Flex,
+  Text,
+  Stack,
 } from '@chakra-ui/react';
+import { ChevronLeftIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useNavigate } from 'react-router-dom';
 import { sendPasswordReset } from '../../utils/AuthUtils';
-import styles from './ForgotPassword.module.css';
+import EmailSentModal from '../EmailSentModal/EmailSentModal';
 
 const ForgotPassword = () => {
+  const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState();
-  const [confirmationMessage, setConfirmationMessage] = useState();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const formSchema = yup.object({
     email: yup.string().email().required('Please enter your email address'),
@@ -26,6 +33,8 @@ const ForgotPassword = () => {
   const {
     register,
     handleSubmit,
+    reset,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(formSchema),
@@ -36,37 +45,100 @@ const ForgotPassword = () => {
     try {
       const { email } = data;
       await sendPasswordReset(email);
-      setConfirmationMessage(
-        'If the email entered is associated with an account, you should receive an email to reset your password shortly.',
-      );
+      onOpen();
       setErrorMessage('');
     } catch (err) {
       setErrorMessage(err.message);
     }
   };
+
+  const handleResendEmail = async () => {
+    const email = getValues('email');
+    await sendPasswordReset(email);
+    navigate('/login');
+  };
+
+  const handleCloseModal = () => {
+    reset();
+    onClose();
+  };
+
   return (
-    <Flex minH="100vh" align="center" justify="center">
-      <Stack>
-        <Heading className={styles['forgot-password-title']}>Send Reset Email</Heading>
-        {errorMessage && <Box>{errorMessage}</Box>}
-        <form onSubmit={handleSubmit(handleForgotPassword)}>
-          <FormControl className={styles['forgot-password-form']} isRequired>
-            <FormLabel className={styles['forgot-password-label']}>Email</FormLabel>
-            <Input type="text" placeholder="Email" {...register('email')} isRequired />
-            <Box className={styles['error-box']}>{errors.email?.message}</Box>
-            <Button colorScheme="blue" className={styles['forgot-password-button']} type="submit">
-              Send Email
-            </Button>
-          </FormControl>
-        </form>
-        {confirmationMessage && (
-          <Box className={styles['confirmation-msg']}>{confirmationMessage}</Box>
-        )}
-        <Link className={styles['login-link']} href="/login" color="teal.500">
-          Back to Login
-        </Link>
-      </Stack>
-    </Flex>
+    <Grid templateColumns="repeat(2, 1fr)" gap={0}>
+      <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
+      <GridItem w="100%" padding={10}>
+        <Flex height="100%" position="relative">
+          <Stack width="100%" zIndex="1" position="absolute">
+            <Link href="/login">
+              <Button variant="unstyled" fontWeight="normal">
+                <Flex alignItems="center">
+                  <ChevronLeftIcon boxSize={6} />
+                  <Text marginLeft={3} fontSize="18px">
+                    Return to Login
+                  </Text>
+                </Flex>
+              </Button>
+            </Link>
+          </Stack>
+          <Grid placeItems="center" height="100%" width="100%">
+            <GridItem>
+              <Stack
+                justifyContent="center"
+                maxW={{ base: '90%', md: '70%', lg: '50%' }}
+                width="100%"
+                margin="auto"
+              >
+                <Heading as="h1" fontSize="48px" mb={1}>
+                  Forgot Password
+                </Heading>
+                <Text fontSize="18px" color="gray.400">
+                  Enter your email address below to receive an email about resetting the account
+                  password.
+                </Text>
+                {errorMessage && <Box>{errorMessage}</Box>}
+                <Stack width="100%">
+                  <form onSubmit={handleSubmit(handleForgotPassword)}>
+                    <FormControl width="100%">
+                      <FormLabel
+                        fontSize="16px"
+                        fontWeight="normal"
+                        textAlign="left"
+                        marginTop={10}
+                      >
+                        Email Address
+                      </FormLabel>
+                      <Input
+                        type="text"
+                        placeholder="name@domain.com"
+                        {...register('email')}
+                        isRequired
+                        width="100%"
+                      />
+                      <Box>{errors.email?.message}</Box>
+                      <Button
+                        colorScheme="blue"
+                        type="submit"
+                        marginTop={14}
+                        padding={6}
+                        width="100%"
+                      >
+                        Send Email
+                      </Button>
+                    </FormControl>
+                  </form>
+                </Stack>
+                <EmailSentModal
+                  isOpen={isOpen}
+                  onClose={handleCloseModal}
+                  onSubmit={handleResendEmail}
+                />
+                ;
+              </Stack>
+            </GridItem>
+          </Grid>
+        </Flex>
+      </GridItem>
+    </Grid>
   );
 };
 
