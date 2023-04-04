@@ -140,7 +140,7 @@ const DonorDashboard = ({ donationId }) => {
   };
 
   const displayPickup = () => {
-    const { status } = donation;
+    const { status, pickupDate } = donation;
     if ([PENDING, RESCHEDULE, APPROVAL_REQUESTED].includes(status)) {
       return <Box>Sit Tight! We&apos;ll be scheduling a pickup date with you soon.</Box>;
     }
@@ -149,7 +149,7 @@ const DonorDashboard = ({ donationId }) => {
       return (
         <Flex direction="column" gap={3}>
           <Text>Proposed Day:</Text>
-          <Text as="b">{donation?.pickupDate}</Text>
+          <Text as="b">{formatDate(pickupDate)}</Text>
           <Text>
             <Checkbox onChange={e => setTCChecked(e.target.checked)} /> I accept the{' '}
             <Text as="b" onClick={onOpen} _hover={{ cursor: 'pointer' }}>
@@ -234,10 +234,12 @@ const DonorDashboard = ({ donationId }) => {
             </Box>
           </Flex>
           <Flex direction="column" gap={3}>
-            <Text fontSize="1.5em" fontWeight="700">
-              Pick Up
-            </Text>
-            {donation.status === SCHEDULING && newTag}
+            <Flex direction="row" gap={3}>
+              <Text fontSize="1.5em" fontWeight="700">
+                Pick Up
+              </Text>
+              <Box p={2}>{donation.status === SCHEDULING && newTag}</Box>
+            </Flex>
             <Box borderRadius="6px" bg="white" w="100%" h="100%" py={4} px={6}>
               {displayPickup()}
             </Box>
