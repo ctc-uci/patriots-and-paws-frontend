@@ -9,25 +9,25 @@ const TrackDonationSection = ({ stage }) => {
       checked: stage >= 1,
       curr: stage === 1,
       heading: 'Form Submitted',
-      body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do',
+      body: 'Thanks for your donation! Keep an on your inbox for updates.',
     },
     {
       checked: stage >= 2,
       curr: stage === 2,
       heading: 'Submission Approved',
-      body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do',
+      body: 'Make sure to schedule a time for us to pick up your donation.',
     },
     {
       checked: stage >= 3,
       curr: stage === 3,
       heading: 'Pickup Scheduled',
-      body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do',
+      body: 'We’ll swing by and pick up your items shortly.',
     },
     {
       checked: stage >= 4,
       curr: stage === 4,
       heading: 'Donation Picked Up',
-      body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do',
+      body: 'We’re received your donation - Thanks for your contribution!',
     },
   ];
 

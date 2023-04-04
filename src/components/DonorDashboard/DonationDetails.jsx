@@ -98,7 +98,7 @@ const DonationDetails = ({ data, setDonationData }) => {
           </Flex>
         </Flex>
         <Divider size="md" variant="solid" />
-        <Grid templateColumns="1fr 1fr" alignItems="center">
+        <Grid templateColumns="1fr 1fr" alignItems="center" gap={5}>
           <Box borderRadius="6px">
             <DonationImagesContainer data={pictures} />
           </Box>
@@ -126,7 +126,13 @@ DonationDetails.propTypes = {
     addressCity: PropTypes.string,
     addressZip: PropTypes.number,
     firstName: PropTypes.string,
-    furniture: PropTypes.arrayOf(PropTypes.string),
+    furniture: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        count: PropTypes.number,
+        name: PropTypes.string,
+      }),
+    ),
     lastName: PropTypes.string,
     email: PropTypes.string,
     phoneNum: PropTypes.string,
