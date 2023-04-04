@@ -14,7 +14,7 @@ import {
   Image,
 } from '@chakra-ui/react';
 import { CheckCircleIcon, CloseIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons';
-// import { getDonationData } from '../../utils/DonorUtils';
+import { getDonationData } from '../../utils/DonorUtils';
 import DonorFooter from '../DonorFooter/DonorFooter';
 import TrackDonationSection from '../TrackDonationSection/TrackDonationSection';
 import DonationDetails from './DonationDetails';
@@ -203,10 +203,6 @@ const DonorDashboard = ({ donationId }) => {
     }
 
     return <Box>No pickup</Box>;
-  };
-
-  const getDonationData = id => {
-    return id;
   };
 
   useEffect(() => {
