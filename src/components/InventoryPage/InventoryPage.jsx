@@ -22,6 +22,8 @@ import {
   Button,
   Tag,
   TagLabel,
+  TabIndicator,
+  Flex,
 } from '@chakra-ui/react';
 
 import DonationModal from './DonationModal';
@@ -128,20 +130,21 @@ const InventoryPage = () => {
       });
   };
 
-  // useEffect(() => {
-  //   makeUserRows;
-  // }, [allDonations]);
-
   return (
     <>
-      <Tabs p="40px" onChange={index => setTabIndex(index)}>
-        <TabList>
-          <Tab>Pending Admin Approval</Tab>
-          <Tab>Pending Donor Approval</Tab>
-          <Tab>Awaiting Pickup</Tab>
-          <Tab>Archive</Tab>
-          <Button onClick={onDrawerOpen}>Open Calendar</Button>
+      <Tabs p="40px" variant="unstyled" onChange={index => setTabIndex(index)}>
+        <TabList justifyContent="space-between">
+          <Flex>
+            <Tab _selected={{ color: 'blue.500' }}>Pending Admin Approval</Tab>
+            <Tab _selected={{ color: 'blue.500' }}>Pending Donor Approval</Tab>
+            <Tab _selected={{ color: 'blue.500' }}>Awaiting Pickup</Tab>
+            <Tab _selected={{ color: 'blue.500' }}>Archive</Tab>
+          </Flex>
+          <Button onClick={onDrawerOpen} colorScheme="teal">
+            Open Calendar
+          </Button>
         </TabList>
+        <TabIndicator mt="-1.5px" height="2px" bg="blue.500" borderRadius="1px" />
         <Drawer isOpen={isDrawerOpen} placement="right" onClose={onDrawerClose} size="full">
           <DrawerOverlay />
           <DrawerContent>
@@ -155,7 +158,7 @@ const InventoryPage = () => {
 
         <TabPanels>
           <TabPanel>
-            <TableContainer p="40px">
+            <TableContainer py="1.5em">
               <Table variant="simple">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
@@ -170,7 +173,7 @@ const InventoryPage = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <TableContainer p="40px">
+            <TableContainer py="1.5em">
               <Table variant="simple">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
@@ -185,7 +188,7 @@ const InventoryPage = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <TableContainer p="40px">
+            <TableContainer py="1.5em">
               <Table variant="simple">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
@@ -200,7 +203,7 @@ const InventoryPage = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <TableContainer p="40px">
+            <TableContainer py="1.5em">
               <Table variant="simple">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
