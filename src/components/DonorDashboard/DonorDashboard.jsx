@@ -216,7 +216,6 @@ const DonorDashboard = ({ donationId }) => {
       };
       setStage(donationStage[donationStatus] ?? 1);
       setDonation(data);
-      console.log(data);
     };
     fetchData();
   }, [donationId]);

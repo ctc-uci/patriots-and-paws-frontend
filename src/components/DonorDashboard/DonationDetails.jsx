@@ -121,7 +121,6 @@ const DonationDetails = ({ data, setDonationData }) => {
 
   const handleDelete = async () => {
     // await PNPBackend.delete(`/donation/${id}`);
-    console.log('delete donation');
     deleteDialogOnClose();
   };
 
