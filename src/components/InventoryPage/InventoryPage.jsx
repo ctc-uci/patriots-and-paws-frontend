@@ -38,7 +38,15 @@ import {
 } from '../../utils/InventoryUtils';
 import { STATUSES } from '../../utils/config';
 
-const { PENDING, CHANGES_REQUESTED, SCHEDULING, SCHEDULED, PICKED_UP, RESCHEDULE } = STATUSES;
+const {
+  PENDING,
+  CHANGES_REQUESTED,
+  SCHEDULING,
+  SCHEDULED,
+  PICKED_UP,
+  RESCHEDULE,
+  APPROVAL_REQUESTED,
+} = STATUSES;
 
 const InventoryPage = () => {
   const [allDonations, setAllDonations] = useState([]);
@@ -50,7 +58,7 @@ const InventoryPage = () => {
   const [tabIndex, setTabIndex] = useState(0);
 
   const tabStatuses = [
-    [PENDING, CHANGES_REQUESTED, RESCHEDULE],
+    [PENDING, CHANGES_REQUESTED, RESCHEDULE, APPROVAL_REQUESTED],
     [SCHEDULING],
     [SCHEDULED],
     [PICKED_UP],

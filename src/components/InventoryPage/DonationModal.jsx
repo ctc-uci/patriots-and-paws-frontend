@@ -33,7 +33,15 @@ import DonationFurnitureContainer from './DonationFurnitureContainer';
 import EmailModal from './EmailModal';
 import { STATUSES } from '../../utils/config';
 
-const { RESCHEDULE, PENDING, CHANGES_REQUESTED, SCHEDULED, SCHEDULING, PICKED_UP } = STATUSES;
+const {
+  RESCHEDULE,
+  PENDING,
+  CHANGES_REQUESTED,
+  SCHEDULED,
+  SCHEDULING,
+  PICKED_UP,
+  APPROVAL_REQUESTED,
+} = STATUSES;
 const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES } = EMAIL_TYPE;
 
 const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
@@ -257,7 +265,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   }}
                   defaultValue={scheduledDate}
                   bg="white"
-                  isDisabled={![PENDING, RESCHEDULE].includes(currentStatus)}
+                  isDisabled={![PENDING, RESCHEDULE, APPROVAL_REQUESTED].includes(currentStatus)}
                 >
                   {Object.keys(displayedRouteOptions).map(day => (
                     <option key={day} value={day}>
@@ -267,7 +275,10 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 </Select>
                 <Select
                   placeholder={(!routeId || currentStatus === RESCHEDULE) && 'Choose a route'}
-                  isDisabled={![PENDING, RESCHEDULE].includes(currentStatus) || !scheduledDate}
+                  isDisabled={
+                    ![PENDING, RESCHEDULE, APPROVAL_REQUESTED].includes(currentStatus) ||
+                    !scheduledDate
+                  }
                   onChange={e => setScheduledRouteId(e.target.value)}
                   bg="white"
                 >
@@ -307,7 +318,9 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
             )}
           </Flex>
           <Flex mr="1%" justify="right">
-            {[PENDING, RESCHEDULE, CHANGES_REQUESTED].includes(currentStatus) && (
+            {[PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
+              currentStatus,
+            ) && (
               <>
                 <Button
                   colorScheme="blue"
