@@ -46,6 +46,15 @@ const DonorDashboard = ({ donationId }) => {
     </Tag>
   );
 
+  const formatDate = date => {
+    const d = new Date(date);
+    return d.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   const displayBanner = () => {
     const { status } = donation;
     if (status === PENDING) {
@@ -168,7 +177,7 @@ const DonorDashboard = ({ donationId }) => {
             <Text>Pickup Day Confirmed</Text>
             <CheckCircleIcon color="green.200" />
           </Flex>
-          <Text as="b">{donation?.pickupDate}</Text>
+          <Text as="b">{formatDate(donation.pickupDate)}</Text>
           <Text>Instructions:</Text>
         </Flex>
       );
@@ -207,26 +216,26 @@ const DonorDashboard = ({ donationId }) => {
       };
       setStage(donationStage[donationStatus] ?? 1);
       setDonation(data);
-      // console.log(data);
+      console.log(data);
     };
     fetchData();
   }, [donationId]);
 
   return (
     <>
-      <Flex bg="gray.200" p={10} direction="column" gap={10}>
+      <Flex bg="gray.200" p={6} direction="column" gap={7}>
         <Grid gap={10} templateColumns="3fr 1fr">
           <Flex direction="column" gap={3}>
-            <Text fontSize="30px" fontWeight="700">
+            <Text fontSize="1.5em" fontWeight="700">
               My Donation
             </Text>
             {displayBanner()}
-            <Box borderRadius="6px" bg="white" w="100%" h="500" p={4}>
+            <Box borderRadius="6px" bg="white" w="100%" h="100%" overflowY="auto" p={6}>
               <DonationDetails data={donation} setDonationData={setDonation} />
             </Box>
           </Flex>
           <Flex direction="column" gap={3}>
-            <Text fontSize="30px" fontWeight="700">
+            <Text fontSize="1.5em" fontWeight="700">
               Pick Up
             </Text>
             {donation.status === SCHEDULING && newTag}
@@ -236,7 +245,7 @@ const DonorDashboard = ({ donationId }) => {
           </Flex>
         </Grid>
         <Flex direction="column">
-          <Text fontSize="30px" fontWeight="700" mb="20px">
+          <Text fontSize="1.5em" fontWeight="700" mb="20px">
             Track your donation
           </Text>
           <TrackDonationSection stage={stage} />

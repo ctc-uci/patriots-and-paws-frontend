@@ -9,11 +9,16 @@ const TrackDonationCard = ({ description }) => {
   return (
     <Card h="100%" className={description.curr ? styles.currStatus : styles.statusBox}>
       <CardHeader display="flex" alignItems="center">
-        <Image src={description.checked ? checkMark : circle} alt="check mark" marginRight="20px" />
-        <Heading size="md">{description.heading}</Heading>
+        <Image
+          src={description.checked ? checkMark : circle}
+          alt="check mark"
+          marginRight="20px"
+          size=".75em"
+        />
+        <Heading size="sm">{description.heading}</Heading>
       </CardHeader>
       <CardBody mt="-20px">
-        <Text fontSize="15px">{description.body}</Text>
+        <Text fontSize="1em">{description.body}</Text>
       </CardBody>
     </Card>
   );

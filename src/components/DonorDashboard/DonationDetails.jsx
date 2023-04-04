@@ -10,6 +10,12 @@ import {
   Button,
   Image,
   Grid,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { PropTypes } from 'prop-types';
@@ -18,6 +24,7 @@ import DonationImagesContainer from '../InventoryPage/DonationImagesContainer';
 import EditDonationModal from '../EditDonationModal/EditDonationModal';
 import { STATUSES } from '../../utils/config';
 import pencilIcon from '../../assets/pencil.svg';
+// import { PNPBackend } from '../../utils/utils';
 
 const {
   PENDING,
@@ -28,6 +35,32 @@ const {
   APPROVAL_REQUESTED,
   // RESCHEDULE,
 } = STATUSES;
+
+const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
+  return (
+    <AlertDialog isOpen={isOpen} onClose={onClose}>
+      <AlertDialogOverlay>
+        <AlertDialogContent>
+          <AlertDialogHeader fontSize="lg" fontWeight="bold">
+            Delete Donation
+          </AlertDialogHeader>
+
+          <AlertDialogBody>
+            <Text>Are you sure you want to delete this form?</Text>
+            <Text> You can’t undo this action afterwards. </Text>
+          </AlertDialogBody>
+
+          <AlertDialogFooter>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button colorScheme="red" onClick={onSubmit} ml={3}>
+              Delete Form
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialogOverlay>
+    </AlertDialog>
+  );
+};
 
 const DonationDetails = ({ data, setDonationData }) => {
   const { status, id, submittedDate, pictures, furniture } = data;
@@ -40,7 +73,16 @@ const DonationDetails = ({ data, setDonationData }) => {
     });
   };
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {
+    isOpen: editModalIsOpen,
+    onOpen: editModalOnOpen,
+    onClose: editModalOnClose,
+  } = useDisclosure();
+  const {
+    isOpen: deleteDialogIsOpen,
+    onOpen: deleteDialogOnOpen,
+    onClose: deleteDialogOnClose,
+  } = useDisclosure();
 
   const displayStatusTag = () => {
     if (status === PENDING || status === APPROVAL_REQUESTED) {
@@ -72,13 +114,15 @@ const DonationDetails = ({ data, setDonationData }) => {
   };
 
   const editButton = (
-    <Button size="sm" onClick={onOpen} colorScheme="orange">
+    <Button size="sm" onClick={editModalOnOpen} colorScheme="orange">
       Edit Form <Image src={pencilIcon} ml={2} />
     </Button>
   );
 
-  const handleDelete = () => {
-    console.log('delete icon clicked');
+  const handleDelete = async () => {
+    // await PNPBackend.delete(`/donation/${id}`);
+    console.log('delete donation');
+    deleteDialogOnClose();
   };
 
   return (
@@ -93,25 +137,32 @@ const DonationDetails = ({ data, setDonationData }) => {
             <Text>Submitted on {formatDate(submittedDate)}</Text>
             {status === CHANGES_REQUESTED && editButton}
             {status !== PICKED_UP && (
-              <DeleteIcon color="red.500" _hover={{ cursor: 'pointer' }} onClick={handleDelete} />
+              <DeleteIcon
+                color="red.500"
+                _hover={{ cursor: 'pointer' }}
+                onClick={deleteDialogOnOpen}
+              />
             )}
           </Flex>
         </Flex>
         <Divider size="md" variant="solid" />
         <Grid templateColumns="1fr 1fr" alignItems="center" gap={5}>
-          <Box borderRadius="6px">
-            <DonationImagesContainer data={pictures} />
-          </Box>
+          <Box borderRadius="6px">{pictures && <DonationImagesContainer data={pictures} />}</Box>
           <Box overflow="scroll" maxH="sm">
-            <DonationFurnitureContainer data={furniture} />
+            {furniture && <DonationFurnitureContainer data={furniture} />}
           </Box>
         </Grid>
       </Flex>
       <EditDonationModal
         donationData={data}
         setDonationData={setDonationData}
-        isOpen={isOpen}
-        onClose={onClose}
+        isOpen={editModalIsOpen}
+        onClose={editModalOnClose}
+      />
+      <DeleteDonationDialog
+        isOpen={deleteDialogIsOpen}
+        onClose={deleteDialogOnClose}
+        onSubmit={handleDelete}
       />
     </>
   );
@@ -149,6 +200,12 @@ DonationDetails.propTypes = {
     ),
   }).isRequired,
   setDonationData: PropTypes.func.isRequired,
+};
+
+DeleteDonationDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
 };
 
 export default DonationDetails;
