@@ -32,6 +32,7 @@ const makeSendButton = (
   updateDonation,
   setCurrentStatus,
   onCloseEmailModal,
+  onCloseCancelModal,
   routeInfo,
   isConfirmationSendEmail = false,
 ) => {
@@ -44,6 +45,7 @@ const makeSendButton = (
     updateDonation({ newStatus: SCHEDULING, newPickupDate: pickupDate, newRouteId: routeId });
     setCurrentStatus(SCHEDULING);
     onCloseEmailModal();
+    onCloseCancelModal();
     toast({
       title: `Scheduled #${donationId}.`,
       description: 'Successfully scheduled donation for pickup.',
@@ -51,7 +53,7 @@ const makeSendButton = (
       duration: 2000,
       isClosable: true,
       position: 'top',
-      variant: 'solid',
+      variant: 'subtle',
     });
   };
 
@@ -64,6 +66,7 @@ const makeSendButton = (
           updateDonation({ newStatus: SCHEDULING });
           setCurrentStatus(SCHEDULING);
           onCloseEmailModal();
+          onCloseCancelModal();
           toast({
             title: `Cancelled #${donationId}.`,
             description: "You've cancelled this pickup.",
@@ -71,7 +74,7 @@ const makeSendButton = (
             duration: 2000,
             isClosable: true,
             position: 'top',
-            variant: 'solid',
+            variant: 'subtle',
           });
         }}
       >
@@ -88,6 +91,7 @@ const makeSendButton = (
           updateDonation({ newStatus: CHANGES_REQUESTED });
           setCurrentStatus(CHANGES_REQUESTED);
           onCloseEmailModal();
+          onCloseCancelModal();
           toast({
             title: `Changes Requested for #${donationId}.`,
             description: 'Email has been sent for changes to be made by the Donor.',
@@ -95,7 +99,7 @@ const makeSendButton = (
             duration: 2000,
             isClosable: true,
             position: 'top',
-            variant: 'solid',
+            variant: 'subtle',
           });
         }}
       >
@@ -184,7 +188,9 @@ const EmailModal = ({
     updateDonation,
     setCurrentStatus,
     onCloseEmailModal,
+    onCloseCancelModal,
     donationInfo,
+    false,
   );
 
   const confirmationSendEmailButton = makeSendButton(
@@ -193,6 +199,7 @@ const EmailModal = ({
     updateDonation,
     setCurrentStatus,
     onCloseEmailModal,
+    onCloseCancelModal,
     donationInfo,
     true,
   );
