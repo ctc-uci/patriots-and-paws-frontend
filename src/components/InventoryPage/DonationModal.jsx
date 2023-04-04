@@ -24,7 +24,6 @@ import {
   AlertTitle,
   AlertDescription,
 } from '@chakra-ui/react';
-// import { WarningIcon } from '@chakra-ui/icons';
 
 import { PropTypes } from 'prop-types';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
@@ -96,8 +95,8 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     );
   };
 
-  const resetScheduledRoute = () => {
-    if (currentStatus !== RESCHEDULE) {
+  const resetScheduledRoute = donationStatus => {
+    if (donationStatus !== RESCHEDULE) {
       setScheduledDate(pickupDate?.replace(/T.*$/, '') ?? '');
       setScheduledRouteId(routeId ?? '');
     } else {
@@ -116,10 +115,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
 
   useEffect(() => {
     setCurrentStatus(status);
-    resetScheduledRoute();
-    console.log(routes);
-    console.log(data);
-    console.log(displayedRouteOptions);
+    resetScheduledRoute(status);
   }, [data]);
 
   const deleteDonation = async () => {
@@ -132,10 +128,11 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     <Modal
       isOpen={isOpen}
       onClose={() => {
-        resetScheduledRoute();
+        resetScheduledRoute(currentStatus);
         onClose();
       }}
       size="full"
+      scrollBehavior="inside"
     >
       <ModalOverlay />
       <ModalContent>
@@ -246,12 +243,10 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 bg="#E2E8F0"
                 align="center"
                 mt="1em"
-                mv="0%"
                 borderRadius={6}
                 gap={5}
                 px="3%"
                 py="1%"
-                mb="0%"
               >
                 <Text fontSize="1.25em">Schedule</Text>
                 <Select
@@ -272,7 +267,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 </Select>
                 <Select
                   placeholder={(!routeId || currentStatus === RESCHEDULE) && 'Choose a route'}
-                  isDisabled={![PENDING].includes(currentStatus) || !scheduledDate}
+                  isDisabled={![PENDING, RESCHEDULE].includes(currentStatus) || !scheduledDate}
                   onChange={e => setScheduledRouteId(e.target.value)}
                   bg="white"
                 >
