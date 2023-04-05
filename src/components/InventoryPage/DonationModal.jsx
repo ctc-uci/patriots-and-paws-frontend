@@ -292,7 +292,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
               </Flex>
             </Box>
 
-            <Box h="50%" w="40%" ml="1%" mr="1%">
+            <Box h="50%" w="40%" xl="1%">
               <Box>
                 <Text mb="1%" fontSize="1.25em">
                   Images
@@ -309,7 +309,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
             </Box>
           </Flex>
         </ModalBody>
-        <ModalFooter justifyContent="space-between" ml="2%" mt="-1em">
+        <ModalFooter justifyContent="space-between" px="3em" py="1em">
           <Flex justify="left">
             {![SCHEDULED, SCHEDULING, PICKED_UP].includes(currentStatus) && (
               <Button colorScheme="red" justifyContent="left" onClick={deleteDonation}>

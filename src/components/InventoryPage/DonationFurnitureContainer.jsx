@@ -12,7 +12,7 @@ const DonationFurnitureContainer = ({ data }) => {
 
   return (
     <>
-      <Flex direction="column" gap={3} height="100px" overflowY="scroll">
+      <Flex direction="column" gap={3} overflowY="scroll">
         {displayedData?.map(furniture => (
           <InputGroup key={furniture.id}>
             <Input value={furniture.name} isDisabled />

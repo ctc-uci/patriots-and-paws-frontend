@@ -147,9 +147,7 @@ const DonationDetails = ({ data, setDonationData }) => {
         <Divider size="md" variant="solid" />
         <Grid templateColumns="1fr 1fr" alignItems="center" gap={5}>
           <Box borderRadius="6px">{pictures && <DonationImagesContainer data={pictures} />}</Box>
-          <Box overflow="scroll" maxH="sm">
-            {furniture && <DonationFurnitureContainer data={furniture} />}
-          </Box>
+          <Box maxH="sm">{furniture && <DonationFurnitureContainer data={furniture} />}</Box>
         </Grid>
       </Flex>
       <EditDonationModal
