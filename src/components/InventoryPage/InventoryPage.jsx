@@ -21,16 +21,36 @@ import {
   DrawerCloseButton,
   Button,
   Tag,
+  TagLabel,
+  TabIndicator,
+  Flex,
+  Image,
 } from '@chakra-ui/react';
-
+import { CheckCircleIcon, ArrowDownIcon, ArrowUpIcon } from '@chakra-ui/icons';
+import peopleIcon from '../../assets/Bold.svg';
+import donationIdIcon from '../../assets/donationId.svg';
+import clockIcon from '../../assets/clock.svg';
 import DonationModal from './DonationModal';
 import RouteCalendar from '../RouteCalendar/RouteCalendar';
 import PaginationFooter from '../PaginationFooter/PaginationFooter';
 import { PNPBackend } from '../../utils/utils';
-import { getRoutesFromDB, makeDate, colorMap } from '../../utils/InventoryUtils';
+import {
+  getRoutesFromDB,
+  makeDate,
+  statusColorMap,
+  displayStatuses,
+} from '../../utils/InventoryUtils';
 import { STATUSES } from '../../utils/config';
 
-const { PENDING, CHANGES_REQUESTED, SCHEDULING, SCHEDULED, PICKED_UP, RESCHEDULE } = STATUSES;
+const {
+  PENDING,
+  CHANGES_REQUESTED,
+  SCHEDULING,
+  SCHEDULED,
+  PICKED_UP,
+  RESCHEDULE,
+  APPROVAL_REQUESTED,
+} = STATUSES;
 
 const InventoryPage = () => {
   const [allDonations, setAllDonations] = useState([]);
@@ -40,9 +60,10 @@ const InventoryPage = () => {
   const [count, setCount] = useState();
   const [routes, setRoutes] = useState({});
   const [tabIndex, setTabIndex] = useState(0);
+  const [submissionDateSortDesc, setSubmissionDateSortDesc] = useState(true);
 
   const tabStatuses = [
-    [PENDING, CHANGES_REQUESTED, RESCHEDULE],
+    [PENDING, CHANGES_REQUESTED, RESCHEDULE, APPROVAL_REQUESTED],
     [SCHEDULING],
     [SCHEDULED],
     [PICKED_UP],
@@ -55,8 +76,8 @@ const InventoryPage = () => {
 
   const makeStatus = status => {
     return (
-      <Tag variant="solid" colorScheme={colorMap[status]}>
-        {status[0].toUpperCase() + status.slice(1)}
+      <Tag size="sm" variant="solid" mt={3} ml={15} colorScheme={statusColorMap[status]}>
+        <TagLabel fontSize={14}>{displayStatuses[status]}</TagLabel>
       </Tag>
     );
   };
@@ -124,14 +145,19 @@ const InventoryPage = () => {
 
   return (
     <>
-      <Tabs p="40px" onChange={index => setTabIndex(index)}>
-        <TabList>
-          <Tab>Pending Admin Approval</Tab>
-          <Tab>Pending Donor Approval</Tab>
-          <Tab>Awaiting Pickup</Tab>
-          <Tab>Archive</Tab>
-          <Button onClick={onDrawerOpen}>Open Calendar</Button>
+      <Tabs p="40px" variant="unstyled" onChange={index => setTabIndex(index)}>
+        <TabList justifyContent="space-between">
+          <Flex>
+            <Tab _selected={{ color: 'blue.500' }}>Pending Admin Approval</Tab>
+            <Tab _selected={{ color: 'blue.500' }}>Pending Donor Approval</Tab>
+            <Tab _selected={{ color: 'blue.500' }}>Awaiting Pickup</Tab>
+            <Tab _selected={{ color: 'blue.500' }}>Archive</Tab>
+          </Flex>
+          <Button onClick={onDrawerOpen} colorScheme="teal">
+            Open Calendar
+          </Button>
         </TabList>
+        <TabIndicator mt="-1.5px" height="2px" bg="blue.500" borderRadius="1px" />
         <Drawer isOpen={isDrawerOpen} placement="right" onClose={onDrawerClose} size="full">
           <DrawerOverlay />
           <DrawerContent>
@@ -145,14 +171,34 @@ const InventoryPage = () => {
 
         <TabPanels>
           <TabPanel>
-            <TableContainer p="40px">
+            <TableContainer py="1.5em">
               <Table variant="simple">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
-                    <Th>NAME</Th>
-                    <Th>DONATION ID</Th>
-                    <Th>STATUS</Th>
-                    <Th>SUBMISSION DATE</Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={peopleIcon} mr={2} color="black" /> NAME
+                      </Flex>
+                    </Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
+                      </Flex>
+                    </Th>
+                    <Th>
+                      <Flex align="center">
+                        <CheckCircleIcon mr={2} color="black" /> STATUS
+                      </Flex>
+                    </Th>
+                    <Th
+                      _hover={{ cursor: 'pointer' }}
+                      onClick={() => setSubmissionDateSortDesc(!submissionDateSortDesc)}
+                    >
+                      <Flex gap={2} align="center">
+                        <Image src={clockIcon} mr={2} color="black" /> SUBMISSION DATE{' '}
+                        {submissionDateSortDesc ? <ArrowDownIcon /> : <ArrowUpIcon />}
+                      </Flex>
+                    </Th>
                   </Tr>
                 </Thead>
                 <Tbody>{makeDonationRows()}</Tbody>
@@ -160,14 +206,26 @@ const InventoryPage = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <TableContainer p="40px">
+            <TableContainer py="1.5em">
               <Table variant="simple">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
-                    <Th>NAME</Th>
-                    <Th>DONATION ID</Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={peopleIcon} mr={2} color="black" /> NAME
+                      </Flex>
+                    </Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
+                      </Flex>
+                    </Th>
                     <Th>ROUTE</Th>
-                    <Th>SCHEDULED DATE</Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={clockIcon} mr={2} color="black" /> SCHEDULED DATE
+                      </Flex>
+                    </Th>
                   </Tr>
                 </Thead>
                 <Tbody>{makeDonationRows()}</Tbody>
@@ -175,14 +233,26 @@ const InventoryPage = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <TableContainer p="40px">
+            <TableContainer py="1.5em">
               <Table variant="simple">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
-                    <Th>NAME</Th>
-                    <Th>DONATION ID</Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={peopleIcon} mr={2} color="black" /> NAME
+                      </Flex>
+                    </Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
+                      </Flex>
+                    </Th>
                     <Th>ROUTE</Th>
-                    <Th>PICKUP DATE</Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={clockIcon} mr={2} color="black" /> PICKUP DATE
+                      </Flex>
+                    </Th>
                   </Tr>
                 </Thead>
                 <Tbody>{makeDonationRows()}</Tbody>
@@ -190,14 +260,26 @@ const InventoryPage = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <TableContainer p="40px">
+            <TableContainer py="1.5em">
               <Table variant="simple">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
-                    <Th>NAME</Th>
-                    <Th>DONATION ID</Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={peopleIcon} mr={2} color="black" /> NAME
+                      </Flex>
+                    </Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
+                      </Flex>
+                    </Th>
                     <Th>ROUTE</Th>
-                    <Th>PICKUP DATE</Th>
+                    <Th>
+                      <Flex align="center">
+                        <Image src={clockIcon} mr={2} color="black" /> DATE PICKED DATE
+                      </Flex>
+                    </Th>
                   </Tr>
                 </Thead>
                 <Tbody>{makeDonationRows()}</Tbody>

@@ -1,7 +1,15 @@
 import { PNPBackend } from './utils';
 import { STATUSES } from './config';
 
-const { PENDING, CHANGES_REQUESTED, SCHEDULED, PICKED_UP, RESCHEDULE } = STATUSES;
+const {
+  APPROVAL_REQUESTED,
+  PENDING,
+  CHANGES_REQUESTED,
+  SCHEDULING,
+  SCHEDULED,
+  PICKED_UP,
+  RESCHEDULE,
+} = STATUSES;
 
 function makeDate(dateDB) {
   const months = [
@@ -34,13 +42,24 @@ const getRoutesFromDB = async () => {
   return routes;
 };
 
-const colorMap = {
+const statusColorMap = {
+  [APPROVAL_REQUESTED]: 'red',
   [PENDING]: 'blackAlpha',
   [CHANGES_REQUESTED]: 'blue',
-  [PICKED_UP]: 'green',
-  [SCHEDULED]: 'green',
-  [PICKED_UP]: 'blue',
+  [SCHEDULING]: 'blue',
+  [SCHEDULED]: 'blue',
+  [PICKED_UP]: 'blackAlpha',
   [RESCHEDULE]: 'orange',
+};
+
+const displayStatuses = {
+  [APPROVAL_REQUESTED]: 'APPROVAL REQUESTED',
+  [PENDING]: 'PENDING',
+  [CHANGES_REQUESTED]: 'CHANGES REQUESTED',
+  [SCHEDULING]: 'PENDING DONOR APPROVAL',
+  [SCHEDULED]: 'AWAITING PICKUP',
+  [PICKED_UP]: 'PICKUP COMPLETE',
+  [RESCHEDULE]: 'RESCHEDULE',
 };
 
 const formatImageData = data => {
@@ -93,6 +112,7 @@ export {
   makeDate,
   formatImageData,
   formatFurnitureData,
-  colorMap,
+  statusColorMap,
+  displayStatuses,
   EMAIL_TYPE,
 };
