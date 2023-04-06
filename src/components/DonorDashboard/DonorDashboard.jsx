@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
   Grid,
@@ -40,6 +41,8 @@ const DonorDashboard = ({ donationId }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationStatus, setDonationStatus] = useState();
   const toast = useToast();
+
+  const navigate = useNavigate();
 
   const newTag = (
     <Tag bg="blue.200" color="white">
@@ -254,6 +257,9 @@ const DonorDashboard = ({ donationId }) => {
           </Text>
           <TrackDonationSection stage={stage} />
         </Flex>
+        <Button bg="red.500" color="white" onClick={() => navigate(0)}>
+          Logout
+        </Button>
       </Flex>
       {/* BUG: If window too small height, overflow occurs & screen becomes scrollable */}
       <DonorFooter />

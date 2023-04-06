@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import {
   Tag,
   TagLabel,
@@ -23,6 +25,7 @@ import DonationFurnitureContainer from '../InventoryPage/DonationFurnitureContai
 import DonationImagesContainer from '../InventoryPage/DonationImagesContainer';
 import EditDonationModal from '../EditDonationModal/EditDonationModal';
 import { STATUSES } from '../../utils/config';
+import { PNPBackend } from '../../utils/utils';
 import pencilIcon from '../../assets/pencil.svg';
 // import { PNPBackend } from '../../utils/utils';
 
@@ -119,9 +122,11 @@ const DonationDetails = ({ data, setDonationData }) => {
     </Button>
   );
 
+  const navigate = useNavigate();
   const handleDelete = async () => {
-    // await PNPBackend.delete(`/donation/${id}`);
+    await PNPBackend.delete(`/donations/${id}`);
     deleteDialogOnClose();
+    navigate(0);
   };
 
   return (
