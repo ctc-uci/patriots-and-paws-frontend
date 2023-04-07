@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Flex, Text } from '@chakra-ui/react';
+import { Select, Flex, Box, HStack, Text } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
   Pagination,
@@ -38,23 +38,41 @@ const PaginationFooter = ({ count, setData, table }) => {
   }, [currentPage, rowsPerPage]);
 
   return (
-    <Flex direction="row" m={5} justify="space-between">
-      <Flex direction="row" gap={2}>
-        <Text>Show rows per page </Text>
-        <Select onChange={e => setRowsPerPage(e.target.value)} defaultValue={10} size="sm">
+    <Flex
+      direction="row"
+      justify="space-between"
+      border="solid"
+      borderWidth="1px"
+      borderColor="#E2E8F0"
+      mx={5}
+      p={3}
+    >
+      <HStack width="13%" spacing={0}>
+        <Box fontSize="14px" width="100%">
+          Show rows per page{' '}
+        </Box>
+        <Select
+          onChange={e => setRowsPerPage(e.target.value)}
+          defaultValue={10}
+          size="sm"
+          width="50%"
+        >
           <option value="10">10</option>
           <option value="15">15</option>
           <option value="20">20</option>
         </Select>
-      </Flex>
+      </HStack>
       <Flex align="center" gap={5}>
-        <Text>
-          <Text as="b">{itemCountString}</Text> of {count}
+        <Text fontSize="14px">
+          <Text as="b" fontSize="14px">
+            {itemCountString}
+          </Text>{' '}
+          of {count}
         </Text>
         <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
           <PaginationContainer justify="right">
-            <PaginationPrevious>&lsaquo;</PaginationPrevious>
-            <PaginationNext>&rsaquo;</PaginationNext>
+            <PaginationPrevious variant="ghost">&lsaquo;</PaginationPrevious>
+            <PaginationNext variant="ghost">&rsaquo;</PaginationNext>
           </PaginationContainer>
         </Pagination>
       </Flex>

@@ -76,8 +76,10 @@ const InventoryPage = () => {
 
   const makeStatus = status => {
     return (
-      <Tag size="sm" variant="solid" mt={3} ml={15} colorScheme={statusColorMap[status]}>
-        <TagLabel fontSize={14}>{displayStatuses[status]}</TagLabel>
+      <Tag size="sm" variant="solid" colorScheme={statusColorMap[status]}>
+        <TagLabel fontSize="18px" fontWeight={600}>
+          {displayStatuses[status]}
+        </TagLabel>
       </Tag>
     );
   };
@@ -124,18 +126,18 @@ const InventoryPage = () => {
             }}
           >
             <Td>
-              <Text>{`${ele.firstName} ${ele.lastName}`}</Text>
+              <Text fontSize="18px">{`${ele.firstName} ${ele.lastName}`}</Text>
             </Td>
-            <Td>#{ele.id}</Td>
+            <Td fontSize="18px">#{ele.id}</Td>
             {tabIndex === 0 ? (
               <>
-                <Td>{makeStatus(ele.status)}</Td>
-                <Td>{makeDate(ele.submittedDate)}</Td>
+                <Td fontSize="18px">{makeStatus(ele.status)}</Td>
+                <Td fontSize="18px">{makeDate(ele.submittedDate)}</Td>
               </>
             ) : (
               <>
-                <Td>{ele.addressCity}</Td>
-                <Td>{makeDate(ele.pickupDate)}</Td>
+                <Td fontSize="18px">{ele.addressCity}</Td>
+                <Td fontSize="18px">{makeDate(ele.pickupDate)}</Td>
               </>
             )}
           </Tr>
@@ -171,26 +173,27 @@ const InventoryPage = () => {
 
         <TabPanels>
           <TabPanel>
-            <TableContainer py="1.5em">
-              <Table variant="simple">
+            <TableContainer mx={1}>
+              <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
-                    <Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={peopleIcon} mr={2} color="black" /> NAME
                       </Flex>
                     </Th>
-                    <Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
                       </Flex>
                     </Th>
-                    <Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <CheckCircleIcon mr={2} color="black" /> STATUS
                       </Flex>
                     </Th>
                     <Th
+                      width="25%"
                       _hover={{ cursor: 'pointer' }}
                       onClick={() => setSubmissionDateSortDesc(!submissionDateSortDesc)}
                     >
@@ -206,22 +209,22 @@ const InventoryPage = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <TableContainer py="1.5em">
-              <Table variant="simple">
+            <TableContainer mx={1}>
+              <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
-                    <Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={peopleIcon} mr={2} color="black" /> NAME
                       </Flex>
                     </Th>
-                    <Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
                       </Flex>
                     </Th>
-                    <Th>ROUTE</Th>
-                    <Th>
+                    <Th width="25%">ROUTE</Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={clockIcon} mr={2} color="black" /> SCHEDULED DATE
                       </Flex>
@@ -233,22 +236,22 @@ const InventoryPage = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <TableContainer py="1.5em">
-              <Table variant="simple">
+            <TableContainer mx={1}>
+              <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
-                    <Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={peopleIcon} mr={2} color="black" /> NAME
                       </Flex>
                     </Th>
-                    <Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
                       </Flex>
                     </Th>
-                    <Th>ROUTE</Th>
-                    <Th>
+                    <Th width="25%">ROUTE</Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={clockIcon} mr={2} color="black" /> PICKUP DATE
                       </Flex>
@@ -260,24 +263,24 @@ const InventoryPage = () => {
             </TableContainer>
           </TabPanel>
           <TabPanel>
-            <TableContainer py="1.5em">
-              <Table variant="simple">
+            <TableContainer mx={1}>
+              <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
                 <Thead>
                   <Tr bg="#F7FAFC" height="40px">
-                    <Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={peopleIcon} mr={2} color="black" /> NAME
                       </Flex>
                     </Th>
-                    <Th>
+                    <Th width="25%">
                       <Flex align="center">
                         <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
                       </Flex>
                     </Th>
-                    <Th>ROUTE</Th>
-                    <Th>
+                    <Th width="25%">ROUTE</Th>
+                    <Th width="25%">
                       <Flex align="center">
-                        <Image src={clockIcon} mr={2} color="black" /> DATE PICKED DATE
+                        <Image src={clockIcon} mr={2} color="black" /> DATE PICKED UP
                       </Flex>
                     </Th>
                   </Tr>
