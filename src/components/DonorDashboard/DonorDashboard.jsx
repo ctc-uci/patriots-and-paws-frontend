@@ -60,7 +60,7 @@ const DonorDashboard = ({ donationId }) => {
   };
 
   const displayBanner = () => {
-    if (donationStatus === PENDING) {
+    if (donationStatus === PENDING || donationStatus === APPROVAL_REQUESTED) {
       return (
         <Flex borderRadius="6px" bg="blue.50" w="100%" p={4} mb={4}>
           <CheckCircleIcon color="blue.100" mr={2} boxSize={5} />
@@ -147,7 +147,21 @@ const DonorDashboard = ({ donationId }) => {
   const displayPickup = () => {
     const { pickupDate } = donation;
     if ([PENDING, RESCHEDULE, APPROVAL_REQUESTED].includes(donationStatus)) {
-      return <Box>Sit Tight! We&apos;ll be scheduling a pickup date with you soon.</Box>;
+      return (
+        <Box>
+          Sit Tight! We&apos;ll be scheduling a pickup date with you soon.
+          <Flex gap={3} visibility="hidden">
+            <Button bg="red.500" color="white">
+              Reject Time
+              <CloseIcon ml={3} />
+            </Button>
+            <Button bg="green" color="white">
+              Approve Time
+              <CheckIcon ml={3} />
+            </Button>
+          </Flex>
+        </Box>
+      );
     }
 
     if (donationStatus === SCHEDULING) {
@@ -184,6 +198,16 @@ const DonorDashboard = ({ donationId }) => {
           </Flex>
           <Text as="b">{formatDate(donation.pickupDate)}</Text>
           <Text>Instructions:</Text>
+          <Flex gap={3} visibility="hidden">
+            <Button bg="red.500" color="white">
+              Reject Time
+              <CloseIcon ml={3} />
+            </Button>
+            <Button bg="green" color="white">
+              Approve Time
+              <CheckIcon ml={3} />
+            </Button>
+          </Flex>
         </Flex>
       );
     }
@@ -236,7 +260,11 @@ const DonorDashboard = ({ donationId }) => {
             </Text>
             {displayBanner()}
             <Box borderRadius="6px" bg="white" w="100%" h="100%" overflowY="auto" p={6}>
-              <DonationDetails data={donation} setDonationData={setDonation} />
+              <DonationDetails
+                data={donation}
+                setDonationData={setDonation}
+                setDonationStatus={setDonationStatus}
+              />
             </Box>
           </Flex>
           <Flex direction="column" gap={3}>
@@ -246,7 +274,7 @@ const DonorDashboard = ({ donationId }) => {
               </Text>
               <Box p={2}>{donationStatus === SCHEDULING && newTag}</Box>
             </Flex>
-            <Box borderRadius="6px" bg="white" w="100%" h="100%" py={4} px={6}>
+            <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
               {displayPickup()}
             </Box>
           </Flex>

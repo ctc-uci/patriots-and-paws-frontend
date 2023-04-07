@@ -65,8 +65,9 @@ const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-const DonationDetails = ({ data, setDonationData }) => {
+const DonationDetails = ({ data, setDonationData, setDonationStatus }) => {
   const { status, id, submittedDate, pictures, furniture } = data;
+
   const formatDate = date => {
     const d = new Date(date);
     return d.toLocaleDateString('en-US', {
@@ -160,6 +161,7 @@ const DonationDetails = ({ data, setDonationData }) => {
         setDonationData={setDonationData}
         isOpen={editModalIsOpen}
         onClose={editModalOnClose}
+        setDonationStatus={setDonationStatus}
       />
       <DeleteDonationDialog
         isOpen={deleteDialogIsOpen}
@@ -202,6 +204,7 @@ DonationDetails.propTypes = {
     ),
   }).isRequired,
   setDonationData: PropTypes.func.isRequired,
+  setDonationStatus: PropTypes.func.isRequired,
 };
 
 DeleteDonationDialog.propTypes = {

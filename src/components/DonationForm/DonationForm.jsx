@@ -58,7 +58,12 @@ const schema = yup.object({
   termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
 
-function DonationForm({ donationData, setDonationData, closeEditDonationModal }) {
+function DonationForm({
+  donationData,
+  setDonationData,
+  closeEditDonationModal,
+  setDonationStatus,
+}) {
   const {
     handleSubmit,
     register,
@@ -128,6 +133,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
       zip: parseInt(data.zipcode, 10),
       furniture: donatedFurnitureList,
       pictures: [...newUrls, ...files.filter(file => file?.imageUrl)],
+      status: APPROVAL_REQUESTED,
     };
 
     if (!donationData) {
@@ -160,6 +166,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
       await PNPBackend.put(`/donations/${donationData.id}`, {
         status: APPROVAL_REQUESTED,
       });
+      setDonationStatus(APPROVAL_REQUESTED);
       closeEditDonationModal();
     }
   };
@@ -387,12 +394,14 @@ DonationForm.propTypes = {
     ),
   }),
   setDonationData: PropTypes.func,
+  setDonationStatus: PropTypes.func,
   closeEditDonationModal: PropTypes.func,
 };
 
 DonationForm.defaultProps = {
   donationData: undefined,
   setDonationData: () => {},
+  setDonationStatus: () => {},
   closeEditDonationModal: () => {},
 };
 

@@ -8,7 +8,7 @@ const DonationFurnitureContainer = ({ data }) => {
 
   useEffect(() => {
     setDisplayedData(data);
-  }, []);
+  }, [data]);
 
   return (
     <>
