@@ -8,8 +8,10 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Text,
   Button,
   Heading,
+  HStack,
   Stack,
   Box,
   Modal,
@@ -20,10 +22,15 @@ import {
   ModalFooter,
   ModalCloseButton,
   useDisclosure,
+  InputRightElement,
   InputLeftElement,
   InputGroup,
   IconButton,
+  useToast,
 } from '@chakra-ui/react';
+import { RiLockFill } from 'react-icons/ri';
+import { MdEmail, MdPhone, MdInfo } from 'react-icons/md';
+import { IoPersonSharp } from 'react-icons/io5';
 import { LockIcon, CloseIcon } from '@chakra-ui/icons';
 import { updateUser } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
@@ -79,17 +86,20 @@ const EditAccountModal = ({
   });
 
   const [errorMessage, setErrorMessage] = useState();
+  const [viewState, setViewState] = useState('view'); // view / edit
   const originalData = { ...data };
 
   const { isOpen: saveIsOpen, onOpen: saveOnOpen, onClose: saveOnClose } = useDisclosure();
 
   const closeModals = () => {
+    setViewState('view');
     saveOnClose();
     onClose();
   };
 
   const cancel = () => {
     reset(originalData);
+    setViewState('view');
     saveOnClose();
     onClose();
   };
@@ -97,6 +107,14 @@ const EditAccountModal = ({
   useEffect(() => {
     reset(data);
   }, [data]);
+
+  // useEffect(() => {
+  //   console.log(viewState);
+  //   let testvar = viewState === 'view' ? false : true;
+  //   if (testvar) {
+  //     console.log('edit mode');
+  //   }
+  // }, [viewState]);
 
   const onSubmit = async e => {
     try {
@@ -124,6 +142,14 @@ const EditAccountModal = ({
           );
         }
       }
+      toast({
+        title: 'Your changes have been saved.',
+        status: 'success',
+        isClosable: true,
+        variant: 'subtle',
+        position: 'top',
+        duration: 4000,
+      });
       closeModals();
     } catch (err) {
       const firebaseErrorMsg = err.message;
@@ -131,23 +157,33 @@ const EditAccountModal = ({
     }
   };
 
+  const toast = useToast();
+
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        onCloseComplete={() => {
+          setViewState('view');
+        }}
+        size="xl"
+      >
         <ModalOverlay />
         <ModalContent>
           <Flex m={5}>
             <Stack>
               <Flex justifyContent="space-between">
                 <Heading className={styles['create-account-title']} mb={5}>
-                  Edit Staff
+                  Profile
                 </Heading>
-                <IconButton
+                {/* <IconButton
                   variant="solid"
-                  colorScheme="gray"
                   icon={<CloseIcon />}
-                  onClick={saveOnOpen}
-                />
+                  colorScheme="gray"
+                  onClick={cancel}
+                /> */}
+                <ModalCloseButton onClick={cancel} mt="1rem" mr="1rem" size="lg" />
               </Flex>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <FormControl className={styles['create-account-form']}>
@@ -156,40 +192,58 @@ const EditAccountModal = ({
                       <FormLabel className={styles['create-account-form-label']}>
                         First Name
                       </FormLabel>
-                      <Input
-                        id="first-name"
-                        style={{ width: '240px' }}
-                        {...register('firstName')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.firstName?.message}</Box>
+                      <InputGroup>
+                        <InputRightElement pointerEvents="none">
+                          <IoPersonSharp color="black.300" />
+                        </InputRightElement>
+                        <Input
+                          id="first-name"
+                          style={{ width: '240px' }}
+                          errorBorderColor="red"
+                          isDisabled={viewState === 'view' ? true : false}
+                          {...register('firstName')}
+                          isRequired
+                        />
+                      </InputGroup>
+                      {/* <Box className={styles['error-box']}>
+                        <Text color="red">{errors.firstName?.message}</Text>
+                      </Box> */}
                     </Flex>
                     <Flex direction="column">
                       <FormLabel className={styles['create-account-form-label']}>
                         Last Name
                       </FormLabel>
-                      <Input
-                        id="last-name"
-                        style={{ width: '240px' }}
-                        {...register('lastName')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.lastName?.message}</Box>
+                      <InputGroup>
+                        <InputRightElement pointerEvents="none">
+                          <IoPersonSharp color="black.300" />
+                        </InputRightElement>
+                        <Input
+                          id="last-name"
+                          style={{ width: '240px' }}
+                          isDisabled={viewState === 'view' ? true : false}
+                          {...register('lastName')}
+                          isRequired
+                        />
+                      </InputGroup>
+                      {/* <Box className={styles['error-box']}>
+                        <Text color="red">{errors.lastName?.message}</Text>
+                      </Box> */}
                     </Flex>
                   </Flex>
                   <Flex mb={5}>
                     <Flex direction="column" mr={8}>
                       <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
                       <InputGroup>
-                        <InputLeftElement pointerEvents="none">
-                          <LockIcon color="black.300" />
-                        </InputLeftElement>
+                        <InputRightElement pointerEvents="none">
+                          <MdEmail color="black.300" />
+                        </InputRightElement>
                         <Input
                           type="email"
                           id="email"
                           style={{ width: '240px' }}
                           placeholder="Enter email"
                           value={data.email}
+                          isDisabled={viewState === 'view' ? true : false}
                           isRequired
                           isReadOnly
                         />
@@ -200,46 +254,84 @@ const EditAccountModal = ({
                       <FormLabel className={styles['create-account-form-label']}>
                         Phone Number
                       </FormLabel>
-                      <Input
-                        type="tel"
-                        id="phone-number"
-                        style={{ width: '240px' }}
-                        {...register('phoneNumber')}
-                        isRequired
-                      />
-                      <Box className={styles['error-box']}>{errors.phoneNumber?.message}</Box>
+                      <InputGroup>
+                        <InputRightElement pointerEvents="none">
+                          <MdPhone color="black.300" />
+                        </InputRightElement>
+                        <Input
+                          type="tel"
+                          id="phone-number"
+                          style={{ width: '240px' }}
+                          errorBorderColor="red"
+                          isDisabled={viewState === 'view' ? true : false}
+                          {...register('phoneNumber')}
+                          isRequired
+                        />
+                      </InputGroup>
+                      {/* <Box className={styles['error-box']}>
+                        <Text color="red">{errors.phoneNumber?.message}</Text>
+                      </Box> */}
                     </Flex>
                   </Flex>
                   {isSuperAdmin && (
                     <Flex mb={5}>
                       <Flex direction="column" mr={8}>
-                        <FormLabel className={styles['create-account-form-label']}>
-                          Password
-                        </FormLabel>
-                        <Input
-                          type="password"
-                          id="password"
-                          style={{ width: '240px' }}
-                          placeholder="Enter password"
-                          {...register('newPassword')}
-                          isRequired
-                        />
-                        <Box className={styles['error-box']}>{errors.newPassword?.message}</Box>
+                        {viewState === 'edit' && (
+                          <HStack>
+                            <FormLabel className={styles['create-account-form-label']}>
+                              Password
+                            </FormLabel>
+                            <IconButton
+                              icon={<MdInfo color="black.300" pb="2000rem" />}
+                              onClick={() => {
+                                console.log('clicked icon');
+                              }}
+                            />
+                          </HStack>
+                        )}
+                        {viewState === 'view' && (
+                          <FormLabel className={styles['create-account-form-label']}>
+                            Password
+                          </FormLabel>
+                        )}
+                        <InputGroup>
+                          <InputRightElement pointerEvents="none">
+                            <RiLockFill color="black.300" />
+                          </InputRightElement>
+                          <Input
+                            background={viewState === 'view' ? '#A0AEC0' : 'white'}
+                            type="password"
+                            id="password"
+                            style={{ width: '240px' }}
+                            placeholder="Enter password"
+                            errorBorderColor="red"
+                            isDisabled={viewState === 'view' ? true : false}
+                            {...register('newPassword')}
+                            isRequired
+                          />
+                        </InputGroup>
+                        <Box className={styles['error-box']}>
+                          <Text color="red">{errors.newPassword?.message}</Text>
+                        </Box>
                       </Flex>
-                      <Flex direction="column">
-                        <FormLabel className={styles['create-account-form-label']}>
-                          Re-enter Password
-                        </FormLabel>
-                        <Input
-                          type="password"
-                          id="check-password"
-                          style={{ width: '240px' }}
-                          placeholder="Re-enter password"
-                          {...register('confirmPassword')}
-                          isRequired
-                        />
-                        <Box className={styles['error-box']}>{errors.confirmPassword?.message}</Box>
-                      </Flex>
+                      {viewState === 'edit' && (
+                        <Flex direction="column">
+                          <FormLabel className={styles['create-account-form-label']}>
+                            Confirm Password
+                          </FormLabel>
+                          <Input
+                            type="password"
+                            id="check-password"
+                            style={{ width: '240px' }}
+                            placeholder="Re-enter password"
+                            {...register('confirmPassword')}
+                            isRequired
+                          />
+                          <Box className={styles['error-box']}>
+                            <Text color="red">{errors.confirmPassword?.message}</Text>
+                          </Box>
+                        </Flex>
+                      )}
                     </Flex>
                   )}
                 </FormControl>
@@ -249,24 +341,41 @@ const EditAccountModal = ({
           </Flex>
           <ModalFooter>
             <Flex justify="flex-end">
-              <Button
-                colorScheme="gray"
-                className={styles['create-account-button']}
-                type="submit"
-                mr={3}
-                onClick={saveOnOpen}
-              >
-                Cancel
-              </Button>
-              <Button
-                colorScheme="blue"
-                className={styles['create-account-button']}
-                type="submit"
-                onClick={handleSubmit(onSubmit)}
-              >
-                Save
-              </Button>
-              <Modal isOpen={saveIsOpen} onClose={saveOnClose}>
+              {viewState === 'edit' && (
+                <>
+                  <Button
+                    variant="outline"
+                    className={styles['create-account-button']}
+                    type="submit"
+                    mr={3}
+                    onClick={cancel}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    colorScheme="blue"
+                    className={styles['create-account-button']}
+                    type="submit"
+                    onClick={handleSubmit(onSubmit)}
+                  >
+                    Save Changes
+                  </Button>
+                </>
+              )}
+              {viewState === 'view' && (
+                <Button
+                  color="white"
+                  background="#718096"
+                  _hover={{ bg: '#718096' }}
+                  _focus={{ bg: '#718096' }}
+                  onClick={() => {
+                    setViewState('edit');
+                  }}
+                >
+                  Edit Profile
+                </Button>
+              )}
+              {/* <Modal isOpen={saveIsOpen} onClose={saveOnClose}>
                 <ModalOverlay />
                 <ModalContent>
                   <ModalHeader>Save before exiting?</ModalHeader>
@@ -274,7 +383,7 @@ const EditAccountModal = ({
                   <ModalBody>Are you sure you want to exit without saving?</ModalBody>
 
                   <ModalFooter>
-                    <Button mr={3} onClick={cancel}>
+                    <Button variant="outline" mr={3} onClick={cancel}>
                       Exit
                     </Button>
                     <Button colorScheme="blue" onClick={closeModals}>
@@ -282,7 +391,7 @@ const EditAccountModal = ({
                     </Button>
                   </ModalFooter>
                 </ModalContent>
-              </Modal>
+              </Modal> */}
             </Flex>
           </ModalFooter>
         </ModalContent>
