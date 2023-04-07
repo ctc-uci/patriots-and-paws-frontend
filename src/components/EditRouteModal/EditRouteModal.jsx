@@ -75,7 +75,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
         Object.assign(donation, { orderNum: index + 1 }),
       );
 
-      // update donations in parallel
+      // this updates donations in parallel
       const updateDonationPromises = updatedDonations.map(donation => updateDonation(donation));
       await Promise.all(updateDonationPromises);
 
