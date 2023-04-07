@@ -21,9 +21,12 @@ import {
   FormControl,
   Select,
   Switch,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
+import { PDFViewer, StyleSheet } from '@react-pdf/renderer';
 import { Reorder } from 'framer-motion';
+import RoutePDF from '../RoutePDF/RoutePDF';
 import { updateDonation, getRoute, updateRoute } from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
 import { AUTH_ROLES } from '../../utils/config';
@@ -36,6 +39,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   const [donations, setDonations] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
   const [modalState, setModalState] = useState('view');
+  const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
@@ -95,6 +99,12 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   const handleChangeToEdit = () => {
     setModalState('edit');
   };
+  const styles = StyleSheet.create({
+    viewer: {
+      width: '100%',
+      height: '80vh',
+    },
+  });
 
   return (
     <Modal size="xl" isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
@@ -266,9 +276,19 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                 paddingRight={5}
               >
                 <Flex justify="left" gap={2}>
-                  <Button colorScheme="blackAlpha" type="submit" onClick={() => {}}>
+                  <Button colorScheme="blackAlpha" type="submit" onClick={exportOnOpen}>
                     Export PDF
                   </Button>
+                  <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
+                    <ModalContent>
+                      <ModalCloseButton />
+                      <ModalBody p="5em 5em 0 5em">
+                        <PDFViewer style={styles.viewer}>
+                          <RoutePDF routeID={routeId} />
+                        </PDFViewer>
+                      </ModalBody>
+                    </ModalContent>
+                  </Modal>
                   <Button
                     colorScheme="teal"
                     type="submit"
