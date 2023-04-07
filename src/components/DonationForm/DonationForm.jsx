@@ -29,7 +29,9 @@ import ImageDetails from '../ImageDetails/ImageDetails';
 import DonationCard from '../DonationCard/DonationCard';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
 import ItemInfo from '../ItemInfo/ItemInfo';
+import { STATUSES } from '../../utils/config';
 
+const { APPROVAL_REQUESTED } = STATUSES;
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
 };
@@ -155,6 +157,9 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
       const newData = await updateDonation(donationData.id, formData);
       setDonationData(prev => newData ?? prev);
       // closes the editDonationModal
+      await PNPBackend.put(`/donations/${donationData.id}`, {
+        status: APPROVAL_REQUESTED,
+      });
       closeEditDonationModal();
     }
   };
