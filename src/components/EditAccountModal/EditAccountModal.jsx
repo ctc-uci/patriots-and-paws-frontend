@@ -11,27 +11,30 @@ import {
   Text,
   Button,
   Heading,
-  HStack,
   Stack,
   Box,
   Modal,
   ModalContent,
   ModalOverlay,
-  ModalHeader,
-  ModalBody,
   ModalFooter,
   ModalCloseButton,
   useDisclosure,
   InputRightElement,
-  InputLeftElement,
   InputGroup,
   IconButton,
   useToast,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverArrow,
+  ListItem,
+  UnorderedList,
 } from '@chakra-ui/react';
 import { RiLockFill } from 'react-icons/ri';
 import { MdEmail, MdPhone, MdInfo } from 'react-icons/md';
 import { IoPersonSharp } from 'react-icons/io5';
-import { LockIcon, CloseIcon } from '@chakra-ui/icons';
 import { updateUser } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 import styles from './EditAccountModal.module.css';
@@ -85,11 +88,13 @@ const EditAccountModal = ({
     delayError: 750,
   });
 
-  const [errorMessage, setErrorMessage] = useState();
+  // const [errorMessage, setErrorMessage] = useState();
   const [viewState, setViewState] = useState('view'); // view / edit
   const originalData = { ...data };
 
-  const { isOpen: saveIsOpen, onOpen: saveOnOpen, onClose: saveOnClose } = useDisclosure();
+  const { onClose: saveOnClose } = useDisclosure();
+
+  const toast = useToast();
 
   const closeModals = () => {
     setViewState('view');
@@ -105,8 +110,18 @@ const EditAccountModal = ({
   };
 
   useEffect(() => {
-    reset(data);
-  }, [data]);
+    if (Object.keys(errors).length) {
+      toast({
+        title: "Your changes couldn't be saved!",
+        description: 'Error in one or more field(s) are marked in red.',
+        status: 'error',
+        isClosable: true,
+        variant: 'subtle',
+        position: 'top',
+        duration: 3000,
+      });
+    }
+  }, [errors]);
 
   // useEffect(() => {
   //   console.log(viewState);
@@ -129,7 +144,7 @@ const EditAccountModal = ({
         newPassword: '',
         confirmPassword: '',
       });
-      setErrorMessage('User successfully edited');
+      // setErrorMessage('User successfully edited');
       if (setUsers) {
         setUsers(prev => prev.map(user => (user.id === data.id ? { ...updatedUser, ...e } : user)));
         if (data.role === 'admin') {
@@ -148,33 +163,24 @@ const EditAccountModal = ({
         isClosable: true,
         variant: 'subtle',
         position: 'top',
-        duration: 4000,
+        duration: 3000,
       });
       closeModals();
     } catch (err) {
-      const firebaseErrorMsg = err.message;
-      setErrorMessage(firebaseErrorMsg);
+      // const firebaseErrorMsg = err.message;
+      // setErrorMessage(firebaseErrorMsg);
     }
   };
 
-  const toast = useToast();
-
   return (
     <>
-      <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        onCloseComplete={() => {
-          setViewState('view');
-        }}
-        size="xl"
-      >
+      <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={cancel} size="xl">
         <ModalOverlay />
         <ModalContent>
           <Flex m={5}>
             <Stack>
               <Flex justifyContent="space-between">
-                <Heading className={styles['create-account-title']} mb={5}>
+                <Heading className={styles['create-account-title']} size="lg" mt=".4rem" mb={5}>
                   Profile
                 </Heading>
                 {/* <IconButton
@@ -199,8 +205,9 @@ const EditAccountModal = ({
                         <Input
                           id="first-name"
                           style={{ width: '240px' }}
-                          errorBorderColor="red"
-                          isDisabled={viewState === 'view' ? true : false}
+                          errorBorderColor="red.300"
+                          isInvalid={'firstName' in errors}
+                          isDisabled={viewState === 'view'}
                           {...register('firstName')}
                           isRequired
                         />
@@ -220,7 +227,9 @@ const EditAccountModal = ({
                         <Input
                           id="last-name"
                           style={{ width: '240px' }}
-                          isDisabled={viewState === 'view' ? true : false}
+                          errorBorderColor="red.300"
+                          isInvalid={'lastName' in errors}
+                          isDisabled={viewState === 'view'}
                           {...register('lastName')}
                           isRequired
                         />
@@ -243,7 +252,7 @@ const EditAccountModal = ({
                           style={{ width: '240px' }}
                           placeholder="Enter email"
                           value={data.email}
-                          isDisabled={viewState === 'view' ? true : false}
+                          isDisabled={viewState === 'view'}
                           isRequired
                           isReadOnly
                         />
@@ -262,8 +271,9 @@ const EditAccountModal = ({
                           type="tel"
                           id="phone-number"
                           style={{ width: '240px' }}
-                          errorBorderColor="red"
-                          isDisabled={viewState === 'view' ? true : false}
+                          errorBorderColor="red.300"
+                          isInvalid={'phoneNumber' in errors}
+                          isDisabled={viewState === 'view'}
                           {...register('phoneNumber')}
                           isRequired
                         />
@@ -276,7 +286,7 @@ const EditAccountModal = ({
                   {isSuperAdmin && (
                     <Flex mb={5}>
                       <Flex direction="column" mr={8}>
-                        {viewState === 'edit' && (
+                        {/* {viewState === 'edit' && (
                           <HStack>
                             <FormLabel className={styles['create-account-form-label']}>
                               Password
@@ -288,6 +298,43 @@ const EditAccountModal = ({
                               }}
                             />
                           </HStack>
+                        )} */}
+                        {viewState === 'edit' && (
+                          <Flex>
+                            {' '}
+                            <FormLabel className={styles['create-account-form-label']} mt=".4rem">
+                              Password
+                            </FormLabel>
+                            <Popover>
+                              <PopoverTrigger>
+                                <IconButton
+                                  variant="invisible"
+                                  icon={<MdInfo color="black.300" />}
+                                />
+                              </PopoverTrigger>
+                              <PopoverContent color="white" bg="black">
+                                <PopoverArrow />
+                                <PopoverCloseButton />
+                                {/* <PopoverHeader>Confirmation!</PopoverHeader> */}
+                                <PopoverBody>
+                                  Password must contain:
+                                  <UnorderedList>
+                                    <ListItem>8 characters</ListItem>
+                                    <ListItem>1 lowercase letter</ListItem>
+                                    <ListItem>1 uppercase letter</ListItem>
+                                    <ListItem>1 symbol</ListItem>
+                                  </UnorderedList>
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                            {/* <IconButton
+                              variant="invisible"
+                              icon={<MdInfo color="black.300" />}
+                              onClick={() => {
+                                console.log('clicked icon');
+                              }}
+                            /> */}
+                          </Flex>
                         )}
                         {viewState === 'view' && (
                           <FormLabel className={styles['create-account-form-label']}>
@@ -304,18 +351,19 @@ const EditAccountModal = ({
                             id="password"
                             style={{ width: '240px' }}
                             placeholder="Enter password"
-                            errorBorderColor="red"
-                            isDisabled={viewState === 'view' ? true : false}
+                            errorBorderColor="red.300"
+                            isInvalid={'newPassword' in errors}
+                            isDisabled={viewState === 'view'}
                             {...register('newPassword')}
                             isRequired
                           />
                         </InputGroup>
-                        <Box className={styles['error-box']}>
+                        {/* <Box className={styles['error-box']}>
                           <Text color="red">{errors.newPassword?.message}</Text>
-                        </Box>
+                        </Box> */}
                       </Flex>
                       {viewState === 'edit' && (
-                        <Flex direction="column">
+                        <Flex direction="column" mt=".46rem">
                           <FormLabel className={styles['create-account-form-label']}>
                             Confirm Password
                           </FormLabel>
@@ -324,6 +372,8 @@ const EditAccountModal = ({
                             id="check-password"
                             style={{ width: '240px' }}
                             placeholder="Re-enter password"
+                            errorBorderColor="red.300"
+                            isInvalid={'confirmPassword' in errors}
                             {...register('confirmPassword')}
                             isRequired
                           />
@@ -336,7 +386,7 @@ const EditAccountModal = ({
                   )}
                 </FormControl>
               </form>
-              <Box className={styles['error-box']}>{errorMessage}</Box>
+              {/* <Box className={styles['error-box']}>{errorMessage}</Box> */}
             </Stack>
           </Flex>
           <ModalFooter>
