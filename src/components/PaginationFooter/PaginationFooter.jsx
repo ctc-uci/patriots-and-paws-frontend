@@ -10,12 +10,13 @@ import {
 } from '@ajna/pagination';
 import { PNPBackend } from '../../utils/utils';
 
-const PaginationFooter = ({ count, setData, table }) => {
+const PaginationFooter = ({ setData, table, tab }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [itemCountString, setItemCountString] = useState('');
+  const [donationCount, setDonationCount] = useState(0);
 
   const { currentPage, setCurrentPage, pagesCount } = usePagination({
-    pagesCount: Math.ceil(count / rowsPerPage),
+    pagesCount: Math.ceil(donationCount / rowsPerPage),
     initialState: { currentPage: 1 },
   });
 
@@ -29,13 +30,19 @@ const PaginationFooter = ({ count, setData, table }) => {
   useEffect(() => {
     const refreshData = async () => {
       const { data } = await PNPBackend.get(
-        `/${table}?numDonations=${rowsPerPage}&pageNum=${currentPage}`,
+        `/${table}?numDonations=${rowsPerPage}&pageNum=${currentPage}&tab=${tab}`,
       );
-      setData(data);
-      calculateItemCount(data.length);
+      const { count, donations } = data;
+      setData(donations);
+      setDonationCount(count[0].count);
+      calculateItemCount(donations.length);
     };
     refreshData();
-  }, [currentPage, rowsPerPage]);
+  }, [currentPage, rowsPerPage, tab]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [tab]);
 
   return (
     <Flex
@@ -67,7 +74,7 @@ const PaginationFooter = ({ count, setData, table }) => {
           <Text as="b" fontSize="14px">
             {itemCountString}
           </Text>{' '}
-          of {count}
+          of {donationCount}
         </Text>
         <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
           <PaginationContainer justify="right">
@@ -81,9 +88,9 @@ const PaginationFooter = ({ count, setData, table }) => {
 };
 
 PaginationFooter.propTypes = {
-  count: PropTypes.string.isRequired,
   setData: PropTypes.func.isRequired,
   table: PropTypes.string.isRequired,
+  tab: PropTypes.string.isRequired,
 };
 
 export default PaginationFooter;

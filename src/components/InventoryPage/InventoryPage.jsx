@@ -33,41 +33,23 @@ import clockIcon from '../../assets/clock.svg';
 import DonationModal from './DonationModal';
 import RouteCalendar from '../RouteCalendar/RouteCalendar';
 import PaginationFooter from '../PaginationFooter/PaginationFooter';
-import { PNPBackend } from '../../utils/utils';
 import {
   getRoutesFromDB,
   makeDate,
   statusColorMap,
   displayStatuses,
 } from '../../utils/InventoryUtils';
-import { STATUSES } from '../../utils/config';
-
-const {
-  PENDING,
-  CHANGES_REQUESTED,
-  SCHEDULING,
-  SCHEDULED,
-  PICKED_UP,
-  RESCHEDULE,
-  APPROVAL_REQUESTED,
-} = STATUSES;
 
 const InventoryPage = () => {
-  const [allDonations, setAllDonations] = useState([]);
+  const [donations, setDonations] = useState([]);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isDrawerOpen, onOpen: onDrawerOpen, onClose: onDrawerClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
-  const [count, setCount] = useState();
   const [routes, setRoutes] = useState({});
   const [tabIndex, setTabIndex] = useState(0);
   const [submissionDateSortDesc, setSubmissionDateSortDesc] = useState(true);
 
-  const tabStatuses = [
-    [PENDING, CHANGES_REQUESTED, RESCHEDULE, APPROVAL_REQUESTED],
-    [SCHEDULING],
-    [SCHEDULED],
-    [PICKED_UP],
-  ];
+  const tabStatuses = ['admin', 'donor', 'pickup', 'archive'];
 
   const handleRowClick = data => {
     setDonationData(data);
@@ -83,16 +65,6 @@ const InventoryPage = () => {
       </Tag>
     );
   };
-
-  const getTotalCount = async () => {
-    const { data } = await PNPBackend.get(`donations/total`);
-    const { count: totalCount } = data[0];
-    setCount(totalCount);
-  };
-
-  useEffect(() => {
-    getTotalCount();
-  }, []);
 
   useEffect(() => {
     const fetchRoutesFromDB = async () => {
@@ -113,36 +85,34 @@ const InventoryPage = () => {
   }, []);
 
   const makeDonationRows = () => {
-    return allDonations
-      .filter(ele => tabStatuses[tabIndex].includes(ele.status))
-      .map(ele => {
-        return (
-          <Tr
-            onClick={() => handleRowClick(ele)}
-            key={ele.id}
-            cursor="pointer"
-            _hover={{
-              background: 'blue.50',
-            }}
-          >
-            <Td>
-              <Text fontSize="18px">{`${ele.firstName} ${ele.lastName}`}</Text>
-            </Td>
-            <Td fontSize="18px">#{ele.id}</Td>
-            {tabIndex === 0 ? (
-              <>
-                <Td fontSize="18px">{makeStatus(ele.status)}</Td>
-                <Td fontSize="18px">{makeDate(ele.submittedDate)}</Td>
-              </>
-            ) : (
-              <>
-                <Td fontSize="18px">{ele.addressCity}</Td>
-                <Td fontSize="18px">{makeDate(ele.pickupDate)}</Td>
-              </>
-            )}
-          </Tr>
-        );
-      });
+    return donations.map(ele => {
+      return (
+        <Tr
+          onClick={() => handleRowClick(ele)}
+          key={ele.id}
+          cursor="pointer"
+          _hover={{
+            background: 'blue.50',
+          }}
+        >
+          <Td>
+            <Text fontSize="18px">{`${ele.firstName} ${ele.lastName}`}</Text>
+          </Td>
+          <Td fontSize="18px">#{ele.id}</Td>
+          {tabIndex === 0 ? (
+            <>
+              <Td fontSize="18px">{makeStatus(ele.status)}</Td>
+              <Td fontSize="18px">{makeDate(ele.submittedDate)}</Td>
+            </>
+          ) : (
+            <>
+              <Td fontSize="18px">{ele.addressCity}</Td>
+              <Td fontSize="18px">{makeDate(ele.pickupDate)}</Td>
+            </>
+          )}
+        </Tr>
+      );
+    });
   };
 
   return (
@@ -289,11 +259,11 @@ const InventoryPage = () => {
               </Table>
             </TableContainer>
           </TabPanel>
-          {count && <PaginationFooter count={count} setData={setAllDonations} table="donations" />}
+          <PaginationFooter setData={setDonations} table="donations" tab={tabStatuses[tabIndex]} />
         </TabPanels>
       </Tabs>
       <DonationModal
-        setAllDonations={setAllDonations}
+        setAllDonations={setDonations}
         data={donationData}
         onClose={onClose}
         onOpen={onOpen}
