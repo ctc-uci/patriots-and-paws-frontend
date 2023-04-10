@@ -44,6 +44,7 @@ import RoutePDF from './components/RoutePDF/RoutePDF';
 
 import { AUTH_ROLES } from './utils/config';
 import DonorLogin from './pages/DonorLogin/DonorLogin';
+import Workshop from './components/Workshop/Workshop';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
 
@@ -211,6 +212,7 @@ function App() {
           <Route exact path="/donate" element={<DonorLogin />} />
           <Route exact path="/donate/form" element={<DonationForm />} />
           <Route exact path="/donate/status" element={<DonorLogin />} />
+          <Route exact path="/workshop" element={<Workshop />} />
         </Routes>
       </Router>
     </ChakraProvider>
