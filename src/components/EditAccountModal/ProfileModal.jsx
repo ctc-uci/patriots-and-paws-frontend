@@ -71,8 +71,6 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
     delayError: 750,
   });
 
-  useEffect(() => console.log(data), [data]);
-
   const [isEditable, setIsEditable] = useState(false);
 
   const toast = useToast();
@@ -88,7 +86,6 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
   };
 
   useEffect(() => {
-    // console.log(errors);
     if (Object.keys(errors).length) {
       toast({
         title: "Your changes couldn't be saved!",
@@ -264,7 +261,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                         type="password"
                         id="password"
                         style={{ width: '240px' }}
-                        placeholder={isEditable && 'Enter password'}
+                        placeholder={isEditable ? 'Enter password' : ''}
                         errorBorderColor="red.300"
                         isInvalid={'newPassword' in errors}
                         isDisabled={!isEditable}
