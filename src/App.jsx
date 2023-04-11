@@ -51,8 +51,6 @@ function App() {
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
 
-  // useEffect(() => console.log(files), [files]);
-
   const onSubmit = async () => {
     const urls = await Promise.all(files.map(async ({ file }) => uploadImage(file)));
     setImages(prev => [...prev, ...urls]);
