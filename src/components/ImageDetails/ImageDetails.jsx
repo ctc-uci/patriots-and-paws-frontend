@@ -2,7 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Input, CloseButton, Image, Text, Flex } from '@chakra-ui/react';
 
-function ImageDetails({ index, name, preview, removeImage, description, updateDescription }) {
+function ImageDetails({
+  index,
+  name,
+  preview,
+  removeImage,
+  description,
+  updateDescription,
+  openImageModal,
+}) {
   return (
     <Flex
       w="15em"
@@ -22,8 +30,12 @@ function ImageDetails({ index, name, preview, removeImage, description, updateDe
           key={preview}
           alt={name}
           src={preview}
+          onClick={openImageModal}
+          _hover={{ cursor: 'pointer' }}
         />
-        <Text fontSize="sm">{name}</Text>
+        <Text fontSize="sm" onClick={openImageModal} _hover={{ cursor: 'pointer' }}>
+          {name}
+        </Text>
         <CloseButton
           onClick={() => {
             removeImage(index);
@@ -50,6 +62,7 @@ ImageDetails.propTypes = {
   removeImage: PropTypes.func.isRequired,
   description: PropTypes.string,
   updateDescription: PropTypes.func.isRequired,
+  openImageModal: PropTypes.func.isRequired,
 };
 
 ImageDetails.defaultProps = {

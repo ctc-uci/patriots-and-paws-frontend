@@ -29,6 +29,7 @@ import ImageDetails from '../ImageDetails/ImageDetails';
 import DonationCard from '../DonationCard/DonationCard';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
 import ItemInfo from '../ItemInfo/ItemInfo';
+import DonationImageModal from '../DonationImageModal/DonationImageModal';
 
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
@@ -67,6 +68,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isOpenImage, onOpen: onOpenImage, onClose: onCloseImage } = useDisclosure();
 
   const navigate = useNavigate();
   const [furnitureOptions, setFurnitureOptions] = useState([]);
@@ -174,6 +176,18 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   const changeDonation = (furnitureName, ev) => {
     const furniture = donatedFurnitureList.find(e => e.name === furnitureName);
     furniture.count = +ev;
+  };
+
+  const [imageSelected, setImageSelected] = useState(0);
+  const openImageModal = index => {
+    const fileSelected = files[index];
+    const image = {
+      imageUrl: fileSelected.file.preview,
+      notes: fileSelected.notes,
+      fileName: fileSelected.file.path,
+    };
+    setImageSelected(image);
+    onOpenImage();
   };
 
   const [itemsInfoList, setItemsInfoList] = useState([]);
@@ -312,20 +326,27 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
             <Flex wrap="wrap">
               {files.map(({ file, id, imageUrl, notes }, index) => {
                 return (
-                  <ImageDetails
-                    key={file?.preview ?? id}
-                    index={index}
-                    name={file?.name ?? imageUrl.slice(-10)}
-                    preview={file?.preview ?? imageUrl}
-                    description={notes}
-                    removeImage={removeFile}
-                    updateDescription={updateDescription}
-                  />
+                  <Box key={file?.preview ?? id}>
+                    <ImageDetails
+                      index={index}
+                      name={file?.name ?? imageUrl.slice(-10)}
+                      preview={file?.preview ?? imageUrl}
+                      description={notes}
+                      removeImage={removeFile}
+                      updateDescription={updateDescription}
+                      openImageModal={() => openImageModal(index)}
+                    />
+                  </Box>
                 );
               })}
             </Flex>
           </Box>
         </Box>
+        <DonationImageModal
+          isOpenImageModal={isOpenImage}
+          onCloseImageModal={onCloseImage}
+          image={imageSelected}
+        />
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Do you Have any Questions or Comments
