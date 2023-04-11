@@ -46,12 +46,14 @@ const TodayRoute = () => {
   const getDonationsForToday = async () => {
     const userId = getCurrentUserId();
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
-    const today = new Date().toISOString();
+    // const today = '2023-03-06T08:00:00.000Z';
+    const today = new Date('2023-03-06T08:00:00.000Z').toISOString();
     const todayRoute = driverRoutes.find(route3 => route3.date === today);
     if (todayRoute) {
       const { data } = await PNPBackend.get(`/routes/${todayRoute.id}`);
       const donationInfo = data[0].donations;
       setDonations(donationInfo);
+      setRoute({ date: today, name: todayRoute.name });
     } else {
       setRoute({ date: today, name: 'No Route Today' });
     }
