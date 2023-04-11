@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
@@ -35,47 +35,10 @@ import {
 import { RiLockFill } from 'react-icons/ri';
 import { MdEmail, MdPhone, MdInfo } from 'react-icons/md';
 import { IoPersonSharp } from 'react-icons/io5';
-import { updateUser } from '../../utils/AuthUtils';
+import { updateUser, logInCurrentUserWithPassword } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
-const superAdminFormSchema = yup.object({
-  firstName: yup.string().required("Please enter the staff member's first name"),
-  lastName: yup.string().required("Please enter the staff member's last name"),
-  phoneNumber: yup
-    .string()
-    .length(10, 'Please enter a ten digit phone number')
-    .matches(/^\d{10}$/)
-    .required("Please enter the staff member's phone number"),
-  newPassword: yup
-    .string()
-    .nullable()
-    .transform(value => value || null)
-    .matches(
-      passwordRequirementsRegex,
-      'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
-    ),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref('newPassword'), null, ''], 'Passwords must both match'),
-});
-const defaultFormSchema = yup.object({
-  firstName: yup.string().required("Please enter the staff member's first name"),
-  lastName: yup.string().required("Please enter the staff member's last name"),
-  phoneNumber: yup
-    .string()
-    .length(10, 'Please enter a ten digit phone number')
-    .matches(/^\d{10}$/),
-});
-
-const EditAccountModal = ({
-  data,
-  isSuperAdmin,
-  isOpen,
-  onClose,
-  setUsers,
-  setAdminUsers,
-  setDriverUsers,
-}) => {
+const ProfileModal = ({ data, setData, isOpen, onClose }) => {
   const {
     register,
     handleSubmit,
@@ -83,15 +46,43 @@ const EditAccountModal = ({
     formState: { errors },
   } = useForm({
     values: data,
-    resolver: yupResolver(isSuperAdmin ? superAdminFormSchema : defaultFormSchema),
+    resolver: yupResolver(
+      yup.object({
+        firstName: yup.string().required("Please enter the staff member's first name"),
+        lastName: yup.string().required("Please enter the staff member's last name"),
+        phoneNumber: yup
+          .string()
+          .length(10, 'Please enter a ten digit phone number')
+          .matches(/^\d{10}$/)
+          .required("Please enter the staff member's phone number"),
+        newPassword: yup
+          .string()
+          .nullable()
+          .transform(value => value || null)
+          .matches(
+            passwordRequirementsRegex,
+            'Password requires at least 8 characters consisting of at least 1 lowercase letter, 1 uppercase letter, 1 symbol, and 1 number.',
+          ),
+        confirmPassword: yup
+          .string()
+          .oneOf([yup.ref('newPassword'), null, ''], 'Passwords must both match'),
+      }),
+    ),
     delayError: 750,
   });
 
+  const [isEditable, setIsEditable] = useState(false);
+
   const toast = useToast();
 
-  const onCancel = () => {
-    reset(data);
+  const closeModals = () => {
+    setIsEditable(false);
     onClose();
+  };
+
+  const cancel = () => {
+    reset(data);
+    setIsEditable(false);
   };
 
   useEffect(() => {
@@ -108,21 +99,21 @@ const EditAccountModal = ({
     }
   }, [errors]);
 
-  const onSubmit = async updatedUser => {
+  const onSubmit = async ({ firstName, lastName, phoneNumber, newPassword }) => {
+    const updatedUser = { firstName, lastName, phoneNumber };
+    if (newPassword) {
+      updatedUser.newPassword = newPassword;
+    }
+
     await updateUser(updatedUser, data.id);
 
+    if (newPassword) {
+      await logInCurrentUserWithPassword(newPassword);
+    }
     reset({
       newPassword: '',
       confirmPassword: '',
     });
-
-    setUsers(prev => prev.map(user => (user.id === data.id ? updatedUser : user)));
-    if (data.role === 'admin') {
-      setAdminUsers(prev => prev.map(user => (user.id === data.id ? updatedUser : user)));
-    } else {
-      setDriverUsers(prev => prev.map(user => (user.id === data.id ? updatedUser : user)));
-    }
-
     toast({
       title: 'Your changes have been saved.',
       status: 'success',
@@ -131,22 +122,22 @@ const EditAccountModal = ({
       position: 'top',
       duration: 3000,
     });
-
-    onClose();
+    setData(prev => ({ ...prev, ...updatedUser }));
+    closeModals();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={onCancel} size="4xl">
+    <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={cancel} size="3xl">
       <ModalOverlay />
       <ModalContent>
-        <Flex ml={5} mt={5} justifyContent="space-between">
-          <Heading size="lg" mt=".4rem" mb={5}>
-            Edit Staff
-          </Heading>
-          <ModalCloseButton onClick={onCancel} mt="1rem" mr="1rem" size="lg" />
-        </Flex>
         <Flex m={5} justifyContent="center">
           <Stack>
+            <Flex justifyContent="space-between">
+              <Heading size="lg" mt=".4rem" mb={5}>
+                Profile
+              </Heading>
+              <ModalCloseButton onClick={cancel} mt="1rem" mr="1rem" size="lg" />
+            </Flex>
             <form onSubmit={handleSubmit(onSubmit)}>
               <FormControl>
                 <Flex mb={5}>
@@ -161,6 +152,8 @@ const EditAccountModal = ({
                         style={{ width: '240px' }}
                         errorBorderColor="red.300"
                         isInvalid={'firstName' in errors}
+                        isReadOnly={!isEditable}
+                        cursor={!isEditable && 'not-allowed'}
                         {...register('firstName')}
                         isRequired
                       />
@@ -177,6 +170,8 @@ const EditAccountModal = ({
                         style={{ width: '240px' }}
                         errorBorderColor="red.300"
                         isInvalid={'lastName' in errors}
+                        isReadOnly={!isEditable}
+                        cursor={!isEditable && 'not-allowed'}
                         {...register('lastName')}
                         isRequired
                       />
@@ -196,6 +191,8 @@ const EditAccountModal = ({
                         style={{ width: '240px' }}
                         placeholder="Enter email"
                         value={data.email}
+                        cursor="not-allowed"
+                        isRequired
                         isReadOnly
                       />
                     </InputGroup>
@@ -213,15 +210,17 @@ const EditAccountModal = ({
                         style={{ width: '240px' }}
                         errorBorderColor="red.300"
                         isInvalid={'phoneNumber' in errors}
+                        isReadOnly={!isEditable}
+                        cursor={!isEditable && 'not-allowed'}
                         {...register('phoneNumber')}
                         isRequired
                       />
                     </InputGroup>
                   </Flex>
                 </Flex>
-                {isSuperAdmin && (
-                  <Flex mb={5}>
-                    <Flex direction="column" mr={8}>
+                <Flex mb={5}>
+                  <Flex direction="column" mr={8}>
+                    {isEditable ? (
                       <Flex>
                         <FormLabel mt=".4rem">Password</FormLabel>
                         <Popover>
@@ -243,23 +242,35 @@ const EditAccountModal = ({
                           </PopoverContent>
                         </Popover>
                       </Flex>
-                      <InputGroup>
-                        <InputRightElement pointerEvents="none">
-                          <RiLockFill color="black.300" />
-                        </InputRightElement>
-                        <Input
-                          background="white"
-                          type="password"
-                          id="password"
-                          style={{ width: '240px' }}
-                          placeholder="Enter password"
-                          errorBorderColor="red.300"
-                          isInvalid={'newPassword' in errors}
-                          {...register('newPassword')}
-                          isRequired
+                    ) : (
+                      <Flex>
+                        <FormLabel mt=".4rem">Password</FormLabel>
+                        <IconButton
+                          variant="invisible"
+                          icon={<MdInfo color="black.300" />}
+                          visibility="hidden"
                         />
-                      </InputGroup>
-                    </Flex>
+                      </Flex>
+                    )}
+                    <InputGroup>
+                      <InputRightElement pointerEvents="none">
+                        <RiLockFill color="black.300" />
+                      </InputRightElement>
+                      <Input
+                        background={!isEditable ? '#EDF2F7' : 'white'}
+                        type="password"
+                        id="password"
+                        style={{ width: '240px' }}
+                        placeholder={isEditable ? 'Enter password' : ''}
+                        errorBorderColor="red.300"
+                        isInvalid={'newPassword' in errors}
+                        isDisabled={!isEditable}
+                        {...register('newPassword')}
+                        isRequired
+                      />
+                    </InputGroup>
+                  </Flex>
+                  {isEditable && (
                     <Flex direction="column" mt=".46rem">
                       <FormLabel>Confirm Password</FormLabel>
                       <Input
@@ -276,16 +287,7 @@ const EditAccountModal = ({
                         <Text color="red">{errors.confirmPassword?.message}</Text>
                       </Box>
                     </Flex>
-                  </Flex>
-                )}
-                <Flex direction="column">
-                  <FormLabel>Role</FormLabel>
-                  <InputGroup>
-                    {/* <InputRightElement pointerEvents="none">
-                        <MdPhone color="black.300" />
-                      </InputRightElement> */}
-                    <Input style={{ width: '240px' }} value={data.role} isReadOnly />
-                  </InputGroup>
+                  )}
                 </Flex>
               </FormControl>
             </form>
@@ -293,12 +295,28 @@ const EditAccountModal = ({
         </Flex>
         <ModalFooter>
           <Flex justify="flex-end">
-            <Button variant="outline" type="submit" mr={3} onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue" type="submit" onClick={handleSubmit(onSubmit)}>
-              Save Changes
-            </Button>
+            {isEditable ? (
+              <>
+                <Button variant="outline" type="submit" mr={3} onClick={cancel}>
+                  Cancel
+                </Button>
+                <Button colorScheme="blue" type="submit" onClick={handleSubmit(onSubmit)}>
+                  Save Changes
+                </Button>
+              </>
+            ) : (
+              <Button
+                color="white"
+                background="#718096"
+                _hover={{ bg: '#718096' }}
+                _focus={{ bg: '#718096' }}
+                onClick={() => {
+                  setIsEditable(true);
+                }}
+              >
+                Edit Profile
+              </Button>
+            )}
           </Flex>
         </ModalFooter>
       </ModalContent>
@@ -306,7 +324,7 @@ const EditAccountModal = ({
   );
 };
 
-EditAccountModal.propTypes = {
+ProfileModal.propTypes = {
   data: PropTypes.shape({
     email: PropTypes.string,
     firstName: PropTypes.string,
@@ -315,12 +333,9 @@ EditAccountModal.propTypes = {
     phoneNumber: PropTypes.string,
     role: PropTypes.string,
   }).isRequired,
-  isSuperAdmin: PropTypes.bool.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
-  setUsers: PropTypes.func.isRequired,
-  setAdminUsers: PropTypes.func.isRequired,
-  setDriverUsers: PropTypes.func.isRequired,
+  setData: PropTypes.func.isRequired,
 };
 
-export default EditAccountModal;
+export default ProfileModal;

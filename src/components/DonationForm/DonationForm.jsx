@@ -346,7 +346,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           </FormControl>
         )}
 
-        <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} isDonationForm />
+        <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
 
         <Button type="submit">{!donationData ? 'Submit' : 'Save'}</Button>
       </form>

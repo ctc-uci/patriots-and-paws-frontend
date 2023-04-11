@@ -150,6 +150,10 @@ const logInWithEmailAndPassword = async (email, password, redirectPath, navigate
   navigate(redirectPath);
 };
 
+const logInCurrentUserWithPassword = async password => {
+  await signInWithEmailAndPassword(auth, auth.currentUser.email, password);
+};
+
 /**
  * Creates a user in firebase database
  * @param {string} email
@@ -326,4 +330,5 @@ export {
   getCurrentUserRole,
   confirmNewPassword,
   confirmVerifyEmail,
+  logInCurrentUserWithPassword,
 };

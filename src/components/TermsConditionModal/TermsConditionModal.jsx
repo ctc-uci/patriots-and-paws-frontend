@@ -4,17 +4,14 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
-  Button,
   Text,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
-import { CheckIcon } from '@chakra-ui/icons';
 
-const TermsConditionModal = ({ onClose, isOpen, isDonationForm = false }) => {
+const TermsConditionModal = ({ onClose, isOpen }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
@@ -31,14 +28,6 @@ const TermsConditionModal = ({ onClose, isOpen, isDonationForm = false }) => {
             mollit anim id est laborum
           </Text>
         </ModalBody>
-        <ModalFooter justifyContent="space-between">
-          {!isDonationForm && (
-            <Button bg="#319747" color="white">
-              Approve Time&nbsp;
-              <CheckIcon />
-            </Button>
-          )}
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );
@@ -47,7 +36,6 @@ const TermsConditionModal = ({ onClose, isOpen, isDonationForm = false }) => {
 TermsConditionModal.propTypes = {
   onClose: PropTypes.func,
   isOpen: PropTypes.bool,
-  isDonationForm: PropTypes.bool.isRequired,
 };
 
 TermsConditionModal.defaultProps = {
