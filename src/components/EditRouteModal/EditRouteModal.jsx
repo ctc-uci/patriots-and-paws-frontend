@@ -94,6 +94,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   };
 
   const handleChangeToEdit = () => {
+    setConfirmedState('inactive');
     setModalState('edit');
   };
 
@@ -158,6 +159,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   id="confirmed-donations"
                   onChange={handleConfirmedToggle}
                   isDisabled={modalState === 'edit'}
+                  isChecked={modalState !== 'edit' && confirmedState === 'active'}
                 />
               </FormControl>
             </Flex>
