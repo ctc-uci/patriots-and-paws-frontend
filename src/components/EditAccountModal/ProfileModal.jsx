@@ -125,10 +125,10 @@ const ProfileModal = ({ data, isOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={cancel} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={cancel} size="3xl">
       <ModalOverlay />
       <ModalContent>
-        <Flex m={5}>
+        <Flex m={5} justifyContent="center">
           <Stack>
             <Flex justifyContent="space-between">
               <Heading size="lg" mt=".4rem" mb={5}>
@@ -150,7 +150,8 @@ const ProfileModal = ({ data, isOpen, onClose }) => {
                         style={{ width: '240px' }}
                         errorBorderColor="red.300"
                         isInvalid={'firstName' in errors}
-                        isDisabled={!isEditable}
+                        isReadOnly={!isEditable}
+                        cursor={!isEditable && 'not-allowed'}
                         {...register('firstName')}
                         isRequired
                       />
@@ -167,7 +168,8 @@ const ProfileModal = ({ data, isOpen, onClose }) => {
                         style={{ width: '240px' }}
                         errorBorderColor="red.300"
                         isInvalid={'lastName' in errors}
-                        isDisabled={!isEditable}
+                        isReadOnly={!isEditable}
+                        cursor={!isEditable && 'not-allowed'}
                         {...register('lastName')}
                         isRequired
                       />
@@ -187,7 +189,7 @@ const ProfileModal = ({ data, isOpen, onClose }) => {
                         style={{ width: '240px' }}
                         placeholder="Enter email"
                         value={data.email}
-                        isDisabled={!isEditable}
+                        cursor="not-allowed"
                         isRequired
                         isReadOnly
                       />
@@ -206,7 +208,8 @@ const ProfileModal = ({ data, isOpen, onClose }) => {
                         style={{ width: '240px' }}
                         errorBorderColor="red.300"
                         isInvalid={'phoneNumber' in errors}
-                        isDisabled={!isEditable}
+                        isReadOnly={!isEditable}
+                        cursor={!isEditable && 'not-allowed'}
                         {...register('phoneNumber')}
                         isRequired
                       />
@@ -238,18 +241,25 @@ const ProfileModal = ({ data, isOpen, onClose }) => {
                         </Popover>
                       </Flex>
                     ) : (
-                      <FormLabel>Password</FormLabel>
+                      <Flex>
+                        <FormLabel mt=".4rem">Password</FormLabel>
+                        <IconButton
+                          variant="invisible"
+                          icon={<MdInfo color="black.300" />}
+                          visibility="hidden"
+                        />
+                      </Flex>
                     )}
                     <InputGroup>
                       <InputRightElement pointerEvents="none">
                         <RiLockFill color="black.300" />
                       </InputRightElement>
                       <Input
-                        background={!isEditable ? '#A0AEC0' : 'white'}
+                        background={!isEditable ? '#EDF2F7' : 'white'}
                         type="password"
                         id="password"
                         style={{ width: '240px' }}
-                        placeholder="Enter password"
+                        placeholder={isEditable && 'Enter password'}
                         errorBorderColor="red.300"
                         isInvalid={'newPassword' in errors}
                         isDisabled={!isEditable}
