@@ -54,7 +54,7 @@ const PaginationFooter = ({ setData, table, tab }) => {
       mx={5}
       p={3}
     >
-      <HStack width="13%" spacing={0}>
+      <HStack width="17%" spacing={0}>
         <Box fontSize="14px" width="100%">
           Show rows per page{' '}
         </Box>

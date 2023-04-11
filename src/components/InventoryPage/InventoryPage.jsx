@@ -26,7 +26,7 @@ import {
   Flex,
   Image,
 } from '@chakra-ui/react';
-import { CheckCircleIcon, ArrowDownIcon, ArrowUpIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import peopleIcon from '../../assets/Bold.svg';
 import donationIdIcon from '../../assets/donationId.svg';
 import clockIcon from '../../assets/clock.svg';
@@ -47,7 +47,6 @@ const InventoryPage = () => {
   const [donationData, setDonationData] = useState({});
   const [routes, setRoutes] = useState({});
   const [tabIndex, setTabIndex] = useState(0);
-  const [submissionDateSortDesc, setSubmissionDateSortDesc] = useState(true);
 
   const tabStatuses = ['admin', 'donor', 'pickup', 'archive'];
 
@@ -58,7 +57,7 @@ const InventoryPage = () => {
 
   const makeStatus = status => {
     return (
-      <Tag size="sm" variant="solid" colorScheme={statusColorMap[status]}>
+      <Tag size="sm" variant="solid" py="5px" colorScheme={statusColorMap[status]}>
         <TagLabel fontSize="18px" fontWeight={600}>
           {displayStatuses[status]}
         </TagLabel>
@@ -162,14 +161,9 @@ const InventoryPage = () => {
                         <CheckCircleIcon mr={2} color="black" /> STATUS
                       </Flex>
                     </Th>
-                    <Th
-                      width="25%"
-                      _hover={{ cursor: 'pointer' }}
-                      onClick={() => setSubmissionDateSortDesc(!submissionDateSortDesc)}
-                    >
-                      <Flex gap={2} align="center">
-                        <Image src={clockIcon} mr={2} color="black" /> SUBMISSION DATE{' '}
-                        {submissionDateSortDesc ? <ArrowDownIcon /> : <ArrowUpIcon />}
+                    <Th width="25%">
+                      <Flex align="center">
+                        <Image src={clockIcon} mr={2} color="black" /> SUBMISSION DATE
                       </Flex>
                     </Th>
                   </Tr>
