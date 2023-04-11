@@ -19,7 +19,7 @@ import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { logout, useNavigate, getUserFromDB, auth, getCurrentUser } from '../../utils/AuthUtils';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import pnpLogo from './PNPlogo.png';
-import EditAccountModal from '../EditAccountModal/EditAccountModal';
+import ProfileModal from '../EditAccountModal/ProfileModal';
 import { AUTH_ROLES } from '../../utils/config';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
@@ -66,7 +66,7 @@ const Navbar = ({ cookies }) => {
       top={0}
       h="60px"
     >
-      <EditAccountModal data={user} isOpen={isProfileOpen} onClose={onProfileClose} isSuperAdmin />
+      <ProfileModal data={user} isOpen={isProfileOpen} onClose={onProfileClose} />
 
       <HStack spacing="24px">
         <LinkBox>

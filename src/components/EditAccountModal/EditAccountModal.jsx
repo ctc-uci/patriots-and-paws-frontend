@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React, { useState, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { useForm } from 'react-hook-form';
