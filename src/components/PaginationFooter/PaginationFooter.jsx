@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Select, Flex, Text } from '@chakra-ui/react';
+import { Select, Flex, Box, HStack, Text } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
   Pagination,
@@ -10,12 +10,13 @@ import {
 } from '@ajna/pagination';
 import { PNPBackend } from '../../utils/utils';
 
-const PaginationFooter = ({ count, setData, table }) => {
+const PaginationFooter = ({ setData, table, tab }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [itemCountString, setItemCountString] = useState('');
+  const [donationCount, setDonationCount] = useState(0);
 
   const { currentPage, setCurrentPage, pagesCount } = usePagination({
-    pagesCount: Math.ceil(count / rowsPerPage),
+    pagesCount: Math.ceil(donationCount / rowsPerPage),
     initialState: { currentPage: 1 },
   });
 
@@ -29,32 +30,56 @@ const PaginationFooter = ({ count, setData, table }) => {
   useEffect(() => {
     const refreshData = async () => {
       const { data } = await PNPBackend.get(
-        `/${table}?numDonations=${rowsPerPage}&pageNum=${currentPage}`,
+        `/${table}?numDonations=${rowsPerPage}&pageNum=${currentPage}&tab=${tab}`,
       );
-      setData(data);
-      calculateItemCount(data.length);
+      const { count, donations } = data;
+      setData(donations);
+      setDonationCount(count[0].count);
+      calculateItemCount(donations.length);
     };
     refreshData();
-  }, [currentPage, rowsPerPage]);
+  }, [currentPage, rowsPerPage, tab]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [tab]);
 
   return (
-    <Flex direction="row" m={5} justify="space-between">
-      <Flex direction="row" gap={2}>
-        <Text>Show rows per page </Text>
-        <Select onChange={e => setRowsPerPage(e.target.value)} defaultValue={10} size="sm">
+    <Flex
+      direction="row"
+      justify="space-between"
+      border="solid"
+      borderWidth="1px"
+      borderColor="#E2E8F0"
+      mx={5}
+      p={3}
+    >
+      <HStack width="17%" spacing={0}>
+        <Box fontSize="14px" width="100%">
+          Show rows per page{' '}
+        </Box>
+        <Select
+          onChange={e => setRowsPerPage(e.target.value)}
+          defaultValue={10}
+          size="sm"
+          width="50%"
+        >
           <option value="10">10</option>
           <option value="15">15</option>
           <option value="20">20</option>
         </Select>
-      </Flex>
+      </HStack>
       <Flex align="center" gap={5}>
-        <Text>
-          <Text as="b">{itemCountString}</Text> of {count}
+        <Text fontSize="14px">
+          <Text as="b" fontSize="14px">
+            {itemCountString}
+          </Text>{' '}
+          of {donationCount}
         </Text>
         <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
           <PaginationContainer justify="right">
-            <PaginationPrevious>&lsaquo;</PaginationPrevious>
-            <PaginationNext>&rsaquo;</PaginationNext>
+            <PaginationPrevious variant="ghost">&lsaquo;</PaginationPrevious>
+            <PaginationNext variant="ghost">&rsaquo;</PaginationNext>
           </PaginationContainer>
         </Pagination>
       </Flex>
@@ -63,9 +88,9 @@ const PaginationFooter = ({ count, setData, table }) => {
 };
 
 PaginationFooter.propTypes = {
-  count: PropTypes.string.isRequired,
   setData: PropTypes.func.isRequired,
   table: PropTypes.string.isRequired,
+  tab: PropTypes.string.isRequired,
 };
 
 export default PaginationFooter;
