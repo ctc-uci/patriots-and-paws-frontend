@@ -66,7 +66,7 @@ const Navbar = ({ cookies }) => {
       top={0}
       h="60px"
     >
-      <ProfileModal data={user} isOpen={isProfileOpen} onClose={onProfileClose} />
+      <ProfileModal data={user} setData={setUser} isOpen={isProfileOpen} onClose={onProfileClose} />
 
       <HStack spacing="24px">
         <LinkBox>

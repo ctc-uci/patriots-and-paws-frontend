@@ -35,10 +35,10 @@ import {
 import { RiLockFill } from 'react-icons/ri';
 import { MdEmail, MdPhone, MdInfo } from 'react-icons/md';
 import { IoPersonSharp } from 'react-icons/io5';
-import { updateUser } from '../../utils/AuthUtils';
+import { updateUser, logInCurrentUserWithPassword } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
-const ProfileModal = ({ data, isOpen, onClose }) => {
+const ProfileModal = ({ data, setData, isOpen, onClose }) => {
   const {
     register,
     handleSubmit,
@@ -109,6 +109,10 @@ const ProfileModal = ({ data, isOpen, onClose }) => {
     }
 
     await updateUser(updatedUser, data.id);
+
+    if (newPassword) {
+      await logInCurrentUserWithPassword(newPassword);
+    }
     reset({
       newPassword: '',
       confirmPassword: '',
@@ -121,6 +125,7 @@ const ProfileModal = ({ data, isOpen, onClose }) => {
       position: 'top',
       duration: 3000,
     });
+    setData(prev => ({ ...prev, ...updatedUser }));
     closeModals();
   };
 
@@ -333,6 +338,7 @@ ProfileModal.propTypes = {
   }).isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  setData: PropTypes.func.isRequired,
 };
 
 export default ProfileModal;
