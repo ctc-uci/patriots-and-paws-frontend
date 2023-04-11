@@ -7,6 +7,7 @@ import {
   Modal,
   Image,
   Text,
+  Center,
 } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 
@@ -14,7 +15,7 @@ const DonationImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
   const { imageUrl, fileName } = image;
   return (
     <>
-      <Modal isOpen={isOpenImageModal} onClose={onCloseImageModal} size="lg">
+      <Modal isOpen={isOpenImageModal} onClose={onCloseImageModal} size="xl" isCentered>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
@@ -22,7 +23,9 @@ const DonationImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
             <Text fontStyle="normal" fontWeight={700} fontSize="20px">
               {fileName}
             </Text>
-            <Image mx="auto" mt={30} src={imageUrl} />
+            <Center>
+              <Image boxSize="30em" objectFit="contain" src={imageUrl} />
+            </Center>
           </ModalBody>
         </ModalContent>
       </Modal>

@@ -326,7 +326,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
             <Flex wrap="wrap">
               {files.map(({ file, id, imageUrl, notes }, index) => {
                 return (
-                  <Box key={file?.preview ?? id} onClick={() => openImageModal(index)}>
+                  <Box key={file?.preview ?? id}>
                     <ImageDetails
                       index={index}
                       name={file?.name ?? imageUrl.slice(-10)}
@@ -334,6 +334,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                       description={notes}
                       removeImage={removeFile}
                       updateDescription={updateDescription}
+                      openImageModal={() => openImageModal(index)}
                     />
                   </Box>
                 );
