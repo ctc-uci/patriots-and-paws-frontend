@@ -9,7 +9,7 @@ const DriverDashboard = () => {
       <Box width="40vw" bg="#EDF1F8">
         <TodayRoute />
       </Box>
-      <Box height="90vh" width="60vw" padding="40px">
+      <Box width="60vw" padding="40px">
         <RouteCalendar />
       </Box>
     </Flex>

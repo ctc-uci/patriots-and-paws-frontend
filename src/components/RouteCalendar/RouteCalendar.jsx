@@ -44,12 +44,25 @@ const RouteCalendar = () => {
       setRole(userRole);
       // TODO: add color indication for driver logged in
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-      const eventsList = routesFromDB.map(({ id, name, date }) => ({
-        id,
-        title: name,
-        start: new Date(date).toISOString().replace(/T.*$/, ''),
-        allDay: true,
-      }));
+      const eventsList = routesFromDB.map(({ id, name, date, driverId, firstName }) =>
+        driverId !== currentUserId
+          ? {
+              id,
+              title: `${firstName}'s Route`,
+              start: new Date(date).toISOString().replace(/T.*$/, ''),
+              allDay: true,
+              borderColor: '#718096',
+              textColor: '#718096',
+              backgroundColor: 'white',
+            }
+          : {
+              id,
+              title: name,
+              start: new Date(date).toISOString().replace(/T.*$/, ''),
+              allDay: true,
+              backgroundColor: new Date(date) > new Date() ? '#2B6CB0' : 'rgba(0, 0, 0, 0.36)',
+            },
+      );
       setDrivers(driversFromDB);
 
       calendarRef.current.getApi().removeAllEventSources();
