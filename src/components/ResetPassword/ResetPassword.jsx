@@ -28,6 +28,7 @@ const ResetPassword = ({ code }) => {
   const [errorMessage, setErrorMessage] = useState();
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [displayPasswordRequirements, setDisplayPasswordRequirements] = useState(false);
   const { isOpen, onOpen } = useDisclosure();
   const navigate = useNavigate();
 
@@ -77,6 +78,11 @@ const ResetPassword = ({ code }) => {
     navigate('/login');
   };
 
+  // const showPasswordRequirements = () => {
+  //   console.log("reached");
+  //   setDisplayPasswordRequirements(true);
+  // };
+
   return (
     <Grid templateColumns="repeat(2, 1fr)" gap={0}>
       <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
@@ -99,6 +105,7 @@ const ResetPassword = ({ code }) => {
                     placeholder="● ● ● ● ● ● ● ● ●"
                     _placeholder={{ fontSize: '10px' }}
                     borderColor={errors.newPassword ? 'red.500' : 'gray.300'}
+                    onChange={() => setDisplayPasswordRequirements(true)}
                     isRequired
                   />
                   <InputRightElement>
@@ -142,7 +149,7 @@ const ResetPassword = ({ code }) => {
                 <Flex
                   align="center"
                   mt={5}
-                  visibility={inputtedPassword.length === 0 && 'hidden'}
+                  visibility={!displayPasswordRequirements && 'hidden'}
                   flexDirection="column"
                   alignItems="left"
                 >
