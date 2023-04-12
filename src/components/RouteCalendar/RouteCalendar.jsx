@@ -38,7 +38,7 @@ const RouteCalendar = () => {
 
   useEffect(() => {
     const fetchAllRoutesAndDrivers = async () => {
-      const currentUserId = await getCurrentUserId();
+      const currentUserId = getCurrentUserId();
       const currentUser = await getUserFromDB(currentUserId);
       const { role: userRole } = currentUser;
       setRole(userRole);
@@ -138,9 +138,8 @@ const RouteCalendar = () => {
           ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           headerToolbar={{
-            left: 'prev,next today',
+            left: 'prev,next',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek',
           }}
           initialView="dayGridMonth"
           fixedWeekCount={false}

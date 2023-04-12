@@ -28,9 +28,10 @@ const TodayRoute = () => {
   const getDonationsForToday = async () => {
     const userId = getCurrentUserId();
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
-    // const today = '2023-03-06T08:00:00.000Z';
-    const today = new Date('2023-03-07T08:00:00.000Z').toISOString();
-    // const today = new Date().toISOString();
+
+    // CHANGE TO TEST
+    // const today = new Date('2023-03-07T08:00:00.000Z').toISOString();
+    const today = new Date().toISOString();
 
     const todayRoute = driverRoutes.find(route3 => route3.date === today);
     if (todayRoute) {
