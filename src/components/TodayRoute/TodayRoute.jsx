@@ -30,8 +30,8 @@ const TodayRoute = () => {
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
 
     // CHANGE TO TEST
-    // const today = new Date('2023-03-07T08:00:00.000Z').toISOString();
-    const today = new Date().toISOString();
+    const today = new Date('2023-03-07T08:00:00.000Z').toISOString();
+    // const today = new Date().toISOString();
 
     const todayRoute = driverRoutes.find(route3 => route3.date === today);
     if (todayRoute) {

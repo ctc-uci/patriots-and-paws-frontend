@@ -5,7 +5,7 @@ import { PropTypes } from 'prop-types';
 import { PNPBackend } from '../../utils/utils';
 import { STATUSES } from '../../utils/config';
 
-const { PICKED_UP } = STATUSES;
+const { PICKED_UP, SCHEDULED } = STATUSES;
 
 const DonationCard = ({ data, itemsCount, handleRowClick }) => {
   const { id, status } = data;
@@ -15,13 +15,24 @@ const DonationCard = ({ data, itemsCount, handleRowClick }) => {
     });
   };
 
+  const pickupIncomplete = donationId => {
+    PNPBackend.put(`/donations/${donationId}`, {
+      status: SCHEDULED,
+    });
+  };
+
   return (
     <Card>
       <CardBody>
         <Flex alignItems="center" justifyContent="space-between">
           <Flex gap={5} alignItems="center">
             {status === PICKED_UP ? (
-              <Checkbox defaultChecked />
+              <Checkbox
+                defaultChecked
+                onChange={() => {
+                  pickupIncomplete(data.id);
+                }}
+              />
             ) : (
               <Checkbox
                 onChange={() => {
