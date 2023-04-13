@@ -284,7 +284,11 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                       <ModalCloseButton />
                       <ModalBody p="5em 5em 0 5em">
                         <PDFViewer style={styles.viewer}>
-                          <RoutePDF routeID={routeId} />
+                          <RoutePDF
+                            driverData={drivers.find(driver => driver.id === assignedDriverId)}
+                            donationData={donations}
+                            date={routeDate}
+                          />
                         </PDFViewer>
                       </ModalBody>
                     </ModalContent>

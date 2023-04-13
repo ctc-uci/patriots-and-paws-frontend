@@ -11,7 +11,7 @@ import {
   Image,
   Font,
 } from '@react-pdf/renderer';
-import { getRouteDonations, formatDate, getDriverName } from '../../utils/RouteUtils';
+import { formatDate } from '../../utils/RouteUtils';
 import { formatPhone } from '../../utils/utils';
 import deliveryIcon from '../../assets/delivery.png';
 import itemIcon from '../../assets/item.png';
@@ -23,7 +23,7 @@ import commentIcon from '../../assets/comment.png';
 import InterRegular from '../../assets/Inter/Inter-Regular.ttf';
 import InterBold from '../../assets/Inter/Inter-Bold.ttf';
 
-const RoutePDF = ({ routeID }) => {
+const RoutePDF = ({ driverData, donationData, date }) => {
   const [donations, setDonations] = useState([]);
   const [driver, setDriver] = useState('');
   const [dateStr, setDateStr] = useState('');
@@ -38,12 +38,9 @@ const RoutePDF = ({ routeID }) => {
 
   useEffect(() => {
     const helper = async () => {
-      const { donations: donationsList, date, driverId } = await getRouteDonations(routeID);
-      setDonations(donationsList);
+      setDonations(donationData);
       setDateStr(formatDate(new Date(date)));
-      // TODO: return driver name in donation request
-      const driverName = await getDriverName(driverId);
-      setDriver(driverName);
+      setDriver(`${driverData.firstName} ${driverData.lastName}`);
     };
     helper();
   }, []);
@@ -110,7 +107,7 @@ const RoutePDF = ({ routeID }) => {
     },
   });
 
-  const donationsList = donations.map(
+  const donationsList = donations?.map(
     ({
       id,
       firstName,
@@ -204,7 +201,43 @@ const RoutePDF = ({ routeID }) => {
 };
 
 RoutePDF.propTypes = {
-  routeID: PropTypes.number.isRequired,
+  driverData: PropTypes.shape({
+    email: PropTypes.string,
+    firstName: PropTypes.string,
+    id: PropTypes.string,
+    lastName: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    role: PropTypes.string,
+  }),
+  donationData: PropTypes.shape({
+    status: PropTypes.string,
+    id: PropTypes.string,
+    addressStreet: PropTypes.string,
+    addressUnit: PropTypes.string,
+    addressCity: PropTypes.string,
+    addressZip: PropTypes.number,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    phoneNum: PropTypes.string,
+    notes: PropTypes.string,
+    submittedDate: PropTypes.string,
+    pickupDate: PropTypes.string,
+    routeId: PropTypes.number,
+    pictures: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        imageURL: PropTypes.string,
+        notes: PropTypes.string,
+      }),
+    ),
+  }),
+  date: PropTypes.instanceOf(Date).isRequired,
+};
+
+RoutePDF.defaultProps = {
+  donationData: {},
+  driverData: {},
 };
 
 export default RoutePDF;
