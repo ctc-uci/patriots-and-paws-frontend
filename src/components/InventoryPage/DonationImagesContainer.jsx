@@ -24,13 +24,16 @@ const DonationImagesContainer = ({ pictures }) => {
 
   const [currentImage, setCurrentImage] = useState();
   const [displayedData, setDisplayedData] = useState([]);
+  const [formattedData, setFormattedData] = useState(() => formatImageData(pictures));
 
   const { currentPage, setCurrentPage, pagesCount } = usePagination({
     pagesCount: Math.ceil(numPictures / itemsPerPage),
     initialState: { currentPage: 1 },
   });
 
-  const formattedData = formatImageData(pictures);
+  useEffect(() => {
+    setFormattedData(formatImageData(pictures));
+  }, [pictures]);
 
   useEffect(() => {
     setDisplayedData(formattedData[currentPage - 1]);

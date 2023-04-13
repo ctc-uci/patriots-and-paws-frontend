@@ -68,6 +68,8 @@ const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
 const DonationDetails = ({ data, setDonationData, setDonationStatus }) => {
   const { status, id, submittedDate, pictures, furniture } = data;
 
+  console.log(data);
+  console.log(pictures);
   const formatDate = date => {
     const d = new Date(date);
     return d.toLocaleDateString('en-US', {
@@ -127,6 +129,7 @@ const DonationDetails = ({ data, setDonationData, setDonationStatus }) => {
   const handleDelete = async () => {
     await PNPBackend.delete(`/donations/${id}`);
     deleteDialogOnClose();
+    navigate('/donate', { state: {} });
     navigate(0);
   };
 
@@ -152,7 +155,9 @@ const DonationDetails = ({ data, setDonationData, setDonationStatus }) => {
         </Flex>
         <Divider size="md" variant="solid" />
         <Grid templateColumns="1fr 1fr" alignItems="center" gap={5}>
-          <Box borderRadius="6px">{pictures && <DonationImagesContainer data={pictures} />}</Box>
+          <Box borderRadius="6px">
+            {pictures && <DonationImagesContainer pictures={pictures} />}
+          </Box>
           <Box maxH="sm">{furniture && <DonationFurnitureContainer data={furniture} />}</Box>
         </Grid>
       </Flex>

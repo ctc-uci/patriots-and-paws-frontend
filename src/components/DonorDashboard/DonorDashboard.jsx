@@ -285,7 +285,16 @@ const DonorDashboard = ({ donationId }) => {
           </Text>
           <TrackDonationSection stage={stage} />
         </Flex>
-        <Button bg="red.500" color="white" onClick={() => navigate(0)}>
+        <Button
+          bg="red.500"
+          color="white"
+          onClick={() => {
+            navigate('/donate', {
+              state: {},
+            });
+            navigate(0);
+          }}
+        >
           Logout
         </Button>
       </Flex>

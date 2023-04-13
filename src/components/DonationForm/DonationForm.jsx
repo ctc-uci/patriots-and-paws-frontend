@@ -149,7 +149,7 @@ function DonationForm({
         // console.log(err.message);
         return;
       }
-      navigate('/donate/status', {
+      navigate('/donate', {
         state: { isLoggedIn: true, email: formData.email, donationId },
       });
       toast({
@@ -160,13 +160,14 @@ function DonationForm({
         isClosable: true,
       });
     } else {
-      const newData = await updateDonation(donationData.id, formData);
-      setDonationData(prev => newData ?? prev);
-      // closes the editDonationModal
-      await PNPBackend.put(`/donations/${donationData.id}`, {
+      const newData = await updateDonation(donationData.id, {
+        ...formData,
         status: APPROVAL_REQUESTED,
       });
+      setDonationData(prev => newData ?? prev);
+      // closes the editDonationModal
       setDonationStatus(APPROVAL_REQUESTED);
+      navigate(0);
       closeEditDonationModal();
     }
   };
