@@ -2,8 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Grid, GridItem } from '@chakra-ui/react';
 import TrackDonationCard from './TrackDonationCard';
+import { STATUSES } from '../../utils/config';
 
-const TrackDonationSection = ({ stage }) => {
+const { PENDING, SCHEDULING, SCHEDULED, CHANGES_REQUESTED, PICKED_UP } = STATUSES;
+
+const donationStage = {
+  [PICKED_UP]: 4,
+  [SCHEDULED]: 3,
+  [SCHEDULING]: 2,
+  [PENDING]: 1,
+  [CHANGES_REQUESTED]: 1,
+};
+
+const TrackDonationSection = ({ status }) => {
+  const stage = donationStage[status] ?? 1;
   const descriptions = [
     {
       checked: stage >= 1,
@@ -34,25 +46,18 @@ const TrackDonationSection = ({ stage }) => {
   return (
     <>
       <Grid templateColumns="repeat(4, 1fr)" gap={0}>
-        <GridItem>
-          <TrackDonationCard description={descriptions[0]} />
-        </GridItem>
-        <GridItem>
-          <TrackDonationCard description={descriptions[1]} />
-        </GridItem>
-        <GridItem>
-          <TrackDonationCard description={descriptions[2]} />
-        </GridItem>
-        <GridItem>
-          <TrackDonationCard description={descriptions[3]} />
-        </GridItem>
+        {descriptions.map(e => (
+          <GridItem key={e.heading}>
+            <TrackDonationCard {...e} />
+          </GridItem>
+        ))}
       </Grid>
     </>
   );
 };
 
 TrackDonationSection.propTypes = {
-  stage: PropTypes.number.isRequired,
+  status: PropTypes.string.isRequired,
 };
 
 export default TrackDonationSection;

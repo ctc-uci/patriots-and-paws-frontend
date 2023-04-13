@@ -10,7 +10,7 @@ import {
   Box,
   Link,
 } from '@chakra-ui/react';
-import { Link as ReactLink, useLocation } from 'react-router-dom';
+import { Link as ReactLink, useLocation, useNavigate } from 'react-router-dom';
 import { verifyDonorLogin } from '../../utils/DonorUtils';
 import DonorDashboard from '../../components/DonorDashboard/DonorDashboard';
 
@@ -20,10 +20,14 @@ const DonorLogin = () => {
   const [email, setEmail] = useState(location.state?.email || '');
   const [donationId, setDonationId] = useState(location.state?.donationId || '');
   const [loginFailed, setLoginFail] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async event => {
     event.preventDefault();
     if (await verifyDonorLogin(donationId, email)) {
+      navigate('/donate', {
+        state: { isLoggedIn: true, email, donationId },
+      });
       setIsLoggedIn(true);
     } else {
       setLoginFail(true);
@@ -43,7 +47,7 @@ const DonorLogin = () => {
                   Donor Login
                 </Text>
                 <Text fontSize="15px" fontWeight="400" mt="-7px" mb="50px">
-                  First time donating?{' '}
+                  First time donating?&nbsp;
                   <Link
                     as={ReactLink}
                     to="/donate/form"

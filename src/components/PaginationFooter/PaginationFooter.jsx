@@ -56,7 +56,7 @@ const PaginationFooter = ({ setData, table, tab }) => {
     >
       <HStack width="17%" spacing={0}>
         <Box fontSize="14px" width="100%">
-          Show rows per page{' '}
+          Show rows per page&nbsp;
         </Box>
         <Select
           onChange={e => setRowsPerPage(e.target.value)}
@@ -73,8 +73,8 @@ const PaginationFooter = ({ setData, table, tab }) => {
         <Text fontSize="14px">
           <Text as="b" fontSize="14px">
             {itemCountString}
-          </Text>{' '}
-          of {donationCount}
+          </Text>
+          &nbsp;of {donationCount}
         </Text>
         <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
           <PaginationContainer justify="right">
