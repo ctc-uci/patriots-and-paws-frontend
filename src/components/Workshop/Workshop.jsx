@@ -8,8 +8,8 @@ import {
   TabPanels,
   Tabs,
   Text,
-  Grid,
-  GridItem,
+  // Grid,
+  // GridItem,
   Button,
   extendTheme,
   ChakraProvider,
@@ -30,25 +30,22 @@ const Workshop = () => {
   const layoutTutorial = () => {
     return (
       <Box>
-        {/* <Flex flexDirection="column">
+        <Flex flexDirection="column">
           {data.map(({ id }) => (
             <>
               <Heading key={id}>{id}</Heading>
               <br />
             </>
           ))}
-        </Flex> */}
-        {/*
-          templateColumns="repeat(5, 1fr)"
-        */}
-        <Grid templateColumns="repeat(2, 1fr)">
+        </Flex>
+        {/* <Grid templateColumns="repeat(2, 1fr)">
           {data.map(({ id }) => (
             <GridItem key={id}>
               <Heading key={id}>{id}</Heading>
               <br />
             </GridItem>
           ))}
-        </Grid>
+        </Grid> */}
       </Box>
     );
   };
