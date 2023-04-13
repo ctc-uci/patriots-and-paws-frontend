@@ -18,7 +18,7 @@ const Workshop = () => {
   useEffect(() => {
     (async () => {
       const res = await PNPBackend.get('/donations');
-      setData(res.data);
+      setData(res.data.donations ?? []);
     })();
   }, []);
 
