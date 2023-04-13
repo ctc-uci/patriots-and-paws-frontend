@@ -36,6 +36,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   const [donations, setDonations] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
   const [modalState, setModalState] = useState('view');
+  const [confirmedState, setConfirmedState] = useState('inactive');
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
@@ -93,7 +94,23 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   };
 
   const handleChangeToEdit = () => {
+    setConfirmedState('inactive');
     setModalState('edit');
+  };
+
+  const handleConfirmedToggle = () => {
+    if (confirmedState === 'inactive') {
+      setConfirmedState('active');
+    } else {
+      setConfirmedState('inactive');
+    }
+  };
+
+  const getConfirmedDonations = () => {
+    if (confirmedState === 'active') {
+      return donations.filter(ele => ele.status === 'scheduling');
+    }
+    return donations;
   };
 
   return (
@@ -137,7 +154,13 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                 <Text fontSize="sm" fontWeight="normal" mb="0" mr={3}>
                   Show confirmed donations only
                 </Text>
-                <Switch PaddingRight={7} id="confirmed-donations" />
+                <Switch
+                  PaddingRight={7}
+                  id="confirmed-donations"
+                  onChange={handleConfirmedToggle}
+                  isDisabled={modalState === 'edit'}
+                  isChecked={modalState !== 'edit' && confirmedState === 'active'}
+                />
               </FormControl>
             </Flex>
           </Stack>
@@ -155,7 +178,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                 styleType="decimal"
                 onReorder={setDonations}
               >
-                {donations.map(donation => (
+                {getConfirmedDonations().map(donation => (
                   <ListItem
                     margin="0"
                     padding="0"
@@ -198,8 +221,8 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
               </List>
             )}
             {modalState === 'view' && (
-              <List spacing={2} axis="y" values={donations}>
-                {donations.map(donation => (
+              <List spacing={2} axis="y" values={getConfirmedDonations()}>
+                {getConfirmedDonations().map(donation => (
                   <ListItem margin="0" padding="0" key={donation.orderNum} value={donation.items}>
                     <Flex alignItems="center" justifyContent="space-between">
                       <Card
@@ -272,7 +295,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   <Button
                     colorScheme="teal"
                     type="submit"
-                    onClick={() => handleNavigateToAddress(donations)}
+                    onClick={() => handleNavigateToAddress(getConfirmedDonations())}
                   >
                     Navigate to Route
                   </Button>
