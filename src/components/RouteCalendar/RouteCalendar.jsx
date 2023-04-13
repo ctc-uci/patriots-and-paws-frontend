@@ -20,6 +20,7 @@ const RouteCalendar = () => {
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
   const [selectedEventDate, setSelectedEventDate] = useState();
   const [selectedRouteId, setSelectedRouteId] = useState();
+  const [overflow, setOverflow] = useState('visible');
   const calendarRef = useRef(null);
 
   // for CreateRouteModal
@@ -70,11 +71,13 @@ const RouteCalendar = () => {
     setSelectedRouteId(e.event._def.publicId);
     setSelectedEventDate(e.event._instance.range.start);
     editRouteOnOpen();
+    setOverflow('hidden');
   };
 
   const handleEditRouteOnClose = () => {
     setSelectedRouteId('');
     editRouteOnClose();
+    setOverflow('visible');
   };
 
   const handleCalendarAddEvent = (eventId, eventName, startDate) => {
@@ -89,7 +92,7 @@ const RouteCalendar = () => {
   };
 
   return (
-    <Flex p={5} height="90vh">
+    <Flex p={5} height="90vh" overflow={overflow}>
       <EditRouteModal
         routeId={selectedRouteId}
         routeDate={selectedEventDate}
