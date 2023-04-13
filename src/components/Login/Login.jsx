@@ -103,7 +103,7 @@ const Login = ({ cookies }) => {
           <Stack align="center" width="100%" margin="auto">
             <Stack width="70%" padding={20}>
               {signup === 'success' && (
-                <Alert status="success" variant="solid">
+                <Alert status="success" variant="solid" bgColor="green">
                   <AlertIcon />
                   You have successfully logged in.
                 </Alert>
