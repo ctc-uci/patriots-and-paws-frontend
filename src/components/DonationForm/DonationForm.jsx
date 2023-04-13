@@ -59,12 +59,7 @@ const schema = yup.object({
   termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
 
-function DonationForm({
-  donationData,
-  setDonationData,
-  closeEditDonationModal,
-  setDonationStatus,
-}) {
+function DonationForm({ donationData, setDonationData, closeEditDonationModal }) {
   const {
     handleSubmit,
     register,
@@ -166,9 +161,7 @@ function DonationForm({
         ...formData,
         status: APPROVAL_REQUESTED,
       });
-      setDonationData(prev => newData ?? prev);
-      // closes the editDonationModal
-      setDonationStatus(APPROVAL_REQUESTED);
+      setDonationData(prev => ({ ...(newData ?? prev), status: APPROVAL_REQUESTED }));
       navigate(0);
       closeEditDonationModal();
     }
@@ -416,14 +409,12 @@ DonationForm.propTypes = {
     ),
   }),
   setDonationData: PropTypes.func,
-  setDonationStatus: PropTypes.func,
   closeEditDonationModal: PropTypes.func,
 };
 
 DonationForm.defaultProps = {
   donationData: undefined,
   setDonationData: () => {},
-  setDonationStatus: () => {},
   closeEditDonationModal: () => {},
 };
 

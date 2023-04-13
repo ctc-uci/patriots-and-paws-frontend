@@ -47,7 +47,7 @@ const DonorLogin = () => {
                   Donor Login
                 </Text>
                 <Text fontSize="15px" fontWeight="400" mt="-7px" mb="50px">
-                  First time donating?{' '}
+                  First time donating?&nbsp;
                   <Link
                     as={ReactLink}
                     to="/donate/form"

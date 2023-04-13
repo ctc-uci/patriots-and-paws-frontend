@@ -209,7 +209,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                           <Stack spacing="0.1rem">
                             <Text fontWeight="bold">Donation #{donation.id}</Text>
                             <Text>
-                              {donation.firstName} {donation.lastName} | Items:{' '}
+                              {donation.firstName} {donation.lastName} | Items:&nbsp;
                               {donation.furniture.length ? donation.furniture.length : 0}
                             </Text>
                           </Stack>
@@ -239,7 +239,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                           <Stack spacing="0.1rem">
                             <Text fontWeight="bold">Donation #{donation.id}</Text>
                             <Text>
-                              {donation.firstName} {donation.lastName} | Items:{' '}
+                              {donation.firstName} {donation.lastName} | Items:&nbsp;
                               {donation.furniture.length ? donation.furniture.length : 0}
                             </Text>
                           </Stack>
