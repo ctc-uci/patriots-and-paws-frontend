@@ -82,9 +82,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
       // this updates donations in parallel
       const updateDonationPromises = updatedDonations.map(donation => updateDonation(donation));
       await Promise.all(updateDonationPromises);
-
-      // clearState();
-      // onClose();
     } catch (err) {
       setErrorMessage(err.message);
     }
@@ -92,8 +89,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
 
   const handleCancel = () => {
     setModalState('view');
-    // clearState();
-    // onClose();
   };
 
   const handleChangeToEdit = () => {
@@ -253,7 +248,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                 paddingLeft={5}
                 paddingRight={5}
               >
-                {/* <QuestionIcon h={5} w={5} color="#718096" /> */}
                 <Flex justify="left" gap={2}>
                   <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
                     Cancel
