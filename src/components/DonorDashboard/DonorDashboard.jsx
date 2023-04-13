@@ -259,7 +259,7 @@ const DonorDashboard = ({ donationId }) => {
           <Text fontSize="1.5em" fontWeight="700" mb="20px">
             Track your donation
           </Text>
-          <TrackDonationSection status={donation.status} />
+          {donation?.status && <TrackDonationSection status={donation.status} />}
         </Flex>
         <Button
           bg="red.500"
