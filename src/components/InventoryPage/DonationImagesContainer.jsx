@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SimpleGrid, Image, useDisclosure, Box, Text, Flex } from '@chakra-ui/react';
+import { SimpleGrid, Image, useDisclosure, Box, Text, Flex, GridItem } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
   Pagination,
@@ -61,14 +61,24 @@ const DonationImagesContainer = ({ pictures }) => {
           >
             <PaginationContainer alignItems="center" justify="space-between" gap={5}>
               <PaginationPrevious>&lsaquo;</PaginationPrevious>
-              <SimpleGrid columns={itemsPerPage === 1 ? 1 : 2} spacing={1} w="100%">
+              <SimpleGrid
+                columns={itemsPerPage === 1 ? 1 : 2}
+                align-items="center"
+                spacing={1}
+                w="100%"
+              >
                 {displayedData?.map(image => (
-                  <Image
-                    key={image.id}
-                    alt={image.notes}
-                    src={image.imageUrl}
-                    onClick={() => handleImageClick(image)}
-                  />
+                  <GridItem key={image.id} align="center">
+                    <Image
+                      alt={image.notes}
+                      src={image.imageUrl}
+                      objectFit="cover"
+                      width={180}
+                      height={140}
+                      align="center"
+                      onClick={() => handleImageClick(image)}
+                    />
+                  </GridItem>
                 ))}
               </SimpleGrid>
               <PaginationNext>&rsaquo;</PaginationNext>

@@ -105,90 +105,101 @@ const ManageStaff = ({ cookies }) => {
   }, [currFilter, allUsers, driverUsers, adminUsers]);
 
   return (
-    <Flex direction="column" m={10}>
-      <Flex mb={10} justify="space-between" vertical-align="center">
-        <Flex verticalAlign="bottom">
-          <InputGroup mr={5} width={300}>
-            <InputLeftElement pointerEvents="none">
-              <SearchIcon color="gray.300" />
-            </InputLeftElement>
-            <Input placeholder="Search Staff" className={styles['search-bar']} onChange={search} />
-          </InputGroup>
-          {isSuperAdmin && currFilter === 'admin' && (
-            <Tag colorScheme="blue">
-              <TagLabel fontSize={18} fontWeight={600} color="black">
-                Admin
-              </TagLabel>
-              <TagCloseButton onClick={() => setCurrFilter('all')} />
-            </Tag>
-          )}
-          {isSuperAdmin && currFilter === 'driver' && (
-            <Tag colorScheme="blue">
-              <TagLabel fontSize={18} fontWeight={600} color="black">
-                Driver
-              </TagLabel>
-              <TagCloseButton onClick={() => setCurrFilter('all')} />
-            </Tag>
-          )}
-        </Flex>
-        {isSuperAdmin && (
-          <Flex vertical-align="center">
-            <Menu minW={0} w="20px">
-              <Flex vertical-align="center" align="center">
-                <MenuButton
-                  as={IconButton}
-                  aria-label="Options"
-                  variant="ghost"
-                  icon={<Image src={menuIcon} />}
+    <>
+      <div className="main-body">
+        <Flex direction="column" m={10}>
+          <Flex mb={10} justify="space-between" vertical-align="center">
+            <Flex verticalAlign="bottom">
+              <InputGroup mr={5} width={300}>
+                <InputLeftElement pointerEvents="none">
+                  <SearchIcon color="gray.300" />
+                </InputLeftElement>
+                <Input
+                  placeholder="Search Staff"
+                  className={styles['search-bar']}
+                  onChange={search}
                 />
-                <MenuList
-                  align="center"
-                  minW={0}
-                  width="65px"
-                  height="80px"
-                  bgColor="rgb(246, 246, 246)"
-                >
-                  <MenuItem
-                    onClick={() => setCurrFilter('admin')}
-                    fontSize={15}
-                    minH={0}
-                    height="30px"
-                    mt={0}
-                  >
+              </InputGroup>
+              {isSuperAdmin && currFilter === 'admin' && (
+                <Tag colorScheme="blue">
+                  <TagLabel fontSize={18} fontWeight={600} color="black">
                     Admin
-                  </MenuItem>
-                  <MenuDivider borderColor="gray" mb={1} mt={1} />
-                  <MenuItem
-                    onClick={() => setCurrFilter('driver')}
-                    fontSize={15}
-                    minH={0}
-                    height="30px"
-                  >
+                  </TagLabel>
+                  <TagCloseButton onClick={() => setCurrFilter('all')} />
+                </Tag>
+              )}
+              {isSuperAdmin && currFilter === 'driver' && (
+                <Tag colorScheme="blue">
+                  <TagLabel fontSize={18} fontWeight={600} color="black">
                     Driver
-                  </MenuItem>
-                </MenuList>
+                  </TagLabel>
+                  <TagCloseButton onClick={() => setCurrFilter('all')} />
+                </Tag>
+              )}
+            </Flex>
+            {isSuperAdmin && (
+              <Flex vertical-align="center">
+                <Menu minW={0} w="20px">
+                  <Flex vertical-align="center" align="center">
+                    <MenuButton
+                      as={IconButton}
+                      aria-label="Options"
+                      variant="ghost"
+                      icon={<Image src={menuIcon} />}
+                    />
+                    <MenuList
+                      align="center"
+                      minW={0}
+                      width="65px"
+                      height="80px"
+                      bgColor="rgb(246, 246, 246)"
+                    >
+                      <MenuItem
+                        onClick={() => setCurrFilter('admin')}
+                        fontSize={15}
+                        minH={0}
+                        height="30px"
+                        mt={0}
+                      >
+                        Admin
+                      </MenuItem>
+                      <MenuDivider borderColor="gray" mb={1} mt={1} />
+                      <MenuItem
+                        onClick={() => setCurrFilter('driver')}
+                        fontSize={15}
+                        minH={0}
+                        height="30px"
+                      >
+                        Driver
+                      </MenuItem>
+                    </MenuList>
+                  </Flex>
+                </Menu>
+                <CreateAccount
+                  isSuperAdmin={isSuperAdmin}
+                  setAllUsers={setAllUsers}
+                  setDriverUsers={setDriverUsers}
+                  setAdminUsers={setAdminUsers}
+                  updateDisplay={updateDisplay}
+                />
               </Flex>
-            </Menu>
-            <CreateAccount
-              isSuperAdmin={isSuperAdmin}
-              setAllUsers={setAllUsers}
-              setDriverUsers={setDriverUsers}
-              setAdminUsers={setAdminUsers}
-              updateDisplay={updateDisplay}
-            />
+            )}
           </Flex>
-        )}
-      </Flex>
-      <UserTable
-        isSuperAdmin={isSuperAdmin}
-        users={displayedUsers}
-        setAllUsers={setAllUsers}
-        setDriverUsers={setDriverUsers}
-        setAdminUsers={setAdminUsers}
-        updateDisplay={updateDisplay}
-      />
-      <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
-    </Flex>
+
+          <UserTable
+            isSuperAdmin={isSuperAdmin}
+            users={displayedUsers}
+            setAllUsers={setAllUsers}
+            setDriverUsers={setDriverUsers}
+            setAdminUsers={setAdminUsers}
+            updateDisplay={updateDisplay}
+          />
+        </Flex>
+      </div>
+      <div className="footer">
+        <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
+      </div>
+    </>
   );
 };
 

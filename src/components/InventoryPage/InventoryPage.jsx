@@ -253,9 +253,16 @@ const InventoryPage = () => {
               </Table>
             </TableContainer>
           </TabPanel>
-          <PaginationFooter setData={setDonations} table="donations" tab={tabStatuses[tabIndex]} />
+          <div className="footer">
+            <PaginationFooter
+              setData={setDonations}
+              table="donations"
+              tab={tabStatuses[tabIndex]}
+            />
+          </div>
         </TabPanels>
       </Tabs>
+      {/* <PaginationFooter setData={setDonations} table="donations" tab={tabStatuses[tabIndex]} /> */}
       <DonationModal
         setAllDonations={setDonations}
         data={donationData}

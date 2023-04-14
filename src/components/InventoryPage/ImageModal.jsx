@@ -4,6 +4,7 @@ import {
   ModalContent,
   ModalBody,
   ModalCloseButton,
+  Center,
   Textarea,
   Modal,
   Image,
@@ -14,12 +15,21 @@ const ImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
   const { imageUrl, notes } = image;
   return (
     <>
-      <Modal isOpen={isOpenImageModal} onClose={onCloseImageModal} size="full">
+      <Modal
+        isOpen={isOpenImageModal}
+        onClose={onCloseImageModal}
+        size="full"
+        scroll="no"
+        BlockScrollOnMount
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
-          <ModalBody>
-            <Image h={500} w="35%" my={50} mx="auto" src={imageUrl} />
+          <ModalBody align="center">
+            <Center w="30rem" h="30rem">
+              <Image objectFit="contain" src={imageUrl} />
+            </Center>
+
             <Textarea defaultValue={notes} isReadOnly />
           </ModalBody>
         </ModalContent>
