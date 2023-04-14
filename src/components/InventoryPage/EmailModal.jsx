@@ -23,8 +23,8 @@ import { sendEmail, PNPBackend } from '../../utils/utils';
 import { EMAIL_TYPE, makeDate } from '../../utils/InventoryUtils';
 import { STATUSES } from '../../utils/config';
 
-const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, SCHEDULED } = EMAIL_TYPE;
-const { SCHEDULING, CHANGES_REQUESTED } = STATUSES;
+const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, SCHEDULED, DELETE_DONATION } = EMAIL_TYPE;
+const { SCHEDULING, CHANGES_REQUESTED, RESCHEDULE } = STATUSES;
 
 const makeSendButton = (
   status,
@@ -63,8 +63,8 @@ const makeSendButton = (
         colorScheme={isConfirmationSendEmail ? 'green' : 'red'}
         onClick={e => {
           handleSubmit(e);
-          updateDonation({ newStatus: SCHEDULING });
-          setCurrentStatus(SCHEDULING);
+          updateDonation({ newStatus: RESCHEDULE });
+          setCurrentStatus(RESCHEDULE);
           onCloseEmailModal();
           onCloseCancelModal();
           toast({
@@ -207,14 +207,32 @@ const EmailModal = ({
   const getEmailContent = (emailStatus, donationData) => {
     const { scheduledDate, id } = donationData;
     const mapping = {
-      [CANCEL_PICKUP]: {
-        header: 'Pickup Canceled',
+      [DELETE_DONATION]: {
+        header: 'Delete Donation',
         body: (
-          <Text>
-            Unfortunately, we have CANCELLED your pickup for this day. You can either reschedule
-            your pickup or cancel it altogether. Please provide this information through the
-            Donation Dashboard at this link.
-          </Text>
+          <>
+            <Text>
+              Unfortunately, we have DELETED your donation due to the reasons listed below. You can
+              either reschedule your pickup or cancel it altogether. Please provide this information
+              through the Donor Dashboard at this link.
+            </Text>
+            <br />
+            <Text as="b">Donation ID: #{id}</Text>
+          </>
+        ),
+      },
+      [CANCEL_PICKUP]: {
+        header: 'Cancel Pickup',
+        body: (
+          <>
+            <Text>
+              Unfortunately, we have CANCELED your pickup for this day due to the reasons listed
+              below. You can either reschedule your pickup or cancel it altogether. Please provide
+              this information through the Donor Dashboard at this link.
+            </Text>
+            <br />
+            <Text as="b">Donation ID: #{id}</Text>
+          </>
         ),
       },
       [REQUEST_CHANGES]: {

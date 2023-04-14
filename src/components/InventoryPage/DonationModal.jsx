@@ -23,6 +23,7 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  useToast,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
@@ -42,7 +43,7 @@ const {
   PICKED_UP,
   APPROVAL_REQUESTED,
 } = STATUSES;
-const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES } = EMAIL_TYPE;
+const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, DELETE_DONATION } = EMAIL_TYPE;
 
 const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
   const {
@@ -74,6 +75,8 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     onOpen: emailModalOnOpen,
     onClose: emailModalOnClose,
   } = useDisclosure();
+
+  const toast = useToast();
 
   const updateDonation = async ({ newStatus, newPickupDate, newRouteId }) => {
     setAllDonations(prev =>
@@ -126,11 +129,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     resetScheduledRoute(status);
   }, [data]);
 
-  const deleteDonation = async () => {
-    await PNPBackend.delete(`/donations/${id}`);
-    setAllDonations(prev => prev.filter(donation => donation.id !== id));
-    onClose();
-  };
+  // const deleteDonation = async () => {
+  //   // emailModalOnOpen();
+  //   // setEmailStatus(DELETE_DONATION);
+  //   await PNPBackend.delete(`/donations/${id}`);
+  //   setAllDonations(prev => prev.filter(donation => donation.id !== id));
+  //   onClose();
+  // };
 
   return (
     <Modal
@@ -312,7 +317,14 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         <ModalFooter justifyContent="space-between" px="3em" py="1em">
           <Flex justify="left">
             {![SCHEDULED, SCHEDULING, PICKED_UP].includes(currentStatus) && (
-              <Button colorScheme="red" justifyContent="left" onClick={deleteDonation}>
+              <Button
+                colorScheme="red"
+                justifyContent="left"
+                onClick={() => {
+                  emailModalOnOpen();
+                  setEmailStatus(DELETE_DONATION);
+                }}
+              >
                 Delete Donation
               </Button>
             )}
@@ -336,11 +348,23 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 <Button
                   ml="2%"
                   colorScheme="green"
+                  // eslint-disable-next-line consistent-return
                   onClick={() => {
+                    if (!scheduledRouteId) {
+                      return toast({
+                        // eslint-disable-next-line no-template-curly-in-string
+                        title: 'Could not approve #'.concat(id),
+                        description:
+                          'Please select a Date and Route before approving the donation.',
+                        status: 'error',
+                        duration: 9000,
+                        isClosable: true,
+                      });
+                    }
                     emailModalOnOpen();
                     setEmailStatus(APPROVE);
                   }}
-                  isDisabled={!scheduledRouteId}
+                  isDisabled={!scheduledRouteId && currentStatus !== PENDING}
                 >
                   Approve
                 </Button>
