@@ -15,21 +15,14 @@ const ImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
   const { imageUrl, notes } = image;
   return (
     <>
-      <Modal
-        isOpen={isOpenImageModal}
-        onClose={onCloseImageModal}
-        size="full"
-        scroll="no"
-        BlockScrollOnMount
-      >
+      <Modal isOpen={isOpenImageModal} onClose={onCloseImageModal} size="full" BlockScrollOnMount>
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />
           <ModalBody align="center">
-            <Center w="30rem" h="30rem">
-              <Image objectFit="contain" src={imageUrl} />
+            <Center w="30rem" h="30rem" my={50}>
+              <Image width="100%" height="100%" objectFit="contain" src={imageUrl} />
             </Center>
-
             <Textarea defaultValue={notes} isReadOnly />
           </ModalBody>
         </ModalContent>

@@ -72,9 +72,9 @@ const DonationImagesContainer = ({ pictures }) => {
                     <Image
                       alt={image.notes}
                       src={image.imageUrl}
-                      objectFit="cover"
-                      width={180}
-                      height={140}
+                      objectFit="contain"
+                      width="12rem"
+                      height="10rem"
                       align="center"
                       onClick={() => handleImageClick(image)}
                     />
