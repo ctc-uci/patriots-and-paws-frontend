@@ -4,7 +4,7 @@ import { useDropzone } from 'react-dropzone';
 import PropTypes from 'prop-types';
 import './DropZone.css';
 
-const DropZone = ({ setFiles }) => {
+const DropZone = ({ files, setFiles, maxFiles }) => {
   const { getRootProps, getInputProps } = useDropzone({
     // isDragAccept, isDragReject
     accept: {
@@ -49,7 +49,7 @@ const DropZone = ({ setFiles }) => {
   return (
     <>
       <div className="dropzone-zone" {...getRootProps()}>
-        <input {...getInputProps()} />
+        <input {...getInputProps()} disabled={files.length >= maxFiles} />
         <div>
           <span className="dropzone-text">Click/drag file to upload</span>
           <p className="dropzone-support-text">Support for jpeg, jpg, png</p>
@@ -60,7 +60,19 @@ const DropZone = ({ setFiles }) => {
 };
 
 DropZone.propTypes = {
+  files: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      imageURL: PropTypes.string,
+      notes: PropTypes.string,
+    }),
+  ).isRequired,
   setFiles: PropTypes.func.isRequired,
+  maxFiles: PropTypes.number,
+};
+
+DropZone.defaultProps = {
+  maxFiles: 16,
 };
 
 export default DropZone;

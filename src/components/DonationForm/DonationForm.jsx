@@ -14,6 +14,12 @@ import {
   Checkbox,
   Text,
   useToast,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -71,6 +77,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isOpenImage, onOpen: onOpenImage, onClose: onCloseImage } = useDisclosure();
+  const { isOpen: isOpenSubmit, onOpen: onOpenSubmit, onClose: onCloseSubmit } = useDisclosure();
 
   const navigate = useNavigate();
   const [furnitureOptions, setFurnitureOptions] = useState([]);
@@ -115,6 +122,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
   const onSubmit = async data => {
     // TODO: handle 0 furniture item validation
+    onCloseSubmit();
     const newUrls = await Promise.all(
       files
         .filter(file => file?.file)
@@ -208,7 +216,27 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
   return (
     <Box className={styles['form-padding']}>
-      <form onSubmit={handleSubmit(data => onSubmit(data))}>
+      {/* <form onSubmit={handleSubmit(data => onSubmit(data))}> */}
+      <form onSubmit={handleSubmit(() => onOpenSubmit())}>
+        <AlertDialog isOpen={isOpenSubmit} onClose={onCloseSubmit}>
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                Submit
+              </AlertDialogHeader>
+              <AlertDialogBody>Are you sure you would like to submit?</AlertDialogBody>
+              <AlertDialogFooter>
+                <Button colorScheme="red" onClick={onCloseSubmit}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSubmit(data => onSubmit(data))} ml={3}>
+                  Submit
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
+
         <Box className={styles['field-section']}>
           <Heading size="md" className={styles.title}>
             Name
@@ -328,7 +356,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           </Heading>
 
           <Box w="80%">
-            <DropZone setFiles={setFiles} />
+            <DropZone files={files} setFiles={setFiles} maxFiles={16} />
             <Flex wrap="wrap">
               {files.map(({ file, id, imageUrl, notes }, index) => {
                 return (
