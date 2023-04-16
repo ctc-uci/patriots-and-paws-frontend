@@ -21,6 +21,7 @@ import {
   AlertDialogContent,
   AlertDialogOverlay,
   Divider,
+  Textarea,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -57,10 +58,6 @@ const schema = yup.object({
     .required('ZIP Code is required')
     .matches(/^[0-9]{5}$/, 'ZIP Code must be a number and exactly 5 digits'),
   email: yup.string().email('Invalid email').required('Email required'),
-  email2: yup
-    .string()
-    .required('Email required')
-    .oneOf([yup.ref('email'), null], 'Emails must both match'),
   Items: yup.array().of(yup.object().shape(itemFieldSchema), 'A Furniture Selection is Required'),
   termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
 });
@@ -72,7 +69,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { ...donationData, email2: donationData?.email },
+    defaultValues: { ...donationData },
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -244,7 +241,83 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
               </Text>
             </Box>
             <Box w="60%">
-              <FormLabel>First Name</FormLabel>
+              <Flex columnGap={16} mb={10}>
+                <FormControl isInvalid={errors && errors.firstName} w="50%">
+                  <FormLabel>First Name</FormLabel>
+                  <Input {...register('firstName')} />
+                  <FormErrorMessage>
+                    {errors.firstName && errors.firstName.message}
+                  </FormErrorMessage>
+                </FormControl>
+
+                <FormControl isInvalid={errors && errors.lastName} w="50%">
+                  <FormLabel>Last Name</FormLabel>
+                  <Input {...register('lastName')} />
+                  <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
+                </FormControl>
+              </Flex>
+
+              <Flex columnGap={16} mb={10}>
+                <FormControl isInvalid={errors && errors.email} w="50%">
+                  <FormLabel>Email Address </FormLabel>
+                  <Input {...register('email')} disabled={donationData?.email} />
+                  <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+                </FormControl>
+
+                <FormControl isInvalid={errors && errors.phoneNum} w="50%">
+                  <FormLabel>Phone Number </FormLabel>
+                  <Input type="tel" {...register('phoneNum')} />
+                  <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
+                </FormControl>
+              </Flex>
+
+              <Flex rowGap={10} flexDir="column" mb={10}>
+                <FormControl isInvalid={errors && errors.addressStreet}>
+                  <FormLabel>Street Address</FormLabel>
+                  <Input {...register('addressStreet')} />
+                  <FormErrorMessage>
+                    {errors.addressStreet && errors.addressStreet.message}
+                  </FormErrorMessage>
+                </FormControl>
+
+                <FormControl>
+                  <FormLabel>Address Line 2</FormLabel>
+                  <Input {...register('addressUnit')} />
+                </FormControl>
+              </Flex>
+
+              <Flex columnGap={16} mb={10}>
+                <FormControl w="50%" isInvalid={errors && errors.addressCity}>
+                  <FormLabel>City </FormLabel>
+                  <Input {...register('addressCity')} />
+                  <FormErrorMessage>
+                    {errors.addressCity && errors.addressCity.message}
+                  </FormErrorMessage>
+                </FormControl>
+
+                <FormControl w="20%">
+                  <FormLabel>State</FormLabel>
+                  <Input defaultValue="CA" isDisabled />
+                </FormControl>
+
+                <FormControl isInvalid={errors && errors.addressZip} w="30%">
+                  <FormLabel>ZIP Code</FormLabel>
+                  <Input {...register('addressZip')} />
+                  <FormErrorMessage>
+                    {errors.addressZip && errors.addressZip.message}
+                  </FormErrorMessage>
+                </FormControl>
+              </Flex>
+
+              <Flex>
+                <FormControl>
+                  <FormLabel>
+                    {' '}
+                    Special Instructions (e.g. gate code, specific directions){' '}
+                  </FormLabel>
+                  <Textarea />
+                </FormControl>
+              </Flex>
             </Box>
           </Flex>
         </Box>
@@ -263,7 +336,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
               <Text>Select which items you would like to donate and how many of each item.</Text>
             </Box>
             <Box w="60%">
-              <FormControl isRequired isInvalid={errors && errors.Items}>
+              <FormControl isInvalid={errors && errors.Items}>
                 <FormLabel mb={5}>Select Items</FormLabel>
                 <Select
                   placeholder="Item List"
@@ -284,6 +357,11 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   />
                 ))}
               </FormControl>
+              <DonationImageModal
+                isOpenImageModal={isOpenImage}
+                onCloseImageModal={onCloseImage}
+                image={imageSelected}
+              />
             </Box>
           </Flex>
         </Box>
@@ -374,91 +452,6 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
               </AlertDialogContent>
             </AlertDialogOverlay>
           </AlertDialog>
-
-          <Box>
-            <Heading size="md">Name</Heading>
-            <Box>
-              <FormControl isInvalid={errors && errors.firstName} width="47%">
-                <FormLabel>First</FormLabel>
-                <Input {...register('firstName')} />
-                <FormErrorMessage>{errors.firstName && errors.firstName.message}</FormErrorMessage>
-              </FormControl>
-
-              <FormControl isInvalid={errors && errors.lastName} width="47%">
-                <FormLabel>Last</FormLabel>
-                <Input {...register('lastName')} />
-                <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
-              </FormControl>
-            </Box>
-          </Box>
-          <Box>
-            <Heading size="md">Address</Heading>
-
-            <FormControl isInvalid={errors && errors.addressStreet}>
-              <FormLabel>Street Address</FormLabel>
-              <Input {...register('addressStreet')} />
-              <FormErrorMessage>
-                {errors.addressStreet && errors.addressStreet.message}
-              </FormErrorMessage>
-            </FormControl>
-
-            <FormControl>
-              <FormLabel>Address Line 2</FormLabel>
-              <Input {...register('addressUnit')} />
-            </FormControl>
-
-            <Box>
-              <FormControl width="47%" isInvalid={errors && errors.addressCity}>
-                <FormLabel>City </FormLabel>
-                <Input {...register('addressCity')} />
-                <FormErrorMessage>
-                  {errors.addressCity && errors.addressCity.message}
-                </FormErrorMessage>
-              </FormControl>
-
-              <FormControl width="47%">
-                <FormLabel>State</FormLabel>
-                <Select defaultChecked="CA" disabled>
-                  <option>CA</option>
-                </Select>
-              </FormControl>
-            </Box>
-
-            <FormControl isInvalid={errors && errors.addressZip}>
-              <FormLabel>ZIP Code</FormLabel>
-              <Input {...register('addressZip')} />
-              <FormErrorMessage>{errors.addressZip && errors.addressZip.message}</FormErrorMessage>
-            </FormControl>
-          </Box>
-          <Box>
-            <Heading size="md">Phone</Heading>
-            <FormControl isInvalid={errors && errors.phoneNum}>
-              <Input type="tel" {...register('phoneNum')} />
-              <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
-            </FormControl>
-          </Box>
-          <Box>
-            <Heading size="md">Email</Heading>
-            <Box>
-              <FormControl isInvalid={errors && errors.email} width="47%">
-                <FormLabel>Enter Email </FormLabel>
-                <Input {...register('email')} disabled={donationData?.email} />
-                <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
-              </FormControl>
-
-              <FormControl isInvalid={errors && errors.email2} width="47%">
-                <FormLabel>Confirm Email </FormLabel>
-                <Input {...register('email2')} disabled={donationData?.email} />
-                <FormErrorMessage>{errors.email2 && errors.email2.message}</FormErrorMessage>
-              </FormControl>
-            </Box>
-          </Box>
-
-          <DonationImageModal
-            isOpenImageModal={isOpenImage}
-            onCloseImageModal={onCloseImage}
-            image={imageSelected}
-          />
 
           <Flex justifyContent="flex-end">
             <Button colorScheme="blue" type="submit">
