@@ -20,12 +20,12 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
+  Divider,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
-import styles from './DonationForm.module.css';
 import DropZone from '../DropZone/DropZone';
 import { PNPBackend, sendEmail } from '../../utils/utils';
 import { createNewDonation, updateDonation } from '../../utils/DonorUtils';
@@ -215,197 +215,259 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   }, []);
 
   return (
-    <Box className={styles['form-padding']}>
-      {/* <form onSubmit={handleSubmit(data => onSubmit(data))}> */}
-      <form onSubmit={handleSubmit(() => onOpenSubmit())}>
-        <AlertDialog isOpen={isOpenSubmit} onClose={onCloseSubmit}>
-          <AlertDialogOverlay>
-            <AlertDialogContent>
-              <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                Submit
-              </AlertDialogHeader>
-              <AlertDialogBody>Are you sure you would like to submit?</AlertDialogBody>
-              <AlertDialogFooter>
-                <Button colorScheme="red" onClick={onCloseSubmit}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSubmit(data => onSubmit(data))} ml={3}>
-                  Submit
-                </Button>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialogOverlay>
-        </AlertDialog>
-
-        <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title}>
-            Name
+    <form onSubmit={handleSubmit(() => onOpenSubmit())}>
+      <Flex justifyContent="center" width="100%" flexDir="column" px={40} py={20}>
+        <Box>
+          <Heading fontSize="36px" fontWeight="700" color="blue.500" mb={5}>
+            Patriots and Paws Donation Form
           </Heading>
-          <Box className={styles.form}>
-            <FormControl isInvalid={errors && errors.firstName} width="47%">
-              <FormLabel>First</FormLabel>
-              <Input {...register('firstName')} />
-              <FormErrorMessage>{errors.firstName && errors.firstName.message}</FormErrorMessage>
-            </FormControl>
-
-            <FormControl isInvalid={errors && errors.lastName} width="47%">
-              <FormLabel>Last</FormLabel>
-              <Input {...register('lastName')} />
-              <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
-            </FormControl>
-          </Box>
+          <Text>
+            Fill out the form with your contact information, select the items you wish to donate,
+            and upload pictures of the furniture to ensure that it&apos;s in good condition. After
+            we receive and review your furniture donation form, we will reach out to you to schedule
+            a pickup of the donated items. We thank you for your support!
+          </Text>
         </Box>
-        <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title}>
-            Address
-          </Heading>
 
-          <FormControl isInvalid={errors && errors.addressStreet}>
-            <FormLabel>Street Address</FormLabel>
-            <Input {...register('addressStreet')} />
-            <FormErrorMessage>
-              {errors.addressStreet && errors.addressStreet.message}
-            </FormErrorMessage>
-          </FormControl>
+        <Divider my={10} />
 
-          <FormControl>
-            <FormLabel>Address Line 2</FormLabel>
-            <Input {...register('addressUnit')} />
-          </FormControl>
+        <Box>
+          <Flex columnGap={40}>
+            <Box w="40%">
+              <Heading fontSize="20px" mb={5}>
+                Contact Information
+              </Heading>
+              <Text>
+                Please enter your contact information. This information will be used to contact you
+                about your donation and to schedule a pickup date. Please provide accurate and
+                up-to-date information.
+              </Text>
+            </Box>
+            <Box w="60%">
+              <FormLabel>First Name</FormLabel>
+            </Box>
+          </Flex>
+        </Box>
 
-          <Box className={styles.form}>
-            <FormControl width="47%" isInvalid={errors && errors.addressCity}>
-              <FormLabel>City </FormLabel>
-              <Input {...register('addressCity')} />
+        <Divider my={10} />
+
+        <Box>
+          <Flex columnGap={40}>
+            <Box w="40%">
+              <Flex alignItems="center" mb={5}>
+                <Heading fontSize="20px" mr={3}>
+                  Donate Items
+                </Heading>
+                <ItemInfo items={itemsInfoList} isAccepted />
+              </Flex>
+              <Text>Select which items you would like to donate and how many of each item.</Text>
+            </Box>
+            <Box w="60%">
+              <FormControl isRequired isInvalid={errors && errors.Items}>
+                <FormLabel mb={5}>Select Items</FormLabel>
+                <Select
+                  placeholder="Item List"
+                  value={selectedFurnitureValue}
+                  onChange={ev => addDonation(ev)}
+                  marginBottom="1em"
+                >
+                  {furnitureOptions.map(furnitureItem => (
+                    <option key={furnitureItem}>{furnitureItem}</option>
+                  ))}
+                </Select>
+                {donatedFurnitureList.map(donatedFurniture => (
+                  <DonationCard
+                    key={donatedFurniture.name}
+                    donatedFurniture={donatedFurniture}
+                    changeDon={changeDonation}
+                    removeDon={removeDonation}
+                  />
+                ))}
+              </FormControl>
+            </Box>
+          </Flex>
+        </Box>
+
+        <Divider my={10} />
+
+        <Box>
+          <Flex columnGap={40}>
+            <Box w="40%">
+              <Heading fontSize="20px" mb={5}>
+                Image Upload
+              </Heading>
+              <Text>
+                Please upload images of all the furniture items you wish to donate with descriptions
+                if needed. Maximum number of photos is 16.
+              </Text>
+            </Box>
+            <Box w="60%">
+              <DropZone files={files} setFiles={setFiles} maxFiles={16} />
+              <Flex wrap="wrap" columnGap={5}>
+                {files.map(({ file, id, imageUrl, notes }, index) => {
+                  return (
+                    <Box key={file?.preview ?? id}>
+                      <ImageDetails
+                        index={index}
+                        name={file?.name ?? imageUrl.slice(-10)}
+                        preview={file?.preview ?? imageUrl}
+                        description={notes}
+                        removeImage={removeFile}
+                        updateDescription={updateDescription}
+                        openImageModal={() => openImageModal(index)}
+                      />
+                    </Box>
+                  );
+                })}
+              </Flex>
+            </Box>
+          </Flex>
+        </Box>
+
+        <Divider my={10} />
+
+        <Box>
+          <Flex columnGap={40}>
+            <Box w="40%">
+              <Heading fontSize="20px" mb={5}>
+                Terms and Conditions
+              </Heading>
+              <Text>Please review and accept these terms before submitting the form.</Text>
+            </Box>
+            <Box w="60%">
+              {!donationData && (
+                <FormControl isInvalid={errors && errors.termsCond}>
+                  <Flex>
+                    <Checkbox {...register('termsCond')} />
+                    <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
+                    <Text cursor="pointer" onClick={onOpen} as="u">
+                      terms and conditions.
+                    </Text>
+                  </Flex>
+                  <FormErrorMessage>
+                    {errors.termsCond && errors.termsCond.message}
+                  </FormErrorMessage>
+                </FormControl>
+              )}
+
+              <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
+            </Box>
+          </Flex>
+        </Box>
+
+        <Box>
+          <AlertDialog isOpen={isOpenSubmit} onClose={onCloseSubmit}>
+            <AlertDialogOverlay>
+              <AlertDialogContent>
+                <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                  Submit
+                </AlertDialogHeader>
+                <AlertDialogBody>Are you sure you would like to submit?</AlertDialogBody>
+                <AlertDialogFooter>
+                  <Button colorScheme="red" onClick={onCloseSubmit}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSubmit(data => onSubmit(data))} ml={3}>
+                    Submit
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialogOverlay>
+          </AlertDialog>
+
+          <Box>
+            <Heading size="md">Name</Heading>
+            <Box>
+              <FormControl isInvalid={errors && errors.firstName} width="47%">
+                <FormLabel>First</FormLabel>
+                <Input {...register('firstName')} />
+                <FormErrorMessage>{errors.firstName && errors.firstName.message}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={errors && errors.lastName} width="47%">
+                <FormLabel>Last</FormLabel>
+                <Input {...register('lastName')} />
+                <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
+              </FormControl>
+            </Box>
+          </Box>
+          <Box>
+            <Heading size="md">Address</Heading>
+
+            <FormControl isInvalid={errors && errors.addressStreet}>
+              <FormLabel>Street Address</FormLabel>
+              <Input {...register('addressStreet')} />
               <FormErrorMessage>
-                {errors.addressCity && errors.addressCity.message}
+                {errors.addressStreet && errors.addressStreet.message}
               </FormErrorMessage>
             </FormControl>
 
-            <FormControl width="47%">
-              <FormLabel>State</FormLabel>
-              <Select defaultChecked="CA" disabled>
-                <option>CA</option>
-              </Select>
-            </FormControl>
-          </Box>
-
-          <FormControl isInvalid={errors && errors.addressZip}>
-            <FormLabel>ZIP Code</FormLabel>
-            <Input {...register('addressZip')} />
-            <FormErrorMessage>{errors.addressZip && errors.addressZip.message}</FormErrorMessage>
-          </FormControl>
-        </Box>
-        <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title}>
-            Phone
-          </Heading>
-          <FormControl isInvalid={errors && errors.phoneNum}>
-            <Input type="tel" {...register('phoneNum')} />
-            <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
-          </FormControl>
-        </Box>
-        <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title}>
-            Email
-          </Heading>
-          <Box className={styles.form}>
-            <FormControl isInvalid={errors && errors.email} width="47%">
-              <FormLabel>Enter Email </FormLabel>
-              <Input {...register('email')} disabled={donationData?.email} />
-              <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+            <FormControl>
+              <FormLabel>Address Line 2</FormLabel>
+              <Input {...register('addressUnit')} />
             </FormControl>
 
-            <FormControl isInvalid={errors && errors.email2} width="47%">
-              <FormLabel>Confirm Email </FormLabel>
-              <Input {...register('email2')} disabled={donationData?.email} />
-              <FormErrorMessage>{errors.email2 && errors.email2.message}</FormErrorMessage>
+            <Box>
+              <FormControl width="47%" isInvalid={errors && errors.addressCity}>
+                <FormLabel>City </FormLabel>
+                <Input {...register('addressCity')} />
+                <FormErrorMessage>
+                  {errors.addressCity && errors.addressCity.message}
+                </FormErrorMessage>
+              </FormControl>
+
+              <FormControl width="47%">
+                <FormLabel>State</FormLabel>
+                <Select defaultChecked="CA" disabled>
+                  <option>CA</option>
+                </Select>
+              </FormControl>
+            </Box>
+
+            <FormControl isInvalid={errors && errors.addressZip}>
+              <FormLabel>ZIP Code</FormLabel>
+              <Input {...register('addressZip')} />
+              <FormErrorMessage>{errors.addressZip && errors.addressZip.message}</FormErrorMessage>
             </FormControl>
           </Box>
-        </Box>
-        <Box className={styles['field-section']}>
-          <Flex marginBottom="1em" align="center">
-            <Heading size="md" className={styles.title} marginRight="1">
-              Item
-            </Heading>
-            <ItemInfo items={itemsInfoList} isAccepted />
+          <Box>
+            <Heading size="md">Phone</Heading>
+            <FormControl isInvalid={errors && errors.phoneNum}>
+              <Input type="tel" {...register('phoneNum')} />
+              <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
+            </FormControl>
+          </Box>
+          <Box>
+            <Heading size="md">Email</Heading>
+            <Box>
+              <FormControl isInvalid={errors && errors.email} width="47%">
+                <FormLabel>Enter Email </FormLabel>
+                <Input {...register('email')} disabled={donationData?.email} />
+                <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={errors && errors.email2} width="47%">
+                <FormLabel>Confirm Email </FormLabel>
+                <Input {...register('email2')} disabled={donationData?.email} />
+                <FormErrorMessage>{errors.email2 && errors.email2.message}</FormErrorMessage>
+              </FormControl>
+            </Box>
+          </Box>
+
+          <DonationImageModal
+            isOpenImageModal={isOpenImage}
+            onCloseImageModal={onCloseImage}
+            image={imageSelected}
+          />
+
+          <Flex justifyContent="flex-end">
+            <Button colorScheme="blue" type="submit">
+              {!donationData ? 'Submit' : 'Save'}
+            </Button>
           </Flex>
-          <Select
-            placeholder="Select Furniture"
-            value={selectedFurnitureValue}
-            onChange={ev => addDonation(ev)}
-            marginBottom="1em"
-            w="80%"
-          >
-            {furnitureOptions.map(furnitureItem => (
-              <option key={furnitureItem}>{furnitureItem}</option>
-            ))}
-          </Select>
-          {donatedFurnitureList.map(donatedFurniture => (
-            <DonationCard
-              key={donatedFurniture.name}
-              donatedFurniture={donatedFurniture}
-              changeDon={changeDonation}
-              removeDon={removeDonation}
-            />
-          ))}
         </Box>
-        <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title} marginBottom="1em">
-            Images
-          </Heading>
-
-          <Box w="80%">
-            <DropZone files={files} setFiles={setFiles} maxFiles={16} />
-            <Flex wrap="wrap">
-              {files.map(({ file, id, imageUrl, notes }, index) => {
-                return (
-                  <Box key={file?.preview ?? id}>
-                    <ImageDetails
-                      index={index}
-                      name={file?.name ?? imageUrl.slice(-10)}
-                      preview={file?.preview ?? imageUrl}
-                      description={notes}
-                      removeImage={removeFile}
-                      updateDescription={updateDescription}
-                      openImageModal={() => openImageModal(index)}
-                    />
-                  </Box>
-                );
-              })}
-            </Flex>
-          </Box>
-        </Box>
-        <DonationImageModal
-          isOpenImageModal={isOpenImage}
-          onCloseImageModal={onCloseImage}
-          image={imageSelected}
-        />
-        <Box className={styles['field-section']}>
-          <Heading size="md" className={styles.title}>
-            Do you Have any Questions or Comments
-          </Heading>
-          <Input {...register('notes')} />
-        </Box>
-
-        {!donationData && (
-          <FormControl isInvalid={errors && errors.termsCond}>
-            <Flex>
-              <Checkbox {...register('termsCond')} />
-              <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
-              <Text cursor="pointer" onClick={onOpen} as="u">
-                terms and conditions.
-              </Text>
-            </Flex>
-            <FormErrorMessage>{errors.termsCond && errors.termsCond.message}</FormErrorMessage>
-          </FormControl>
-        )}
-
-        <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
-
-        <Button type="submit">{!donationData ? 'Submit' : 'Save'}</Button>
-      </form>
-    </Box>
+      </Flex>
+    </form>
   );
 }
 
