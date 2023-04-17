@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useState, useEffect, useRef } from 'react';
 import { AddIcon } from '@chakra-ui/icons';
-import { Box, Flex, useDisclosure, Button } from '@chakra-ui/react';
+import { Box, Flex, useDisclosure, Button, Heading } from '@chakra-ui/react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -20,7 +20,7 @@ const RouteCalendar = () => {
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
   const [selectedEventDate, setSelectedEventDate] = useState();
   const [selectedRouteId, setSelectedRouteId] = useState();
-  const [overflow, setOverflow] = useState('visible');
+  // const [overflow, setOverflow] = useState('visible');
   const calendarRef = useRef(null);
 
   // for CreateRouteModal
@@ -71,13 +71,13 @@ const RouteCalendar = () => {
     setSelectedRouteId(e.event._def.publicId);
     setSelectedEventDate(e.event._instance.range.start);
     editRouteOnOpen();
-    setOverflow('hidden');
+    // setOverflow('hidden');
   };
 
   const handleEditRouteOnClose = () => {
     setSelectedRouteId('');
     editRouteOnClose();
-    setOverflow('visible');
+    // setOverflow('visible');
   };
 
   const handleCalendarAddEvent = (eventId, eventName, startDate) => {
@@ -90,9 +90,9 @@ const RouteCalendar = () => {
       allDay: true,
     });
   };
-
+  // p={5} height="90vh"
   return (
-    <Flex p={5} height="90vh" overflow={overflow}>
+    <Flex>
       <EditRouteModal
         routeId={selectedRouteId}
         routeDate={selectedEventDate}
@@ -108,21 +108,22 @@ const RouteCalendar = () => {
         onClose={createRouteOnClose}
         handleCalendarAddEvent={handleCalendarAddEvent}
       />
-      <Box
-        flex="1"
-        _hover={{
-          backgroundColor: 'white',
-        }}
-      >
+      <Box>
         {role !== DRIVER_ROLE && (
-          <Button
-            leftIcon={<AddIcon boxSize={3} />}
-            onClick={createRouteOnOpen}
-            colorScheme="blue"
-            marginBottom={1}
-          >
-            Create Route
-          </Button>
+          <Flex gap="1em" align="end">
+            <Heading as="h3" size="lg" noOfLines={1}>
+              Routes Calendar
+            </Heading>
+            <Button
+              leftIcon={<AddIcon boxSize={3} />}
+              onClick={createRouteOnOpen}
+              colorScheme="blue"
+              marginBottom={1}
+              size="xs"
+            >
+              Create Route
+            </Button>
+          </Flex>
         )}
         <FullCalendar
           ref={calendarRef}
@@ -130,7 +131,7 @@ const RouteCalendar = () => {
           headerToolbar={{
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek',
+            right: '',
           }}
           initialView="dayGridMonth"
           fixedWeekCount={false}
@@ -138,6 +139,8 @@ const RouteCalendar = () => {
           dayMaxEvents
           select={handleDateSelect}
           eventClick={handleEventClick}
+          contentHeight="auto"
+          height="1vh"
         />
       </Box>
     </Flex>
