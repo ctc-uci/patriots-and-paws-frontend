@@ -38,12 +38,11 @@ import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
 import ItemInfo from '../ItemInfo/ItemInfo';
 import { STATUSES } from '../../utils/config';
 import DonationImageModal from '../DonationImageModal/DonationImageModal';
-import { validateNamespace } from '@firebase/util';
 
 const { APPROVAL_REQUESTED } = STATUSES;
-const itemFieldSchema = {
-  itemName: yup.string().required('TESTING ARRAY VALIDATION'),
-};
+// const itemFieldSchema = {
+//   itemName: yup.string().required('A furniture selection is required'),
+// };
 
 const schema = yup.object({
   firstName: yup.string().required('Invalid first name'),
@@ -52,16 +51,15 @@ const schema = yup.object({
     .string()
     .required('Phone number is required')
     .matches(/[0-9]{10}/, 'Phone number must be 10 digits'),
-  addressStreet: yup.string().required('Street Address is required'),
+  addressStreet: yup.string().required('Street address is required'),
   addressCity: yup.string().required('City is required'),
   addressZip: yup
     .string()
     .required('ZIP Code is required')
     .matches(/^[0-9]{5}$/, 'ZIP Code must be a number and exactly 5 digits'),
   email: yup.string().email('Invalid email').required('Email required'),
-  Items: yup.array().of(yup.object().shape(itemFieldSchema)).min(1, 'TESTING ARRAY VALIDATION'),
+  Items: yup.array().of(yup.string()).min(1, 'A furniture selection is required'),
   termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
-  // donations: yup.array().required().nullable(),
 });
 
 function DonationForm({ donationData, setDonationData, closeEditDonationModal }) {
@@ -70,7 +68,6 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     register,
     formState: { errors },
     setError,
-    getValues,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: { ...donationData },
@@ -194,12 +191,6 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     setDonatedFurniture(prev => [...prev, { name: ev.target.value, count: 1 }]);
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
     setSelectedFurnitureValue('Select Furniture');
-    const values = getValues();
-    if ('test10' in values) {
-      values.test10 = [{ name: ev.target.value, count: 1 }];
-    } else {
-      values.test10.append({ name: ev.target.value, count: 1 });
-    }
   };
 
   const changeDonation = (furnitureName, ev) => {
@@ -229,28 +220,18 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     fetchItemsInfoOptions();
   }, []);
 
-  const test = () => {
-    const values = getValues();
-    console.log(values);
-  };
-
   const validateData = () => {
     if (donatedFurnitureList.length < 1) {
       setError('Items', {
         type: 'manual',
         message: 'A furniture selection is required',
       });
-      // return;
+      return;
     }
-    // const t = { ...data, Items: donatedFurnitureList };
-    // const s = schema.validateSync(t);
-    // console.log(s);
-    console.log(errors);
-    // onOpenSubmit();
+    onOpenSubmit();
   };
 
   return (
-    // <form onSubmit={handleSubmit( () => onOpenImage())}>
     <form onSubmit={handleSubmit(() => validateData())}>
       <Flex justifyContent="center" width="100%" flexDir="column" px={40} py={20}>
         <Box>
@@ -418,7 +399,6 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   value={selectedFurnitureValue}
                   onChange={ev => addDonation(ev)}
                   marginBottom="1em"
-                  // {...register('test10')}
                 >
                   {furnitureOptions.map(furnitureItem => (
                     <option key={furnitureItem}>{furnitureItem}</option>
@@ -537,8 +517,6 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           </Flex>
         </Box>
       </Flex>
-
-      <Button onClick={() => test()}>Testing</Button>
     </form>
   );
 }
