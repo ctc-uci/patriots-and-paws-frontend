@@ -101,7 +101,7 @@ const Login = ({ cookies }) => {
       <GridItem>
         <Flex minH="100vh" align="center" justify="center">
           <Stack align="center" width="100%" margin="auto">
-            <Stack width="70%" padding={20}>
+            <Stack width="70%" padding={9}>
               {signup === 'success' && (
                 <Alert status="success" variant="solid" bgColor="green">
                   <AlertIcon />
@@ -109,7 +109,7 @@ const Login = ({ cookies }) => {
                 </Alert>
               )}
               {errorMessage && (
-                <Alert status="error" rounded="md" mb="3em">
+                <Alert status="error" rounded="md" mb="1em">
                   <Flex direction="row" verticalAlign="center" align="center">
                     <AlertIcon ml="0.75%" boxSize="5.5%" />
                     <Flex direction="column" ml="0.75%">
@@ -118,9 +118,8 @@ const Login = ({ cookies }) => {
                   </Flex>
                 </Alert>
               )}
-              <Heading fontSize="48px">Staff Login</Heading>
-              {errorMessage && <Box>{errorMessage}</Box>}
-              <Link href="/forgot-password" color="#3182ce" fontSize="18px">
+              <Heading fontSize="3rem">Staff Login</Heading>
+              <Link href="/forgot-password" color="#3182ce" fontSize="1rem">
                 Forgot Password?
               </Link>
               <Stack width="100%">

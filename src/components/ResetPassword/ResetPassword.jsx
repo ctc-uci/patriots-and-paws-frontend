@@ -83,8 +83,8 @@ const ResetPassword = ({ code }) => {
       <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
       <GridItem>
         <Flex minH="100vh" justify="center">
-          <Stack width="70%" margin="auto" padding="20 20 0 20">
-            <Heading fontSize="40px" mb={10}>
+          <Stack width="55%" margin="auto" padding="20 20 0 20">
+            <Heading fontSize="40px" mb={7}>
               Reset Password
             </Heading>
             <PasswordConfirmationModal isOpen={isOpen} onClose={handleOnClose} />
@@ -97,7 +97,6 @@ const ResetPassword = ({ code }) => {
                   <Input
                     type={showNewPassword ? 'text' : 'password'}
                     {...register('newPassword')}
-                    placeholder="● ● ● ● ● ● ● ● ●"
                     _placeholder={{ fontSize: '10px' }}
                     borderColor={errors.newPassword ? 'red.500' : 'gray.300'}
                     onClick={() => setDisplayPasswordRequirements(true)}
@@ -120,7 +119,7 @@ const ResetPassword = ({ code }) => {
                 {displayPasswordRequirements && (
                   <Flex
                     align="center"
-                    mt={5}
+                    mt={2}
                     visibility={!displayPasswordRequirements && 'hidden'}
                     flexDirection="column"
                     alignItems="left"
@@ -175,7 +174,6 @@ const ResetPassword = ({ code }) => {
                   <Input
                     type={showConfirmPassword ? 'text' : 'password'}
                     {...register('confirmNewPassword')}
-                    placeholder="● ● ● ● ● ● ● ● ●"
                     _placeholder={{ fontSize: '10px' }}
                     borderColor={errors.confirmNewPassword ? 'red.500' : 'gray.300'}
                     isRequired
@@ -199,11 +197,9 @@ const ResetPassword = ({ code }) => {
                     {errorMessage}
                   </Box>
                 )}
-                <Flex justifyContent="flex-end">
-                  <Button colorScheme="blue" type="submit">
-                    Reset Password
-                  </Button>
-                </Flex>
+                <Button colorScheme="blue" type="submit" width="100%" mt={14}>
+                  Reset Password
+                </Button>
               </FormControl>
             </form>
           </Stack>
