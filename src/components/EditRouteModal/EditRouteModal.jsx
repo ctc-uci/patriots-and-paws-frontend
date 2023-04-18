@@ -7,7 +7,6 @@ import {
   Box,
   Card,
   Text,
-  HStack,
   Button,
   Stack,
   ModalOverlay,
@@ -21,6 +20,11 @@ import {
   FormControl,
   Select,
   Switch,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
 } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
 import { Reorder } from 'framer-motion';
@@ -57,6 +61,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
       weekday: 'long',
       month: 'long',
       day: 'numeric',
+      year: 'numeric',
       timeZone: 'UTC',
     });
     return formattedDate;
@@ -216,16 +221,35 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                         fontSize={16}
                         width="500px"
                       >
-                        <HStack spacing="1rem">
-                          <DragHandleIcon />
-                          <Stack spacing="0.1rem">
-                            <Text fontWeight="bold">Donation #{donation.id}</Text>
-                            <Text>
-                              {donation.firstName} {donation.lastName} | Items:&nbsp;
-                              {donation.furniture.length ? donation.furniture.length : 0}
-                            </Text>
-                          </Stack>
-                        </HStack>
+                        <Flex justifyContent="space-between" alignItems="center">
+                          <Flex alignItems="center">
+                            <DragHandleIcon />
+                            <Stack ml={5} spacing="0.1rem">
+                              <Text fontWeight="bold">Donation #{donation.id}</Text>
+                              <Text>
+                                {donation.firstName} {donation.lastName} | Items:&nbsp;
+                                {donation.furniture.length ? donation.furniture.length : 0}
+                              </Text>
+                            </Stack>
+                          </Flex>
+
+                          <Popover placement="left">
+                            <PopoverTrigger>
+                              <Button colorScheme="teal" size="sm">
+                                Show Address
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent bg="#171923" color="white">
+                              <PopoverArrow bg="#171923" />
+                              <PopoverBody>
+                                {donation.addressUnit
+                                  ? `${donation.addressStreet}, Unit ${donation.addressUnit}`
+                                  : donation.addressStreet}
+                                , {donation.addressCity}, CA {donation.addressZip}
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
+                        </Flex>
                       </Card>
                     </Flex>
                   </ListItem>
@@ -255,6 +279,22 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                               {donation.furniture.length ? donation.furniture.length : 0}
                             </Text>
                           </Stack>
+                          <Popover placement="left">
+                            <PopoverTrigger>
+                              <Button colorScheme="teal" size="sm">
+                                Show Address
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent bg="#171923" color="white">
+                              <PopoverArrow bg="#171923" />
+                              <PopoverBody>
+                                {donation.addressUnit
+                                  ? `${donation.addressStreet}, Unit ${donation.addressUnit}`
+                                  : donation.addressStreet}
+                                , {donation.addressCity}, CA {donation.addressZip}
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
                         </Flex>
                       </Card>
                     </Flex>
