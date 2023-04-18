@@ -2,7 +2,8 @@ import React from 'react';
 import { useDropzone } from 'react-dropzone';
 // import { CloseIcon } from '@chakra-ui/icons';
 import PropTypes from 'prop-types';
-import { Box, Text, Input } from '@chakra-ui/react';
+import { Box, Text, Input, Image, Flex } from '@chakra-ui/react';
+import imageIcon from '../../assets/InsertPhoto.svg';
 
 const DropZone = ({ files, setFiles, maxFiles }) => {
   const { getRootProps, getInputProps } = useDropzone({
@@ -63,7 +64,8 @@ const DropZone = ({ files, setFiles, maxFiles }) => {
         disabled={files.length >= maxFiles}
         {...getInputProps()}
       />
-      <Box textAlign="center">
+      <Flex alignItems="center" flexDirection="column">
+        <Image src={imageIcon} color="black" boxSize="40px" />
         <Text fontSize="14px" fontWeight="400" whiteSpace="nowrap">
           Drag and drop images here or&nbsp;
           <Text
@@ -79,7 +81,7 @@ const DropZone = ({ files, setFiles, maxFiles }) => {
         <Text fontSize="12px" textAlign="center" mt={2} textColor="gray.700">
           Accepted file types: JPEG, PNG, GIF
         </Text>
-      </Box>
+      </Flex>
     </Box>
   );
 };

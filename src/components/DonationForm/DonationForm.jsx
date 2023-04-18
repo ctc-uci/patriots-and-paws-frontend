@@ -38,10 +38,11 @@ import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
 import ItemInfo from '../ItemInfo/ItemInfo';
 import { STATUSES } from '../../utils/config';
 import DonationImageModal from '../DonationImageModal/DonationImageModal';
+import { validateNamespace } from '@firebase/util';
 
 const { APPROVAL_REQUESTED } = STATUSES;
 const itemFieldSchema = {
-  itemName: yup.string().required('A Furniture Selection is Required'),
+  itemName: yup.string().required('TESTING ARRAY VALIDATION'),
 };
 
 const schema = yup.object({
@@ -58,8 +59,9 @@ const schema = yup.object({
     .required('ZIP Code is required')
     .matches(/^[0-9]{5}$/, 'ZIP Code must be a number and exactly 5 digits'),
   email: yup.string().email('Invalid email').required('Email required'),
-  Items: yup.array().of(yup.object().shape(itemFieldSchema), 'A Furniture Selection is Required'),
+  Items: yup.array().of(yup.object().shape(itemFieldSchema)).min(1, 'TESTING ARRAY VALIDATION'),
   termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
+  // donations: yup.array().required().nullable(),
 });
 
 function DonationForm({ donationData, setDonationData, closeEditDonationModal }) {
@@ -67,6 +69,8 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     handleSubmit,
     register,
     formState: { errors },
+    setError,
+    getValues,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: { ...donationData },
@@ -120,6 +124,14 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   const onSubmit = async data => {
     // TODO: handle 0 furniture item validation
     onCloseSubmit();
+    // if (donatedFurnitureList.length < 1) {
+    //   setError('Items', {
+    //     type: 'manual',
+    //     message: 'A furniture selection is required.',
+    //   });
+    //   return;
+    // }
+
     const newUrls = await Promise.all(
       files
         .filter(file => file?.file)
@@ -182,6 +194,12 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     setDonatedFurniture(prev => [...prev, { name: ev.target.value, count: 1 }]);
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
     setSelectedFurnitureValue('Select Furniture');
+    const values = getValues();
+    if ('test10' in values) {
+      values.test10 = [{ name: ev.target.value, count: 1 }];
+    } else {
+      values.test10.append({ name: ev.target.value, count: 1 });
+    }
   };
 
   const changeDonation = (furnitureName, ev) => {
@@ -211,8 +229,29 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     fetchItemsInfoOptions();
   }, []);
 
+  const test = () => {
+    const values = getValues();
+    console.log(values);
+  };
+
+  const validateData = () => {
+    if (donatedFurnitureList.length < 1) {
+      setError('Items', {
+        type: 'manual',
+        message: 'A furniture selection is required',
+      });
+      // return;
+    }
+    // const t = { ...data, Items: donatedFurnitureList };
+    // const s = schema.validateSync(t);
+    // console.log(s);
+    console.log(errors);
+    // onOpenSubmit();
+  };
+
   return (
-    <form onSubmit={handleSubmit(() => onOpenSubmit())}>
+    // <form onSubmit={handleSubmit( () => onOpenImage())}>
+    <form onSubmit={handleSubmit(() => validateData())}>
       <Flex justifyContent="center" width="100%" flexDir="column" px={40} py={20}>
         <Box>
           <Heading fontSize="36px" fontWeight="700" color="blue.500" mb={5}>
@@ -243,7 +282,11 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
             <Box w="60%">
               <Flex columnGap={16} mb={10}>
                 <FormControl isInvalid={errors && errors.firstName} w="50%">
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel>
+                    <Flex>
+                      First Name&nbsp;<FormLabel color="red">*</FormLabel>
+                    </Flex>
+                  </FormLabel>
                   <Input {...register('firstName')} />
                   <FormErrorMessage>
                     {errors.firstName && errors.firstName.message}
@@ -251,7 +294,11 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 </FormControl>
 
                 <FormControl isInvalid={errors && errors.lastName} w="50%">
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>
+                    <Flex>
+                      Last Name&nbsp;<FormLabel color="red">*</FormLabel>
+                    </Flex>
+                  </FormLabel>
                   <Input {...register('lastName')} />
                   <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
                 </FormControl>
@@ -259,13 +306,21 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
               <Flex columnGap={16} mb={10}>
                 <FormControl isInvalid={errors && errors.email} w="50%">
-                  <FormLabel>Email Address </FormLabel>
+                  <FormLabel>
+                    <Flex>
+                      Email Address&nbsp;<FormLabel color="red">*</FormLabel>
+                    </Flex>
+                  </FormLabel>
                   <Input {...register('email')} disabled={donationData?.email} />
                   <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl isInvalid={errors && errors.phoneNum} w="50%">
-                  <FormLabel>Phone Number </FormLabel>
+                  <FormLabel>
+                    <Flex>
+                      Phone Number&nbsp;<FormLabel color="red">*</FormLabel>
+                    </Flex>
+                  </FormLabel>
                   <Input type="tel" {...register('phoneNum')} />
                   <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
                 </FormControl>
@@ -273,7 +328,11 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
               <Flex rowGap={10} flexDir="column" mb={10}>
                 <FormControl isInvalid={errors && errors.addressStreet}>
-                  <FormLabel>Street Address</FormLabel>
+                  <FormLabel>
+                    <Flex>
+                      Street Address&nbsp;<FormLabel color="red">*</FormLabel>
+                    </Flex>
+                  </FormLabel>
                   <Input {...register('addressStreet')} />
                   <FormErrorMessage>
                     {errors.addressStreet && errors.addressStreet.message}
@@ -288,7 +347,11 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
               <Flex columnGap={16} mb={10}>
                 <FormControl w="50%" isInvalid={errors && errors.addressCity}>
-                  <FormLabel>City </FormLabel>
+                  <FormLabel>
+                    <Flex>
+                      City&nbsp;<FormLabel color="red">*</FormLabel>
+                    </Flex>
+                  </FormLabel>
                   <Input {...register('addressCity')} />
                   <FormErrorMessage>
                     {errors.addressCity && errors.addressCity.message}
@@ -296,12 +359,20 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 </FormControl>
 
                 <FormControl w="20%">
-                  <FormLabel>State</FormLabel>
+                  <FormLabel>
+                    <Flex>
+                      State&nbsp;<FormLabel color="red">*</FormLabel>
+                    </Flex>
+                  </FormLabel>
                   <Input defaultValue="CA" isDisabled />
                 </FormControl>
 
                 <FormControl isInvalid={errors && errors.addressZip} w="30%">
-                  <FormLabel>ZIP Code</FormLabel>
+                  <FormLabel>
+                    <Flex>
+                      Zip Code&nbsp;<FormLabel color="red">*</FormLabel>
+                    </Flex>
+                  </FormLabel>
                   <Input {...register('addressZip')} />
                   <FormErrorMessage>
                     {errors.addressZip && errors.addressZip.message}
@@ -315,7 +386,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                     {' '}
                     Special Instructions (e.g. gate code, specific directions){' '}
                   </FormLabel>
-                  <Textarea />
+                  <Textarea {...register('notes')} />
                 </FormControl>
               </Flex>
             </Box>
@@ -337,12 +408,17 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
             </Box>
             <Box w="60%">
               <FormControl isInvalid={errors && errors.Items}>
-                <FormLabel mb={5}>Select Items</FormLabel>
+                <FormLabel>
+                  <Flex>
+                    Select Items&nbsp;<FormLabel color="red">*</FormLabel>
+                  </Flex>
+                </FormLabel>
                 <Select
                   placeholder="Item List"
                   value={selectedFurnitureValue}
                   onChange={ev => addDonation(ev)}
                   marginBottom="1em"
+                  // {...register('test10')}
                 >
                   {furnitureOptions.map(furnitureItem => (
                     <option key={furnitureItem}>{furnitureItem}</option>
@@ -357,6 +433,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   />
                 ))}
               </FormControl>
+              {errors.Items && <Box textColor="red.500">{errors.Items.message}</Box>}
               <DonationImageModal
                 isOpenImageModal={isOpenImage}
                 onCloseImageModal={onCloseImage}
@@ -460,6 +537,8 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           </Flex>
         </Box>
       </Flex>
+
+      <Button onClick={() => test()}>Testing</Button>
     </form>
   );
 }
