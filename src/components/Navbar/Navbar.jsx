@@ -14,6 +14,8 @@ import {
   MenuList,
   MenuItem,
   useDisclosure,
+  Tag,
+  Text,
 } from '@chakra-ui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { logout, useNavigate, getUserFromDB, auth, getCurrentUser } from '../../utils/AuthUtils';
@@ -27,8 +29,9 @@ const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 const Navbar = ({ cookies }) => {
   const [user, setUser] = useState({});
   const [role, setRole] = useState('');
+  // const [currentPage, setCurrentPage] = useState('dashboard');
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isProfileOpen, onOpen: onProfileOpen, onClose: onProfileClose } = useDisclosure();
 
   useEffect(() => {
@@ -58,7 +61,7 @@ const Navbar = ({ cookies }) => {
   return (
     <Flex
       as="nav"
-      bgColor="lightblue"
+      bgColor="rgb(237,241,248)"
       align="center"
       justify="space-between"
       position="sticky"
@@ -78,45 +81,67 @@ const Navbar = ({ cookies }) => {
             />
           </LinkOverlay>
         </LinkBox>
-
+        <Text fontSize="1.2em" fontStyle="bold">
+          Patriots and Paws
+        </Text>
+      </HStack>
+      <HStack>
         {role && (
-          <>
+          <Flex align="center">
             <Link as={NavLink} to="/">
-              Dashboard
+              <Tag
+                size="md"
+                borderRadius="full"
+                bgColor="rgb(66,153,225)"
+                color="white"
+                fontSize="1.2em"
+                ml="1em"
+                mr="1em"
+              >
+                Dashboard
+              </Tag>
             </Link>
             {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
               <>
                 <Link as={NavLink} to="/donate/edit">
-                  Manage Donation Form
+                  <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
+                    Manage Donation Form
+                  </Text>
                 </Link>
                 <Link as={NavLink} to="/manage-staff">
-                  Manage Staff
+                  <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
+                    Manage Staff
+                  </Text>
                 </Link>
               </>
             )}
-          </>
+          </Flex>
         )}
       </HStack>
-      <Menu isOpen={isOpen} alignSelf="right">
-        <MenuButton
-          as={Button}
-          mx={1}
-          py={[1, 2, 2]}
-          px={4}
-          borderRadius={5}
-          _hover={{ bg: 'white' }}
-          aria-label="User Dropdown"
-          fontWeight="normal"
-          onMouseEnter={onOpen}
-          onMouseLeave={onClose}
-        >
-          {user.lastName && user.firstName && `${user.lastName}, ${user.firstName}`}
-          {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-        </MenuButton>
-        <MenuList onMouseEnter={onOpen} onMouseLeave={onClose}>
-          <MenuItem onClick={onProfileOpen}>Profile</MenuItem>
-          <MenuItem onClick={handleSubmit}>Logout</MenuItem>
-        </MenuList>
+      <Menu alignSelf="right">
+        {({ isOpen }) => (
+          <>
+            <MenuButton
+              isActive={isOpen}
+              as={Button}
+              mx={1}
+              py={[1, 2, 2]}
+              px={4}
+              borderRadius={5}
+              bgColor="white"
+              aria-label="User Dropdown"
+              fontWeight="normal"
+              fontSize="1.2em"
+            >
+              {user.lastName && user.firstName && `${user.lastName}, ${user.firstName}`}
+              {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+            </MenuButton>
+            <MenuList>
+              <MenuItem onClick={onProfileOpen}>Profile</MenuItem>
+              <MenuItem onClick={handleSubmit}>Logout</MenuItem>
+            </MenuList>
+          </>
+        )}
       </Menu>
     </Flex>
   );
