@@ -106,9 +106,8 @@ const RouteCalendar = () => {
       allDay: true,
     });
   };
-  // p={5} height="90vh"
   return (
-    <Flex>
+    <Flex p={5} height="90vh">
       <EditRouteModal
         routeId={selectedRouteId}
         routeDate={selectedEventDate}

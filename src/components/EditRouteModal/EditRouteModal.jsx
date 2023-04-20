@@ -28,10 +28,10 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
-import { PDFViewer, StyleSheet } from '@react-pdf/renderer';
+import { PDFViewer } from '@react-pdf/renderer';
 import { Reorder } from 'framer-motion';
 import RoutePDF from '../RoutePDF/RoutePDF';
-import { updateDonation, getRoute, updateRoute } from '../../utils/RouteUtils';
+import { updateDonation, getRoute, updateRoute, routePDFStyles } from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
 import { AUTH_ROLES } from '../../utils/config';
 
@@ -119,12 +119,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
     }
     return donations;
   };
-  const styles = StyleSheet.create({
-    viewer: {
-      width: '100%',
-      height: '80vh',
-    },
-  });
 
   return (
     <Modal size="xl" isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
@@ -323,7 +317,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                 paddingLeft={5}
                 paddingRight={5}
               >
-                {/* <QuestionIcon h={5} w={5} color="#718096" /> */}
                 <Flex justify="left" gap={2}>
                   <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
                     Cancel
@@ -353,7 +346,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                     <ModalContent>
                       <ModalCloseButton />
                       <ModalBody p="5em 5em 0 5em">
-                        <PDFViewer style={styles.viewer}>
+                        <PDFViewer style={routePDFStyles.viewer}>
                           <RoutePDF
                             driverData={drivers.find(driver => driver.id === assignedDriverId)}
                             donationData={donations}
