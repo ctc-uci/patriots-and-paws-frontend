@@ -1,8 +1,0 @@
-.footer {
-  position: sticky;
-  height: 100px;
-}
-
-.main-body {
-  min-height: calc(100vh - 12.5rem);
-}

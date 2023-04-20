@@ -15,6 +15,7 @@ import {
   Tag,
   TagCloseButton,
   TagLabel,
+  Box,
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import Fuse from 'fuse.js';
@@ -106,7 +107,7 @@ const ManageStaff = ({ cookies }) => {
 
   return (
     <>
-      <div className="main-body">
+      <div height="70vh">
         <Flex direction="column" m={10}>
           <Flex mb={10} justify="space-between" vertical-align="center">
             <Flex verticalAlign="bottom">
@@ -196,9 +197,9 @@ const ManageStaff = ({ cookies }) => {
           />
         </Flex>
       </div>
-      <div className="footer">
+      <Box position="sticky">
         <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
-      </div>
+      </Box>
     </>
   );
 };

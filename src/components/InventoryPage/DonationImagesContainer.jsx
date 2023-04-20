@@ -76,7 +76,8 @@ const DonationImagesContainer = ({ pictures }) => {
                       width="12rem"
                       height="10rem"
                       align="center"
-                      onClick={() => handleImageClick(image)}
+                      onClick={image.imageUrl ? () => handleImageClick(image) : () => {}}
+                      fallback={!image.imageUrl && <Box width="12rem" height="10rem" />}
                     />
                   </GridItem>
                 ))}

@@ -140,12 +140,11 @@ const InventoryPage = () => {
               </DrawerBody>
             </DrawerContent>
           </Drawer>
-
           <TabPanels>
             <TabPanel>
-              <TableContainer mx={1}>
-                <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
-                  <Thead>
+              <TableContainer mx={1} overflowY="scroll" height="70vh">
+                <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
+                  <Thead position="sticky" top={0}>
                     <Tr bg="#F7FAFC" height="40px">
                       <Th width="25%">
                         <Flex align="center">
@@ -174,9 +173,9 @@ const InventoryPage = () => {
               </TableContainer>
             </TabPanel>
             <TabPanel>
-              <TableContainer mx={1}>
-                <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
-                  <Thead>
+              <TableContainer mx={1} overflowY="scroll" height="70vh">
+                <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
+                  <Thead position="sticky" top={0}>
                     <Tr bg="#F7FAFC" height="40px">
                       <Th width="25%">
                         <Flex align="center">
@@ -201,9 +200,9 @@ const InventoryPage = () => {
               </TableContainer>
             </TabPanel>
             <TabPanel>
-              <TableContainer mx={1}>
-                <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
-                  <Thead>
+              <TableContainer mx={1} overflowY="scroll" height="70vh">
+                <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
+                  <Thead position="sticky" top={0} h="5em">
                     <Tr bg="#F7FAFC" height="40px">
                       <Th width="25%">
                         <Flex align="center">
@@ -228,9 +227,9 @@ const InventoryPage = () => {
               </TableContainer>
             </TabPanel>
             <TabPanel>
-              <TableContainer mx={1}>
-                <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
-                  <Thead>
+              <TableContainer mx={1} overflowY="scroll" height="70vh">
+                <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
+                  <Thead position="sticky" top={0}>
                     <Tr bg="#F7FAFC" height="40px">
                       <Th width="25%">
                         <Flex align="center">
@@ -258,9 +257,12 @@ const InventoryPage = () => {
         </Tabs>
       </div>
       <Tabs px="40px" variant="unstyled">
-        <div className="footer">
-          <PaginationFooter setData={setDonations} table="donations" tab={tabStatuses[tabIndex]} />
-        </div>
+        <PaginationFooter
+          setData={setDonations}
+          table="donations"
+          tab={tabStatuses[tabIndex]}
+          position="sticky"
+        />
       </Tabs>
       <DonationModal
         setAllDonations={setDonations}
