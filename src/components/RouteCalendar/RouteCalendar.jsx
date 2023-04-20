@@ -44,11 +44,11 @@ const RouteCalendar = () => {
       setRole(userRole);
       // TODO: add color indication for driver logged in
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-      const eventsList = routesFromDB.map(({ id, name, date, driverId, firstName }) =>
+      const eventsList = routesFromDB.map(({ id, name, date, driverId }) =>
         driverId !== currentUserId
           ? {
               id,
-              title: `${firstName}'s Route`,
+              title: name,
               start: new Date(date).toISOString().replace(/T.*$/, ''),
               allDay: true,
               borderColor: '#718096',
@@ -60,7 +60,10 @@ const RouteCalendar = () => {
               title: name,
               start: new Date(date).toISOString().replace(/T.*$/, ''),
               allDay: true,
-              backgroundColor: new Date(date) > new Date() ? '#2B6CB0' : 'rgba(0, 0, 0, 0.36)',
+              backgroundColor:
+                new Date(date).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0)
+                  ? '#2B6CB0'
+                  : 'rgba(0, 0, 0, 0.36)',
             },
       );
       setDrivers(driversFromDB);
@@ -138,8 +141,9 @@ const RouteCalendar = () => {
           ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           headerToolbar={{
-            left: 'prev,next',
+            left: 'prev,next today',
             center: 'title',
+            right: '',
           }}
           initialView="dayGridMonth"
           fixedWeekCount={false}

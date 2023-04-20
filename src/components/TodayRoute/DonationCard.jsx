@@ -7,18 +7,20 @@ import { STATUSES } from '../../utils/config';
 
 const { PICKED_UP, SCHEDULED } = STATUSES;
 
-const DonationCard = ({ data, itemsCount, handleRowClick }) => {
+const DonationCard = ({ data, itemsCount, handleRowClick, setDonations }) => {
   const { id, status } = data;
-  const pickupComplete = donationId => {
-    PNPBackend.put(`/donations/${donationId}`, {
+  const pickupComplete = async donationId => {
+    await PNPBackend.put(`/donations/${donationId}`, {
       status: PICKED_UP,
     });
+    setDonations(prev => prev.map(ele => (ele.id === id ? { ...ele, status: PICKED_UP } : ele)));
   };
 
-  const pickupIncomplete = donationId => {
-    PNPBackend.put(`/donations/${donationId}`, {
+  const pickupIncomplete = async donationId => {
+    await PNPBackend.put(`/donations/${donationId}`, {
       status: SCHEDULED,
     });
+    setDonations(prev => prev.map(ele => (ele.id === id ? { ...ele, status: SCHEDULED } : ele)));
   };
 
   return (
@@ -30,13 +32,13 @@ const DonationCard = ({ data, itemsCount, handleRowClick }) => {
               <Checkbox
                 defaultChecked
                 onChange={() => {
-                  pickupIncomplete(data.id);
+                  pickupIncomplete(id);
                 }}
               />
             ) : (
               <Checkbox
                 onChange={() => {
-                  pickupComplete(data.id);
+                  pickupComplete(id);
                 }}
               />
             )}
@@ -58,6 +60,7 @@ DonationCard.propTypes = {
   data: PropTypes.string,
   itemsCount: PropTypes.number,
   handleRowClick: PropTypes.func.isRequired,
+  setDonations: PropTypes.func.isRequired,
 };
 
 DonationCard.defaultProps = {

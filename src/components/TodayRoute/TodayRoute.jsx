@@ -29,11 +29,9 @@ const TodayRoute = () => {
     const userId = getCurrentUserId();
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
 
-    // CHANGE TO TEST
-    // const today = new Date('2023-03-07T08:00:00.000Z').toISOString();
     const today = new Date().toISOString();
 
-    const todayRoute = driverRoutes.find(route3 => route3.date === today);
+    const todayRoute = driverRoutes.find(route3 => makeDate(route3.date) === makeDate(today));
     if (todayRoute) {
       const { data } = await PNPBackend.get(`/routes/${todayRoute.id}`);
       const donationInfo = data[0].donations;
@@ -68,6 +66,7 @@ const TodayRoute = () => {
                     itemsCount={getFurnitureCount(d.furniture)}
                     data={d}
                     handleRowClick={handleRowClick}
+                    setDonations={setDonations}
                   />
                 );
               })}
@@ -78,14 +77,13 @@ const TodayRoute = () => {
           <Box textAlign="right">
             <Button
               size="sm"
-              bg="#319795"
-              color="white"
+              colorScheme="teal"
               mr="2%"
               onClick={() => handleNavigateToAddress(donations)}
             >
               Navigate to Route
             </Button>
-            <Button size="sm" bg="rgba(0, 0, 0, 0.36)" color="white">
+            <Button size="sm" colorScheme="blackAlpha">
               Export PDF
             </Button>
           </Box>
