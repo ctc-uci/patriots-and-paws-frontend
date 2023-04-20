@@ -104,6 +104,7 @@ const EMAIL_TYPE = {
   APPROVE: 'approve',
   REQUEST_CHANGES: 'request changes',
   SCHEDULED: 'scheduled',
+  DELETE_DONATION: 'delete',
 };
 
 export {
