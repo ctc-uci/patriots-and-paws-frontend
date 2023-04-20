@@ -316,7 +316,6 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 colorScheme="red"
                 justifyContent="left"
                 onClick={() => {
-                  console.log('hi');
                   setEmailStatus(DELETE_DONATION);
                   emailModalOnOpen();
                 }}
