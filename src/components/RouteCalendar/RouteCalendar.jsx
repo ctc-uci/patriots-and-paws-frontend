@@ -39,18 +39,34 @@ const RouteCalendar = () => {
 
   useEffect(() => {
     const fetchAllRoutesAndDrivers = async () => {
-      const currentUserId = await getCurrentUserId();
+      const currentUserId = getCurrentUserId();
       const currentUser = await getUserFromDB(currentUserId);
       const { role: userRole } = currentUser;
       setRole(userRole);
       // TODO: add color indication for driver logged in
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-      const eventsList = routesFromDB.map(({ id, name, date }) => ({
-        id,
-        title: name,
-        start: new Date(date).toISOString().replace(/T.*$/, ''),
-        allDay: true,
-      }));
+      const eventsList = routesFromDB.map(({ id, name, date, driverId }) =>
+        driverId !== currentUserId
+          ? {
+              id,
+              title: name,
+              start: new Date(date).toISOString().replace(/T.*$/, ''),
+              allDay: true,
+              borderColor: '#718096',
+              textColor: '#718096',
+              backgroundColor: 'white',
+            }
+          : {
+              id,
+              title: name,
+              start: new Date(date).toISOString().replace(/T.*$/, ''),
+              allDay: true,
+              backgroundColor:
+                new Date(date).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0)
+                  ? '#2B6CB0'
+                  : 'rgba(0, 0, 0, 0.36)',
+            },
+      );
       setDrivers(driversFromDB);
 
       calendarRef.current.getApi().removeAllEventSources();

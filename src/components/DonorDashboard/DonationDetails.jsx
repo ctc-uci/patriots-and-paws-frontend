@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import {
   Tag,
   TagLabel,
@@ -23,6 +25,7 @@ import DonationFurnitureContainer from '../InventoryPage/DonationFurnitureContai
 import DonationImagesContainer from '../InventoryPage/DonationImagesContainer';
 import EditDonationModal from '../EditDonationModal/EditDonationModal';
 import { STATUSES } from '../../utils/config';
+import { PNPBackend } from '../../utils/utils';
 import pencilIcon from '../../assets/pencil.svg';
 // import { PNPBackend } from '../../utils/utils';
 
@@ -64,6 +67,7 @@ const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
 
 const DonationDetails = ({ data, setDonationData }) => {
   const { status, id, submittedDate, pictures, furniture } = data;
+
   const formatDate = date => {
     const d = new Date(date);
     return d.toLocaleDateString('en-US', {
@@ -119,9 +123,12 @@ const DonationDetails = ({ data, setDonationData }) => {
     </Button>
   );
 
+  const navigate = useNavigate();
   const handleDelete = async () => {
-    // await PNPBackend.delete(`/donation/${id}`);
+    await PNPBackend.delete(`/donations/${id}`);
     deleteDialogOnClose();
+    navigate('/donate', { state: {} });
+    navigate(0);
   };
 
   return (
@@ -146,7 +153,9 @@ const DonationDetails = ({ data, setDonationData }) => {
         </Flex>
         <Divider size="md" variant="solid" />
         <Grid templateColumns="1fr 1fr" alignItems="center" gap={5}>
-          <Box borderRadius="6px">{pictures && <DonationImagesContainer data={pictures} />}</Box>
+          <Box borderRadius="6px">
+            {pictures && <DonationImagesContainer pictures={pictures} />}
+          </Box>
           <Box maxH="sm">{furniture && <DonationFurnitureContainer data={furniture} />}</Box>
         </Grid>
       </Flex>

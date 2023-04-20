@@ -63,6 +63,16 @@ const handleNavigateToAddress = donations => {
 const calendarConfigs = {
   dateFormat: 'MM-dd-yyyy',
 };
+
+const formatDate = date => {
+  const d = new Date(date);
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+
 // eslint-disable-next-line import/prefer-default-export
 export {
   PNPBackend,
@@ -72,4 +82,5 @@ export {
   formatAddress,
   handleNavigateToAddress,
   calendarConfigs,
+  formatDate,
 };

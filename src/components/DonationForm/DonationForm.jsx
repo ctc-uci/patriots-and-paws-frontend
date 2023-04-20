@@ -29,8 +29,10 @@ import ImageDetails from '../ImageDetails/ImageDetails';
 import DonationCard from '../DonationCard/DonationCard';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
 import ItemInfo from '../ItemInfo/ItemInfo';
+import { STATUSES } from '../../utils/config';
 import DonationImageModal from '../DonationImageModal/DonationImageModal';
 
+const { APPROVAL_REQUESTED } = STATUSES;
 const itemFieldSchema = {
   itemName: yup.string().required('A Furniture Selection is Required'),
 };
@@ -128,6 +130,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
       zip: parseInt(data.zipcode, 10),
       furniture: donatedFurnitureList,
       pictures: [...newUrls, ...files.filter(file => file?.imageUrl)],
+      status: APPROVAL_REQUESTED,
     };
 
     if (!donationData) {
@@ -143,7 +146,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
         // console.log(err.message);
         return;
       }
-      navigate('/donate/status', {
+      navigate('/donate', {
         state: { isLoggedIn: true, email: formData.email, donationId },
       });
       toast({
@@ -154,9 +157,12 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
         isClosable: true,
       });
     } else {
-      const newData = await updateDonation(donationData.id, formData);
-      setDonationData(prev => newData ?? prev);
-      // closes the editDonationModal
+      const newData = await updateDonation(donationData.id, {
+        ...formData,
+        status: APPROVAL_REQUESTED,
+      });
+      setDonationData(prev => ({ ...(newData ?? prev), status: APPROVAL_REQUESTED }));
+      navigate(0);
       closeEditDonationModal();
     }
   };
