@@ -70,7 +70,7 @@ const formatImageData = data => {
     }, []);
   }
 
-  return data.reduce(
+  const res = data.reduce(
     (acc, curr) => {
       const lastGroup = acc[acc.length - 1];
       if (lastGroup.length < 4) {
@@ -82,6 +82,18 @@ const formatImageData = data => {
     },
     [[]],
   );
+
+  const lastGroup = res[res.length - 1];
+
+  const { length } = lastGroup;
+
+  let { id } = lastGroup[length - 1];
+  while (lastGroup.length % 4 !== 0) {
+    id += 1;
+    lastGroup.push({ imageURL: null, id });
+  }
+
+  return res;
 };
 
 const formatFurnitureData = data => {

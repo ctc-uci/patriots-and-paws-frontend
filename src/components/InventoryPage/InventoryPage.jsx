@@ -116,145 +116,153 @@ const InventoryPage = () => {
 
   return (
     <>
-      <Tabs p="40px" variant="unstyled" onChange={index => setTabIndex(index)}>
-        <TabList justifyContent="space-between">
-          <Flex>
-            <Tab _selected={{ color: 'blue.500' }}>Pending Admin Approval</Tab>
-            <Tab _selected={{ color: 'blue.500' }}>Pending Donor Approval</Tab>
-            <Tab _selected={{ color: 'blue.500' }}>Awaiting Pickup</Tab>
-            <Tab _selected={{ color: 'blue.500' }}>Archive</Tab>
-          </Flex>
-          <Button onClick={onDrawerOpen} colorScheme="teal">
-            Open Calendar
-          </Button>
-        </TabList>
-        <TabIndicator mt="-1.5px" height="2px" bg="blue.500" borderRadius="1px" />
-        <Drawer isOpen={isDrawerOpen} placement="right" onClose={onDrawerClose} size="full">
-          <DrawerOverlay />
-          <DrawerContent>
-            <DrawerCloseButton />
+      <div className="main-body">
+        <Tabs p="40px" variant="unstyled" onChange={index => setTabIndex(index)}>
+          <TabList justifyContent="space-between">
+            <Flex>
+              <Tab _selected={{ color: 'blue.500' }}>Pending Admin Approval</Tab>
+              <Tab _selected={{ color: 'blue.500' }}>Pending Donor Approval</Tab>
+              <Tab _selected={{ color: 'blue.500' }}>Awaiting Pickup</Tab>
+              <Tab _selected={{ color: 'blue.500' }}>Archive</Tab>
+            </Flex>
+            <Button onClick={onDrawerOpen} colorScheme="teal">
+              Open Calendar
+            </Button>
+          </TabList>
+          <TabIndicator mt="-1.5px" height="2px" bg="blue.500" borderRadius="1px" />
+          <Drawer isOpen={isDrawerOpen} placement="right" onClose={onDrawerClose} size="full">
+            <DrawerOverlay />
+            <DrawerContent>
+              <DrawerCloseButton />
 
-            <DrawerBody p="2em">
-              <RouteCalendar />
-            </DrawerBody>
-          </DrawerContent>
-        </Drawer>
-
-        <TabPanels>
-          <TabPanel>
-            <TableContainer mx={1}>
-              <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
-                <Thead>
-                  <Tr bg="#F7FAFC" height="40px">
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={peopleIcon} mr={2} color="black" /> NAME
-                      </Flex>
-                    </Th>
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
-                      </Flex>
-                    </Th>
-                    <Th width="25%">
-                      <Flex align="center">
-                        <CheckCircleIcon mr={2} color="black" /> STATUS
-                      </Flex>
-                    </Th>
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={clockIcon} mr={2} color="black" /> SUBMISSION DATE
-                      </Flex>
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>{makeDonationRows()}</Tbody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-          <TabPanel>
-            <TableContainer mx={1}>
-              <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
-                <Thead>
-                  <Tr bg="#F7FAFC" height="40px">
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={peopleIcon} mr={2} color="black" /> NAME
-                      </Flex>
-                    </Th>
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
-                      </Flex>
-                    </Th>
-                    <Th width="25%">ROUTE</Th>
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={clockIcon} mr={2} color="black" /> SCHEDULED DATE
-                      </Flex>
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>{makeDonationRows()}</Tbody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-          <TabPanel>
-            <TableContainer mx={1}>
-              <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
-                <Thead>
-                  <Tr bg="#F7FAFC" height="40px">
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={peopleIcon} mr={2} color="black" /> NAME
-                      </Flex>
-                    </Th>
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
-                      </Flex>
-                    </Th>
-                    <Th width="25%">ROUTE</Th>
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={clockIcon} mr={2} color="black" /> PICKUP DATE
-                      </Flex>
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>{makeDonationRows()}</Tbody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-          <TabPanel>
-            <TableContainer mx={1}>
-              <Table variant="striped" border="solid" borderWidth="1px" borderColor="#E2E8F0">
-                <Thead>
-                  <Tr bg="#F7FAFC" height="40px">
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={peopleIcon} mr={2} color="black" /> NAME
-                      </Flex>
-                    </Th>
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
-                      </Flex>
-                    </Th>
-                    <Th width="25%">ROUTE</Th>
-                    <Th width="25%">
-                      <Flex align="center">
-                        <Image src={clockIcon} mr={2} color="black" /> DATE PICKED UP
-                      </Flex>
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>{makeDonationRows()}</Tbody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-          <PaginationFooter setData={setDonations} table="donations" tab={tabStatuses[tabIndex]} />
-        </TabPanels>
+              <DrawerBody p="2em">
+                <RouteCalendar />
+              </DrawerBody>
+            </DrawerContent>
+          </Drawer>
+          <TabPanels>
+            <TabPanel>
+              <TableContainer mx={1} overflowY="scroll" height="70vh">
+                <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
+                  <Thead position="sticky" top={0}>
+                    <Tr bg="#F7FAFC" height="40px">
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={peopleIcon} mr={2} color="black" /> NAME
+                        </Flex>
+                      </Th>
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
+                        </Flex>
+                      </Th>
+                      <Th width="25%">
+                        <Flex align="center">
+                          <CheckCircleIcon mr={2} color="black" /> STATUS
+                        </Flex>
+                      </Th>
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={clockIcon} mr={2} color="black" /> SUBMISSION DATE
+                        </Flex>
+                      </Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>{makeDonationRows()}</Tbody>
+                </Table>
+              </TableContainer>
+            </TabPanel>
+            <TabPanel>
+              <TableContainer mx={1} overflowY="scroll" height="70vh">
+                <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
+                  <Thead position="sticky" top={0}>
+                    <Tr bg="#F7FAFC" height="40px">
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={peopleIcon} mr={2} color="black" /> NAME
+                        </Flex>
+                      </Th>
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
+                        </Flex>
+                      </Th>
+                      <Th width="25%">ROUTE</Th>
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={clockIcon} mr={2} color="black" /> SCHEDULED DATE
+                        </Flex>
+                      </Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>{makeDonationRows()}</Tbody>
+                </Table>
+              </TableContainer>
+            </TabPanel>
+            <TabPanel>
+              <TableContainer mx={1} overflowY="scroll" height="70vh">
+                <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
+                  <Thead position="sticky" top={0}>
+                    <Tr bg="#F7FAFC" height="40px">
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={peopleIcon} mr={2} color="black" /> NAME
+                        </Flex>
+                      </Th>
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
+                        </Flex>
+                      </Th>
+                      <Th width="25%">ROUTE</Th>
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={clockIcon} mr={2} color="black" /> PICKUP DATE
+                        </Flex>
+                      </Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>{makeDonationRows()}</Tbody>
+                </Table>
+              </TableContainer>
+            </TabPanel>
+            <TabPanel>
+              <TableContainer mx={1} overflowY="scroll" height="70vh">
+                <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
+                  <Thead position="sticky" top={0}>
+                    <Tr bg="#F7FAFC" height="40px">
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={peopleIcon} mr={2} color="black" /> NAME
+                        </Flex>
+                      </Th>
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={donationIdIcon} mr={2} color="black" /> DONATION ID
+                        </Flex>
+                      </Th>
+                      <Th width="25%">ROUTE</Th>
+                      <Th width="25%">
+                        <Flex align="center">
+                          <Image src={clockIcon} mr={2} color="black" /> DATE PICKED UP
+                        </Flex>
+                      </Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>{makeDonationRows()}</Tbody>
+                </Table>
+              </TableContainer>
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </div>
+      <Tabs px="40px" variant="unstyled">
+        <PaginationFooter
+          setData={setDonations}
+          table="donations"
+          tab={tabStatuses[tabIndex]}
+          position="sticky"
+        />
       </Tabs>
       <DonationModal
         setAllDonations={setDonations}
