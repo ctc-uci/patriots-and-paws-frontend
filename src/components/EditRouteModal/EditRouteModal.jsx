@@ -121,7 +121,15 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   };
 
   return (
-    <Modal size="xl" isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
+    <Modal
+      size="xl"
+      isOpen={isOpen}
+      onClose={() => {
+        setConfirmedState('inactive');
+        onClose();
+      }}
+      scrollBehavior="outside"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -304,80 +312,84 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
           </Stack>
           <Box>{errorMessage}</Box>
         </ModalBody>
-        {donations.length !== 0 && (
-          <ModalFooter>
-            {modalState === 'edit' && (
-              <Flex
-                direction="row"
-                justify="right"
-                alignItems="center"
-                width="100%"
-                spacing={5}
-                paddingBottom={5}
-                paddingLeft={5}
-                paddingRight={5}
-              >
-                <Flex justify="left" gap={2}>
-                  <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
-                    Cancel
-                  </Button>
-                  <Button colorScheme="blue" type="submit" onClick={handleSave}>
-                    Save changes
-                  </Button>
-                </Flex>
+        <ModalFooter>
+          {modalState === 'edit' && (
+            <Flex
+              direction="row"
+              justify="right"
+              alignItems="center"
+              width="100%"
+              spacing={5}
+              paddingBottom={5}
+              paddingLeft={5}
+              paddingRight={5}
+            >
+              <Flex justify="left" gap={2}>
+                <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button colorScheme="blue" type="submit" onClick={handleSave}>
+                  Save changes
+                </Button>
               </Flex>
-            )}
-            {modalState === 'view' && (
-              <Flex
-                direction="row"
-                justify="space-between"
-                alignItems="center"
-                width="100%"
-                spacing={5}
-                paddingBottom={5}
-                paddingLeft={5}
-                paddingRight={5}
-              >
-                <Flex justify="left" gap={2}>
-                  <Button colorScheme="blackAlpha" type="submit" onClick={exportOnOpen}>
-                    Export PDF
-                  </Button>
-                  <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
-                    <ModalContent>
-                      <ModalCloseButton />
-                      <ModalBody p="5em 5em 0 5em">
-                        <PDFViewer style={routePDFStyles.viewer}>
-                          <RoutePDF
-                            driverData={drivers.find(driver => driver.id === assignedDriverId)}
-                            donationData={donations}
-                            date={routeDate}
-                          />
-                        </PDFViewer>
-                      </ModalBody>
-                    </ModalContent>
-                  </Modal>
-                  <Button
-                    colorScheme="teal"
-                    type="submit"
-                    onClick={() => handleNavigateToAddress(getConfirmedDonations())}
-                  >
-                    Navigate to Route
-                  </Button>
-                </Flex>
-                {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
-                  <Button
-                    colorScheme="blue"
-                    type="submit"
-                    justify="right"
-                    onClick={handleChangeToEdit}
-                  >
-                    Edit Routes
-                  </Button>
-                )}
+            </Flex>
+          )}
+          {modalState === 'view' && (
+            <Flex
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+              width="100%"
+              spacing={5}
+              paddingBottom={5}
+              paddingLeft={5}
+              paddingRight={5}
+            >
+              <Flex justify="left" gap={2}>
+                <Button
+                  colorScheme="blackAlpha"
+                  type="submit"
+                  onClick={exportOnOpen}
+                  isDisabled={donations.length === 0}
+                >
+                  Export PDF
+                </Button>
+                <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
+                  <ModalContent>
+                    <ModalCloseButton />
+                    <ModalBody p="5em 5em 0 5em">
+                      <PDFViewer style={routePDFStyles.viewer}>
+                        <RoutePDF
+                          driverData={drivers.find(driver => driver.id === assignedDriverId)}
+                          donationData={getConfirmedDonations()}
+                          date={routeDate}
+                        />
+                      </PDFViewer>
+                    </ModalBody>
+                  </ModalContent>
+                </Modal>
+                <Button
+                  colorScheme="teal"
+                  type="submit"
+                  onClick={() => handleNavigateToAddress(getConfirmedDonations())}
+                  isDisabled={donations.length === 0}
+                >
+                  Navigate to Route
+                </Button>
               </Flex>
-            )}
-          </ModalFooter>
-        )}
+              {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
+                <Button
+                  colorScheme="blue"
+                  type="submit"
+                  justify="right"
+                  onClick={handleChangeToEdit}
+                >
+                  Edit Routes
+                </Button>
+              )}
+            </Flex>
+          )}
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );
