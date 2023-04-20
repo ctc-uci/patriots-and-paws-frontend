@@ -1,36 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Flex,
-  Stack,
-  Text,
-  Button,
-  Checkbox,
-  Tag,
-  Table,
-  TableContainer,
-  Thead,
-  Tr,
-  Th,
-  Td,
-  Tbody,
-  Center,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { Flex, Text, Button, Box, useDisclosure } from '@chakra-ui/react';
 import './TodayRoute.module.css';
-import { PNPBackend } from '../../utils/utils';
+import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
 import { makeDate } from '../../utils/InventoryUtils';
 
 import { getCurrentUserId } from '../../utils/AuthUtils';
 import DonationModal from '../InventoryPage/DonationModal';
-import { STATUSES } from '../../utils/config';
-
-const { PICKED_UP } = STATUSES;
+import DonationCard from './DonationCard';
 
 const TodayRoute = () => {
   const [donations, setDonations] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
-  const [route, setRoute] = useState();
+  const [route, setRoute] = useState({});
 
   const handleRowClick = data => {
     setDonationData(data);
@@ -46,14 +28,17 @@ const TodayRoute = () => {
   const getDonationsForToday = async () => {
     const userId = getCurrentUserId();
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
+
     const today = new Date().toISOString();
-    const todayRoute = driverRoutes.find(route3 => route3.date === today);
+
+    const todayRoute = driverRoutes.find(route3 => makeDate(route3.date) === makeDate(today));
     if (todayRoute) {
       const { data } = await PNPBackend.get(`/routes/${todayRoute.id}`);
       const donationInfo = data[0].donations;
       setDonations(donationInfo);
+      setRoute({ date: today, name: todayRoute.name, isRoute: true });
     } else {
-      setRoute({ date: today, name: 'No Route Today' });
+      setRoute({ date: today, name: 'No Route Today', isRoute: false });
     }
   };
 
@@ -61,68 +46,57 @@ const TodayRoute = () => {
     getDonationsForToday();
   }, []);
 
-  const pickupComplete = id => {
-    PNPBackend.put(`/donations/${id}`, {
-      status: PICKED_UP,
-    });
-  };
-
   return (
-    <Flex minH="100vh">
-      {route && (
-        <Stack align="center">
-          <Text>{route.name}</Text>
-          <Text>{makeDate(route.date)}</Text>
-          <TableContainer>
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>Donation ID</Th>
-                  <Th>Number of Items</Th>
-                  <Th>Pickup Status</Th>
-                  <Th>Details</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {donations ? (
-                  donations.map(d => {
-                    return (
-                      <Tr key={d.id}>
-                        <Td>#{d.id}</Td>
-                        <Td>{getFurnitureCount(d.furniture)}</Td>
-                        <Td>
-                          {d.status === PICKED_UP ? (
-                            <Tag>
-                              <Checkbox defaultChecked />
-                            </Tag>
-                          ) : (
-                            <Tag>
-                              <Checkbox
-                                onChange={() => {
-                                  pickupComplete(d.id);
-                                }}
-                              />
-                            </Tag>
-                          )}
-                        </Td>
-                        <Td>
-                          <Button mr={5} ml={5} onClick={() => handleRowClick(d)}>
-                            INFO
-                          </Button>
-                        </Td>
-                      </Tr>
-                    );
-                  })
-                ) : (
-                  <Center>
-                    <Text>No Routes to Display for Today&apos;s Date</Text>
-                  </Center>
-                )}
-              </Tbody>
-            </Table>
-          </TableContainer>
+    <Flex h="90vh">
+      {route.isRoute ? (
+        <Flex flexDirection="column" gap={5} padding="25px" w="100%">
+          <Flex flexDirection="column">
+            <Text fontSize="3xl" as="b">
+              {route.name}
+            </Text>
+            <Text>{makeDate(route.date)}</Text>
+          </Flex>
+
+          <Flex flexDirection="column" gap={5} height="70vh" overflow="scroll">
+            {donations &&
+              donations.map(d => {
+                return (
+                  <DonationCard
+                    key={d.id}
+                    itemsCount={getFurnitureCount(d.furniture)}
+                    data={d}
+                    handleRowClick={handleRowClick}
+                    setDonations={setDonations}
+                  />
+                );
+              })}
+          </Flex>
+
           <DonationModal data={donationData} onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
-        </Stack>
+
+          <Box textAlign="right">
+            <Button
+              size="sm"
+              colorScheme="teal"
+              mr="2%"
+              onClick={() => handleNavigateToAddress(donations)}
+            >
+              Navigate to Route
+            </Button>
+            <Button size="sm" colorScheme="blackAlpha">
+              Export PDF
+            </Button>
+          </Box>
+        </Flex>
+      ) : (
+        <Flex w="40vw" h="90vh" justifyContent="center" alignItems="center">
+          <Box textAlign="center" color="rgba(0, 0, 0, 0.48)">
+            <Text fontSize="4xl" as="b">
+              No Route Today
+            </Text>
+            <Text>{makeDate(route.date)}</Text>
+          </Box>
+        </Flex>
       )}
     </Flex>
   );

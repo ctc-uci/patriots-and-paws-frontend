@@ -7,7 +7,6 @@ import {
   Box,
   Card,
   Text,
-  HStack,
   Button,
   Stack,
   ModalOverlay,
@@ -21,6 +20,11 @@ import {
   FormControl,
   Select,
   Switch,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
 } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
 import { Reorder } from 'framer-motion';
@@ -57,6 +61,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
       weekday: 'long',
       month: 'long',
       day: 'numeric',
+      year: 'numeric',
       timeZone: 'UTC',
     });
     return formattedDate;
@@ -87,8 +92,10 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
     }
   };
 
+  const [originalOrder, setOriginalOrder] = useState([]);
   const handleCancel = () => {
     setModalState('view');
+    setDonations(originalOrder);
     // clearState();
     // onClose();
   };
@@ -96,6 +103,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   const handleChangeToEdit = () => {
     setConfirmedState('inactive');
     setModalState('edit');
+    setOriginalOrder(donations);
   };
 
   const handleConfirmedToggle = () => {
@@ -158,7 +166,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   PaddingRight={7}
                   id="confirmed-donations"
                   onChange={handleConfirmedToggle}
-                  isDisabled={modalState === 'edit'}
+                  isDisabled={modalState === 'edit' || donations.length === 0}
                   isChecked={modalState !== 'edit' && confirmedState === 'active'}
                 />
               </FormControl>
@@ -168,7 +176,16 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
         <ModalCloseButton />
         <ModalBody>
           <Stack pl={5} pr={5} height="39vh" overflow="scroll">
-            {donations.length === 0 && <Text fontWeight="bold">No pickups scheduled.</Text>}
+            {donations.length === 0 && (
+              <Box textAlign="center" mt="auto" mb="auto">
+                <Text fontSize="36px" fontWeight="bold" color="rgba(0, 0, 0, 0.48)">
+                  No Donations Added Yet
+                </Text>
+                <Text fontSize="14px" color="rgba(0, 0, 0, 0.48)">
+                  You can add donations to a route when scheduling
+                </Text>
+              </Box>
+            )}
             {modalState === 'edit' && (
               <List
                 as={Reorder.Group}
@@ -204,16 +221,35 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                         fontSize={16}
                         width="500px"
                       >
-                        <HStack spacing="1rem">
-                          <DragHandleIcon />
-                          <Stack spacing="0.1rem">
-                            <Text fontWeight="bold">Donation #{donation.id}</Text>
-                            <Text>
-                              {donation.firstName} {donation.lastName} | Items:&nbsp;
-                              {donation.furniture.length ? donation.furniture.length : 0}
-                            </Text>
-                          </Stack>
-                        </HStack>
+                        <Flex justifyContent="space-between" alignItems="center">
+                          <Flex alignItems="center">
+                            <DragHandleIcon />
+                            <Stack ml={5} spacing="0.1rem">
+                              <Text fontWeight="bold">Donation #{donation.id}</Text>
+                              <Text>
+                                {donation.firstName} {donation.lastName} | Items:&nbsp;
+                                {donation.furniture.length ? donation.furniture.length : 0}
+                              </Text>
+                            </Stack>
+                          </Flex>
+
+                          <Popover placement="left">
+                            <PopoverTrigger>
+                              <Button colorScheme="teal" size="sm">
+                                Show Address
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent bg="#171923" color="white">
+                              <PopoverArrow bg="#171923" />
+                              <PopoverBody>
+                                {donation.addressUnit
+                                  ? `${donation.addressStreet}, Unit ${donation.addressUnit}`
+                                  : donation.addressStreet}
+                                , {donation.addressCity}, CA {donation.addressZip}
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
+                        </Flex>
                       </Card>
                     </Flex>
                   </ListItem>
@@ -243,6 +279,22 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                               {donation.furniture.length ? donation.furniture.length : 0}
                             </Text>
                           </Stack>
+                          <Popover placement="left">
+                            <PopoverTrigger>
+                              <Button colorScheme="teal" size="sm">
+                                Show Address
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent bg="#171923" color="white">
+                              <PopoverArrow bg="#171923" />
+                              <PopoverBody>
+                                {donation.addressUnit
+                                  ? `${donation.addressStreet}, Unit ${donation.addressUnit}`
+                                  : donation.addressStreet}
+                                , {donation.addressCity}, CA {donation.addressZip}
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
                         </Flex>
                       </Card>
                     </Flex>
@@ -253,67 +305,71 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
           </Stack>
           <Box>{errorMessage}</Box>
         </ModalBody>
-        {donations.length !== 0 && (
-          <ModalFooter>
-            {modalState === 'edit' && (
-              <Flex
-                direction="row"
-                justify="right"
-                alignItems="center"
-                width="100%"
-                spacing={5}
-                paddingBottom={5}
-                paddingLeft={5}
-                paddingRight={5}
-              >
-                {/* <QuestionIcon h={5} w={5} color="#718096" /> */}
-                <Flex justify="left" gap={2}>
-                  <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
-                    Cancel
-                  </Button>
-                  <Button colorScheme="blue" type="submit" onClick={handleSave}>
-                    Save changes
-                  </Button>
-                </Flex>
+        <ModalFooter>
+          {modalState === 'edit' && (
+            <Flex
+              direction="row"
+              justify="right"
+              alignItems="center"
+              width="100%"
+              spacing={5}
+              paddingBottom={5}
+              paddingLeft={5}
+              paddingRight={5}
+            >
+              {/* <QuestionIcon h={5} w={5} color="#718096" /> */}
+              <Flex justify="left" gap={2}>
+                <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
+                  Cancel
+                </Button>
+                <Button colorScheme="blue" type="submit" onClick={handleSave}>
+                  Save changes
+                </Button>
               </Flex>
-            )}
-            {modalState === 'view' && (
-              <Flex
-                direction="row"
-                justify="space-between"
-                alignItems="center"
-                width="100%"
-                spacing={5}
-                paddingBottom={5}
-                paddingLeft={5}
-                paddingRight={5}
-              >
-                <Flex justify="left" gap={2}>
-                  <Button colorScheme="blackAlpha" type="submit" onClick={() => {}}>
-                    Export PDF
-                  </Button>
-                  <Button
-                    colorScheme="teal"
-                    type="submit"
-                    onClick={() => handleNavigateToAddress(getConfirmedDonations())}
-                  >
-                    Navigate to Route
-                  </Button>
-                </Flex>
-                {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
-                  <Button
-                    colorScheme="blue"
-                    type="submit"
-                    justify="right"
-                    onClick={handleChangeToEdit}
-                  >
-                    Reorder Routes
-                  </Button>
-                )}
+            </Flex>
+          )}
+          {modalState === 'view' && (
+            <Flex
+              direction="row"
+              justify="space-between"
+              alignItems="center"
+              width="100%"
+              spacing={5}
+              paddingBottom={5}
+              paddingLeft={5}
+              paddingRight={5}
+            >
+              <Flex justify="left" gap={2}>
+                <Button
+                  colorScheme="blackAlpha"
+                  type="submit"
+                  onClick={() => {}}
+                  isDisabled={donations.length === 0}
+                >
+                  Export PDF
+                </Button>
+                <Button
+                  colorScheme="teal"
+                  type="submit"
+                  onClick={() => handleNavigateToAddress(getConfirmedDonations())}
+                  isDisabled={donations.length === 0}
+                >
+                  Navigate to Route
+                </Button>
               </Flex>
-            )}
-          </ModalFooter>
-        )}
+              {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
+                <Button
+                  colorScheme="blue"
+                  type="submit"
+                  justify="right"
+                  onClick={handleChangeToEdit}
+                >
+                  Edit Route
+                </Button>
+              )}
+            </Flex>
+          )}
+        </ModalFooter>
       </ModalContent>
     </Modal>
   );

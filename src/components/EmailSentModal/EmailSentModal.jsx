@@ -29,7 +29,7 @@ const EmailSentModal = ({ isOpen, onClose, onSubmit }) => {
     <Modal size="4xl" isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <Flex>
-        <ModalContent p={24}>
+        <ModalContent p={16}>
           <ModalHeader>
             <VStack>
               <Box bg="blue.100" borderRadius="full" p={10}>
