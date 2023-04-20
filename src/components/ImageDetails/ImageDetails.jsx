@@ -13,18 +13,17 @@ function ImageDetails({
 }) {
   return (
     <Flex
-      w="15em"
+      w="100%"
       border="1px"
       borderColor="gray.200"
-      borderRadius="10px"
-      padding="10px"
-      margin="5px"
+      borderRadius="6px"
+      padding={5}
+      mt={5}
       flexDirection="column"
-      gap="5px"
     >
-      <Flex flexDirection="row" alignItems="center" justifyContent="space-between" gap="5px">
+      <Flex flexDirection="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Image
-          borderRadius="10px"
+          borderRadius="6px"
           boxSize="3em"
           objectFit="cover"
           key={preview}

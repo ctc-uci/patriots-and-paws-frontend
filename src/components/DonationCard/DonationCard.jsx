@@ -26,16 +26,9 @@ function DonationCard({ donatedFurniture, changeDon, removeDon }) {
   }, [count]);
 
   return (
-    <Stat
-      width="80%"
-      margin="5px 0 5px 0"
-      border="1px"
-      borderRadius="10px"
-      borderColor="gray.200"
-      padding="5px"
-    >
+    <Stat width="100%" my={2} border="1px" borderRadius="6px" borderColor="gray.200" padding={5}>
       <Flex alignItems="center" justifyContent="space-between">
-        <Heading marginLeft="5px" size="sm">
+        <Heading marginLeft="5px" fontSize="18px">
           {name}
         </Heading>
         <Flex flexDirection="row" alignItems="center" gap="10px">

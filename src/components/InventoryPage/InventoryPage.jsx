@@ -134,7 +134,7 @@ const InventoryPage = () => {
           <DrawerContent>
             <DrawerCloseButton />
 
-            <DrawerBody>
+            <DrawerBody p="2em">
               <RouteCalendar />
             </DrawerBody>
           </DrawerContent>
