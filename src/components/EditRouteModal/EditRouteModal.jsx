@@ -25,10 +25,13 @@ import {
   PopoverContent,
   PopoverBody,
   PopoverArrow,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
+import { PDFViewer } from '@react-pdf/renderer';
 import { Reorder } from 'framer-motion';
-import { updateDonation, getRoute, updateRoute } from '../../utils/RouteUtils';
+import RoutePDF from '../RoutePDF/RoutePDF';
+import { updateDonation, getRoute, updateRoute, routePDFStyles } from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
 import { AUTH_ROLES } from '../../utils/config';
 
@@ -40,6 +43,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   const [donations, setDonations] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
   const [modalState, setModalState] = useState('view');
+  const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
   const [confirmedState, setConfirmedState] = useState('inactive');
 
   const fetchDonations = async () => {
@@ -81,12 +85,9 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
         Object.assign(donation, { orderNum: index + 1 }),
       );
 
-      // update donations in parallel
+      // this updates donations in parallel
       const updateDonationPromises = updatedDonations.map(donation => updateDonation(donation));
       await Promise.all(updateDonationPromises);
-
-      // clearState();
-      // onClose();
     } catch (err) {
       setErrorMessage(err.message);
     }
@@ -96,8 +97,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   const handleCancel = () => {
     setModalState('view');
     setDonations(originalOrder);
-    // clearState();
-    // onClose();
   };
 
   const handleChangeToEdit = () => {
@@ -122,7 +121,15 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   };
 
   return (
-    <Modal size="xl" isOpen={isOpen} onClose={onClose} scrollBehavior="outside">
+    <Modal
+      size="xl"
+      isOpen={isOpen}
+      onClose={() => {
+        setConfirmedState('inactive');
+        onClose();
+      }}
+      scrollBehavior="outside"
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
@@ -317,7 +324,6 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
               paddingLeft={5}
               paddingRight={5}
             >
-              {/* <QuestionIcon h={5} w={5} color="#718096" /> */}
               <Flex justify="left" gap={2}>
                 <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
                   Cancel
@@ -343,11 +349,25 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                 <Button
                   colorScheme="blackAlpha"
                   type="submit"
-                  onClick={() => {}}
+                  onClick={exportOnOpen}
                   isDisabled={donations.length === 0}
                 >
                   Export PDF
                 </Button>
+                <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
+                  <ModalContent>
+                    <ModalCloseButton />
+                    <ModalBody p="5em 5em 0 5em">
+                      <PDFViewer style={routePDFStyles.viewer}>
+                        <RoutePDF
+                          driverData={drivers.find(driver => driver.id === assignedDriverId)}
+                          donationData={getConfirmedDonations()}
+                          date={routeDate}
+                        />
+                      </PDFViewer>
+                    </ModalBody>
+                  </ModalContent>
+                </Modal>
                 <Button
                   colorScheme="teal"
                   type="submit"
@@ -364,7 +384,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   justify="right"
                   onClick={handleChangeToEdit}
                 >
-                  Edit Route
+                  Edit Routes
                 </Button>
               )}
             </Flex>
