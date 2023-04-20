@@ -1,18 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Text, Button, Box, useDisclosure } from '@chakra-ui/react';
-import './TodayRoute.module.css';
+import {
+  Flex,
+  Text,
+  Button,
+  Box,
+  useDisclosure,
+  Modal,
+  ModalCloseButton,
+  ModalContent,
+  ModalBody,
+} from '@chakra-ui/react';
+import { PDFViewer } from '@react-pdf/renderer';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
 import { makeDate } from '../../utils/InventoryUtils';
-
+import { routePDFStyles } from '../../utils/RouteUtils';
 import { getCurrentUserId } from '../../utils/AuthUtils';
 import DonationModal from '../InventoryPage/DonationModal';
 import DonationCard from './DonationCard';
+import RoutePDF from '../RoutePDF/RoutePDF';
 
 const TodayRoute = () => {
   const [donations, setDonations] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
   const [route, setRoute] = useState({});
+  const [driverInfo, setDriverInfo] = useState();
+  const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
+  const userId = getCurrentUserId();
 
   const handleRowClick = data => {
     setDonationData(data);
@@ -26,10 +40,9 @@ const TodayRoute = () => {
   };
 
   const getDonationsForToday = async () => {
-    const userId = getCurrentUserId();
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
 
-    const today = new Date().toISOString();
+    const today = new Date('04/19/2023').toISOString();
 
     const todayRoute = driverRoutes.find(route3 => makeDate(route3.date) === makeDate(today));
     if (todayRoute) {
@@ -42,7 +55,13 @@ const TodayRoute = () => {
     }
   };
 
+  const getDriveInfo = async () => {
+    const { data } = await PNPBackend.get(`/users/${userId}`);
+    setDriverInfo(data[0]);
+  };
+
   useEffect(() => {
+    getDriveInfo();
     getDonationsForToday();
   }, []);
 
@@ -83,9 +102,19 @@ const TodayRoute = () => {
             >
               Navigate to Route
             </Button>
-            <Button size="sm" colorScheme="blackAlpha">
+            <Button size="sm" colorScheme="blackAlpha" onClick={exportOnOpen}>
               Export PDF
             </Button>
+            <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
+              <ModalContent>
+                <ModalCloseButton />
+                <ModalBody p="5em 5em 0 5em">
+                  <PDFViewer style={routePDFStyles.viewer}>
+                    <RoutePDF driverData={driverInfo} donationData={donations} date={new Date()} />
+                  </PDFViewer>
+                </ModalBody>
+              </ModalContent>
+            </Modal>
           </Box>
         </Flex>
       ) : (
