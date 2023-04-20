@@ -202,7 +202,7 @@ const InventoryPage = () => {
             <TabPanel>
               <TableContainer mx={1} overflowY="scroll" height="70vh">
                 <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
-                  <Thead position="sticky" top={0} h="5em">
+                  <Thead position="sticky" top={0}>
                     <Tr bg="#F7FAFC" height="40px">
                       <Th width="25%">
                         <Flex align="center">
