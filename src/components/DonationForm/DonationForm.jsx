@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Box,
@@ -40,11 +40,8 @@ import { STATUSES } from '../../utils/config';
 import DonationImageModal from '../DonationImageModal/DonationImageModal';
 
 const { APPROVAL_REQUESTED } = STATUSES;
-// const itemFieldSchema = {
-//   itemName: yup.string().required('A furniture selection is required'),
-// };
 
-const schema = yup.object({
+const schema = {
   firstName: yup.string().required('Invalid first name'),
   lastName: yup.string().required('Invalid last name'),
   phoneNum: yup
@@ -58,9 +55,7 @@ const schema = yup.object({
     .required('ZIP Code is required')
     .matches(/^[0-9]{5}$/, 'ZIP Code must be a number and exactly 5 digits'),
   email: yup.string().email('Invalid email').required('Email required'),
-  Items: yup.array().of(yup.string()).min(1, 'A furniture selection is required'),
-  termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
-});
+};
 
 function DonationForm({ donationData, setDonationData, closeEditDonationModal }) {
   const {
@@ -68,8 +63,16 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     register,
     formState: { errors },
     setError,
+    clearErrors,
   } = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(
+      yup.object({
+        ...schema,
+        ...(!donationData && {
+          termsCond: yup.boolean().oneOf([true], 'You must accept the terms and conditions'),
+        }),
+      }),
+    ),
     defaultValues: { ...donationData },
   });
 
@@ -85,6 +88,8 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   const [selectedFurnitureValue, setSelectedFurnitureValue] = useState('');
 
   const [files, setFiles] = useState(donationData?.pictures ?? []);
+
+  const furnitureItemsDropdownRef = useRef(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -119,15 +124,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   };
 
   const onSubmit = async data => {
-    // TODO: handle 0 furniture item validation
     onCloseSubmit();
-    // if (donatedFurnitureList.length < 1) {
-    //   setError('Items', {
-    //     type: 'manual',
-    //     message: 'A furniture selection is required.',
-    //   });
-    //   return;
-    // }
 
     const newUrls = await Promise.all(
       files
@@ -188,6 +185,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   };
 
   const addDonation = async ev => {
+    clearErrors('Items');
     setDonatedFurniture(prev => [...prev, { name: ev.target.value, count: 1 }]);
     setFurnitureOptions(prev => prev.filter(e => e !== ev.target.value));
     setSelectedFurnitureValue('Select Furniture');
@@ -222,6 +220,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
   const validateData = () => {
     if (donatedFurnitureList.length < 1) {
+      furnitureItemsDropdownRef.current.focus();
       setError('Items', {
         type: 'manual',
         message: 'A furniture selection is required',
@@ -399,6 +398,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   value={selectedFurnitureValue}
                   onChange={ev => addDonation(ev)}
                   marginBottom="1em"
+                  ref={furnitureItemsDropdownRef}
                 >
                   {furnitureOptions.map(furnitureItem => (
                     <option key={furnitureItem}>{furnitureItem}</option>
@@ -412,8 +412,8 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                     removeDon={removeDonation}
                   />
                 ))}
+                <FormErrorMessage>{errors.Items && errors.Items.message}</FormErrorMessage>
               </FormControl>
-              {errors.Items && <Box textColor="red.500">{errors.Items.message}</Box>}
               <DonationImageModal
                 isOpenImageModal={isOpenImage}
                 onCloseImageModal={onCloseImage}
@@ -437,7 +437,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
               </Text>
             </Box>
             <Box w="60%">
-              <DropZone files={files} setFiles={setFiles} maxFiles={16} />
+              <DropZone setFiles={setFiles} maxFiles={16} />
               <Flex wrap="wrap" columnGap={5}>
                 {files.map(({ file, id, imageUrl, notes }, index) => {
                   return (
@@ -459,36 +459,40 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           </Flex>
         </Box>
 
-        <Divider my={10} />
+        {!donationData ? (
+          <>
+            <Divider my={10} />
+            <Box>
+              <Flex columnGap={40}>
+                <Box w="40%">
+                  <Heading fontSize="20px" mb={5}>
+                    Terms and Conditions
+                  </Heading>
+                  <Text>Please review and accept these terms before submitting the form.</Text>
+                </Box>
+                <Box w="60%">
+                  <FormControl isInvalid={errors && errors.termsCond}>
+                    <FormLabel display="flex">
+                      <Checkbox {...register('termsCond')} />
+                      <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
+                      <Text cursor="pointer" onClick={onOpen} as="u">
+                        terms and conditions.
+                      </Text>
+                      <Text color="red">&nbsp;*</Text>
+                    </FormLabel>
+                    <FormErrorMessage>
+                      {errors.termsCond && errors.termsCond.message}
+                    </FormErrorMessage>
+                  </FormControl>
 
-        <Box>
-          <Flex columnGap={40}>
-            <Box w="40%">
-              <Heading fontSize="20px" mb={5}>
-                Terms and Conditions
-              </Heading>
-              <Text>Please review and accept these terms before submitting the form.</Text>
+                  <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
+                </Box>
+              </Flex>
             </Box>
-            <Box w="60%">
-              {!donationData && (
-                <FormControl isInvalid={errors && errors.termsCond}>
-                  <Flex>
-                    <Checkbox {...register('termsCond')} />
-                    <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
-                    <Text cursor="pointer" onClick={onOpen} as="u">
-                      terms and conditions.
-                    </Text>
-                  </Flex>
-                  <FormErrorMessage>
-                    {errors.termsCond && errors.termsCond.message}
-                  </FormErrorMessage>
-                </FormControl>
-              )}
-
-              <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
-            </Box>
-          </Flex>
-        </Box>
+          </>
+        ) : (
+          <Box mb={10} />
+        )}
 
         <Box>
           <AlertDialog isOpen={isOpenSubmit} onClose={onCloseSubmit}>
