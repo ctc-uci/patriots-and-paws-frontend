@@ -22,7 +22,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <InfoIcon onClick={onOpen} />
+      <InfoIcon boxSize={5} onClick={onOpen} />
 
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
         <ModalOverlay />

@@ -4,8 +4,7 @@
   border-width: 2px;
   border-style: solid;
   height: 250px;
-  border-color: var(--color-light-gray);
-  background-color: var(--color-off-white);
+  background-color: #edf2f7;
   color: var(--color-gray);
   display: flex;
   justify-content: center;
