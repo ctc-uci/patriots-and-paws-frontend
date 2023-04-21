@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { instanceOf } from 'prop-types';
 import {
   Link,
@@ -29,10 +29,8 @@ const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 const Navbar = ({ cookies }) => {
   const [user, setUser] = useState({});
   const [role, setRole] = useState('');
-  // const [currentPage, setCurrentPage] = useState('dashboard');
-
-  // const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isProfileOpen, onOpen: onProfileOpen, onClose: onProfileClose } = useDisclosure();
+  const location = useLocation();
 
   useEffect(() => {
     const checkRole = () => {
@@ -88,7 +86,7 @@ const Navbar = ({ cookies }) => {
       <HStack>
         {role && (
           <Flex align="center">
-            <Link as={NavLink} to="/">
+            {location.pathname === '/' ? (
               <Tag
                 size="md"
                 borderRadius="full"
@@ -100,19 +98,53 @@ const Navbar = ({ cookies }) => {
               >
                 Dashboard
               </Tag>
-            </Link>
+            ) : (
+              <Link as={NavLink} to="/">
+                <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
+                  Dashboard
+                </Text>
+              </Link>
+            )}
             {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
               <>
-                <Link as={NavLink} to="/donate/edit">
-                  <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
+                {location.pathname === '/donate/edit' ? (
+                  <Tag
+                    size="md"
+                    borderRadius="full"
+                    bgColor="rgb(66,153,225)"
+                    color="white"
+                    fontSize="1.2em"
+                    ml="1em"
+                    mr="1em"
+                  >
                     Manage Donation Form
-                  </Text>
-                </Link>
-                <Link as={NavLink} to="/manage-staff">
-                  <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
+                  </Tag>
+                ) : (
+                  <Link as={NavLink} to="/donate/edit">
+                    <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
+                      Manage Donation Form
+                    </Text>
+                  </Link>
+                )}
+                {location.pathname === '/manage-staff' ? (
+                  <Tag
+                    size="md"
+                    borderRadius="full"
+                    bgColor="rgb(66,153,225)"
+                    color="white"
+                    fontSize="1.2em"
+                    ml="1em"
+                    mr="1em"
+                  >
                     Manage Staff
-                  </Text>
-                </Link>
+                  </Tag>
+                ) : (
+                  <Link as={NavLink} to="/manage-staff">
+                    <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
+                      Manage Staff
+                    </Text>
+                  </Link>
+                )}
               </>
             )}
           </Flex>
