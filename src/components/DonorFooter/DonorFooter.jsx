@@ -13,9 +13,21 @@ const DonorFooter = () => {
       borderColor="#3182CE #fff #fff #fff"
       position="sticky"
       top="100vh"
-      justifyContent="space-between"
+      justifyContent={{ base: 'center', md: 'space-between' }}
     >
-      <Flex justifyContent="space-between" gap="10px">
+      <Flex
+        justifyContent={{ base: 'center', md: 'space-between' }}
+        gap="10px"
+        direction={{ base: 'column', md: 'row' }}
+      >
+        <Link
+          href="https://www.patriotsandpaws.org/"
+          color="red.500"
+          fontSize="20px"
+          display={{ base: 'block', md: 'none' }}
+        >
+          Patriots & Paws
+        </Link>
         <Link href="https://www.patriotsandpaws.org/our-story/" isExternal>
           <Text as="u">About Us</Text>
         </Link>
@@ -28,10 +40,15 @@ const DonorFooter = () => {
         <Link href="https://www.patriotsandpaws.org/donors" isExternal>
           <Text as="u">Donors & Supporters</Text>
         </Link>
+        <Link
+          href="https://www.patriotsandpaws.org/"
+          color="red.500"
+          fontSize="20px"
+          display={{ base: 'none', md: 'block' }}
+        >
+          Patriots & Paws
+        </Link>
       </Flex>
-      <Link href="https://www.patriotsandpaws.org/" color="red.500" fontSize="20px">
-        Patriots & Paws
-      </Link>
     </Flex>
   );
 };

@@ -7,7 +7,11 @@ import circle from './circle.png';
 
 const TrackDonationCard = ({ checked, curr, heading, body }) => {
   return (
-    <Card h="100%" className={curr ? styles.currStatus : styles.statusBox}>
+    <Card
+      h="100%"
+      borderRadius={0}
+      className={curr || checked ? styles.currStatus : styles.statusBox}
+    >
       <CardHeader display="flex" alignItems="center">
         <Image
           src={checked ? checkMark : circle}

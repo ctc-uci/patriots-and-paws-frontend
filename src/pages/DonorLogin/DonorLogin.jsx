@@ -38,15 +38,29 @@ const DonorLogin = () => {
     <>
       {!isLoggedIn ? (
         <>
-          <Grid templateColumns="repeat(2, 1fr)" gap={0}>
-            <GridItem w="100%" h="100vh" bgGradient="linear(to-br, red.200, blue.600)" />
+          <Grid templateColumns={{ md: 'repeat(2, 1fr)' }} gap={0} display={{ md: 'flex' }}>
+            <GridItem
+              w="100%"
+              h={{ base: '50vh', md: '100vh' }}
+              bgGradient="linear(to-br, red.200, blue.600)"
+            />
 
             <GridItem w="100%" display="flex" alignItems="center" justifyContent="center">
-              <Box w="30vw">
-                <Text fontSize="45px" fontWeight="700">
+              <Box w={{ base: '80vw', md: '30vw' }}>
+                <Text
+                  fontSize={{ base: '30px', md: '45px' }}
+                  fontWeight="700"
+                  mt={{ base: 4, md: 0 }}
+                  mb={{ base: 4, md: 0 }}
+                >
                   Donor Login
                 </Text>
-                <Text fontSize="15px" fontWeight="400" mt="-7px" mb="50px">
+                <Text
+                  fontSize="15px"
+                  fontWeight="400"
+                  display={{ base: 'none', md: 'block' }}
+                  mb="50px"
+                >
                   First time donating?&nbsp;
                   <Link
                     as={ReactLink}
@@ -60,16 +74,6 @@ const DonorLogin = () => {
 
                 <form onSubmit={handleSubmit}>
                   <FormControl isRequired mb="10px">
-                    <FormLabel>Email Address</FormLabel>
-                    <Input
-                      type="email"
-                      placeholder="name@domain.com"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                    />
-                  </FormControl>
-
-                  <FormControl isRequired mb="40px">
                     <FormLabel>Donation ID</FormLabel>
                     <Input
                       type="text"
@@ -79,15 +83,48 @@ const DonorLogin = () => {
                     />
                   </FormControl>
 
+                  <FormControl isRequired mb="40px">
+                    <FormLabel>Email Address</FormLabel>
+                    <Input
+                      type="email"
+                      placeholder="name@domain.com"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                    />
+                  </FormControl>
+
                   {loginFailed && (
                     <Text color="red" fontSize="14px">
                       Donation ID and email do not match
                     </Text>
                   )}
 
-                  <Button colorScheme="blue" type="submit" w="100%" mt="50px">
+                  <Button
+                    colorScheme="blue"
+                    type="submit"
+                    w="100%"
+                    mt={{ base: 5, md: 50 }}
+                    mb={{ base: 10, md: 0 }}
+                  >
                     Login
                   </Button>
+                  <Text
+                    textAlign="center"
+                    fontSize="15px"
+                    fontWeight="400"
+                    display={{ base: 'block', md: 'none' }}
+                    mb="50px"
+                  >
+                    First time donating?&nbsp;
+                    <Link
+                      as={ReactLink}
+                      to="/donate/form"
+                      textDecoration="underline"
+                      color="blue.500"
+                    >
+                      Donate Here
+                    </Link>
+                  </Text>
                 </form>
               </Box>
             </GridItem>

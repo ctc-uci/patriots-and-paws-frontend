@@ -237,7 +237,7 @@ const DonorDashboard = ({ donationId }) => {
               <DonationDetails data={donation} setDonationData={setDonation} />
             </Box>
           </Flex>
-          <Flex direction="column" gap={3}>
+          <Flex direction="column" gap={3} display={{ base: 'none', md: 'block' }}>
             <Flex direction="row" gap={3}>
               <Text fontSize="1.5em" fontWeight="700">
                 Pick Up
@@ -255,6 +255,23 @@ const DonorDashboard = ({ donationId }) => {
             </Box>
           </Flex>
         </Grid>
+        <Flex direction="column" gap={3} display={{ base: 'block', md: 'none' }}>
+          <Flex direction="row" gap={3}>
+            <Text fontSize="1.5em" fontWeight="700">
+              Pick Up
+            </Text>
+            <Box p={2}>
+              {donation.status === SCHEDULING && (
+                <Tag bg="blue.200" color="white">
+                  New
+                </Tag>
+              )}
+            </Box>
+          </Flex>
+          <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
+            {displayPickup()}
+          </Box>
+        </Flex>
         <Flex direction="column">
           <Text fontSize="1.5em" fontWeight="700" mb="20px">
             Track your donation
