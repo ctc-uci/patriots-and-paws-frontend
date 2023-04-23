@@ -59,30 +59,44 @@ const DonationImagesContainer = ({ pictures }) => {
             currentPage={currentPage}
             onPageChange={setCurrentPage}
           >
-            <PaginationContainer alignItems="center" justify="space-between" gap={5}>
-              <PaginationPrevious>&lsaquo;</PaginationPrevious>
-              <SimpleGrid
-                columns={itemsPerPage === 1 ? 1 : 2}
-                align-items="center"
-                spacing={1}
-                w="100%"
-              >
-                {displayedData?.map(image => (
-                  <GridItem key={image.id} align="center">
-                    <Image
-                      alt={image.notes}
-                      src={image.imageUrl}
-                      objectFit="contain"
-                      width="12rem"
-                      height="10rem"
-                      align="center"
-                      onClick={image.imageUrl ? () => handleImageClick(image) : () => {}}
-                      fallback={!image.imageUrl && <Box width="12rem" height="10rem" />}
-                    />
-                  </GridItem>
-                ))}
-              </SimpleGrid>
-              <PaginationNext>&rsaquo;</PaginationNext>
+            <PaginationContainer
+              alignItems="center"
+              justify={{ base: 'center', md: 'space-between' }}
+              gap={5}
+            >
+              <PaginationPrevious display={{ base: 'none', md: 'block' }}>
+                &lsaquo;
+              </PaginationPrevious>
+
+              <Flex direction="column">
+                <SimpleGrid
+                  columns={itemsPerPage === 1 ? 1 : 2}
+                  align-items="center"
+                  spacing={1}
+                  w="100%"
+                >
+                  {displayedData?.map(image => (
+                    <GridItem key={image.id} align="center">
+                      <Image
+                        alt={image.notes}
+                        src={image.imageUrl}
+                        objectFit="contain"
+                        width={{ base: '50rem', md: '12rem' }}
+                        height={{ base: '15rem', md: '12rem' }}
+                        align="center"
+                        onClick={image.imageUrl ? () => handleImageClick(image) : () => {}}
+                        fallback={!image.imageUrl && <Box width="12rem" height="10rem" />}
+                      />
+                    </GridItem>
+                  ))}
+                </SimpleGrid>
+                <Flex justifyContent="center" gap={5}>
+                  <PaginationPrevious display={{ md: 'none' }}>&lsaquo;</PaginationPrevious>
+                  <PaginationNext display={{ md: 'none' }}>&rsaquo;</PaginationNext>
+                </Flex>
+              </Flex>
+
+              <PaginationNext display={{ base: 'none', md: 'block' }}>&rsaquo;</PaginationNext>
             </PaginationContainer>
           </Pagination>
         </>

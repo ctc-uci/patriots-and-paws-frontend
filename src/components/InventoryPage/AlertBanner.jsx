@@ -3,7 +3,7 @@ import React from 'react';
 
 const AlertBanner = () => {
   return (
-    <Alert status="warning" rounded="md" ml="10%" mb="1%" width="45%">
+    <Alert status="warning" rounded="md" ml={{ md: '10%' }} mb="1%" width={{ md: '45%' }}>
       <Flex direction="row" verticalAlign="center" align="center">
         <AlertIcon ml="0.75%" boxSize="5.5%" />
         <Flex direction="column" ml="0.75%">
