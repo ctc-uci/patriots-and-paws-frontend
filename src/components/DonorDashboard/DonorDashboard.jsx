@@ -168,11 +168,11 @@ const DonorDashboard = ({ donationId }) => {
             <Flex gap={3}>
               <Button bg="red.500" color="white" onClick={handleRejectTime}>
                 Reject Time
-                <CloseIcon ml={3} />
+                <CloseIcon ml={3} boxSize={3} />
               </Button>
               <Button bg="green" color="white" onClick={handleAcceptTime}>
                 Approve Time
-                <CheckIcon ml={3} />
+                <CheckIcon ml={3} boxSize={3} />
               </Button>
             </Flex>
           </Flex>
@@ -227,20 +227,28 @@ const DonorDashboard = ({ donationId }) => {
   return (
     <>
       <Flex bg="gray.200" p={6} direction="column" gap={7}>
-        <Grid gap={10} templateColumns="3fr 1fr">
+        <Grid gap={10} templateColumns={{ md: '3fr 1fr' }}>
           <Flex direction="column" gap={3}>
-            <Text fontSize="1.5em" fontWeight="700">
+            <Text fontSize={{ base: '20px', md: '30px' }} fontWeight="700">
               My Donation
             </Text>
             {displayBanner()}
-            <Box borderRadius="6px" bg="white" w="100%" h="100%" overflowY="auto" p={6}>
+            <Box
+              maxH="600px"
+              borderRadius="6px"
+              bg="white"
+              w="100%"
+              h="100%"
+              overflowY="auto"
+              p={6}
+            >
               <DonationDetails data={donation} setDonationData={setDonation} />
             </Box>
           </Flex>
           <Flex direction="column" gap={3} display={{ base: 'none', md: 'block' }}>
             <Flex direction="row" gap={3}>
               <Text fontSize="1.5em" fontWeight="700">
-                Pick Up
+                Pickup
               </Text>
               <Box p={2}>
                 {donation.status === SCHEDULING && (
@@ -258,7 +266,7 @@ const DonorDashboard = ({ donationId }) => {
         <Flex direction="column" gap={3} display={{ base: 'block', md: 'none' }}>
           <Flex direction="row" gap={3}>
             <Text fontSize="1.5em" fontWeight="700">
-              Pick Up
+              Pickup
             </Text>
             <Box p={2}>
               {donation.status === SCHEDULING && (

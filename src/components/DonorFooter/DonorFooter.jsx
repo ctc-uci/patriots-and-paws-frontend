@@ -10,8 +10,6 @@ const DonorFooter = () => {
       fontWeight="500"
       textAlign="center"
       bg="white"
-      borderTop="4px"
-      borderColor="#3182CE #fff #fff #fff"
       position="sticky"
       top="100vh"
       justifyContent={{ base: 'center', md: 'space-between' }}
