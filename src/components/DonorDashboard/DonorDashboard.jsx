@@ -155,7 +155,15 @@ const DonorDashboard = ({ donationId }) => {
       case SCHEDULING:
         return (
           <Flex direction="column" gap={3}>
-            <Text>Proposed Day:</Text>
+            <Text display={{ base: 'block', md: 'none' }}>
+              Proposed Day:
+              {donation.status === SCHEDULING && (
+                <Tag bg="blue.200" color="white" ml="10">
+                  New
+                </Tag>
+              )}
+            </Text>
+            <Text display={{ base: 'none', md: 'block' }}>Proposed Day:</Text>
             <Text as="b">{formatDate(donation.pickupDate)}</Text>
             <Flex>
               <Checkbox ref={tAndCRef} mr={2} />
@@ -269,11 +277,11 @@ const DonorDashboard = ({ donationId }) => {
               Pickup
             </Text>
             <Box p={2}>
-              {donation.status === SCHEDULING && (
+              {/* {donation.status === SCHEDULING && (
                 <Tag bg="blue.200" color="white">
                   New
                 </Tag>
-              )}
+              )} */}
             </Box>
           </Flex>
           <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
