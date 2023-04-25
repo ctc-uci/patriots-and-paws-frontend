@@ -140,7 +140,14 @@ const DonorDashboard = ({ donationId }) => {
       case APPROVAL_REQUESTED:
         return (
           <Flex flexDir="column">
-            <Heading>Pickup</Heading>
+            <Heading
+              fontWeight="700"
+              fontSize="20px"
+              mb="20px"
+              display={{ base: 'block', md: 'none' }}
+            >
+              Pickup
+            </Heading>
             <Box>
               Sit Tight! We&apos;ll be scheduling a pickup date with you soon.
               <Flex gap={3} visibility="hidden">
@@ -200,12 +207,25 @@ const DonorDashboard = ({ donationId }) => {
       case SCHEDULED:
         return (
           <Flex direction="column" gap={3}>
+            <Heading
+              fontWeight="700"
+              fontSize="20px"
+              mb="20px"
+              display={{ base: 'block', md: 'none' }}
+            >
+              Pickup
+            </Heading>
             <Flex gap={3} align="center">
               <Text>Pickup Day Confirmed</Text>
               <CheckCircleIcon color="green.200" />
             </Flex>
-            <Text as="b">{formatDate(donation.pickupDate)}</Text>
-            <Text>Instructions:</Text>
+            <Text fontWeight="700">{formatDate(donation.pickupDate)}</Text>
+            <Text>
+              Be sure to leave all items outside your door before&nbsp;
+              <Text as="span" fontWeight="700">
+                3:30PM
+              </Text>
+            </Text>
             <Flex gap={3} visibility="hidden">
               <Button bg="red.500" color="white">
                 Reject Time
@@ -220,15 +240,37 @@ const DonorDashboard = ({ donationId }) => {
         );
       case CHANGES_REQUESTED:
         return (
-          <Box>
-            After submitting your changes, we&apos;ll be scheduling a pickup date with you soon.
-          </Box>
+          <Flex flexDir="column">
+            <Heading
+              fontWeight="700"
+              fontSize="20px"
+              mb="20px"
+              display={{ base: 'block', md: 'none' }}
+            >
+              Pickup
+            </Heading>
+            <Box>
+              After submitting your changes, we&apos;ll be scheduling a pickup date with you soon.
+            </Box>
+          </Flex>
         );
       case PICKED_UP:
         return (
-          <Flex align="center" h="100%" direction="column" justify="center" gap={2}>
-            <Image src={pickedUpImage} mx={15} />
-            Your items has been successfully picked up!
+          <Flex h="100%" direction="column" justify="center" gap={2}>
+            <Heading
+              fontWeight="700"
+              fontSize="20px"
+              mb="20px"
+              display={{ base: 'block', md: 'none' }}
+            >
+              Pickup
+            </Heading>
+            <Flex flexDir="column" alignItems="center">
+              <Image src={pickedUpImage} mx={15} mb="25px" />
+              <Text textAlign="center" fontSize={{ base: '18px', md: '20px' }}>
+                Your items have been successfully picked up!
+              </Text>
+            </Flex>
           </Flex>
         );
       default:
