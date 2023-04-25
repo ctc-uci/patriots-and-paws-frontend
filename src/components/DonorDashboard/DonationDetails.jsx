@@ -67,6 +67,35 @@ const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
+const displayStatusTag = status => {
+  if (status === PENDING || status === APPROVAL_REQUESTED) {
+    return (
+      <Tag variant="solid" colorScheme="blue">
+        Submitted
+      </Tag>
+    );
+  }
+  if (status === CHANGES_REQUESTED) {
+    return (
+      <Tag bg="orange.100">
+        <TagLabel color="orange.600"> Changes Needed </TagLabel>
+      </Tag>
+    );
+  }
+  if (status === PICKED_UP) {
+    return (
+      <Tag variant="solid" colorScheme="green">
+        Received
+      </Tag>
+    );
+  }
+  return (
+    <Tag variant="solid" colorScheme="green">
+      Approved
+    </Tag>
+  );
+};
+
 const DonationDetails = ({ data, setDonationData }) => {
   const { status, id, submittedDate, pictures, furniture } = data;
 
@@ -90,36 +119,7 @@ const DonationDetails = ({ data, setDonationData }) => {
     onClose: deleteDialogOnClose,
   } = useDisclosure();
 
-  const displayStatusTag = () => {
-    if (status === PENDING || status === APPROVAL_REQUESTED) {
-      return (
-        <Tag variant="solid" colorScheme="blue">
-          Submitted
-        </Tag>
-      );
-    }
-    if (status === CHANGES_REQUESTED) {
-      return (
-        <Tag bg="orange.100">
-          <TagLabel color="orange.600"> Changes Needed </TagLabel>
-        </Tag>
-      );
-    }
-    if (status === PICKED_UP) {
-      return (
-        <Tag variant="solid" colorScheme="green">
-          Received
-        </Tag>
-      );
-    }
-    return (
-      <Tag variant="solid" colorScheme="green">
-        Approved
-      </Tag>
-    );
-  };
-
-  const [isMobile] = useMediaQuery('(max-width: 480px)');
+  const [isMobile] = useMediaQuery('(max-width: 768px)');
 
   const editButton = isMobile ? (
     <Button variant="ghost" onClick={editModalOnOpen}>
@@ -143,12 +143,29 @@ const DonationDetails = ({ data, setDonationData }) => {
   return (
     <Flex direction="column" width="100%">
       <Flex alignItems="center" justifyContent="space-between" px={3} pb={4}>
-        <Flex gap={5}>
-          {displayStatusTag()}
-          <Text fontWeight={700}>Form #{id}</Text>
+        <Flex display={{ base: 'flex', md: 'none' }} flexDir="column">
+          <Text fontWeight={600} fontSize="16px">
+            Form #{id}
+          </Text>
+          <Text fontSize="12px">Submitted on {formatDate(submittedDate)}</Text>
         </Flex>
-        <Flex alignItems="center" gap={5}>
-          <Text>Submitted on {formatDate(submittedDate)}</Text>
+        <Box display={{ base: 'inline', md: 'none' }}>
+          {status !== PICKED_UP && (
+            <DeleteIcon
+              color="red.500"
+              _hover={{ cursor: 'pointer' }}
+              onClick={deleteDialogOnOpen}
+            />
+          )}
+        </Box>
+        <Flex gap={5} display={{ base: 'none', md: 'flex' }}>
+          <Box display={{ base: 'none', md: 'block' }}>{displayStatusTag(status)}</Box>
+          <Text fontWeight={700} fontSize={{ base: '16px', md: '18px' }}>
+            Form #{id}
+          </Text>
+        </Flex>
+        <Flex alignItems="center" gap={5} display={{ base: 'none', md: 'flex' }}>
+          <Text fontSize="18px">Submitted on {formatDate(submittedDate)}</Text>
           {status === CHANGES_REQUESTED && editButton}
           {status !== PICKED_UP && (
             <DeleteIcon
@@ -221,4 +238,4 @@ DeleteDonationDialog.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default DonationDetails;
+export { DonationDetails, displayStatusTag };

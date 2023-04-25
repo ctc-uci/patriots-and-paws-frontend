@@ -19,7 +19,7 @@ import { CheckCircleIcon, CloseIcon, CheckIcon, WarningIcon } from '@chakra-ui/i
 import { getDonationData } from '../../utils/DonorUtils';
 import DonorFooter from '../DonorFooter/DonorFooter';
 import TrackDonationSection from '../TrackDonationSection/TrackDonationSection';
-import DonationDetails from './DonationDetails';
+import { DonationDetails, displayStatusTag } from './DonationDetails';
 import { STATUSES } from '../../utils/config';
 import { PNPBackend, formatDate } from '../../utils/utils';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
@@ -248,10 +248,19 @@ const DonorDashboard = ({ donationId }) => {
     <>
       <Flex bg="gray.200" p={{ base: 6, md: 14 }} direction="column" gap={7}>
         <Grid gap={10} templateColumns={{ md: '3fr 1fr' }}>
-          <Flex direction="column" gap={3}>
-            <Text fontSize={{ base: '20px', md: '30px' }} fontWeight="700">
-              My Donation
-            </Text>
+          <Flex direction="column" gap={3} justifyContent="center">
+            <Flex alignItems="center">
+              <Text
+                fontSize={{ base: '20px', md: '30px' }}
+                fontWeight="700"
+                mr={{ base: '15px', md: 0 }}
+              >
+                My Donation
+              </Text>
+              <Box display={{ base: 'inline', md: 'none' }}>
+                {displayStatusTag(donation.status)}
+              </Box>
+            </Flex>
             {displayBanner()}
             <Box
               maxH="600px"
@@ -289,7 +298,7 @@ const DonorDashboard = ({ donationId }) => {
           </Box>
         </Flex>
         <Flex direction="column">
-          <Text fontSize="1.5em" fontWeight="700" mb="20px">
+          <Text fontSize="1.5em" fontWeight="700" mb={{ base: '10px', md: '20px' }}>
             Track your donation
           </Text>
           {donation?.status && <TrackDonationSection status={donation.status} />}
