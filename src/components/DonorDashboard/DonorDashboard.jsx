@@ -13,6 +13,7 @@ import {
   useDisclosure,
   useToast,
   Image,
+  Heading,
 } from '@chakra-ui/react';
 import { CheckCircleIcon, CloseIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons';
 import { getDonationData } from '../../utils/DonorUtils';
@@ -138,42 +139,53 @@ const DonorDashboard = ({ donationId }) => {
       case RESCHEDULE:
       case APPROVAL_REQUESTED:
         return (
-          <Box>
-            Sit Tight! We&apos;ll be scheduling a pickup date with you soon.
-            <Flex gap={3} visibility="hidden">
-              <Button bg="red.500" color="white">
-                Reject Time
-                <CloseIcon ml={3} />
-              </Button>
-              <Button bg="green" color="white">
-                Approve Time
-                <CheckIcon ml={3} />
-              </Button>
-            </Flex>
-          </Box>
+          <Flex flexDir="column">
+            <Heading>Pickup</Heading>
+            <Box>
+              Sit Tight! We&apos;ll be scheduling a pickup date with you soon.
+              <Flex gap={3} visibility="hidden">
+                <Button bg="red.500" color="white">
+                  Reject Time
+                  <CloseIcon ml={3} />
+                </Button>
+                <Button bg="green" color="white">
+                  Approve Time
+                  <CheckIcon ml={3} />
+                </Button>
+              </Flex>
+            </Box>
+          </Flex>
         );
       case SCHEDULING:
         return (
           <Flex direction="column" gap={3}>
-            <Text display={{ base: 'block', md: 'none' }}>
+            <Box display={{ base: 'block', md: 'none' }} mb="10px">
+              <Heading fontWeight="700" fontSize="20px">
+                Pickup
+                {donation.status === SCHEDULING && (
+                  <Tag bg="blue.300" color="white" ml="20px">
+                    NEW
+                  </Tag>
+                )}
+              </Heading>
+            </Box>
+            <Text fontWeight="400" fontSize="16px" mb="15px" mt={0}>
               Proposed Day:
-              {donation.status === SCHEDULING && (
-                <Tag bg="blue.200" color="white" ml="10">
-                  New
-                </Tag>
-              )}
+              <Text fontWeight="600" fontSize="18px">
+                {formatDate(donation.pickupDate)}
+              </Text>
             </Text>
-            <Text display={{ base: 'none', md: 'block' }}>Proposed Day:</Text>
-            <Text as="b">{formatDate(donation.pickupDate)}</Text>
-            <Flex>
-              <Checkbox ref={tAndCRef} mr={2} />
-              <Text>I accept the&nbsp;</Text>
-              <Text as="b" onClick={onOpen} _hover={{ cursor: 'pointer' }}>
-                Terms and Conditions
+            <Flex mb="15px">
+              <Checkbox ref={tAndCRef} mr="13px" />
+              <Text fontSize="14px">
+                I accept the&nbsp;
+                <Text as="b" onClick={onOpen} _hover={{ cursor: 'pointer' }}>
+                  Terms and Conditions
+                </Text>
               </Text>
             </Flex>
             <TermsConditionModal onClose={onClose} isOpen={isOpen} />
-            <Flex gap={3}>
+            <Flex columnGap={5} w="100%">
               <Button bg="red.500" color="white" onClick={handleRejectTime}>
                 Reject Time
                 <CloseIcon ml={3} boxSize={3} />
@@ -234,7 +246,7 @@ const DonorDashboard = ({ donationId }) => {
 
   return (
     <>
-      <Flex bg="gray.200" p={6} direction="column" gap={7}>
+      <Flex bg="gray.200" p={{ base: 6, md: 14 }} direction="column" gap={7}>
         <Grid gap={10} templateColumns={{ md: '3fr 1fr' }}>
           <Flex direction="column" gap={3}>
             <Text fontSize={{ base: '20px', md: '30px' }} fontWeight="700">
@@ -260,8 +272,8 @@ const DonorDashboard = ({ donationId }) => {
               </Text>
               <Box p={2}>
                 {donation.status === SCHEDULING && (
-                  <Tag bg="blue.200" color="white">
-                    New
+                  <Tag bg="blue.300" color="white">
+                    NEW
                   </Tag>
                 )}
               </Box>
@@ -272,18 +284,6 @@ const DonorDashboard = ({ donationId }) => {
           </Flex>
         </Grid>
         <Flex direction="column" gap={3} display={{ base: 'block', md: 'none' }}>
-          <Flex direction="row" gap={3}>
-            <Text fontSize="1.5em" fontWeight="700">
-              Pickup
-            </Text>
-            <Box p={2}>
-              {/* {donation.status === SCHEDULING && (
-                <Tag bg="blue.200" color="white">
-                  New
-                </Tag>
-              )} */}
-            </Box>
-          </Flex>
           <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
             {displayPickup()}
           </Box>
