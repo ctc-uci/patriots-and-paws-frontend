@@ -45,6 +45,11 @@ const Navbar = ({ cookies }) => {
     fetchUserFromDB();
     checkRole();
   }, []);
+  // react reload on user role change using a useEffect
+  useEffect(() => {
+    const currentUserRole = cookies.get(cookieKeys.ROLE);
+    setRole(currentUserRole);
+  }, [role]);
 
   const navigate = useNavigate();
   // const [errorMessage, setErrorMessage] = useState();
@@ -54,6 +59,22 @@ const Navbar = ({ cookies }) => {
     } catch (err) {
       // setErrorMessage(err.message);
     }
+  };
+
+  const makeTag = page => {
+    return (
+      <Tag
+        size="md"
+        borderRadius="full"
+        bgColor="rgb(66,153,225)"
+        color="white"
+        fontSize="1.2em"
+        ml="1em"
+        mr="1em"
+      >
+        {page}
+      </Tag>
+    );
   };
 
   return (
@@ -79,25 +100,15 @@ const Navbar = ({ cookies }) => {
             />
           </LinkOverlay>
         </LinkBox>
-        <Text fontSize="1.2em" fontStyle="bold">
+        <Link fontSize="1.2em" fontStyle="bold" href="/">
           Patriots and Paws
-        </Text>
+        </Link>
       </HStack>
       <HStack>
         {role && (
           <Flex align="center">
             {location.pathname === '/' ? (
-              <Tag
-                size="md"
-                borderRadius="full"
-                bgColor="rgb(66,153,225)"
-                color="white"
-                fontSize="1.2em"
-                ml="1em"
-                mr="1em"
-              >
-                Dashboard
-              </Tag>
+              makeTag('Dashboard')
             ) : (
               <Link as={NavLink} to="/">
                 <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
@@ -108,17 +119,7 @@ const Navbar = ({ cookies }) => {
             {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
               <>
                 {location.pathname === '/donate/edit' ? (
-                  <Tag
-                    size="md"
-                    borderRadius="full"
-                    bgColor="rgb(66,153,225)"
-                    color="white"
-                    fontSize="1.2em"
-                    ml="1em"
-                    mr="1em"
-                  >
-                    Manage Donation Form
-                  </Tag>
+                  makeTag('Manage Donation Form')
                 ) : (
                   <Link as={NavLink} to="/donate/edit">
                     <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
@@ -127,17 +128,7 @@ const Navbar = ({ cookies }) => {
                   </Link>
                 )}
                 {location.pathname === '/manage-staff' ? (
-                  <Tag
-                    size="md"
-                    borderRadius="full"
-                    bgColor="rgb(66,153,225)"
-                    color="white"
-                    fontSize="1.2em"
-                    ml="1em"
-                    mr="1em"
-                  >
-                    Manage Staff
-                  </Tag>
+                  makeTag('Manage Staff')
                 ) : (
                   <Link as={NavLink} to="/manage-staff">
                     <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
