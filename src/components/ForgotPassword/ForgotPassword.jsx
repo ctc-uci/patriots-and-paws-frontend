@@ -84,14 +84,14 @@ const ForgotPassword = () => {
             <GridItem>
               <Stack
                 justifyContent="center"
-                maxW={{ base: '90%', md: '70%', lg: '50%' }}
+                maxW={{ base: '90%', md: '70%', lg: '60%' }}
                 width="100%"
                 margin="auto"
               >
-                <Heading as="h1" fontSize="48px" mb={1}>
+                <Heading as="h1" fontSize="3rem" mb={1}>
                   Forgot Password
                 </Heading>
-                <Text fontSize="18px" color="gray.400">
+                <Text fontSize="1rem" color="gray.400">
                   Enter your email address below to receive an email about resetting the account
                   password.
                 </Text>
