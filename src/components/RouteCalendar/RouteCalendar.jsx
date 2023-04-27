@@ -87,9 +87,22 @@ const RouteCalendar = () => {
       allDay: true,
     });
   };
+  const breakpointsW = {
+    md: '80%',
+    lg: '70%',
+    xl: '60%', // 80em+
+  };
+
+  const breakpointsMb = {
+    base: '5rem',
+    md: '8rem',
+  };
+  const breakpointsMt = {
+    base: '3rem',
+  };
 
   return (
-    <Flex p={5} height="90vh">
+    <Flex p={5} mb={breakpointsMb} w={breakpointsW} mt={breakpointsMt}>
       <EditRouteModal
         routeId={selectedRouteId}
         routeDate={selectedEventDate}
