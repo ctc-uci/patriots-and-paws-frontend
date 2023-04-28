@@ -55,7 +55,9 @@ const DonationImagesContainer = ({ pictures, itemsPerPage }) => {
   useEffect(() => {
     const newFormattedData = formatImageData(pictures, responsiveItemsPerPage ?? 1);
     setFormattedData(newFormattedData);
+    console.log('FORMATTED IMAGES ', newFormattedData);
     if (currentPage === 1) {
+      setDisplayedData(newFormattedData[currentPage - 1]);
       return;
     }
     const maxPage = newFormattedData.length;
