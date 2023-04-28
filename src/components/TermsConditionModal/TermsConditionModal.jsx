@@ -13,7 +13,7 @@ import { PropTypes } from 'prop-types';
 
 const TermsConditionModal = ({ onClose, isOpen }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'xl' }}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Terms &amp; Conditions</ModalHeader>

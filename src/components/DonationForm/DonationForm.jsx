@@ -256,7 +256,6 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           <Divider my={10} />
 
           <Box display={{ md: 'flex' }}>
-            {/* <Flex columnGap={40}> */}
             <Box w={{ md: '40%' }} mr={{ md: 40 }}>
               <Heading fontSize="20px" mb={5}>
                 Contact Information
