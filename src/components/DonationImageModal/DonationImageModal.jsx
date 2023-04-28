@@ -15,7 +15,12 @@ const DonationImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
   const { imageUrl, fileName } = image;
   return (
     <>
-      <Modal isOpen={isOpenImageModal} onClose={onCloseImageModal} size="xl" isCentered>
+      <Modal
+        isOpen={isOpenImageModal}
+        onClose={onCloseImageModal}
+        size={{ base: 'sm', md: 'xl' }}
+        isCentered
+      >
         <ModalOverlay />
         <ModalContent>
           <ModalCloseButton />

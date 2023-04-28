@@ -62,18 +62,18 @@ const displayStatuses = {
   [RESCHEDULE]: 'RESCHEDULE',
 };
 
-const formatImageData = data => {
-  if (data.length < 4) {
+const formatImageData = (data, numRowDisplay = 4) => {
+  if (data.length < numRowDisplay) {
     return data.reduce((acc, curr) => {
       acc.push([curr]);
       return acc;
     }, []);
   }
 
-  return data.reduce(
+  const res = data.reduce(
     (acc, curr) => {
       const lastGroup = acc[acc.length - 1];
-      if (lastGroup.length < 4) {
+      if (lastGroup.length < numRowDisplay) {
         lastGroup.push(curr);
       } else {
         acc.push([curr]);
@@ -82,6 +82,18 @@ const formatImageData = data => {
     },
     [[]],
   );
+
+  const lastGroup = res[res.length - 1];
+
+  const { length } = lastGroup;
+
+  let { id } = lastGroup[length - 1];
+  while (lastGroup.length % numRowDisplay !== 0) {
+    id += 1;
+    lastGroup.push({ imageURL: null, id });
+  }
+
+  return res;
 };
 
 const formatFurnitureData = data => {
@@ -104,6 +116,7 @@ const EMAIL_TYPE = {
   APPROVE: 'approve',
   REQUEST_CHANGES: 'request changes',
   SCHEDULED: 'scheduled',
+  DELETE_DONATION: 'delete',
 };
 
 export {

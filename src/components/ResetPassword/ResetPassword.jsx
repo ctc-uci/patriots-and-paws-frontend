@@ -28,6 +28,7 @@ const ResetPassword = ({ code }) => {
   const [errorMessage, setErrorMessage] = useState();
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [displayPasswordRequirements, setDisplayPasswordRequirements] = useState(false);
   const { isOpen, onOpen } = useDisclosure();
   const navigate = useNavigate();
 
@@ -82,8 +83,8 @@ const ResetPassword = ({ code }) => {
       <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
       <GridItem>
         <Flex minH="100vh" justify="center">
-          <Stack width="70%" margin="auto" padding="20 20 0 20">
-            <Heading fontSize="40px" mb={10}>
+          <Stack width="55%" margin="auto" padding="20 20 0 20">
+            <Heading fontSize="40px" mb={7}>
               Reset Password
             </Heading>
             <PasswordConfirmationModal isOpen={isOpen} onClose={handleOnClose} />
@@ -96,9 +97,9 @@ const ResetPassword = ({ code }) => {
                   <Input
                     type={showNewPassword ? 'text' : 'password'}
                     {...register('newPassword')}
-                    placeholder="● ● ● ● ● ● ● ● ●"
                     _placeholder={{ fontSize: '10px' }}
                     borderColor={errors.newPassword ? 'red.500' : 'gray.300'}
+                    onClick={() => setDisplayPasswordRequirements(true)}
                     isRequired
                   />
                   <InputRightElement>
@@ -115,6 +116,56 @@ const ResetPassword = ({ code }) => {
                 <Box mt={2} textColor="red.500">
                   {errors.newPassword?.message}
                 </Box>
+                {displayPasswordRequirements && (
+                  <Flex
+                    align="center"
+                    mt={2}
+                    visibility={!displayPasswordRequirements && 'hidden'}
+                    flexDirection="column"
+                    alignItems="left"
+                  >
+                    <Text color={inputtedPassword.length >= 8 ? 'green.500' : 'red.500'}>
+                      {inputtedPassword.length >= 8 ? (
+                        <CheckIcon color="green.500" mr={2} />
+                      ) : (
+                        <CloseIcon color="red.500" mr={3} boxSize={3} />
+                      )}
+                      &nbsp;8 characters
+                    </Text>
+                    <Text color={/[a-z]/.test(inputtedPassword) ? 'green.500' : 'red.500'}>
+                      {/[a-z]/.test(inputtedPassword) ? (
+                        <CheckIcon color="green.500" mr={2} />
+                      ) : (
+                        <CloseIcon color="red.500" mr={3} boxSize={3} />
+                      )}
+                      &nbsp;1 lowercase letter
+                    </Text>
+                    <Text color={/[A-Z]/.test(inputtedPassword) ? 'green.500' : 'red.500'}>
+                      {/[A-Z]/.test(inputtedPassword) ? (
+                        <CheckIcon color="green.500" mr={2} />
+                      ) : (
+                        <CloseIcon color="red.500" mr={3} boxSize={3} />
+                      )}
+                      &nbsp;1 uppercase letter
+                    </Text>
+                    <Text color={/[@$!%*?&]/.test(inputtedPassword) ? 'green.500' : 'red.500'}>
+                      {/[@$!%*?&]/.test(inputtedPassword) ? (
+                        <CheckIcon color="green.500" mr={2} />
+                      ) : (
+                        <CloseIcon color="red.500" mr={3} boxSize={3} />
+                      )}
+                      &nbsp;1 symbol
+                    </Text>
+                    <Text color={/(?=.*\d)/.test(inputtedPassword) ? 'green.500' : 'red.500'}>
+                      {/(?=.*\d)/.test(inputtedPassword) ? (
+                        <CheckIcon color="green.500" mr={2} />
+                      ) : (
+                        <CloseIcon color="red.500" mr={3} boxSize={3} />
+                      )}
+                      &nbsp;1 number
+                    </Text>
+                  </Flex>
+                )}
 
                 <FormLabel fontSize="16px" fontWeight="500" mt={10}>
                   Confirm Password
@@ -123,7 +174,6 @@ const ResetPassword = ({ code }) => {
                   <Input
                     type={showConfirmPassword ? 'text' : 'password'}
                     {...register('confirmNewPassword')}
-                    placeholder="● ● ● ● ● ● ● ● ●"
                     _placeholder={{ fontSize: '10px' }}
                     borderColor={errors.confirmNewPassword ? 'red.500' : 'gray.300'}
                     isRequired
@@ -139,54 +189,6 @@ const ResetPassword = ({ code }) => {
                     />
                   </InputRightElement>
                 </InputGroup>
-                <Flex
-                  align="center"
-                  mt={5}
-                  visibility={inputtedPassword.length === 0 && 'hidden'}
-                  flexDirection="column"
-                  alignItems="left"
-                >
-                  <Text color={inputtedPassword.length >= 8 ? 'green.500' : 'red.500'}>
-                    {inputtedPassword.length >= 8 ? (
-                      <CheckIcon color="green.500" mr={2} />
-                    ) : (
-                      <CloseIcon color="red.500" mr={3} boxSize={3} />
-                    )}
-                    &nbsp;8 characters
-                  </Text>
-                  <Text color={/[a-z]/.test(inputtedPassword) ? 'green.500' : 'red.500'}>
-                    {/[a-z]/.test(inputtedPassword) ? (
-                      <CheckIcon color="green.500" mr={2} />
-                    ) : (
-                      <CloseIcon color="red.500" mr={3} boxSize={3} />
-                    )}
-                    &nbsp;1 lowercase letter
-                  </Text>
-                  <Text color={/[A-Z]/.test(inputtedPassword) ? 'green.500' : 'red.500'}>
-                    {/[A-Z]/.test(inputtedPassword) ? (
-                      <CheckIcon color="green.500" mr={2} />
-                    ) : (
-                      <CloseIcon color="red.500" mr={3} boxSize={3} />
-                    )}
-                    &nbsp;1 uppercase letter
-                  </Text>
-                  <Text color={/[@$!%*?&]/.test(inputtedPassword) ? 'green.500' : 'red.500'}>
-                    {/[@$!%*?&]/.test(inputtedPassword) ? (
-                      <CheckIcon color="green.500" mr={2} />
-                    ) : (
-                      <CloseIcon color="red.500" mr={3} boxSize={3} />
-                    )}
-                    &nbsp;1 symbol
-                  </Text>
-                  <Text color={/(?=.*\d)/.test(inputtedPassword) ? 'green.500' : 'red.500'}>
-                    {/(?=.*\d)/.test(inputtedPassword) ? (
-                      <CheckIcon color="green.500" mr={2} />
-                    ) : (
-                      <CloseIcon color="red.500" mr={3} boxSize={3} />
-                    )}
-                    &nbsp;1 number
-                  </Text>
-                </Flex>
                 <Box mt={2} textColor="red.500">
                   {errors.confirmNewPassword?.message}
                 </Box>
@@ -195,11 +197,9 @@ const ResetPassword = ({ code }) => {
                     {errorMessage}
                   </Box>
                 )}
-                <Flex justifyContent="flex-end">
-                  <Button colorScheme="blue" type="submit">
-                    Reset Password
-                  </Button>
-                </Flex>
+                <Button colorScheme="blue" type="submit" width="100%" mt={14}>
+                  Reset Password
+                </Button>
               </FormControl>
             </form>
           </Stack>

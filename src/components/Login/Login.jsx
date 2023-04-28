@@ -19,6 +19,7 @@ import {
   Spinner,
   Grid,
   GridItem,
+  AlertTitle,
 } from '@chakra-ui/react';
 import { Cookies, withCookies } from '../../utils/CookieUtils';
 import { logInWithEmailAndPassword, useNavigate, userIsAuthenticated } from '../../utils/AuthUtils';
@@ -67,13 +68,13 @@ const Login = ({ cookies }) => {
       const firebaseErrorMsg = err.message;
 
       if (errorCode === 'auth/wrong-password') {
-        setErrorMessage('Invalid password');
+        setErrorMessage('Email address or password does not match our records!');
       } else if (errorCode === 'auth/invalid-email') {
-        setErrorMessage('Invalid email address');
+        setErrorMessage('Email address or password does not match our records!');
       } else if (errorCode === 'auth/unverified-email') {
         setErrorMessage('Please verify your email address.');
       } else if (errorCode === 'auth/user-not-found') {
-        setErrorMessage('There is no account associated with this email address.');
+        setErrorMessage('Email address or password does not match our records!');
       } else if (errorCode === 'auth/user-disabled') {
         setErrorMessage('This account has been disabled.');
       } else if (errorCode === 'auth/too-many-requests') {
@@ -100,16 +101,25 @@ const Login = ({ cookies }) => {
       <GridItem>
         <Flex minH="100vh" align="center" justify="center">
           <Stack align="center" width="100%" margin="auto">
-            {signup === 'success' && (
-              <Alert status="success" variant="solid">
-                <AlertIcon />
-                Account successfully created! Please verify your email.
-              </Alert>
-            )}
-            <Stack width="70%" padding={20}>
-              <Heading fontSize="48px">Staff Login</Heading>
-              {errorMessage && <Box>{errorMessage}</Box>}
-              <Link href="/forgot-password" color="#3182ce" fontSize="18px">
+            <Stack width="70%" padding={9}>
+              {signup === 'success' && (
+                <Alert status="success" variant="solid" bgColor="green">
+                  <AlertIcon />
+                  You have successfully logged in.
+                </Alert>
+              )}
+              {errorMessage && (
+                <Alert status="error" rounded="md" mb="1em">
+                  <Flex direction="row" verticalAlign="center" align="center">
+                    <AlertIcon ml="0.75%" boxSize="5.5%" />
+                    <Flex direction="column" ml="0.75%">
+                      <AlertTitle fontSize="md">{errorMessage}</AlertTitle>
+                    </Flex>
+                  </Flex>
+                </Alert>
+              )}
+              <Heading fontSize="3rem">Staff Login</Heading>
+              <Link href="/forgot-password" color="#3182ce" fontSize="1rem">
                 Forgot Password?
               </Link>
               <Stack width="100%">

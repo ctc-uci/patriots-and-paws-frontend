@@ -1,3 +1,4 @@
+import { StyleSheet } from '@react-pdf/renderer';
 import { PNPBackend } from './utils';
 import { AUTH_ROLES } from './config';
 
@@ -108,6 +109,13 @@ const formatDate = date =>
 
 const A4_WIDTH = 595.28; // can use instead of "A4" for page size to get one long page
 
+const routePDFStyles = StyleSheet.create({
+  viewer: {
+    width: '100%',
+    height: '80vh',
+  },
+});
+
 export {
   getAllRoutes,
   getRoute,
@@ -120,4 +128,5 @@ export {
   getDriverName,
   formatDate,
   A4_WIDTH,
+  routePDFStyles,
 };

@@ -19,10 +19,7 @@ import {
   Tag,
   useDisclosure,
   Select,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
+  useToast,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
@@ -32,6 +29,7 @@ import DonationImagesContainer from './DonationImagesContainer';
 import DonationFurnitureContainer from './DonationFurnitureContainer';
 import EmailModal from './EmailModal';
 import { STATUSES } from '../../utils/config';
+import AlertBanner from './AlertBanner';
 
 const {
   RESCHEDULE,
@@ -42,9 +40,9 @@ const {
   PICKED_UP,
   APPROVAL_REQUESTED,
 } = STATUSES;
-const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES } = EMAIL_TYPE;
+const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, DELETE_DONATION } = EMAIL_TYPE;
 
-const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
+const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadOnly }) => {
   const {
     id,
     status,
@@ -75,6 +73,8 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     onClose: emailModalOnClose,
   } = useDisclosure();
 
+  const toast = useToast();
+
   const updateDonation = async ({ newStatus, newPickupDate, newRouteId }) => {
     setAllDonations(prev =>
       prev.map(ele =>
@@ -92,11 +92,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     return (
       <Tag
         visibility={curStatus === RESCHEDULE && 'hidden'}
-        size="sm"
+        size={{ base: 'md', md: 'sm' }}
+        px={{ base: '1px' }}
         mt="1%"
-        ml="1%"
+        ml={{ md: '1%' }}
         variant="solid"
         colorScheme={statusColorMap[curStatus]}
+        fontWeight={{ base: 'md' }}
       >
         {displayStatuses[curStatus]}
       </Tag>
@@ -126,7 +128,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     resetScheduledRoute(status);
   }, [data]);
 
-  const deleteDonation = async () => {
+  const onDeleteDonation = async () => {
     await PNPBackend.delete(`/donations/${id}`);
     setAllDonations(prev => prev.filter(donation => donation.id !== id));
     onClose();
@@ -139,122 +141,141 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         resetScheduledRoute(currentStatus);
         onClose();
       }}
-      size="full"
+      size={{ base: 'full', md: '6xl' }}
+      borderRadius="20px"
       scrollBehavior="inside"
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent overflowX="hidden">
         <ModalHeader mr="1%" ml="1%">
           {currentStatus && makeStatusTag(currentStatus)}
-          <Flex direction="row">
+          <Flex direction={{ base: 'column', md: 'row' }}>
             <Flex direction="column">
-              <Text ml="0.5em" fontSize="1.5em">
+              <Text ml={{ md: '0.5em' }} fontSize="1.5em">
                 Donation #{id}
               </Text>
-              <Text ml="1em" fontSize="0.75em">
+              <Text ml={{ md: '1em' }} fontSize="0.75em">
                 Submission Date: {makeDate(submittedDate)}
               </Text>
             </Flex>
-            {currentStatus === RESCHEDULE && (
-              <>
-                <Alert status="warning" rounded="md" ml="10%" mb="1%" width="45%">
-                  <Flex direction="row" verticalAlign="center" align="center">
-                    <AlertIcon ml="0.75%" boxSize="5.5%" />
-                    <Flex direction="column" ml="0.75%">
-                      <AlertTitle fontSize="md">Donor Rejected Scheduled Date</AlertTitle>
-                      <AlertDescription fontSize="md" fontWeight="normal" mt="0.25%">
-                        Please select a new date to continue.
-                      </AlertDescription>
-                    </Flex>
-                  </Flex>
-                </Alert>
-              </>
-            )}
+            {currentStatus === RESCHEDULE && <AlertBanner />}
           </Flex>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Flex flexDirection="row" m={3}>
-            <Box h="100%" w="60%" ml="1em" mr="1em" mb="1em" mt="-1.5em">
-              <Text mb="1%" fontSize="1.25em" fontWeight="medium">
-                Basic Information
-              </Text>
-              <Stack spacing="1%">
-                <InputGroup width="50%">
-                  <InputLeftAddon>Name</InputLeftAddon>
-                  <Input defaultValue={`${firstName} ${lastName}`} isReadOnly />
-                </InputGroup>
-              </Stack>
-              <Stack direction="row" my="1%">
-                <InputGroup>
-                  <InputLeftAddon>Email</InputLeftAddon>
-                  <Input defaultValue={email} isReadOnly />
-                </InputGroup>
-                <InputGroup>
-                  <InputLeftAddon>Phone Number</InputLeftAddon>
-                  <Input type="tel" defaultValue={phoneNum} isReadOnly />
-                </InputGroup>
-              </Stack>
-              <Stack direction="row" mt="3%" mb="0.75%">
+          <Flex
+            flexDirection={{ base: 'column', md: 'row' }}
+            justifyContent={{ base: 'center' }}
+            m={{ base: 0, md: 3 }}
+          >
+            <Box h="100%" w={{ base: '100%', md: '60%' }} m={{ md: '-1.5em 1em 1em 1em' }}>
+              {/* BASIC INFO SECTION */}
+              <>
                 <Text mb="1%" fontSize="1.25em" fontWeight="medium">
-                  Address
+                  Basic Information
                 </Text>
-                <Box>
-                  <Button
-                    ml="15%"
-                    colorScheme="teal"
-                    size="sm"
-                    type="submit"
-                    onClick={() => {
-                      handleNavigateToAddress([data]);
-                    }}
-                  >
-                    Navigate
-                  </Button>
-                </Box>
-              </Stack>
-              <Stack spacing="1%" direction="row">
-                <Stack spacing="1%" direction="column">
+                <Stack spacing="1%" my={{ base: '15px', md: '0' }}>
                   <InputGroup>
-                    <InputLeftAddon>Street Address</InputLeftAddon>
-                    <Input defaultValue={addressStreet} isReadOnly />
+                    <InputLeftAddon>Name</InputLeftAddon>
+                    <Input defaultValue={`${firstName} ${lastName}`} isReadOnly />
                   </InputGroup>
-                  <Stack spacing="1%" direction="row">
+                </Stack>
+                <Flex
+                  flexDirection={{ base: 'column', md: 'row' }}
+                  my="1%"
+                  gap={{ base: '15px', md: '1%' }}
+                >
+                  <InputGroup>
+                    <InputLeftAddon>Email</InputLeftAddon>
+                    <Input defaultValue={email} isReadOnly />
+                  </InputGroup>
+                  <InputGroup>
+                    <InputLeftAddon>Phone Number</InputLeftAddon>
+                    <Input type="tel" defaultValue={phoneNum} isReadOnly />
+                  </InputGroup>
+                </Flex>
+              </>
+              {/* ADDRESS SECTION */}
+              <>
+                <Stack
+                  direction="row"
+                  mb={{ base: '15px', md: '0.75%' }}
+                  mt={{ base: '40px', md: '3%' }}
+                >
+                  <Text mb="1%" fontSize="1.25em" fontWeight="medium">
+                    Address
+                  </Text>
+                  <Box>
+                    <Button
+                      ml="15%"
+                      colorScheme="teal"
+                      size="sm"
+                      type="submit"
+                      onClick={() => {
+                        handleNavigateToAddress([data]);
+                      }}
+                    >
+                      Navigate
+                    </Button>
+                  </Box>
+                </Stack>
+                <Stack
+                  spacing={{ base: '15px', md: '1%' }}
+                  direction={{ base: 'column', md: 'row' }}
+                >
+                  <Stack spacing={{ base: '15px', md: '1%' }} direction="column">
                     <InputGroup>
-                      <InputLeftAddon>City</InputLeftAddon>
-                      <Input defaultValue={addressCity} isReadOnly />
+                      <InputLeftAddon>Street Address</InputLeftAddon>
+                      <Input defaultValue={addressStreet} isReadOnly />
+                    </InputGroup>
+                    <Stack
+                      spacing={{ base: '15px', md: '1%' }}
+                      direction={{ base: 'column', md: 'row' }}
+                    >
+                      <InputGroup>
+                        <InputLeftAddon>City</InputLeftAddon>
+                        <Input defaultValue={addressCity} isReadOnly />
+                      </InputGroup>
+                      <InputGroup>
+                        <InputLeftAddon>State</InputLeftAddon>
+                        <Input defaultValue="CA" isReadOnly />
+                      </InputGroup>
+                    </Stack>
+                  </Stack>
+                  <Stack spacing={{ base: '15px', md: '1%' }} direction="column">
+                    <InputGroup>
+                      <InputLeftAddon>Unit</InputLeftAddon>
+                      <Input defaultValue={addressUnit} isReadOnly />
                     </InputGroup>
                     <InputGroup>
-                      <InputLeftAddon>State</InputLeftAddon>
-                      <Input defaultValue="CA" isReadOnly />
+                      <InputLeftAddon>Zip Code</InputLeftAddon>
+                      <Input defaultValue={addressZip} isReadOnly />
                     </InputGroup>
                   </Stack>
                 </Stack>
-                <Stack spacing="1%" direction="column">
-                  <InputGroup>
-                    <InputLeftAddon>Unit</InputLeftAddon>
-                    <Input defaultValue={addressUnit} isReadOnly />
-                  </InputGroup>
-                  <InputGroup>
-                    <InputLeftAddon>Zip Code</InputLeftAddon>
-                    <Input defaultValue={addressZip} isReadOnly />
-                  </InputGroup>
-                </Stack>
-              </Stack>
-              <Text mt="2.5%" mb="0.75%" fontSize="1.25em" fontWeight="medium">
-                Special Instructions
-              </Text>
-              <Textarea defaultValue={notes} isReadOnly />
-
+              </>
+              {/* SPECIAL INSTRUCTIONS SECTION */}
+              <Box mt={{ base: '40px', md: '0px' }}>
+                <Text
+                  mt={{ base: '2em', md: '2.5%' }}
+                  mb={{ base: '15px', md: '0.75%' }}
+                  fontSize="1.25em"
+                  fontWeight="medium"
+                >
+                  Special Instructions
+                </Text>
+                <Textarea defaultValue={notes} isReadOnly />
+              </Box>
+              {/* SCHEDULE SECTION */}
               <Flex
-                direction="row"
+                direction={{ base: 'column', md: 'row' }}
                 bg="#E2E8F0"
-                align="center"
-                mt="1em"
+                align={{ md: 'center' }}
+                mt={{ base: '2em', md: '1em' }}
                 borderRadius={6}
-                gap={5}
-                px="3%"
-                py="1%"
+                gap={{ base: 3, md: 5 }}
+                px={{ base: '6%', md: '3%' }}
+                py={{ base: '3%', md: '1%' }}
               >
                 <Text fontSize="1.25em">Schedule</Text>
                 <Select
@@ -265,7 +286,11 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   }}
                   defaultValue={scheduledDate}
                   bg="white"
-                  isDisabled={![PENDING, RESCHEDULE, APPROVAL_REQUESTED].includes(currentStatus)}
+                  isDisabled={
+                    ![PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
+                      currentStatus,
+                    )
+                  }
                 >
                   {Object.keys(displayedRouteOptions).map(day => (
                     <option key={day} value={day}>
@@ -276,8 +301,9 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 <Select
                   placeholder={(!routeId || currentStatus === RESCHEDULE) && 'Choose a route'}
                   isDisabled={
-                    ![PENDING, RESCHEDULE, APPROVAL_REQUESTED].includes(currentStatus) ||
-                    !scheduledDate
+                    ![PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
+                      currentStatus,
+                    ) || !scheduledDate
                   }
                   onChange={e => setScheduledRouteId(e.target.value)}
                   bg="white"
@@ -292,16 +318,26 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
               </Flex>
             </Box>
 
-            <Box h="50%" w="40%" xl="1%">
+            <Box
+              m={{ md: '-1.5em 1em 1em 1em', base: '1em 0' }}
+              h="50%"
+              w={{ base: '100%', md: '40%' }}
+              xl="1%"
+            >
               <Box>
-                <Text mb="1%" fontSize="1.25em">
+                <Text mb="1%" fontSize="1.25em" fontWeight="medium">
                   Images
                 </Text>
-                <DonationImagesContainer pictures={pictures} />
+                {pictures && (
+                  <DonationImagesContainer
+                    pictures={pictures}
+                    itemsPerPage={pictures.length < 4 ? 1 : 4}
+                  />
+                )}
               </Box>
 
               <Box h="50%" w="100%">
-                <Text mt="1%" mb="1%" fontSize="1.25em">
+                <Text my="1%" fontSize="1.25em" fontWeight="medium" mb="0.5em">
                   Furniture Items
                 </Text>
                 <DonationFurnitureContainer data={furniture} />
@@ -310,64 +346,93 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
           </Flex>
         </ModalBody>
         <ModalFooter justifyContent="space-between" px="3em" py="1em">
-          <Flex justify="left">
-            {![SCHEDULED, SCHEDULING, PICKED_UP].includes(currentStatus) && (
-              <Button colorScheme="red" justifyContent="left" onClick={deleteDonation}>
-                Delete Donation
-              </Button>
-            )}
-          </Flex>
-          <Flex mr="1%" justify="right">
-            {[PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
-              currentStatus,
-            ) && (
-              <>
-                <Button
-                  colorScheme="blue"
-                  justify="right"
-                  isDisabled={currentStatus === CHANGES_REQUESTED}
-                  onClick={() => {
-                    emailModalOnOpen();
-                    setEmailStatus(REQUEST_CHANGES);
-                  }}
-                >
-                  Request Changes
-                </Button>
-                <Button
-                  ml="2%"
-                  colorScheme="green"
-                  onClick={() => {
-                    emailModalOnOpen();
-                    setEmailStatus(APPROVE);
-                  }}
-                  isDisabled={!scheduledRouteId}
-                >
-                  Approve
-                </Button>
-              </>
-            )}
-            {[SCHEDULING, SCHEDULED].includes(currentStatus) && (
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  emailModalOnOpen();
-                  setEmailStatus(CANCEL_PICKUP);
-                }}
-              >
-                Cancel Pickup
-              </Button>
-            )}
-          </Flex>
+          {!isReadOnly && (
+            <>
+              <Flex justify="left">
+                {![SCHEDULED, SCHEDULING, PICKED_UP].includes(currentStatus) && (
+                  <Button
+                    colorScheme="red"
+                    justifyContent="left"
+                    onClick={() => {
+                      setEmailStatus(DELETE_DONATION);
+                      emailModalOnOpen();
+                    }}
+                  >
+                    Delete Donation
+                  </Button>
+                )}
+              </Flex>
+              <Flex mr="1%" justify="right">
+                {[PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
+                  currentStatus,
+                ) && (
+                  <>
+                    <Button
+                      colorScheme="blue"
+                      justify="right"
+                      isDisabled={currentStatus === CHANGES_REQUESTED}
+                      onClick={() => {
+                        setEmailStatus(REQUEST_CHANGES);
+                        emailModalOnOpen();
+                      }}
+                    >
+                      Request Changes
+                    </Button>
+                    <Button
+                      ml="2%"
+                      colorScheme="green"
+                      // eslint-disable-next-line consistent-return
+                      onClick={() => {
+                        if (!scheduledRouteId) {
+                          return toast({
+                            title: 'Could not approve #'.concat(id),
+                            description:
+                              'Please select a Date and Route before approving the donation.',
+                            status: 'error',
+                            duration: 9000,
+                            isClosable: true,
+                          });
+                        }
+                        setEmailStatus(APPROVE);
+                        emailModalOnOpen();
+                      }}
+                      isDisabled={
+                        !scheduledRouteId && ![PENDING, CHANGES_REQUESTED].includes(currentStatus)
+                      }
+                    >
+                      Approve
+                    </Button>
+                  </>
+                )}
+                {[SCHEDULING, SCHEDULED].includes(currentStatus) && (
+                  <Button
+                    colorScheme="red"
+                    onClick={() => {
+                      setEmailStatus(CANCEL_PICKUP);
+                      emailModalOnOpen();
+                    }}
+                  >
+                    Cancel Pickup
+                  </Button>
+                )}
+              </Flex>
+            </>
+          )}
         </ModalFooter>
-        <EmailModal
-          isOpenEmailModal={emailModalIsOpen}
-          onCloseEmailModal={emailModalOnClose}
-          status={emailStatus}
-          updateDonation={updateDonation}
-          email={email}
-          setCurrentStatus={setCurrentStatus}
-          donationInfo={{ id, scheduledDate, scheduledRouteId }}
-        />
+
+        {email && emailStatus && (
+          <EmailModal
+            isOpenEmailModal={emailModalIsOpen}
+            onCloseEmailModal={emailModalOnClose}
+            status={emailStatus}
+            updateDonation={updateDonation}
+            email={email}
+            setCurrentStatus={setCurrentStatus}
+            donationInfo={{ id, scheduledDate, scheduledRouteId }}
+            onDeleteDonation={onDeleteDonation}
+            onCloseDonationModal={onClose}
+          />
+        )}
       </ModalContent>
     </Modal>
   );
@@ -415,6 +480,7 @@ DonationModal.propTypes = {
       }),
     ),
   }),
+  isReadOnly: PropTypes.bool,
 };
 
 DonationModal.defaultProps = {
@@ -423,6 +489,7 @@ DonationModal.defaultProps = {
   onClose: () => {},
   setAllDonations: () => {},
   routes: {},
+  isReadOnly: false,
 };
 
 export default DonationModal;
