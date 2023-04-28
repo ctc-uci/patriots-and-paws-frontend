@@ -1,5 +1,6 @@
 import React from 'react';
-import { Flex, Box, Text, Button, Checkbox, Card, CardBody, Heading } from '@chakra-ui/react';
+import { Flex, Box, Text, Checkbox, Card, CardBody, Heading, IconButton } from '@chakra-ui/react';
+import { InfoIcon } from '@chakra-ui/icons';
 import { PropTypes } from 'prop-types';
 
 import { PNPBackend } from '../../utils/utils';
@@ -47,9 +48,15 @@ const DonationCard = ({ data, itemsCount, handleRowClick, setDonations }) => {
               <Text>{itemsCount} items</Text>
             </Box>
           </Flex>
-          <Button variant="outline" fontSize="sm" onClick={() => handleRowClick(data)}>
+          {/* <Button variant="outline" fontSize="sm" onClick={() => handleRowClick(data)}>
             View Details
-          </Button>
+          </Button> */}
+          <IconButton
+            variant="ghost"
+            icon={<InfoIcon />}
+            aria-label="View Details"
+            onClick={() => handleRowClick(data)}
+          />
         </Flex>
       </CardBody>
     </Card>

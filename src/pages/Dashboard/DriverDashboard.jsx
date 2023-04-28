@@ -11,14 +11,10 @@ import TodayRoute from '../../components/TodayRoute/TodayRoute';
 //   '2xl': '96em', // 1536px
 // };
 
-const breakpointM = {
-  base: '100000rem',
-};
-
 const DriverDashboard = () => {
   return (
-    <Flex direction="row-reverse" flexWrap="wrap" w="100%">
-      <RouteCalendar mt={breakpointM} />
+    <Flex direction="row-reverse" flexWrap="wrap" w="100%" alignItems="center">
+      <RouteCalendar />
       <TodayRoute mr={5} />
     </Flex>
   );

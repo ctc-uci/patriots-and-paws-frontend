@@ -107,21 +107,14 @@ const RouteCalendar = () => {
     });
   };
   const breakpointsW = {
-    md: '80%',
+    sm: '100%',
+    md: '100%',
     lg: '70%',
     xl: '60%', // 80em+
   };
 
-  const breakpointsMb = {
-    base: '5rem',
-    md: '8rem',
-  };
-  const breakpointsMt = {
-    base: '3rem',
-  };
-
   return (
-    <Flex p={5} mb={breakpointsMb} w={breakpointsW} mt={breakpointsMt}>
+    <Flex p={5} w={breakpointsW} h="100%">
       <EditRouteModal
         routeId={selectedRouteId}
         routeDate={selectedEventDate}
@@ -139,7 +132,7 @@ const RouteCalendar = () => {
       />
       <Box>
         {role !== DRIVER_ROLE && (
-          <Flex gap="1em" align="end">
+          <Flex gap="1em" align="center">
             <Heading as="h3" size="lg" noOfLines={1}>
               Routes Calendar
             </Heading>
@@ -169,7 +162,7 @@ const RouteCalendar = () => {
           select={handleDateSelect}
           eventClick={handleEventClick}
           contentHeight="auto"
-          height="1vh"
+          height="100%" // was 1vh
         />
       </Box>
     </Flex>

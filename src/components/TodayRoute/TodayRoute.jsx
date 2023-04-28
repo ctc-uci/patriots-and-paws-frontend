@@ -81,9 +81,9 @@ const TodayRoute = () => {
   // };
 
   const breakpointsH = {
-    base: '15rem', // 0-48em
-    md: '15rem', // 48em-80em,
-    lg: 'calc(100vh)',
+    base: '100%', // 0-48em
+    md: '100%', // 48em-80em,
+    lg: '100%',
     xl: 'calc(100vh)', // 80em+
   };
   const breakpointsW = {
@@ -112,36 +112,7 @@ const TodayRoute = () => {
         {route.isRoute && (
           <>
             <Flex flexDirection="column" gap={5} padding="25px" w="100%">
-              <Flex flexDirection="column">
-                <Text fontSize="3xl" as="b">
-                  {route.name}
-                </Text>
-                <Text>{routeFormatDate(route.date)}</Text>
-              </Flex>
-
-              <Flex flexDirection="column" gap={5} height="70vh" overflow="scroll">
-                {donations &&
-                  donations.map(d => {
-                    return (
-                      <DonationCard
-                        key={d.id}
-                        itemsCount={getFurnitureCount(d.furniture)}
-                        data={d}
-                        handleRowClick={handleRowClick}
-                        setDonations={setDonations}
-                      />
-                    );
-                  })}
-              </Flex>
-
-              <DonationModal
-                data={donationData}
-                onClose={onClose}
-                onOpen={onOpen}
-                isOpen={isOpen}
-              />
-
-              <Box textAlign="right">
+              <Flex>
                 <Button
                   size="sm"
                   colorScheme="teal"
@@ -167,7 +138,36 @@ const TodayRoute = () => {
                     </ModalBody>
                   </ModalContent>
                 </Modal>
-              </Box>
+              </Flex>
+
+              <Flex flexDirection="column">
+                <Text fontSize="3xl" as="b">
+                  {route.name}
+                </Text>
+                <Text>{routeFormatDate(route.date)}</Text>
+              </Flex>
+
+              <Flex flexDirection="column" gap={5} w="100%" height="100%" overflow="scroll">
+                {donations &&
+                  donations.map(d => {
+                    return (
+                      <DonationCard
+                        key={d.id}
+                        itemsCount={getFurnitureCount(d.furniture)}
+                        data={d}
+                        handleRowClick={handleRowClick}
+                        setDonations={setDonations}
+                      />
+                    );
+                  })}
+              </Flex>
+
+              <DonationModal
+                data={donationData}
+                onClose={onClose}
+                onOpen={onOpen}
+                isOpen={isOpen}
+              />
             </Flex>
           </>
         )}
