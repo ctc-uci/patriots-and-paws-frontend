@@ -318,7 +318,12 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
               </Flex>
             </Box>
 
-            <Box mt={{ base: '2em' }} h="50%" w={{ base: '100%', md: '40%' }} xl="1%">
+            <Box
+              m={{ md: '-1.5em 1em 1em 1em', base: '1em' }}
+              h="50%"
+              w={{ base: '100%', md: '40%' }}
+              xl="1%"
+            >
               <Box>
                 <Text mb="1%" fontSize="1.25em" fontWeight="medium">
                   Images

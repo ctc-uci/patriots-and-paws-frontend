@@ -55,7 +55,6 @@ const DonationImagesContainer = ({ pictures, itemsPerPage }) => {
   useEffect(() => {
     const newFormattedData = formatImageData(pictures, responsiveItemsPerPage ?? 1);
     setFormattedData(newFormattedData);
-    console.log('FORMATTED IMAGES ', newFormattedData);
     if (currentPage === 1) {
       setDisplayedData(newFormattedData[currentPage - 1]);
       return;
@@ -93,7 +92,7 @@ const DonationImagesContainer = ({ pictures, itemsPerPage }) => {
           gap={5}
           borderRadius="6px"
           position="relative"
-          p="2em"
+          p="1em 2em"
           justifyContent="center"
         >
           <PaginationPrevious position="absolute" left={0}>
