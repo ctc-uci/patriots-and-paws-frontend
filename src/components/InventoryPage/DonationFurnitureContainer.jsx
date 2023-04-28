@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { InputGroup, Input, InputRightAddon, Flex } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
-import './DonationFurnitureContainer.module.css';
 
 const DonationFurnitureContainer = ({ data }) => {
   const [displayedData, setDisplayedData] = useState([]);
@@ -11,10 +10,10 @@ const DonationFurnitureContainer = ({ data }) => {
   }, [data]);
 
   return (
-    <Flex direction="column" gap={3} overflowY="scroll" maxH="400px">
+    <Flex direction="column" gap={0} overflowY="scroll" maxH="400px">
       {displayedData?.map(furniture => (
-        <InputGroup key={furniture.id}>
-          <Input value={furniture.name} isDisabled />
+        <InputGroup key={furniture.id} variant="white">
+          <Input value={furniture.name} isReadOnly />
           <InputRightAddon w="4em" justifyContent="center">
             {furniture.count}
           </InputRightAddon>
