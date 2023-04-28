@@ -14,7 +14,6 @@ import {
   MenuList,
   MenuItem,
   useDisclosure,
-  Tag,
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
@@ -25,7 +24,7 @@ import pnpLogo from './PNPlogo.png';
 import ProfileModal from '../EditAccountModal/ProfileModal';
 import { AUTH_ROLES } from '../../utils/config';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
+const { DRIVER_ROLE } = AUTH_ROLES;
 
 const Navbar = ({ cookies }) => {
   const [user, setUser] = useState({});
@@ -71,19 +70,26 @@ const Navbar = ({ cookies }) => {
     }
   };
 
-  const makeTag = page => {
+  const makeNavTabs = (page, path) => {
+    const selectedTab = location.pathname === path;
     return (
-      <Tag
-        size="md"
-        borderRadius="full"
-        bgColor="rgb(66,153,225)"
-        color="white"
-        fontSize="1.2em"
-        ml="1em"
-        mr="1em"
+      <Link
+        as={NavLink}
+        to={path}
+        _hover={{ textDecoration: 'none' }}
+        paddingY="1.5em"
+        borderBottom={selectedTab && '2px solid'}
+        borderColor={selectedTab && 'blue.500'}
       >
-        {page}
-      </Tag>
+        <Text
+          color={selectedTab ? 'blue.500' : 'gray.500'}
+          fontSize="1.2em"
+          mx="1em"
+          _hover={{ color: 'blue.600' }}
+        >
+          {page}
+        </Text>
+      </Link>
     );
   };
 
@@ -96,8 +102,7 @@ const Navbar = ({ cookies }) => {
       position="sticky"
       zIndex="sticky"
       top={0}
-      h="60px"
-      p="2.5em 0.75em"
+      px="0.75em"
       boxShadow="md"
     >
       <ProfileModal data={user} setData={setUser} isOpen={isProfileOpen} onClose={onProfileClose} />
@@ -122,35 +127,11 @@ const Navbar = ({ cookies }) => {
         </LinkOverlay>
       </LinkBox>
       <HStack>
-        {role && (role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
+        {role !== DRIVER_ROLE && (
           <Flex align="center">
-            {location.pathname === '/' ? (
-              makeTag('Dashboard')
-            ) : (
-              <Link as={NavLink} to="/">
-                <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
-                  Dashboard
-                </Text>
-              </Link>
-            )}
-            {location.pathname === '/donate/edit' ? (
-              makeTag('Manage Donation Form')
-            ) : (
-              <Link as={NavLink} to="/donate/edit">
-                <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
-                  Manage Donation Form
-                </Text>
-              </Link>
-            )}
-            {location.pathname === '/manage-staff' ? (
-              makeTag('Manage Staff')
-            ) : (
-              <Link as={NavLink} to="/manage-staff">
-                <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
-                  Manage Staff
-                </Text>
-              </Link>
-            )}
+            {makeNavTabs('Dashboard', '/')}
+            {makeNavTabs('Manage Donation Form', '/donate/edit')}
+            {makeNavTabs('Manage Staff', '/manage-staff')}
           </Flex>
         )}
       </HStack>
@@ -168,7 +149,8 @@ const Navbar = ({ cookies }) => {
               aria-label="User Dropdown"
               fontWeight="normal"
               fontSize="1.2em"
-              shadow="md"
+              shadow={{ md: 'md' }}
+              my="1em"
             >
               {showFullMenu &&
                 user.lastName &&
