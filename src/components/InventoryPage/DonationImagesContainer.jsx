@@ -12,7 +12,7 @@ import ImageModal from './ImageModal';
 import { formatImageData } from '../../utils/InventoryUtils';
 import imageIcon from '../../assets/InsertPhoto.svg';
 
-const DonationImagesContainer = ({ pictures }) => {
+const DonationImagesContainer = ({ pictures, numColDisplay }) => {
   const {
     isOpen: isOpenImageModal,
     onOpen: onOpenImageModal,
@@ -20,11 +20,11 @@ const DonationImagesContainer = ({ pictures }) => {
   } = useDisclosure();
 
   const numPictures = pictures.length;
-  const itemsPerPage = numPictures < 4 ? 1 : 4;
+  const itemsPerPage = numPictures < 4 || numColDisplay === 1 ? 1 : 4;
 
   const [currentImage, setCurrentImage] = useState();
   const [displayedData, setDisplayedData] = useState([]);
-  const [formattedData, setFormattedData] = useState(() => formatImageData(pictures));
+  const [formattedData, setFormattedData] = useState(() => formatImageData(pictures, 1));
 
   const { currentPage, setCurrentPage, pagesCount } = usePagination({
     pagesCount: Math.ceil(numPictures / itemsPerPage),
@@ -32,7 +32,7 @@ const DonationImagesContainer = ({ pictures }) => {
   });
 
   useEffect(() => {
-    setFormattedData(formatImageData(pictures));
+    setFormattedData(formatImageData(pictures, 1));
   }, [pictures]);
 
   useEffect(() => {
@@ -45,54 +45,59 @@ const DonationImagesContainer = ({ pictures }) => {
   };
 
   return (
-    <Box p="2em">
-      {numPictures > 0 ? (
-        <>
-          <ImageModal
-            isOpenImageModal={isOpenImageModal}
-            onOpenImageModal={onOpenImageModal}
-            onCloseImageModal={onCloseImageModal}
-            image={currentImage}
-          />
-          <Pagination
-            pagesCount={pagesCount}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-          >
-            <PaginationContainer alignItems="center" justify="space-between" gap={5}>
-              <PaginationPrevious>&lsaquo;</PaginationPrevious>
-              <SimpleGrid
-                columns={itemsPerPage === 1 ? 1 : 2}
-                align-items="center"
-                spacing={1}
-                w="100%"
+    <Flex>
+      <Box p="2em">
+        {numPictures > 0 ? (
+          <>
+            <ImageModal
+              isOpenImageModal={isOpenImageModal}
+              onOpenImageModal={onOpenImageModal}
+              onCloseImageModal={onCloseImageModal}
+              image={currentImage}
+            />
+            <Pagination
+              pagesCount={pagesCount}
+              currentPage={currentPage}
+              onPageChange={setCurrentPage}
+            >
+              <PaginationContainer
+                alignItems="center"
+                justify="space-between"
+                gap={5}
+                borderRadius="6px"
               >
-                {displayedData?.map(image => (
-                  <GridItem key={image.id} align="center">
-                    <Image
-                      alt={image.notes}
-                      src={image.imageUrl}
-                      objectFit="contain"
-                      width="12rem"
-                      height="10rem"
-                      align="center"
-                      onClick={image.imageUrl ? () => handleImageClick(image) : () => {}}
-                      fallback={!image.imageUrl && <Box width="12rem" height="10rem" />}
-                    />
-                  </GridItem>
-                ))}
-              </SimpleGrid>
-              <PaginationNext>&rsaquo;</PaginationNext>
-            </PaginationContainer>
-          </Pagination>
-        </>
-      ) : (
-        <Flex p="3em" direction="column" alignItems="center">
-          <Image src={imageIcon} h="3em" w="3em" />
-          <Text color="gray.500">No Images Uploaded</Text>
-        </Flex>
-      )}
-    </Box>
+                <PaginationPrevious left={16}>&lsaquo;</PaginationPrevious>
+                <SimpleGrid
+                  columns={itemsPerPage === 1 || numColDisplay === 1 ? 1 : 2}
+                  alignItems="center"
+                  spacing={1}
+                >
+                  {displayedData?.map(image => (
+                    <GridItem key={image.id} align="center">
+                      <Image
+                        alt={image.notes}
+                        src={image.imageUrl}
+                        objectFit="cover"
+                        h="30vh"
+                        align="center"
+                        onClick={image.imageUrl ? () => handleImageClick(image) : () => {}}
+                        fallback={!image.imageUrl && <Box width="12rem" height="10rem" />}
+                      />
+                    </GridItem>
+                  ))}
+                </SimpleGrid>
+                <PaginationNext right={16}>&rsaquo;</PaginationNext>
+              </PaginationContainer>
+            </Pagination>
+          </>
+        ) : (
+          <Flex p="3em" direction="column" alignItems="center">
+            <Image src={imageIcon} h="3em" w="3em" />
+            <Text color="gray.500">No Images Uploaded</Text>
+          </Flex>
+        )}
+      </Box>
+    </Flex>
   );
 };
 
@@ -104,10 +109,12 @@ DonationImagesContainer.propTypes = {
       notes: PropTypes.string,
     }),
   ),
+  numColDisplay: PropTypes.number,
 };
 
 DonationImagesContainer.defaultProps = {
   pictures: [],
+  numColDisplay: 2,
 };
 
 export default DonationImagesContainer;
