@@ -18,7 +18,6 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
-  useMediaQuery,
 } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { PropTypes } from 'prop-types';
@@ -29,17 +28,8 @@ import { STATUSES } from '../../utils/config';
 import { PNPBackend } from '../../utils/utils';
 import pencilIcon from '../../assets/pencil.svg';
 import grayPencilIcon from '../../assets/grayPencil.png';
-// import { PNPBackend } from '../../utils/utils';
 
-const {
-  PENDING,
-  // SCHEDULING,
-  // SCHEDULED,
-  CHANGES_REQUESTED,
-  PICKED_UP,
-  APPROVAL_REQUESTED,
-  // RESCHEDULE,
-} = STATUSES;
+const { PENDING, CHANGES_REQUESTED, PICKED_UP, APPROVAL_REQUESTED } = STATUSES;
 
 const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
   return (
@@ -119,19 +109,6 @@ const DonationDetails = ({ data, setDonationData }) => {
     onClose: deleteDialogOnClose,
   } = useDisclosure();
 
-  const [isMobile] = useMediaQuery('(max-width: 768px)');
-
-  const editButton = isMobile ? (
-    <Button variant="ghost" onClick={editModalOnOpen}>
-      <Image src={grayPencilIcon} />
-    </Button>
-  ) : (
-    <Button onClick={editModalOnOpen} colorScheme="orange" justifyContent="center">
-      <Text>Edit Form</Text>
-      <Image src={pencilIcon} ml={2} />
-    </Button>
-  );
-
   const navigate = useNavigate();
   const handleDelete = async () => {
     await PNPBackend.delete(`/donations/${id}`);
@@ -150,6 +127,9 @@ const DonationDetails = ({ data, setDonationData }) => {
           <Text fontSize="12px">Submitted on {formatDate(submittedDate)}</Text>
         </Flex>
         <Box display={{ base: 'inline', md: 'none' }}>
+          <Button variant="ghost" onClick={editModalOnOpen}>
+            <Image src={grayPencilIcon} w="1em" />
+          </Button>
           {status !== PICKED_UP && (
             <DeleteIcon
               color="red.500"
@@ -164,9 +144,14 @@ const DonationDetails = ({ data, setDonationData }) => {
             Form #{id}
           </Text>
         </Flex>
-        <Flex alignItems="center" gap={5} display={{ base: 'none', md: 'flex' }}>
+        <Box alignItems="center" gap={5} display={{ base: 'none', md: 'flex' }}>
           <Text fontSize="18px">Submitted on {formatDate(submittedDate)}</Text>
-          {status === CHANGES_REQUESTED && editButton}
+          {status === CHANGES_REQUESTED && (
+            <Button onClick={editModalOnOpen} colorScheme="orange" justifyContent="center">
+              <Text>Edit Form</Text>
+              <Image src={pencilIcon} ml={2} />
+            </Button>
+          )}
           {status !== PICKED_UP && (
             <DeleteIcon
               color="red.500"
@@ -174,13 +159,11 @@ const DonationDetails = ({ data, setDonationData }) => {
               onClick={deleteDialogOnOpen}
             />
           )}
-        </Flex>
+        </Box>
       </Flex>
       <Divider size="md" variant="solid" />
       <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} alignItems="center" gap={5}>
-        <Box borderRadius="6px">
-          {pictures && <DonationImagesContainer pictures={pictures} numColDisplay={1} />}
-        </Box>
+        {pictures && <DonationImagesContainer pictures={pictures} numColDisplay={1} />}
         <Box maxH="sm">{furniture && <DonationFurnitureContainer data={furniture} />}</Box>
       </Grid>
       <EditDonationModal

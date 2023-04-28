@@ -18,7 +18,7 @@ const ImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
       <Modal
         isOpen={isOpenImageModal}
         onClose={onCloseImageModal}
-        size={{ base: 'md', md: 'full' }}
+        size={{ base: 'md', md: '2xl' }}
         BlockScrollOnMount
         isCentered
       >

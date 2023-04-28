@@ -11,6 +11,7 @@ import {
   Link,
   Flex,
   Heading,
+  useToast,
 } from '@chakra-ui/react';
 import { Link as ReactLink, useLocation, useNavigate } from 'react-router-dom';
 import { verifyDonorLogin } from '../../utils/DonorUtils';
@@ -21,8 +22,8 @@ const DonorLogin = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(location.state?.isLoggedIn || false);
   const [email, setEmail] = useState(location.state?.email || '');
   const [donationId, setDonationId] = useState(location.state?.donationId || '');
-  const [loginFailed, setLoginFail] = useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleSubmit = async event => {
     event.preventDefault();
@@ -32,7 +33,14 @@ const DonorLogin = () => {
       });
       setIsLoggedIn(true);
     } else {
-      setLoginFail(true);
+      toast({
+        title: 'Donation ID or Email Address does not match our records!',
+        description: 'Donation ID and email do not match',
+        status: 'error',
+        posiion: 'top',
+        duration: 3000,
+        isClosable: true,
+      });
     }
   };
 
@@ -80,16 +88,6 @@ const DonorLogin = () => {
                   </Text>
 
                   <form onSubmit={handleSubmit}>
-                    <FormControl isRequired mb={{ base: '25px', md: '40px' }}>
-                      <FormLabel>Donation ID</FormLabel>
-                      <Input
-                        type="text"
-                        placeholder="########"
-                        value={donationId}
-                        onChange={e => setDonationId(e.target.value)}
-                      />
-                    </FormControl>
-
                     <FormControl isRequired mb={{ base: '30px', md: '40px' }}>
                       <FormLabel>Email Address</FormLabel>
                       <Input
@@ -100,11 +98,15 @@ const DonorLogin = () => {
                       />
                     </FormControl>
 
-                    {loginFailed && (
-                      <Text color="red" fontSize="14px">
-                        Donation ID and email do not match
-                      </Text>
-                    )}
+                    <FormControl isRequired mb={{ base: '25px', md: '40px' }}>
+                      <FormLabel>Donation ID</FormLabel>
+                      <Input
+                        type="text"
+                        placeholder="########"
+                        value={donationId}
+                        onChange={e => setDonationId(e.target.value)}
+                      />
+                    </FormControl>
 
                     <Button
                       colorScheme="blue"

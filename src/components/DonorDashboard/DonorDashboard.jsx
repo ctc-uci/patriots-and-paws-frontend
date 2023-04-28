@@ -184,11 +184,12 @@ const DonorDashboard = ({ donationId }) => {
             </Text>
             <Flex mb="15px">
               <Checkbox ref={tAndCRef} mr="13px" />
-              <Text fontSize="14px">
-                I accept the&nbsp;
-                <Text as="b" onClick={onOpen} _hover={{ cursor: 'pointer' }}>
-                  Terms and Conditions
-                </Text>
+              <Text fontSize="14px">I accept the&nbsp;</Text>
+              <Text fontSize="14px" as="b" onClick={onOpen} _hover={{ cursor: 'pointer' }}>
+                Terms and Conditions&nbsp;
+              </Text>
+              <Text fontSize="14px" color="red">
+                *
               </Text>
             </Flex>
             <TermsConditionModal onClose={onClose} isOpen={isOpen} />

@@ -60,13 +60,17 @@ const DonationImagesContainer = ({ pictures, numColDisplay }) => {
               currentPage={currentPage}
               onPageChange={setCurrentPage}
             >
-              <PaginationContainer alignItems="center" justify="space-between" gap={5}>
-                <PaginationPrevious left={{ base: 16, md: 0 }}>&lsaquo;</PaginationPrevious>
+              <PaginationContainer
+                alignItems="center"
+                justify="space-between"
+                gap={5}
+                borderRadius="6px"
+              >
+                <PaginationPrevious left={16}>&lsaquo;</PaginationPrevious>
                 <SimpleGrid
                   columns={itemsPerPage === 1 || numColDisplay === 1 ? 1 : 2}
-                  align-items="center"
+                  alignItems="center"
                   spacing={1}
-                  w="100%"
                 >
                   {displayedData?.map(image => (
                     <GridItem key={image.id} align="center">
@@ -74,8 +78,7 @@ const DonationImagesContainer = ({ pictures, numColDisplay }) => {
                         alt={image.notes}
                         src={image.imageUrl}
                         objectFit="cover"
-                        width="12rem"
-                        height="10rem"
+                        h="30vh"
                         align="center"
                         onClick={image.imageUrl ? () => handleImageClick(image) : () => {}}
                         fallback={!image.imageUrl && <Box width="12rem" height="10rem" />}
@@ -83,7 +86,7 @@ const DonationImagesContainer = ({ pictures, numColDisplay }) => {
                     </GridItem>
                   ))}
                 </SimpleGrid>
-                <PaginationNext right={{ base: 16, md: 0 }}>&rsaquo;</PaginationNext>
+                <PaginationNext right={16}>&rsaquo;</PaginationNext>
               </PaginationContainer>
             </Pagination>
           </>
