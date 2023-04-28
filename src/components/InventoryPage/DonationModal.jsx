@@ -142,12 +142,12 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
         onClose();
       }}
       size={{ base: 'full', md: '6xl' }}
-      scrollBehavior={{ md: 'inside' }}
       borderRadius="20px"
+      scrollBehavior="inside"
     >
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
+      <ModalContent overflowX="hidden">
+        <ModalHeader mr="1%" ml="1%">
           {currentStatus && makeStatusTag(currentStatus)}
           <Flex direction={{ base: 'column', md: 'row' }}>
             <Flex direction="column">
