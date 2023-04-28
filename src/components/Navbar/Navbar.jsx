@@ -18,7 +18,14 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
-import { logout, useNavigate, getUserFromDB, auth, getCurrentUser } from '../../utils/AuthUtils';
+import {
+  logout,
+  useNavigate,
+  getUserFromDB,
+  auth,
+  getCurrentUser,
+  refreshToken,
+} from '../../utils/AuthUtils';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import pnpLogo from './PNPlogo.png';
 import ProfileModal from '../EditAccountModal/ProfileModal';
@@ -51,14 +58,10 @@ const Navbar = ({ cookies }) => {
       const userFromDB = await getUserFromDB(uid);
       setUser(userFromDB);
     };
+    refreshToken();
     fetchUserFromDB();
     checkRole();
   }, []);
-  // react reload on user role change using a useEffect
-  useEffect(() => {
-    const currentUserRole = cookies.get(cookieKeys.ROLE);
-    setRole(currentUserRole);
-  }, [role]);
 
   const navigate = useNavigate();
   // const [errorMessage, setErrorMessage] = useState();
