@@ -11,16 +11,16 @@ const DonationFurnitureContainer = ({ data }) => {
   }, [data]);
 
   return (
-    <>
-      <Flex direction="column" gap={3} overflowY="scroll">
-        {displayedData?.map(furniture => (
-          <InputGroup key={furniture.id}>
-            <Input value={furniture.name} isDisabled />
-            <InputRightAddon w="4em">{furniture.count}</InputRightAddon>
-          </InputGroup>
-        ))}
-      </Flex>
-    </>
+    <Flex direction="column" gap={3} overflowY="scroll" maxH="400px">
+      {displayedData?.map(furniture => (
+        <InputGroup key={furniture.id}>
+          <Input value={furniture.name} isDisabled />
+          <InputRightAddon w="4em" justifyContent="center">
+            {furniture.count}
+          </InputRightAddon>
+        </InputGroup>
+      ))}
+    </Flex>
   );
 };
 

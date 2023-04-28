@@ -27,17 +27,9 @@ import EditDonationModal from '../EditDonationModal/EditDonationModal';
 import { STATUSES } from '../../utils/config';
 import { PNPBackend } from '../../utils/utils';
 import pencilIcon from '../../assets/pencil.svg';
-// import { PNPBackend } from '../../utils/utils';
+import grayPencilIcon from '../../assets/grayPencil.png';
 
-const {
-  PENDING,
-  // SCHEDULING,
-  // SCHEDULED,
-  CHANGES_REQUESTED,
-  PICKED_UP,
-  APPROVAL_REQUESTED,
-  // RESCHEDULE,
-} = STATUSES;
+const { PENDING, CHANGES_REQUESTED, PICKED_UP, APPROVAL_REQUESTED } = STATUSES;
 
 const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
   return (
@@ -65,6 +57,35 @@ const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
+const displayStatusTag = status => {
+  if (status === PENDING || status === APPROVAL_REQUESTED) {
+    return (
+      <Tag variant="solid" colorScheme="blue">
+        Submitted
+      </Tag>
+    );
+  }
+  if (status === CHANGES_REQUESTED) {
+    return (
+      <Tag bg="orange.100">
+        <TagLabel color="orange.600"> Changes Needed </TagLabel>
+      </Tag>
+    );
+  }
+  if (status === PICKED_UP) {
+    return (
+      <Tag variant="solid" colorScheme="green">
+        Received
+      </Tag>
+    );
+  }
+  return (
+    <Tag variant="solid" colorScheme="green">
+      Approved
+    </Tag>
+  );
+};
+
 const DonationDetails = ({ data, setDonationData }) => {
   const { status, id, submittedDate, pictures, furniture } = data;
 
@@ -88,41 +109,6 @@ const DonationDetails = ({ data, setDonationData }) => {
     onClose: deleteDialogOnClose,
   } = useDisclosure();
 
-  const displayStatusTag = () => {
-    if (status === PENDING || status === APPROVAL_REQUESTED) {
-      return (
-        <Tag variant="solid" colorScheme="blue">
-          Submitted
-        </Tag>
-      );
-    }
-    if (status === CHANGES_REQUESTED) {
-      return (
-        <Tag bg="orange.100">
-          <TagLabel color="orange.600"> Changes Needed </TagLabel>
-        </Tag>
-      );
-    }
-    if (status === PICKED_UP) {
-      return (
-        <Tag variant="solid" colorScheme="green">
-          Received
-        </Tag>
-      );
-    }
-    return (
-      <Tag variant="solid" colorScheme="green">
-        Approved
-      </Tag>
-    );
-  };
-
-  const editButton = (
-    <Button size="sm" onClick={editModalOnOpen} colorScheme="orange">
-      Edit Form <Image src={pencilIcon} ml={2} />
-    </Button>
-  );
-
   const navigate = useNavigate();
   const handleDelete = async () => {
     await PNPBackend.delete(`/donations/${id}`);
@@ -132,33 +118,54 @@ const DonationDetails = ({ data, setDonationData }) => {
   };
 
   return (
-    <>
-      <Flex direction="column">
-        <Flex alignItems="center" justifyContent="space-between" px={3} pb={4}>
-          <Flex gap={5}>
-            {displayStatusTag()}
-            <Text fontWeight={700}>Form #{id}</Text>
-          </Flex>
-          <Flex alignItems="center" gap={5}>
-            <Text>Submitted on {formatDate(submittedDate)}</Text>
-            {status === CHANGES_REQUESTED && editButton}
-            {status !== PICKED_UP && (
-              <DeleteIcon
-                color="red.500"
-                _hover={{ cursor: 'pointer' }}
-                onClick={deleteDialogOnOpen}
-              />
-            )}
-          </Flex>
+    <Flex direction="column" width="100%">
+      <Flex alignItems="center" justifyContent="space-between" px={3} pb={4}>
+        <Flex display={{ base: 'flex', md: 'none' }} flexDir="column">
+          <Text fontWeight={600} fontSize="16px">
+            Form #{id}
+          </Text>
+          <Text fontSize="12px">Submitted on {formatDate(submittedDate)}</Text>
         </Flex>
-        <Divider size="md" variant="solid" />
-        <Grid templateColumns="1fr 1fr" alignItems="center" gap={5}>
-          <Box borderRadius="6px">
-            {pictures && <DonationImagesContainer pictures={pictures} />}
-          </Box>
-          <Box maxH="sm">{furniture && <DonationFurnitureContainer data={furniture} />}</Box>
-        </Grid>
+        <Box display={{ base: 'inline', md: 'none' }}>
+          <Button variant="ghost" onClick={editModalOnOpen}>
+            <Image src={grayPencilIcon} w="1em" />
+          </Button>
+          {status !== PICKED_UP && (
+            <DeleteIcon
+              color="red.500"
+              _hover={{ cursor: 'pointer' }}
+              onClick={deleteDialogOnOpen}
+            />
+          )}
+        </Box>
+        <Flex gap={5} display={{ base: 'none', md: 'flex' }}>
+          <Box display={{ base: 'none', md: 'block' }}>{displayStatusTag(status)}</Box>
+          <Text fontWeight={700} fontSize={{ base: '16px', md: '18px' }}>
+            Form #{id}
+          </Text>
+        </Flex>
+        <Box alignItems="center" gap={5} display={{ base: 'none', md: 'flex' }}>
+          <Text fontSize="18px">Submitted on {formatDate(submittedDate)}</Text>
+          {status === CHANGES_REQUESTED && (
+            <Button onClick={editModalOnOpen} colorScheme="orange" justifyContent="center">
+              <Text>Edit Form</Text>
+              <Image src={pencilIcon} ml={2} />
+            </Button>
+          )}
+          {status !== PICKED_UP && (
+            <DeleteIcon
+              color="red.500"
+              _hover={{ cursor: 'pointer' }}
+              onClick={deleteDialogOnOpen}
+            />
+          )}
+        </Box>
       </Flex>
+      <Divider size="md" variant="solid" />
+      <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} alignItems="center" gap={5}>
+        {pictures && <DonationImagesContainer pictures={pictures} numColDisplay={1} />}
+        <Box maxH="sm">{furniture && <DonationFurnitureContainer data={furniture} />}</Box>
+      </Grid>
       <EditDonationModal
         donationData={data}
         setDonationData={setDonationData}
@@ -170,7 +177,7 @@ const DonationDetails = ({ data, setDonationData }) => {
         onClose={deleteDialogOnClose}
         onSubmit={handleDelete}
       />
-    </>
+    </Flex>
   );
 };
 
@@ -214,4 +221,4 @@ DeleteDonationDialog.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default DonationDetails;
+export { DonationDetails, displayStatusTag };
