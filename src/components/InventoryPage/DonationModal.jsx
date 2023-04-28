@@ -323,7 +323,12 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                 <Text mb="1%" fontSize="1.25em" fontWeight="medium">
                   Images
                 </Text>
-                <DonationImagesContainer pictures={pictures} />
+                {pictures && (
+                  <DonationImagesContainer
+                    pictures={pictures}
+                    itemsPerPage={pictures.length < 4 ? 1 : 4}
+                  />
+                )}
               </Box>
 
               <Box h="50%" w="100%">
