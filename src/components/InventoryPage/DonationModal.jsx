@@ -319,7 +319,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
             </Box>
 
             <Box
-              m={{ md: '-1.5em 1em 1em 1em', base: '1em' }}
+              m={{ md: '-1.5em 1em 1em 1em', base: '1em 0' }}
               h="50%"
               w={{ base: '100%', md: '40%' }}
               xl="1%"
@@ -337,7 +337,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
               </Box>
 
               <Box h="50%" w="100%">
-                <Text my="1%" fontSize="1.25em" fontWeight="medium">
+                <Text my="1%" fontSize="1.25em" fontWeight="medium" mb="0.5em">
                   Furniture Items
                 </Text>
                 <DonationFurnitureContainer data={furniture} />

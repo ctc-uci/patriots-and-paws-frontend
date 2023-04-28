@@ -94,6 +94,7 @@ const DonationImagesContainer = ({ pictures, itemsPerPage }) => {
           position="relative"
           p="1em 2em"
           justifyContent="center"
+          maxH="400px"
         >
           <PaginationPrevious position="absolute" left={0}>
             &lsaquo;
