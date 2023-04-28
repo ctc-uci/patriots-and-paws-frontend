@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { InputGroup, Input, InputRightAddon, Flex } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
-import styles from './DonationFurnitureContainer.module.css';
 
 const DonationFurnitureContainer = ({ data }) => {
   const [displayedData, setDisplayedData] = useState([]);
@@ -14,13 +13,9 @@ const DonationFurnitureContainer = ({ data }) => {
     <>
       <Flex direction="column" gap={0} overflowY="scroll">
         {displayedData?.map(furniture => (
-          <InputGroup key={furniture.id}>
-            <Input value={furniture.name} isReadOnly color="#2d3748" />
-            <InputRightAddon
-              w="4em"
-              variation="outline"
-              className={styles['furniture-input-addon']}
-            >
+          <InputGroup key={furniture.id} variant="white">
+            <Input value={furniture.name} isReadOnly />
+            <InputRightAddon w="4em" justifyContent="center">
               {furniture.count}
             </InputRightAddon>
           </InputGroup>

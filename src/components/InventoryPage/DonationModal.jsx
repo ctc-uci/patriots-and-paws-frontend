@@ -42,7 +42,7 @@ const {
 } = STATUSES;
 const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, DELETE_DONATION } = EMAIL_TYPE;
 
-const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
+const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadOnly }) => {
   const {
     id,
     status,
@@ -143,10 +143,11 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
       }}
       size={{ base: 'full', md: '6xl' }}
       scrollBehavior={{ md: 'inside' }}
+      borderRadius="20px"
     >
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader mr="1%" ml="1%">
+        <ModalHeader>
           {currentStatus && makeStatusTag(currentStatus)}
           <Flex direction={{ base: 'column', md: 'row' }}>
             <Flex direction="column">
@@ -174,7 +175,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                   Basic Information
                 </Text>
                 <Stack spacing="1%" my={{ base: '15px', md: '0' }}>
-                  <InputGroup width={{ base: '100%', md: '50%' }}>
+                  <InputGroup>
                     <InputLeftAddon>Name</InputLeftAddon>
                     <Input defaultValue={`${firstName} ${lastName}`} isReadOnly />
                   </InputGroup>
@@ -335,75 +336,80 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
           </Flex>
         </ModalBody>
         <ModalFooter justifyContent="space-between" px="3em" py="1em">
-          <Flex justify="left">
-            {![SCHEDULED, SCHEDULING, PICKED_UP].includes(currentStatus) && (
-              <Button
-                colorScheme="red"
-                justifyContent="left"
-                onClick={() => {
-                  setEmailStatus(DELETE_DONATION);
-                  emailModalOnOpen();
-                }}
-              >
-                Delete Donation
-              </Button>
-            )}
-          </Flex>
-          <Flex mr="1%" justify="right">
-            {[PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
-              currentStatus,
-            ) && (
-              <>
-                <Button
-                  colorScheme="blue"
-                  justify="right"
-                  isDisabled={currentStatus === CHANGES_REQUESTED}
-                  onClick={() => {
-                    setEmailStatus(REQUEST_CHANGES);
-                    emailModalOnOpen();
-                  }}
-                >
-                  Request Changes
-                </Button>
-                <Button
-                  ml="2%"
-                  colorScheme="green"
-                  // eslint-disable-next-line consistent-return
-                  onClick={() => {
-                    if (!scheduledRouteId) {
-                      return toast({
-                        title: 'Could not approve #'.concat(id),
-                        description:
-                          'Please select a Date and Route before approving the donation.',
-                        status: 'error',
-                        duration: 9000,
-                        isClosable: true,
-                      });
-                    }
-                    setEmailStatus(APPROVE);
-                    emailModalOnOpen();
-                  }}
-                  isDisabled={
-                    !scheduledRouteId && ![PENDING, CHANGES_REQUESTED].includes(currentStatus)
-                  }
-                >
-                  Approve
-                </Button>
-              </>
-            )}
-            {[SCHEDULING, SCHEDULED].includes(currentStatus) && (
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  setEmailStatus(CANCEL_PICKUP);
-                  emailModalOnOpen();
-                }}
-              >
-                Cancel Pickup
-              </Button>
-            )}
-          </Flex>
+          {!isReadOnly && (
+            <>
+              <Flex justify="left">
+                {![SCHEDULED, SCHEDULING, PICKED_UP].includes(currentStatus) && (
+                  <Button
+                    colorScheme="red"
+                    justifyContent="left"
+                    onClick={() => {
+                      setEmailStatus(DELETE_DONATION);
+                      emailModalOnOpen();
+                    }}
+                  >
+                    Delete Donation
+                  </Button>
+                )}
+              </Flex>
+              <Flex mr="1%" justify="right">
+                {[PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
+                  currentStatus,
+                ) && (
+                  <>
+                    <Button
+                      colorScheme="blue"
+                      justify="right"
+                      isDisabled={currentStatus === CHANGES_REQUESTED}
+                      onClick={() => {
+                        setEmailStatus(REQUEST_CHANGES);
+                        emailModalOnOpen();
+                      }}
+                    >
+                      Request Changes
+                    </Button>
+                    <Button
+                      ml="2%"
+                      colorScheme="green"
+                      // eslint-disable-next-line consistent-return
+                      onClick={() => {
+                        if (!scheduledRouteId) {
+                          return toast({
+                            title: 'Could not approve #'.concat(id),
+                            description:
+                              'Please select a Date and Route before approving the donation.',
+                            status: 'error',
+                            duration: 9000,
+                            isClosable: true,
+                          });
+                        }
+                        setEmailStatus(APPROVE);
+                        emailModalOnOpen();
+                      }}
+                      isDisabled={
+                        !scheduledRouteId && ![PENDING, CHANGES_REQUESTED].includes(currentStatus)
+                      }
+                    >
+                      Approve
+                    </Button>
+                  </>
+                )}
+                {[SCHEDULING, SCHEDULED].includes(currentStatus) && (
+                  <Button
+                    colorScheme="red"
+                    onClick={() => {
+                      setEmailStatus(CANCEL_PICKUP);
+                      emailModalOnOpen();
+                    }}
+                  >
+                    Cancel Pickup
+                  </Button>
+                )}
+              </Flex>
+            </>
+          )}
         </ModalFooter>
+
         {email && emailStatus && (
           <EmailModal
             isOpenEmailModal={emailModalIsOpen}
@@ -464,6 +470,7 @@ DonationModal.propTypes = {
       }),
     ),
   }),
+  isReadOnly: PropTypes.bool,
 };
 
 DonationModal.defaultProps = {
@@ -472,6 +479,7 @@ DonationModal.defaultProps = {
   onClose: () => {},
   setAllDonations: () => {},
   routes: {},
+  isReadOnly: false,
 };
 
 export default DonationModal;

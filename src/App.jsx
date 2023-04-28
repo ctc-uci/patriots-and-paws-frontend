@@ -10,6 +10,7 @@ import {
   ModalContent,
   ModalBody,
   ModalCloseButton,
+  extendTheme,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
@@ -44,12 +45,19 @@ import RoutePDF from './components/RoutePDF/RoutePDF';
 
 import { AUTH_ROLES } from './utils/config';
 import DonorLogin from './pages/DonorLogin/DonorLogin';
+import inputTheme from './theme/Input';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
 
 function App() {
   const [files, setFiles] = useState([]);
   const [images, setImages] = useState([]);
+
+  const theme = extendTheme({
+    components: {
+      Input: inputTheme,
+    },
+  });
 
   const onSubmit = async () => {
     const urls = await Promise.all(files.map(async ({ file }) => uploadImage(file)));
@@ -114,7 +122,7 @@ function App() {
   );
 
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <Router>
         <Routes>
           <Route exact path="/playground" element={<Playground />} />
