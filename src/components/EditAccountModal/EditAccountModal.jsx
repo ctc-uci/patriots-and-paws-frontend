@@ -19,7 +19,7 @@ import {
   ModalOverlay,
   ModalFooter,
   ModalCloseButton,
-  InputRightElement,
+  InputLeftElement,
   InputGroup,
   IconButton,
   useToast,
@@ -33,8 +33,7 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import { RiLockFill } from 'react-icons/ri';
-import { MdEmail, MdPhone, MdInfo } from 'react-icons/md';
-import { IoPersonSharp } from 'react-icons/io5';
+import { MdInfo } from 'react-icons/md';
 import { updateUser } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
@@ -153,9 +152,6 @@ const EditAccountModal = ({
                   <Flex direction="column" mr={8}>
                     <FormLabel>First Name</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
-                        <IoPersonSharp color="black.300" />
-                      </InputRightElement>
                       <Input
                         id="first-name"
                         style={{ width: '240px' }}
@@ -169,9 +165,6 @@ const EditAccountModal = ({
                   <Flex direction="column">
                     <FormLabel>Last Name</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
-                        <IoPersonSharp color="black.300" />
-                      </InputRightElement>
                       <Input
                         id="last-name"
                         style={{ width: '240px' }}
@@ -187,9 +180,9 @@ const EditAccountModal = ({
                   <Flex direction="column" mr={8}>
                     <FormLabel>Email</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
-                        <MdEmail color="black.300" />
-                      </InputRightElement>
+                      <InputLeftElement pointerEvents="none">
+                        <RiLockFill color="black.300" />
+                      </InputLeftElement>
                       <Input
                         type="email"
                         id="email"
@@ -204,9 +197,6 @@ const EditAccountModal = ({
                   <Flex direction="column">
                     <FormLabel>Phone Number</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
-                        <MdPhone color="black.300" />
-                      </InputRightElement>
                       <Input
                         type="tel"
                         id="phone-number"
@@ -244,9 +234,6 @@ const EditAccountModal = ({
                         </Popover>
                       </Flex>
                       <InputGroup>
-                        <InputRightElement pointerEvents="none">
-                          <RiLockFill color="black.300" />
-                        </InputRightElement>
                         <Input
                           background="white"
                           type="password"
@@ -281,9 +268,9 @@ const EditAccountModal = ({
                 <Flex direction="column">
                   <FormLabel>Role</FormLabel>
                   <InputGroup>
-                    {/* <InputRightElement pointerEvents="none">
-                        <MdPhone color="black.300" />
-                      </InputRightElement> */}
+                    <InputLeftElement pointerEvents="none">
+                      <RiLockFill color="black.300" />
+                    </InputLeftElement>
                     <Input style={{ width: '240px' }} value={data.role} isReadOnly />
                   </InputGroup>
                 </Flex>
