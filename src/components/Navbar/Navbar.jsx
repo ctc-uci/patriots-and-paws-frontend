@@ -16,6 +16,7 @@ import {
   useDisclosure,
   Tag,
   Text,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { ChevronUpIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { logout, useNavigate, getUserFromDB, auth, getCurrentUser } from '../../utils/AuthUtils';
@@ -31,6 +32,15 @@ const Navbar = ({ cookies }) => {
   const [role, setRole] = useState('');
   const { isOpen: isProfileOpen, onOpen: onProfileOpen, onClose: onProfileClose } = useDisclosure();
   const location = useLocation();
+  const showFullMenu = useBreakpointValue(
+    {
+      base: false,
+      md: true,
+    },
+    {
+      fallback: true,
+    },
+  );
 
   useEffect(() => {
     const checkRole = () => {
@@ -80,32 +90,39 @@ const Navbar = ({ cookies }) => {
   return (
     <Flex
       as="nav"
-      bgColor="rgb(237,241,248)"
+      bgColor="gray.100"
       align="center"
       justify="space-between"
       position="sticky"
       zIndex="sticky"
       top={0}
       h="60px"
+      p="2.5em 0.75em"
+      boxShadow="md"
     >
       <ProfileModal data={user} setData={setUser} isOpen={isProfileOpen} onClose={onProfileClose} />
-
-      <HStack spacing="24px">
-        <LinkBox>
-          <LinkOverlay href="https://www.patriotsandpaws.org/" isExternal>
+      <LinkBox>
+        <LinkOverlay href="https://www.patriotsandpaws.org/" isExternal>
+          <HStack spacing="24px">
             <Image
               boxSize="3rem"
               src={pnpLogo}
               alt="Patriots and Paws logo, redirects to main page"
             />
-          </LinkOverlay>
-        </LinkBox>
-        <Link fontSize="1.2em" fontStyle="bold" href="/">
-          Patriots and Paws
-        </Link>
-      </HStack>
+            <Link
+              fontSize="1.2em"
+              fontStyle="bold"
+              href="https://www.patriotsandpaws.org/"
+              isExternal
+              _hover={{ textDecoration: 'none' }}
+            >
+              Patriots and Paws
+            </Link>
+          </HStack>
+        </LinkOverlay>
+      </LinkBox>
       <HStack>
-        {role && (
+        {role && (role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
           <Flex align="center">
             {location.pathname === '/' ? (
               makeTag('Dashboard')
@@ -116,27 +133,23 @@ const Navbar = ({ cookies }) => {
                 </Text>
               </Link>
             )}
-            {(role === ADMIN_ROLE || role === SUPERADMIN_ROLE) && (
-              <>
-                {location.pathname === '/donate/edit' ? (
-                  makeTag('Manage Donation Form')
-                ) : (
-                  <Link as={NavLink} to="/donate/edit">
-                    <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
-                      Manage Donation Form
-                    </Text>
-                  </Link>
-                )}
-                {location.pathname === '/manage-staff' ? (
-                  makeTag('Manage Staff')
-                ) : (
-                  <Link as={NavLink} to="/manage-staff">
-                    <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
-                      Manage Staff
-                    </Text>
-                  </Link>
-                )}
-              </>
+            {location.pathname === '/donate/edit' ? (
+              makeTag('Manage Donation Form')
+            ) : (
+              <Link as={NavLink} to="/donate/edit">
+                <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
+                  Manage Donation Form
+                </Text>
+              </Link>
+            )}
+            {location.pathname === '/manage-staff' ? (
+              makeTag('Manage Staff')
+            ) : (
+              <Link as={NavLink} to="/manage-staff">
+                <Text color="rgb(113,128,150)" fontSize="1.2em" ml="1em" mr="1em">
+                  Manage Staff
+                </Text>
+              </Link>
             )}
           </Flex>
         )}
@@ -151,12 +164,16 @@ const Navbar = ({ cookies }) => {
               py={[1, 2, 2]}
               px={4}
               borderRadius={5}
-              bgColor="white"
+              bgColor={showFullMenu ? 'white' : 'transparent'}
               aria-label="User Dropdown"
               fontWeight="normal"
               fontSize="1.2em"
+              shadow="md"
             >
-              {user.lastName && user.firstName && `${user.lastName}, ${user.firstName}`}
+              {showFullMenu &&
+                user.lastName &&
+                user.firstName &&
+                `${user.firstName} ${user.lastName}`}
               {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </MenuButton>
             <MenuList>
