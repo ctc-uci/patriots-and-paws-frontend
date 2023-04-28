@@ -38,7 +38,6 @@ import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
 import ItemInfo from '../ItemInfo/ItemInfo';
 import { STATUSES } from '../../utils/config';
 import DonationImageModal from '../DonationImageModal/DonationImageModal';
-import DonorFooter from '../DonorFooter/DonorFooter';
 
 const { APPROVAL_REQUESTED } = STATUSES;
 
@@ -544,7 +543,6 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           </Box>
         </Flex>
       </form>
-      <DonorFooter />
     </>
   );
 }
