@@ -40,6 +40,7 @@ const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
 const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) => {
   const [assignedDriverId, setAssignedDriverId] = useState('');
   const [route, setRoute] = useState({});
+  const [assignedRouteName, setAssignedRouteName] = useState('');
   const [donations, setDonations] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
   const [modalState, setModalState] = useState('view');
@@ -50,6 +51,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
     const routeFromDB = await getRoute(routeId);
     setRoute(routeFromDB);
     setAssignedDriverId(routeFromDB.driverId);
+    setAssignedRouteName(routeFromDB.name);
     setDonations(routeFromDB.donations ?? []);
   };
 
@@ -135,7 +137,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
         <ModalHeader>
           <Stack>
             <Heading paddingLeft={5} paddingTop={5}>
-              Route #{routeId}
+              {assignedRouteName}
             </Heading>
             <Flex justifyContent="space-between">
               <Text paddingLeft={5} fontSize="md" fontWeight="normal">
