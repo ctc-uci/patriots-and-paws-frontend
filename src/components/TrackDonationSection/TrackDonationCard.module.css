@@ -14,10 +14,10 @@
   .statusBox {
     border-width: 1px 1px 4px 1px !important;
     border-color: #00000011 !important;
-}
+  }
 
   .currStatus {
     border-width: 1px 1px 4px 1px !important;
     border-color: #00000011 #00000011 #3182ce #00000011 !important;
-}
+  }
 }

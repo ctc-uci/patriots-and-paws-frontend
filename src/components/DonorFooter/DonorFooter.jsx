@@ -11,7 +11,7 @@ const DonorFooter = () => {
       textAlign="center"
       bg="white"
       position="sticky"
-      top="100vh
+      top="100vh"
       justifyContent={{ base: 'center', md: 'space-between' }}
       alignItems="center"
     >
