@@ -87,6 +87,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
 
   useEffect(() => {
     if (Object.keys(errors).length) {
+      toast.closeAll();
       toast({
         title: "Your changes couldn't be saved!",
         description: 'Error in one or more field(s) are marked in red.',
@@ -114,6 +115,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
       newPassword: '',
       confirmPassword: '',
     });
+    toast.closeAll();
     toast({
       title: 'Your changes have been saved.',
       status: 'success',

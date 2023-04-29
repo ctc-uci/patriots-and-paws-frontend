@@ -33,6 +33,7 @@ const DonorLogin = () => {
       });
       setIsLoggedIn(true);
     } else {
+      toast.closeAll();
       toast({
         title: 'Donation ID or Email Address does not match our records!',
         description: 'Donation ID and email do not match',

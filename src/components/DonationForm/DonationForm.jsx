@@ -160,6 +160,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
       navigate('/donate', {
         state: { isLoggedIn: true, email: formData.email, donationId },
       });
+      toast.closeAll();
       toast({
         title: 'Your Donation Has Been Succesfully Submitted!',
         description: 'An email has been sent with your donation ID',
