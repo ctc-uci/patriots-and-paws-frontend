@@ -46,9 +46,8 @@ const ManageStaffPagination = ({ data, setData }) => {
       direction="row"
       justify="space-between"
       border="solid"
-      borderWidth="1px"
+      borderWidth="0px 1px 1px 1px"
       borderColor="#E2E8F0"
-      mx="2em"
       p={3}
     >
       <HStack width="17%" spacing={0}>
@@ -66,15 +65,15 @@ const ManageStaffPagination = ({ data, setData }) => {
           <option value="20">20</option>
         </Select>
       </HStack>
-      <Flex align="center" gap={5}>
-        <Text fontSize="14px">
-          <Text as="b" fontSize="14px">
+      <Flex align="center" gap={5} mr="24px">
+        <Text fontSize="14px" fontWeight={400} color="gray.500">
+          <Text as="span" fontSize="14px" fontWeight={400} color="gray.700">
             {itemCountString}
           </Text>
           &nbsp;of {data.length}
         </Text>
         <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
-          <PaginationContainer justify="right">
+          <PaginationContainer justify="right" gap="8px">
             <PaginationPrevious variant="ghost">&lsaquo;</PaginationPrevious>
             <PaginationNext variant="ghost">&rsaquo;</PaginationNext>
           </PaginationContainer>

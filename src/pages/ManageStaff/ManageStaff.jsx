@@ -21,7 +21,6 @@ import { SearchIcon } from '@chakra-ui/icons';
 import Fuse from 'fuse.js';
 import { PNPBackend } from '../../utils/utils';
 import { getCurrentUserId } from '../../utils/AuthUtils';
-import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import menuIcon from '../../assets/Menu.svg';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
@@ -107,31 +106,30 @@ const ManageStaff = ({ cookies }) => {
 
   return (
     <>
-      <div height="70vh">
-        <Flex direction="column" m={10}>
-          <Flex mb={10} justify="space-between" vertical-align="center">
+      <div>
+        <Flex direction="column" my="30px" mx="34px">
+          <Flex mb="20px" justify="space-between" vertical-align="center">
             <Flex verticalAlign="bottom">
               <InputGroup mr={5} width={300}>
                 <InputLeftElement pointerEvents="none">
                   <SearchIcon color="gray.300" />
                 </InputLeftElement>
                 <Input
-                  placeholder="Search Staff"
-                  className={styles['search-bar']}
+                  placeholder={isSuperAdmin ? 'Search Staff' : 'Search Drivers'}
                   onChange={search}
                 />
               </InputGroup>
               {isSuperAdmin && currFilter === 'admin' && (
-                <Tag colorScheme="blue">
-                  <TagLabel fontSize={18} fontWeight={600} color="black">
+                <Tag bgColor="blue.50" p="10px 24px 10px 24px">
+                  <TagLabel lineHeight="28px" fontSize={18} fontWeight={600} color="black">
                     Admin
                   </TagLabel>
                   <TagCloseButton onClick={() => setCurrFilter('all')} />
                 </Tag>
               )}
               {isSuperAdmin && currFilter === 'driver' && (
-                <Tag colorScheme="blue">
-                  <TagLabel fontSize={18} fontWeight={600} color="black">
+                <Tag bgColor="blue.50" p="10px 24px 10px 24px">
+                  <TagLabel lineHeight="28px" fontSize={18} fontWeight={600} color="black">
                     Driver
                   </TagLabel>
                   <TagCloseButton onClick={() => setCurrFilter('all')} />
@@ -145,9 +143,19 @@ const ManageStaff = ({ cookies }) => {
                     <MenuButton
                       as={IconButton}
                       aria-label="Options"
-                      variant="ghost"
-                      icon={<Image src={menuIcon} />}
-                    />
+                      variant="outline"
+                      p="10px 24px 10px 24px"
+                      borderRadius="6px"
+                      fontSize="18px"
+                      fontWeight={600}
+                      lineHeight="28px"
+                      borderWidth="1px"
+                      borderColor="blackAlpha.700"
+                      color="blackAlpha.700"
+                      leftIcon={<Image src={menuIcon} h="9px" />}
+                    >
+                      Filter
+                    </MenuButton>
                     <MenuList
                       align="center"
                       minW={0}
@@ -195,11 +203,12 @@ const ManageStaff = ({ cookies }) => {
             setAdminUsers={setAdminUsers}
             updateDisplay={updateDisplay}
           />
+
+          <Box position="sticky">
+            <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
+          </Box>
         </Flex>
       </div>
-      <Box position="sticky">
-        <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
-      </Box>
     </>
   );
 };
