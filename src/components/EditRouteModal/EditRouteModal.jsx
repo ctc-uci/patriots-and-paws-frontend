@@ -71,6 +71,11 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
     return formattedDate;
   };
 
+  const isToday = date => {
+    const today = new Date();
+    return date < today;
+  };
+
   const handleDriverChange = e => {
     setAssignedDriverId(e.target.value);
   };
@@ -127,6 +132,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
       onClose={() => {
         setConfirmedState('inactive');
         onClose();
+        setModalState('view');
       }}
       scrollBehavior="outside"
     >
@@ -354,7 +360,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                 >
                   Export PDF
                 </Button>
-                <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
+                <Modal isOpen={exportIsOpen} onClose={exportOnClose} blockScrollOnMount size="full">
                   <ModalContent>
                     <ModalCloseButton />
                     <ModalBody p="5em 5em 0 5em">
@@ -383,6 +389,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   type="submit"
                   justify="right"
                   onClick={handleChangeToEdit}
+                  isDisabled={isToday(routeDate)}
                 >
                   Edit Routes
                 </Button>
