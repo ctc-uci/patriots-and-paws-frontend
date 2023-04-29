@@ -48,7 +48,7 @@ const DeleteAccountModal = ({
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure you want to delete this staff member? You can not undo this action
+              Are you sure you want to delete this staff member? You can&apos;t undo this action
               afterwards.
             </AlertDialogBody>
 
