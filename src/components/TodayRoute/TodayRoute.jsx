@@ -48,7 +48,7 @@ const TodayRoute = () => {
   const getDonationsForToday = async () => {
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
 
-    const today = new Date('04/19/2023').toISOString();
+    const today = new Date().toISOString();
 
     const todayRoute = driverRoutes.find(
       route3 => routeFormatDate(route3.date) === routeFormatDate(today),
@@ -83,7 +83,7 @@ const TodayRoute = () => {
   const breakpointsH = {
     base: '100%', // 0-48em
     md: '100%', // 48em-80em,
-    lg: '100%',
+    lg: 'calc(100vh)',
     xl: 'calc(100vh)', // 80em+
   };
   const breakpointsW = {

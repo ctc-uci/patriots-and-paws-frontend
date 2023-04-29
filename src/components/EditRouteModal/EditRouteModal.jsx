@@ -170,7 +170,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   Show confirmed donations only
                 </Text>
                 <Switch
-                  PaddingRight={7}
+                  paddingRight={7}
                   id="confirmed-donations"
                   onChange={handleConfirmedToggle}
                   isDisabled={modalState === 'edit' || donations.length === 0}
@@ -269,7 +269,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   <ListItem margin="0" padding="0" key={donation.orderNum} value={donation.items}>
                     <Flex alignItems="center" justifyContent="space-between">
                       <Card
-                        PaddingLeft={5}
+                        paddingLeft={5}
                         backgroundColor="white"
                         border="solid"
                         borderWidth={1}

@@ -39,6 +39,7 @@ import Navbar from './components/Navbar/Navbar';
 import EmailSending from './components/EmailTemplates/EmailSending';
 import InventoryPage from './components/InventoryPage/InventoryPage';
 import DriverDashboard from './pages/Dashboard/DriverDashboard';
+import theme from './theme/theme';
 
 import RoutePDF from './components/RoutePDF/RoutePDF';
 
@@ -114,7 +115,7 @@ function App() {
   );
 
   return (
-    <ChakraProvider>
+    <ChakraProvider theme={theme}>
       <Router>
         <Routes>
           <Route exact path="/playground" element={<Playground />} />

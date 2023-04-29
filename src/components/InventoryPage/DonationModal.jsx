@@ -42,7 +42,7 @@ const {
 } = STATUSES;
 const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, DELETE_DONATION } = EMAIL_TYPE;
 
-const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
+const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadOnly }) => {
   const {
     id,
     status,
@@ -92,11 +92,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
     return (
       <Tag
         visibility={curStatus === RESCHEDULE && 'hidden'}
-        size="sm"
+        size={{ base: 'md', md: 'sm' }}
+        px={{ base: '1px' }}
         mt="1%"
-        ml="1%"
+        ml={{ md: '1%' }}
         variant="solid"
         colorScheme={statusColorMap[curStatus]}
+        fontWeight={{ base: 'md' }}
       >
         {displayStatuses[curStatus]}
       </Tag>
@@ -139,19 +141,20 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         resetScheduledRoute(currentStatus);
         onClose();
       }}
-      size="6xl"
+      size={{ base: 'full', md: '6xl' }}
+      borderRadius="20px"
       scrollBehavior="inside"
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent overflowX="hidden">
         <ModalHeader mr="1%" ml="1%">
           {currentStatus && makeStatusTag(currentStatus)}
-          <Flex direction="row">
+          <Flex direction={{ base: 'column', md: 'row' }}>
             <Flex direction="column">
-              <Text ml="0.5em" fontSize="1.5em">
+              <Text ml={{ md: '0.5em' }} fontSize="1.5em">
                 Donation #{id}
               </Text>
-              <Text ml="1em" fontSize="0.75em">
+              <Text ml={{ md: '1em' }} fontSize="0.75em">
                 Submission Date: {makeDate(submittedDate)}
               </Text>
             </Flex>
@@ -160,20 +163,28 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Flex flexDirection="row" m={3}>
-            <Box h="100%" w="60%" m="-1.5em 1em 1em 1em">
+          <Flex
+            flexDirection={{ base: 'column', md: 'row' }}
+            justifyContent={{ base: 'center' }}
+            m={{ base: 0, md: 3 }}
+          >
+            <Box h="100%" w={{ base: '100%', md: '60%' }} m={{ md: '-1.5em 1em 1em 1em' }}>
               {/* BASIC INFO SECTION */}
               <>
                 <Text mb="1%" fontSize="1.25em" fontWeight="medium">
                   Basic Information
                 </Text>
-                <Stack spacing="1%">
-                  <InputGroup width="50%">
+                <Stack spacing="1%" my={{ base: '15px', md: '0' }}>
+                  <InputGroup>
                     <InputLeftAddon>Name</InputLeftAddon>
                     <Input defaultValue={`${firstName} ${lastName}`} isReadOnly />
                   </InputGroup>
                 </Stack>
-                <Stack direction="row" my="1%">
+                <Flex
+                  flexDirection={{ base: 'column', md: 'row' }}
+                  my="1%"
+                  gap={{ base: '15px', md: '1%' }}
+                >
                   <InputGroup>
                     <InputLeftAddon>Email</InputLeftAddon>
                     <Input defaultValue={email} isReadOnly />
@@ -182,11 +193,15 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                     <InputLeftAddon>Phone Number</InputLeftAddon>
                     <Input type="tel" defaultValue={phoneNum} isReadOnly />
                   </InputGroup>
-                </Stack>
+                </Flex>
               </>
               {/* ADDRESS SECTION */}
               <>
-                <Stack direction="row" mt="3%" mb="0.75%">
+                <Stack
+                  direction="row"
+                  mb={{ base: '15px', md: '0.75%' }}
+                  mt={{ base: '40px', md: '3%' }}
+                >
                   <Text mb="1%" fontSize="1.25em" fontWeight="medium">
                     Address
                   </Text>
@@ -204,13 +219,19 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                     </Button>
                   </Box>
                 </Stack>
-                <Stack spacing="1%" direction="row">
-                  <Stack spacing="1%" direction="column">
+                <Stack
+                  spacing={{ base: '15px', md: '1%' }}
+                  direction={{ base: 'column', md: 'row' }}
+                >
+                  <Stack spacing={{ base: '15px', md: '1%' }} direction="column">
                     <InputGroup>
                       <InputLeftAddon>Street Address</InputLeftAddon>
                       <Input defaultValue={addressStreet} isReadOnly />
                     </InputGroup>
-                    <Stack spacing="1%" direction="row">
+                    <Stack
+                      spacing={{ base: '15px', md: '1%' }}
+                      direction={{ base: 'column', md: 'row' }}
+                    >
                       <InputGroup>
                         <InputLeftAddon>City</InputLeftAddon>
                         <Input defaultValue={addressCity} isReadOnly />
@@ -221,7 +242,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                       </InputGroup>
                     </Stack>
                   </Stack>
-                  <Stack spacing="1%" direction="column">
+                  <Stack spacing={{ base: '15px', md: '1%' }} direction="column">
                     <InputGroup>
                       <InputLeftAddon>Unit</InputLeftAddon>
                       <Input defaultValue={addressUnit} isReadOnly />
@@ -234,22 +255,27 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
                 </Stack>
               </>
               {/* SPECIAL INSTRUCTIONS SECTION */}
-              <>
-                <Text mt="2.5%" mb="0.75%" fontSize="1.25em" fontWeight="medium">
+              <Box mt={{ base: '40px', md: '0px' }}>
+                <Text
+                  mt={{ base: '2em', md: '2.5%' }}
+                  mb={{ base: '15px', md: '0.75%' }}
+                  fontSize="1.25em"
+                  fontWeight="medium"
+                >
                   Special Instructions
                 </Text>
                 <Textarea defaultValue={notes} isReadOnly />
-              </>
+              </Box>
               {/* SCHEDULE SECTION */}
               <Flex
-                direction="row"
+                direction={{ base: 'column', md: 'row' }}
                 bg="#E2E8F0"
-                align="center"
-                mt="1em"
+                align={{ md: 'center' }}
+                mt={{ base: '2em', md: '1em' }}
                 borderRadius={6}
-                gap={5}
-                px="3%"
-                py="1%"
+                gap={{ base: 3, md: 5 }}
+                px={{ base: '6%', md: '3%' }}
+                py={{ base: '3%', md: '1%' }}
               >
                 <Text fontSize="1.25em">Schedule</Text>
                 <Select
@@ -292,16 +318,26 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
               </Flex>
             </Box>
 
-            <Box h="50%" w="40%" xl="1%">
+            <Box
+              m={{ md: '-1.5em 1em 1em 1em', base: '1em 0' }}
+              h="50%"
+              w={{ base: '100%', md: '40%' }}
+              xl="1%"
+            >
               <Box>
-                <Text mb="1%" fontSize="1.25em">
+                <Text mb="1%" fontSize="1.25em" fontWeight="medium">
                   Images
                 </Text>
-                <DonationImagesContainer pictures={pictures} />
+                {pictures && (
+                  <DonationImagesContainer
+                    pictures={pictures}
+                    itemsPerPage={pictures.length < 4 ? 1 : 4}
+                  />
+                )}
               </Box>
 
               <Box h="50%" w="100%">
-                <Text my="1%" fontSize="1.25em">
+                <Text my="1%" fontSize="1.25em" fontWeight="medium" mb="0.5em">
                   Furniture Items
                 </Text>
                 <DonationFurnitureContainer data={furniture} />
@@ -310,75 +346,80 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes }) => {
           </Flex>
         </ModalBody>
         <ModalFooter justifyContent="space-between" px="3em" py="1em">
-          <Flex justify="left">
-            {![SCHEDULED, SCHEDULING, PICKED_UP].includes(currentStatus) && (
-              <Button
-                colorScheme="red"
-                justifyContent="left"
-                onClick={() => {
-                  setEmailStatus(DELETE_DONATION);
-                  emailModalOnOpen();
-                }}
-              >
-                Delete Donation
-              </Button>
-            )}
-          </Flex>
-          <Flex mr="1%" justify="right">
-            {[PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
-              currentStatus,
-            ) && (
-              <>
-                <Button
-                  colorScheme="blue"
-                  justify="right"
-                  isDisabled={currentStatus === CHANGES_REQUESTED}
-                  onClick={() => {
-                    setEmailStatus(REQUEST_CHANGES);
-                    emailModalOnOpen();
-                  }}
-                >
-                  Request Changes
-                </Button>
-                <Button
-                  ml="2%"
-                  colorScheme="green"
-                  // eslint-disable-next-line consistent-return
-                  onClick={() => {
-                    if (!scheduledRouteId) {
-                      return toast({
-                        title: 'Could not approve #'.concat(id),
-                        description:
-                          'Please select a Date and Route before approving the donation.',
-                        status: 'error',
-                        duration: 9000,
-                        isClosable: true,
-                      });
-                    }
-                    setEmailStatus(APPROVE);
-                    emailModalOnOpen();
-                  }}
-                  isDisabled={
-                    !scheduledRouteId && ![PENDING, CHANGES_REQUESTED].includes(currentStatus)
-                  }
-                >
-                  Approve
-                </Button>
-              </>
-            )}
-            {[SCHEDULING, SCHEDULED].includes(currentStatus) && (
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  setEmailStatus(CANCEL_PICKUP);
-                  emailModalOnOpen();
-                }}
-              >
-                Cancel Pickup
-              </Button>
-            )}
-          </Flex>
+          {!isReadOnly && (
+            <>
+              <Flex justify="left">
+                {![SCHEDULED, SCHEDULING, PICKED_UP].includes(currentStatus) && (
+                  <Button
+                    colorScheme="red"
+                    justifyContent="left"
+                    onClick={() => {
+                      setEmailStatus(DELETE_DONATION);
+                      emailModalOnOpen();
+                    }}
+                  >
+                    Delete Donation
+                  </Button>
+                )}
+              </Flex>
+              <Flex mr="1%" justify="right">
+                {[PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
+                  currentStatus,
+                ) && (
+                  <>
+                    <Button
+                      colorScheme="blue"
+                      justify="right"
+                      isDisabled={currentStatus === CHANGES_REQUESTED}
+                      onClick={() => {
+                        setEmailStatus(REQUEST_CHANGES);
+                        emailModalOnOpen();
+                      }}
+                    >
+                      Request Changes
+                    </Button>
+                    <Button
+                      ml="2%"
+                      colorScheme="green"
+                      // eslint-disable-next-line consistent-return
+                      onClick={() => {
+                        if (!scheduledRouteId) {
+                          return toast({
+                            title: 'Could not approve #'.concat(id),
+                            description:
+                              'Please select a Date and Route before approving the donation.',
+                            status: 'error',
+                            duration: 9000,
+                            isClosable: true,
+                          });
+                        }
+                        setEmailStatus(APPROVE);
+                        emailModalOnOpen();
+                      }}
+                      isDisabled={
+                        !scheduledRouteId && ![PENDING, CHANGES_REQUESTED].includes(currentStatus)
+                      }
+                    >
+                      Approve
+                    </Button>
+                  </>
+                )}
+                {[SCHEDULING, SCHEDULED].includes(currentStatus) && (
+                  <Button
+                    colorScheme="red"
+                    onClick={() => {
+                      setEmailStatus(CANCEL_PICKUP);
+                      emailModalOnOpen();
+                    }}
+                  >
+                    Cancel Pickup
+                  </Button>
+                )}
+              </Flex>
+            </>
+          )}
         </ModalFooter>
+
         {email && emailStatus && (
           <EmailModal
             isOpenEmailModal={emailModalIsOpen}
@@ -439,6 +480,7 @@ DonationModal.propTypes = {
       }),
     ),
   }),
+  isReadOnly: PropTypes.bool,
 };
 
 DonationModal.defaultProps = {
@@ -447,6 +489,7 @@ DonationModal.defaultProps = {
   onClose: () => {},
   setAllDonations: () => {},
   routes: {},
+  isReadOnly: false,
 };
 
 export default DonationModal;

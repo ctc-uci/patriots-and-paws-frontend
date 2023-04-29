@@ -231,25 +231,31 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   };
 
   return (
-    <form onSubmit={handleSubmit(() => validateData())}>
-      <Flex justifyContent="center" width="100%" flexDir="column" px={40} py={20}>
-        <Box>
-          <Heading fontSize="36px" fontWeight="700" color="blue.500" mb={5}>
-            Patriots and Paws Donation Form
-          </Heading>
-          <Text>
-            Fill out the form with your contact information, select the items you wish to donate,
-            and upload pictures of the furniture to ensure that it&apos;s in good condition. After
-            we receive and review your furniture donation form, we will reach out to you to schedule
-            a pickup of the donated items. We thank you for your support!
-          </Text>
-        </Box>
+    <>
+      <form onSubmit={handleSubmit(() => validateData())}>
+        <Flex
+          justifyContent="center"
+          width="100%"
+          flexDir="column"
+          px={{ base: 10, md: 40 }}
+          py={{ base: 5, md: 20 }}
+        >
+          <Box>
+            <Heading fontSize="36px" fontWeight="700" color="blue.500" mb={5}>
+              Patriots and Paws Donation Form
+            </Heading>
+            <Text>
+              Fill out the form with your contact information, select the items you wish to donate,
+              and upload pictures of the furniture to ensure that it&apos;s in good condition. After
+              we receive and review your furniture donation form, we will reach out to you to
+              schedule a pickup of the donated items. We thank you for your support!
+            </Text>
+          </Box>
 
-        <Divider my={10} />
+          <Divider my={10} />
 
-        <Box>
-          <Flex columnGap={40}>
-            <Box w="40%">
+          <Box display={{ md: 'flex' }}>
+            <Box w={{ md: '40%' }} mr={{ md: 40 }}>
               <Heading fontSize="20px" mb={5}>
                 Contact Information
               </Heading>
@@ -259,9 +265,13 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 up-to-date information.
               </Text>
             </Box>
-            <Box w="60%">
-              <Flex columnGap={16} mb={10}>
-                <FormControl isInvalid={errors && errors.firstName} w="50%">
+            <Box w={{ md: '60%' }} mt={{ base: 5, md: 0 }}>
+              <Box display={{ md: 'flex' }} mb={10}>
+                <FormControl
+                  isInvalid={errors && errors.firstName}
+                  w={{ md: '50%' }}
+                  mr={{ md: 16 }}
+                >
                   <FormLabel>
                     <Flex>
                       First Name&nbsp;<FormLabel color="red">*</FormLabel>
@@ -273,7 +283,11 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   </FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={errors && errors.lastName} w="50%">
+                <FormControl
+                  isInvalid={errors && errors.lastName}
+                  w={{ md: '50%' }}
+                  mt={{ base: 5, md: 0 }}
+                >
                   <FormLabel>
                     <Flex>
                       Last Name&nbsp;<FormLabel color="red">*</FormLabel>
@@ -282,10 +296,10 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   <Input {...register('lastName')} />
                   <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
                 </FormControl>
-              </Flex>
+              </Box>
 
-              <Flex columnGap={16} mb={10}>
-                <FormControl isInvalid={errors && errors.email} w="50%">
+              <Box display={{ md: 'flex' }} mb={10}>
+                <FormControl isInvalid={errors && errors.email} w={{ md: '50%' }} mr={{ md: 16 }}>
                   <FormLabel>
                     <Flex>
                       Email Address&nbsp;<FormLabel color="red">*</FormLabel>
@@ -295,7 +309,11 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl isInvalid={errors && errors.phoneNum} w="50%">
+                <FormControl
+                  isInvalid={errors && errors.phoneNum}
+                  mt={{ base: 5, md: 0 }}
+                  w={{ md: '50%' }}
+                >
                   <FormLabel>
                     <Flex>
                       Phone Number&nbsp;<FormLabel color="red">*</FormLabel>
@@ -304,7 +322,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   <Input type="tel" {...register('phoneNum')} />
                   <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
                 </FormControl>
-              </Flex>
+              </Box>
 
               <Flex rowGap={10} flexDir="column" mb={10}>
                 <FormControl isInvalid={errors && errors.addressStreet}>
@@ -325,8 +343,12 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 </FormControl>
               </Flex>
 
-              <Flex columnGap={16} mb={10}>
-                <FormControl w="50%" isInvalid={errors && errors.addressCity}>
+              <Box display={{ md: 'flex' }} mb={10}>
+                <FormControl
+                  w={{ md: '50%' }}
+                  isInvalid={errors && errors.addressCity}
+                  mr={{ md: 16 }}
+                >
                   <FormLabel>
                     <Flex>
                       City&nbsp;<FormLabel color="red">*</FormLabel>
@@ -338,7 +360,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   </FormErrorMessage>
                 </FormControl>
 
-                <FormControl w="20%">
+                <FormControl w={{ md: '20%' }} mr={{ md: 16 }} mt={{ md: 0, base: 5 }}>
                   <FormLabel>
                     <Flex>
                       State&nbsp;<FormLabel color="red">*</FormLabel>
@@ -347,7 +369,11 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   <Input defaultValue="CA" isDisabled />
                 </FormControl>
 
-                <FormControl isInvalid={errors && errors.addressZip} w="30%">
+                <FormControl
+                  isInvalid={errors && errors.addressZip}
+                  w={{ md: '30%' }}
+                  mt={{ md: 0, base: 5 }}
+                >
                   <FormLabel>
                     <Flex>
                       Zip Code&nbsp;<FormLabel color="red">*</FormLabel>
@@ -358,7 +384,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                     {errors.addressZip && errors.addressZip.message}
                   </FormErrorMessage>
                 </FormControl>
-              </Flex>
+              </Box>
 
               <Flex>
                 <FormControl>
@@ -370,14 +396,12 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 </FormControl>
               </Flex>
             </Box>
-          </Flex>
-        </Box>
+          </Box>
 
-        <Divider my={10} />
+          <Divider my={10} />
 
-        <Box>
-          <Flex columnGap={40}>
-            <Box w="40%">
+          <Box display={{ md: 'flex' }}>
+            <Box w={{ md: '40%' }} mr={{ md: 40 }}>
               <Flex alignItems="center" mb={5}>
                 <Heading fontSize="20px" mr={3}>
                   Donate Items
@@ -386,7 +410,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
               </Flex>
               <Text>Select which items you would like to donate and how many of each item.</Text>
             </Box>
-            <Box w="60%">
+            <Box mt={{ base: 5, md: 0 }} w={{ md: '60%' }}>
               <FormControl isInvalid={errors && errors.Items}>
                 <FormLabel>
                   <Flex>
@@ -420,14 +444,12 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 image={imageSelected}
               />
             </Box>
-          </Flex>
-        </Box>
+          </Box>
 
-        <Divider my={10} />
+          <Divider my={10} />
 
-        <Box>
-          <Flex columnGap={40}>
-            <Box w="40%">
+          <Box display={{ md: 'flex' }}>
+            <Box w={{ md: '40%' }} mr={{ md: 40 }}>
               <Heading fontSize="20px" mb={5}>
                 Image Upload
               </Heading>
@@ -436,7 +458,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 if needed. Maximum number of photos is 16.
               </Text>
             </Box>
-            <Box w="60%">
+            <Box mt={{ base: 5, md: 0 }} w={{ md: '60%' }}>
               <DropZone setFiles={setFiles} maxFiles={16} />
               <Flex wrap="wrap" columnGap={5}>
                 {files.map(({ file, id, imageUrl, notes }, index) => {
@@ -456,27 +478,27 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 })}
               </Flex>
             </Box>
-          </Flex>
-        </Box>
+          </Box>
 
-        {!donationData ? (
-          <>
-            <Divider my={10} />
-            <Box>
-              <Flex columnGap={40}>
-                <Box w="40%">
+          {!donationData ? (
+            <>
+              <Divider my={10} />
+              <Box display={{ md: 'flex' }}>
+                <Box w={{ md: '40%' }} mr={{ md: 40 }}>
                   <Heading fontSize="20px" mb={5}>
                     Terms and Conditions
                   </Heading>
                   <Text>Please review and accept these terms before submitting the form.</Text>
                 </Box>
-                <Box w="60%">
+                <Box mt={{ base: 5, md: 0 }} w={{ md: '60%' }}>
                   <FormControl isInvalid={errors && errors.termsCond}>
-                    <FormLabel display="flex">
+                    <FormLabel display="flex" mb={{ base: 5, md: 0 }}>
                       <Checkbox {...register('termsCond')} />
-                      <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
-                      <Text cursor="pointer" onClick={onOpen} as="u">
-                        terms and conditions.
+                      <Text>
+                        &nbsp;&nbsp;I agree to the&nbsp;
+                        <Text cursor="pointer" onClick={onOpen} as="u">
+                          terms and conditions.
+                        </Text>
                       </Text>
                       <Text color="red">&nbsp;*</Text>
                     </FormLabel>
@@ -487,41 +509,41 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
                   <TermsConditionModal onClose={onClose} onOpen={onOpen} isOpen={isOpen} />
                 </Box>
-              </Flex>
-            </Box>
-          </>
-        ) : (
-          <Box mb={10} />
-        )}
+              </Box>
+            </>
+          ) : (
+            <Box mb={10} />
+          )}
 
-        <Box>
-          <AlertDialog isOpen={isOpenSubmit} onClose={onCloseSubmit}>
-            <AlertDialogOverlay>
-              <AlertDialogContent>
-                <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                  Submit
-                </AlertDialogHeader>
-                <AlertDialogBody>Are you sure you would like to submit?</AlertDialogBody>
-                <AlertDialogFooter>
-                  <Button colorScheme="red" onClick={onCloseSubmit}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSubmit(data => onSubmit(data))} ml={3}>
+          <Box>
+            <AlertDialog isOpen={isOpenSubmit} onClose={onCloseSubmit}>
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
                     Submit
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialogOverlay>
-          </AlertDialog>
+                  </AlertDialogHeader>
+                  <AlertDialogBody>Are you sure you would like to submit?</AlertDialogBody>
+                  <AlertDialogFooter>
+                    <Button colorScheme="red" onClick={onCloseSubmit}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSubmit(data => onSubmit(data))} ml={3}>
+                      Submit
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
 
-          <Flex justifyContent="flex-end">
-            <Button colorScheme="blue" type="submit">
-              {!donationData ? 'Submit' : 'Save'}
-            </Button>
-          </Flex>
-        </Box>
-      </Flex>
-    </form>
+            <Flex justifyContent={{ md: 'flex-end', base: 'center' }}>
+              <Button colorScheme="blue" type="submit">
+                {!donationData ? 'Submit' : 'Save'}
+              </Button>
+            </Flex>
+          </Box>
+        </Flex>
+      </form>
+    </>
   );
 }
 
