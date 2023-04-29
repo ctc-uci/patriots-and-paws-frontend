@@ -31,7 +31,6 @@ import {
 } from '@chakra-ui/react';
 import { SmallAddIcon, InfoIcon } from '@chakra-ui/icons';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
-import styles from './CreateAccount.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
 const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUsers }) => {
@@ -112,10 +111,14 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
   return (
     <>
       <Button
-        ml={5}
-        mt={0}
+        p="10px 24px 10px 24px"
+        gap="8px"
         colorScheme="blue"
-        className={styles['create-account-button']}
+        bg="blue.600"
+        fontSize="16px"
+        fontWeight={600}
+        lineHeight="28px"
+        height="48px"
         onClick={onOpen}
       >
         Add Staff <SmallAddIcon />
@@ -126,15 +129,13 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
           <ModalCloseButton />
           <Flex m={5}>
             <Stack>
-              <Heading className={styles['create-account-title']}>Add Staff</Heading>
+              <Heading>Add Staff</Heading>
               <form>
-                <FormControl className={styles['create-account-form']}>
+                <FormControl>
                   <Flex>
                     <Flex direction="column" mr={8}>
                       <FormControl isInvalid={errors && errors.firstName}>
-                        <FormLabel className={styles['create-account-form-label']}>
-                          First Name
-                        </FormLabel>
+                        <FormLabel>First Name</FormLabel>
                         <Input
                           id="add-staff"
                           style={{ width: '240px' }}
@@ -148,9 +149,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                     </Flex>
                     <Flex direction="column">
                       <FormControl isInvalid={errors && errors.lastName}>
-                        <FormLabel className={styles['create-account-form-label']}>
-                          Last Name
-                        </FormLabel>
+                        <FormLabel>Last Name</FormLabel>
                         <Input
                           id="last-name"
                           style={{ width: '240px' }}
@@ -167,7 +166,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                   <Flex>
                     <Flex direction="column" mr={8}>
                       <FormControl isInvalid={errors && errors.email}>
-                        <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <Input
                           type="email"
                           id="email"
@@ -181,9 +180,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                     </Flex>
                     <Flex direction="column">
                       <FormControl isInvalid={errors && errors.phoneNumber}>
-                        <FormLabel className={styles['create-account-form-label']}>
-                          Phone Number
-                        </FormLabel>
+                        <FormLabel>Phone Number</FormLabel>
                         <Input
                           type="tel"
                           id="phone-number"
@@ -201,7 +198,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                   <Flex>
                     <Flex direction="column" mr={8}>
                       <FormControl isInvalid={errors && errors.password}>
-                        <FormLabel className={styles['create-account-form-label']}>
+                        <FormLabel>
                           Password
                           <Popover placement="top" arrowPadding={8}>
                             <PopoverTrigger>
@@ -246,9 +243,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                     </Flex>
                     <Flex direction="column">
                       <FormControl isInvalid={errors && errors.confirmPassword}>
-                        <FormLabel className={styles['create-account-form-label']}>
-                          Re-enter Password
-                        </FormLabel>
+                        <FormLabel>Re-enter Password</FormLabel>
                         <Input
                           type="password"
                           style={{ width: '240px' }}
@@ -266,9 +261,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                     <Flex>
                       <Flex direction="column">
                         <FormControl isInvalid={errors && errors.role}>
-                          <FormLabel className={styles['create-account-form-label']}>
-                            Role
-                          </FormLabel>
+                          <FormLabel>Role</FormLabel>
                           <Select
                             style={{ width: '240px' }}
                             {...register('role')}
@@ -284,26 +277,15 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                   )}
                 </FormControl>
               </form>
-              <Box className={styles['error-box']}>{errorMessage}</Box>
+              <Box>{errorMessage}</Box>
             </Stack>
           </Flex>
           <ModalFooter>
             <Flex justify="flex-end">
-              <Button
-                colorScheme="gray"
-                className={styles['create-account-button']}
-                type="submit"
-                mr={3}
-                onClick={resetFields}
-              >
+              <Button colorScheme="gray" type="submit" mr={3} onClick={resetFields}>
                 Cancel
               </Button>
-              <Button
-                colorScheme="blue"
-                className={styles['create-account-button']}
-                type="submit"
-                onClick={handleSubmit(onSubmit)}
-              >
+              <Button colorScheme="blue" type="submit" onClick={handleSubmit(onSubmit)}>
                 Add Staff
               </Button>
             </Flex>

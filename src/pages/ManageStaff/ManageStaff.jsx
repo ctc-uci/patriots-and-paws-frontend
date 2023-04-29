@@ -107,20 +107,11 @@ const ManageStaff = ({ cookies }) => {
   return (
     <>
       <Flex direction="column" my="30px" mx="34px" overflow="hidden">
-        <Flex mb="20px" justify="space-between" vertical-align="center">
-          <Flex verticalAlign="bottom">
-            <InputGroup mr={5} width={300}>
-              <InputLeftElement pointerEvents="none">
-                <SearchIcon color="gray.300" />
-              </InputLeftElement>
-              <Input
-                placeholder={isSuperAdmin ? 'Search Staff' : 'Search Drivers'}
-                onChange={search}
-              />
-            </InputGroup>
+        <Flex mb="20px" justify="space-between" verticalAlign="center">
+          <Flex alignItems="center">
             {isSuperAdmin && currFilter === 'admin' && (
               <Tag bgColor="blue.50" p="10px 24px 10px 24px">
-                <TagLabel lineHeight="28px" fontSize={18} fontWeight={600} color="black">
+                <TagLabel lineHeight="28px" fontSize="18px" fontWeight={600} color="black">
                   Admin
                 </TagLabel>
                 <TagCloseButton onClick={() => setCurrFilter('all')} />
@@ -128,17 +119,32 @@ const ManageStaff = ({ cookies }) => {
             )}
             {isSuperAdmin && currFilter === 'driver' && (
               <Tag bgColor="blue.50" p="10px 24px 10px 24px">
-                <TagLabel lineHeight="28px" fontSize={18} fontWeight={600} color="black">
+                <TagLabel lineHeight="28px" fontSize="18px" fontWeight={600} color="black">
                   Driver
                 </TagLabel>
                 <TagCloseButton onClick={() => setCurrFilter('all')} />
               </Tag>
             )}
           </Flex>
+          <Flex alignItems="center" justify="flex-end" width="100%">
+            <InputGroup width={300} alignItems="center">
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon color="blackAlpha.700" mt="10px" />
+              </InputLeftElement>
+              <Input
+                borderWidth={1}
+                borderColor="blackAlpha.700"
+                placeholder={isSuperAdmin ? 'Search Staff' : 'Search Drivers'}
+                _placeholder={{ color: 'blackAlpha.700' }}
+                size="lg"
+                onChange={search}
+              />
+            </InputGroup>
+          </Flex>
           {isSuperAdmin && (
-            <Flex vertical-align="center">
+            <Flex alignItems="center" ml="20px" gap="20px">
               <Menu minW={0} w="20px">
-                <Flex vertical-align="center" align="center">
+                <Flex verticalAlign="center" align="center">
                   <MenuButton
                     as={IconButton}
                     aria-label="Options"
@@ -151,6 +157,7 @@ const ManageStaff = ({ cookies }) => {
                     borderWidth="1px"
                     borderColor="blackAlpha.700"
                     color="blackAlpha.700"
+                    height="48px"
                     leftIcon={<Image src={menuIcon} h="9px" />}
                   >
                     Filter
