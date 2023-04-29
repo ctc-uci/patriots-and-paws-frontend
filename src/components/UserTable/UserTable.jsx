@@ -50,7 +50,7 @@ const UserTable = ({
   };
   return (
     <>
-      <TableContainer border="1px" borderColor="gray.200" overflowY="scroll" height="80vh">
+      <TableContainer border="1px" borderColor="gray.200" overflowY="auto" height="70vh">
         <Table variant="striped" colorScheme="gray">
           <Thead bgColor="rgb(247,250,252)" position="sticky" top={0}>
             <Tr className={styles['table-header']}>

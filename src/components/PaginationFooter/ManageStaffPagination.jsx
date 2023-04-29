@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Select, Text, HStack, Box } from '@chakra-ui/react';
+import { Flex, Select, Text, Box, Grid } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
   Pagination,
@@ -48,9 +48,10 @@ const ManageStaffPagination = ({ data, setData }) => {
       border="solid"
       borderWidth="0px 1px 1px 1px"
       borderColor="#E2E8F0"
-      p={3}
+      px="24px"
+      py="10px"
     >
-      <HStack width="17%" spacing={0}>
+      <Grid templateColumns="repeat(2, 1fr)" gap={5} alignItems="center">
         <Box fontSize="14px" width="100%" whitespace="nowrap">
           Show rows per page&nbsp;
         </Box>
@@ -64,8 +65,8 @@ const ManageStaffPagination = ({ data, setData }) => {
           <option value="15">15</option>
           <option value="20">20</option>
         </Select>
-      </HStack>
-      <Flex align="center" gap={5} mr="24px">
+      </Grid>
+      <Flex align="center" gap={5}>
         <Text fontSize="14px" fontWeight={400} color="gray.500">
           <Text as="span" fontSize="14px" fontWeight={400} color="gray.700">
             {itemCountString}
