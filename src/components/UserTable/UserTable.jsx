@@ -12,12 +12,14 @@ import {
   Tbody,
   Tag,
   Td,
-  IconButton,
   useDisclosure,
+  Icon,
+  HStack,
+  TableCaption,
 } from '@chakra-ui/react';
-import { EmailIcon, PhoneIcon, EditIcon, DeleteIcon } from '@chakra-ui/icons';
+import { PhoneIcon } from '@chakra-ui/icons';
+import { MdDelete, MdEdit, MdEmail } from 'react-icons/md';
 import { formatPhone } from '../../utils/utils';
-import styles from './UserTable.module.css';
 import EditAccountModal from '../EditAccountModal/EditAccountModal';
 import DeleteAccountModal from '../DeleteAccountModal/DeleteAccountModal';
 import peopleIcon from '../../assets/Bold.svg';
@@ -52,38 +54,46 @@ const UserTable = ({
     <>
       <TableContainer border="1px" borderColor="gray.200" overflowY="auto" height="70vh">
         <Table variant="striped" colorScheme="gray">
-          <Thead bgColor="rgb(247,250,252)" position="sticky" top={0}>
-            <Tr className={styles['table-header']}>
-              <Th>
+          <Thead bgColor="gray.50" position="sticky" top={0}>
+            <Tr>
+              <Th w={isSuperAdmin ? '25%' : '33.3%'}>
                 <Flex align="center">
-                  <Image src={peopleIcon} mr={2} color="black" />
-                  <Text color="black">Name</Text>
+                  <Image src={peopleIcon} mr="8px" />
+                  <Text color="blackAlpha.700" fontSize="15px" fontWeight={700} lineHeight="16px">
+                    Name
+                  </Text>
                 </Flex>
               </Th>
-              <Th>
+              <Th w={isSuperAdmin ? '25%' : '33.3%'}>
                 <Flex align="center">
-                  <EmailIcon mr={2} color="black" />
-                  <Text color="black">Email Address</Text>
+                  <Icon as={MdEmail} color="black" boxSize="16px" mr="8px" />
+                  <Text color="blackAlpha.700" fontSize="15px" fontWeight={700} lineHeight="16px">
+                    Email Address
+                  </Text>
                 </Flex>
               </Th>
-              <Th>
+              <Th w={isSuperAdmin ? '25%' : '16.65%'}>
                 <Flex align="center">
-                  <PhoneIcon mr={2} color="black" />
-                  <Text color="black">Phone Number</Text>
+                  <PhoneIcon color="black" mr="8px" />
+                  <Text color="blackAlpha.700" fontSize="15px" fontWeight={700} lineHeight="16px">
+                    Phone Number
+                  </Text>
                 </Flex>
               </Th>
               {isSuperAdmin && (
-                <Th>
+                <Th w="12.5%">
                   <Flex>
-                    <Image src={cardAccount} mr={2} />
-                    <Text color="black">Role</Text>
+                    <Image src={cardAccount} mr="8px" />
+                    <Text color="blackAlpha.700" fontSize="15px" fontWeight={700} lineHeight="16px">
+                      Role
+                    </Text>
                   </Flex>
                 </Th>
               )}
-              <Th />
+              <TableCaption w={isSuperAdmin ? '12.5%' : '16.65%'} />
             </Tr>
           </Thead>
-          <Tbody className={styles['row-text']}>
+          <Tbody>
             {users?.map(user => (
               <Tr key={`${user.email}`}>
                 <Td>
@@ -97,28 +107,46 @@ const UserTable = ({
                       <Tag
                         size="sm"
                         variant="solid"
-                        colorScheme="blue"
+                        bgColor="blue.400"
                         font="Inter"
-                        fontSize="14px"
+                        fontSize="18px"
+                        lineHeight="27px"
+                        p="1.5px 7.5px 1.5px 7.5px"
                       >
                         Admin
                       </Tag>
                     ) : (
-                      <Tag size="sm" variant="solid" colorScheme="red" font="Inter" fontSize="14px">
+                      <Tag
+                        size="sm"
+                        variant="solid"
+                        bgColor="teal.500"
+                        font="Inter"
+                        fontSize="18px"
+                        lineHeight="27px"
+                        p="1.5px 7.5px 1.5px 7.5px"
+                      >
                         Driver
                       </Tag>
                     )}
                   </Td>
                 )}
                 <Td>
-                  <IconButton onClick={() => openEdit(user)} icon={<EditIcon />} variant="ghost" />
-                  {isSuperAdmin && (
-                    <IconButton
-                      onClick={() => openDelete(user)}
-                      icon={<DeleteIcon />}
-                      variant="ghost"
+                  <HStack gap="30px" justifyContent="flex-end">
+                    <Icon
+                      as={MdEdit}
+                      onClick={() => openEdit(user)}
+                      color="blackAlpha.700"
+                      boxSize={30}
                     />
-                  )}
+                    {isSuperAdmin && (
+                      <Icon
+                        as={MdDelete}
+                        onClick={() => openDelete(user)}
+                        color="red.500"
+                        boxSize={30}
+                      />
+                    )}
+                  </HStack>
                 </Td>
               </Tr>
             ))}

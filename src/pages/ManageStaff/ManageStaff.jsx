@@ -17,7 +17,7 @@ import {
   TagLabel,
   Box,
 } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { Search2Icon } from '@chakra-ui/icons';
 import Fuse from 'fuse.js';
 import { PNPBackend } from '../../utils/utils';
 import { getCurrentUserId } from '../../utils/AuthUtils';
@@ -129,7 +129,7 @@ const ManageStaff = ({ cookies }) => {
           <Flex alignItems="center" justify="flex-end" width="100%">
             <InputGroup width={300} alignItems="center">
               <InputLeftElement pointerEvents="none">
-                <SearchIcon color="blackAlpha.700" mt="10px" />
+                <Search2Icon color="blackAlpha.700" mt="10px" />
               </InputLeftElement>
               <Input
                 borderWidth={1}
