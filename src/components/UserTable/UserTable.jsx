@@ -137,6 +137,7 @@ const UserTable = ({
                       onClick={() => openEdit(user)}
                       color="blackAlpha.700"
                       boxSize={30}
+                      _hover={{ cursor: 'pointer' }}
                     />
                     {isSuperAdmin && (
                       <Icon
@@ -144,6 +145,7 @@ const UserTable = ({
                         onClick={() => openDelete(user)}
                         color="red.500"
                         boxSize={30}
+                        _hover={{ cursor: 'pointer' }}
                       />
                     )}
                   </HStack>

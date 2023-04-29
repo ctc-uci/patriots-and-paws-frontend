@@ -123,169 +123,180 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
       >
         Add Staff <SmallAddIcon />
       </Button>
-      <Modal isOpen={isOpen} onClose={resetFields} size="xl">
+      <Modal isOpen={isOpen} onClose={resetFields} size="3xl">
         <ModalOverlay />
         <ModalContent>
-          <ModalCloseButton />
-          <Flex m={5}>
+          <Flex p="60px 60px 0px 60px">
             <Stack>
-              <Heading>Add Staff</Heading>
+              <Heading mb="45px">Add Staff</Heading>
+              <ModalCloseButton />
               <form>
-                <FormControl>
+                <Flex mb="40px">
+                  <Flex flexDir="column" mr={8}>
+                    <FormControl isInvalid={errors && errors.firstName}>
+                      <FormLabel>First Name</FormLabel>
+                      <Input
+                        id="add-staff"
+                        style={{ width: '240px' }}
+                        placeholder="Enter first name"
+                        {...register('firstName')}
+                      />
+                      <FormErrorMessage>
+                        {errors.firstName && errors.firstName.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                  </Flex>
+                  <Flex flexDir="column">
+                    <FormControl isInvalid={errors && errors.lastName}>
+                      <FormLabel>Last Name</FormLabel>
+                      <Input
+                        id="last-name"
+                        style={{ width: '240px' }}
+                        placeholder="Enter last name"
+                        {...register('lastName')}
+                        isRequired
+                      />
+                      <FormErrorMessage>
+                        {errors.lastName && errors.lastName.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                  </Flex>
+                </Flex>
+                <Flex mb="40px">
+                  <Flex flexDir="column" mr={8}>
+                    <FormControl isInvalid={errors && errors.email}>
+                      <FormLabel>Email</FormLabel>
+                      <Input
+                        type="email"
+                        id="email"
+                        style={{ width: '240px' }}
+                        placeholder="Enter email"
+                        {...register('email')}
+                        isRequired
+                      />
+                      <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
+                    </FormControl>
+                  </Flex>
+                  <Flex flexDir="column">
+                    <FormControl isInvalid={errors && errors.phoneNumber}>
+                      <FormLabel>Phone Number</FormLabel>
+                      <Input
+                        type="tel"
+                        id="phone-number"
+                        style={{ width: '240px' }}
+                        placeholder="Enter phone number"
+                        {...register('phoneNumber')}
+                        isRequired
+                      />
+                      <FormErrorMessage>
+                        {errors.phoneNumber && errors.phoneNumber.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                  </Flex>
+                </Flex>
+                <Flex mb="40px">
+                  <Flex direction="column" mr={8}>
+                    <FormControl isInvalid={errors && errors.password}>
+                      <FormLabel>
+                        Password
+                        <Popover placement="top" arrowPadding={8}>
+                          <PopoverTrigger>
+                            <InfoIcon mb={0.5} ml={2} />
+                          </PopoverTrigger>
+                          <PopoverContent borderColor="black" bgColor="black" color="white" w={200}>
+                            <PopoverArrow borderColor="black" bgColor="black" />
+                            <PopoverBody w={200}>
+                              <Text textAlign="center" fontSize={16} fontWeight={400}>
+                                Password must contain:
+                              </Text>
+                              <UnorderedList
+                                listStylePosition="inside"
+                                fontSize={16}
+                                fontWeight={400}
+                              >
+                                <ListItem>8 characters</ListItem>
+                                <ListItem>1 lowercase letter</ListItem>
+                                <ListItem>1 uppercase letter</ListItem>
+                                <ListItem>1 symbol</ListItem>
+                              </UnorderedList>
+                            </PopoverBody>
+                          </PopoverContent>
+                        </Popover>
+                      </FormLabel>
+                      <Input
+                        type="password"
+                        style={{ width: '240px' }}
+                        placeholder="Enter password"
+                        {...register('password')}
+                        isRequired
+                      />
+                      <FormErrorMessage>
+                        {errors.password && errors.password.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                  </Flex>
+                  <Flex direction="column">
+                    <FormControl isInvalid={errors && errors.confirmPassword}>
+                      <FormLabel>Re-enter Password</FormLabel>
+                      <Input
+                        type="password"
+                        style={{ width: '240px' }}
+                        placeholder="Re-enter password"
+                        {...register('confirmPassword')}
+                        isRequired
+                      />
+                      <FormErrorMessage>
+                        {errors.confirmPassword && errors.confirmPassword.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                  </Flex>
+                </Flex>
+                {isSuperAdmin && (
                   <Flex>
-                    <Flex direction="column" mr={8}>
-                      <FormControl isInvalid={errors && errors.firstName}>
-                        <FormLabel>First Name</FormLabel>
-                        <Input
-                          id="add-staff"
-                          style={{ width: '240px' }}
-                          placeholder="Enter first name"
-                          {...register('firstName')}
-                        />
-                        <FormErrorMessage>
-                          {errors.firstName && errors.firstName.message}
-                        </FormErrorMessage>
-                      </FormControl>
-                    </Flex>
                     <Flex direction="column">
-                      <FormControl isInvalid={errors && errors.lastName}>
-                        <FormLabel>Last Name</FormLabel>
-                        <Input
-                          id="last-name"
+                      <FormControl isInvalid={errors && errors.role}>
+                        <FormLabel>Role</FormLabel>
+                        <Select
                           style={{ width: '240px' }}
-                          placeholder="Enter last name"
-                          {...register('lastName')}
-                          isRequired
-                        />
-                        <FormErrorMessage>
-                          {errors.lastName && errors.lastName.message}
-                        </FormErrorMessage>
+                          {...register('role')}
+                          defaultValue="admin"
+                        >
+                          <option value="admin">Admin</option>
+                          <option value="driver">Driver</option>
+                        </Select>
+                        <FormErrorMessage>{errors.role && errors.role.message}</FormErrorMessage>
                       </FormControl>
                     </Flex>
                   </Flex>
-                  <Flex>
-                    <Flex direction="column" mr={8}>
-                      <FormControl isInvalid={errors && errors.email}>
-                        <FormLabel>Email</FormLabel>
-                        <Input
-                          type="email"
-                          id="email"
-                          style={{ width: '240px' }}
-                          placeholder="Enter email"
-                          {...register('email')}
-                          isRequired
-                        />
-                        <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
-                      </FormControl>
-                    </Flex>
-                    <Flex direction="column">
-                      <FormControl isInvalid={errors && errors.phoneNumber}>
-                        <FormLabel>Phone Number</FormLabel>
-                        <Input
-                          type="tel"
-                          id="phone-number"
-                          style={{ width: '240px' }}
-                          placeholder="Enter phone number"
-                          {...register('phoneNumber')}
-                          isRequired
-                        />
-                        <FormErrorMessage>
-                          {errors.phoneNumber && errors.phoneNumber.message}
-                        </FormErrorMessage>
-                      </FormControl>
-                    </Flex>
-                  </Flex>
-                  <Flex>
-                    <Flex direction="column" mr={8}>
-                      <FormControl isInvalid={errors && errors.password}>
-                        <FormLabel>
-                          Password
-                          <Popover placement="top" arrowPadding={8}>
-                            <PopoverTrigger>
-                              <InfoIcon mb={0.5} ml={2} />
-                            </PopoverTrigger>
-                            <PopoverContent
-                              borderColor="black"
-                              bgColor="black"
-                              color="white"
-                              w={200}
-                            >
-                              <PopoverArrow borderColor="black" bgColor="black" />
-                              <PopoverBody w={200}>
-                                <Text textAlign="center" fontSize={16} fontWeight={400}>
-                                  Password must contain:
-                                </Text>
-                                <UnorderedList
-                                  listStylePosition="inside"
-                                  fontSize={16}
-                                  fontWeight={400}
-                                >
-                                  <ListItem>8 characters</ListItem>
-                                  <ListItem>1 lowercase letter</ListItem>
-                                  <ListItem>1 uppercase letter</ListItem>
-                                  <ListItem>1 symbol</ListItem>
-                                </UnorderedList>
-                              </PopoverBody>
-                            </PopoverContent>
-                          </Popover>
-                        </FormLabel>
-                        <Input
-                          type="password"
-                          style={{ width: '240px' }}
-                          placeholder="Enter password"
-                          {...register('password')}
-                          isRequired
-                        />
-                        <FormErrorMessage>
-                          {errors.password && errors.password.message}
-                        </FormErrorMessage>
-                      </FormControl>
-                    </Flex>
-                    <Flex direction="column">
-                      <FormControl isInvalid={errors && errors.confirmPassword}>
-                        <FormLabel>Re-enter Password</FormLabel>
-                        <Input
-                          type="password"
-                          style={{ width: '240px' }}
-                          placeholder="Re-enter password"
-                          {...register('confirmPassword')}
-                          isRequired
-                        />
-                        <FormErrorMessage>
-                          {errors.confirmPassword && errors.confirmPassword.message}
-                        </FormErrorMessage>
-                      </FormControl>
-                    </Flex>
-                  </Flex>
-                  {isSuperAdmin && (
-                    <Flex>
-                      <Flex direction="column">
-                        <FormControl isInvalid={errors && errors.role}>
-                          <FormLabel>Role</FormLabel>
-                          <Select
-                            style={{ width: '240px' }}
-                            {...register('role')}
-                            defaultValue="admin"
-                          >
-                            <option value="admin">Admin</option>
-                            <option value="driver">Driver</option>
-                          </Select>
-                          <FormErrorMessage>{errors.role && errors.role.message}</FormErrorMessage>
-                        </FormControl>
-                      </Flex>
-                    </Flex>
-                  )}
-                </FormControl>
+                )}
               </form>
               <Box>{errorMessage}</Box>
             </Stack>
           </Flex>
-          <ModalFooter>
-            <Flex justify="flex-end">
-              <Button colorScheme="gray" type="submit" mr={3} onClick={resetFields}>
+          <ModalFooter p="0px 60px 60px 60px">
+            <Flex justify="flex-end" columnGap="8px">
+              <Button
+                variant="ghost"
+                type="submit"
+                fontSize="18px"
+                p="10px 24px"
+                lineHeight="28px"
+                fontWeight={600}
+                height="48px"
+                onClick={resetFields}
+              >
                 Cancel
               </Button>
-              <Button colorScheme="blue" type="submit" onClick={handleSubmit(onSubmit)}>
+              <Button
+                fontSize="18px"
+                colorScheme="blue"
+                p="10px 24px"
+                lineHeight="28px"
+                fontWeight={600}
+                height="48px"
+                type="submit"
+                onClick={handleSubmit(onSubmit)}
+              >
                 Add Staff
               </Button>
             </Flex>
