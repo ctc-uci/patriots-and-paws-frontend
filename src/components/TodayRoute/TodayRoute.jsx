@@ -25,7 +25,7 @@ const TodayRoute = () => {
   const [donations, setDonations] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [donationData, setDonationData] = useState({});
-  const [route, setRoute] = useState({});
+  const [route, setRoute] = useState();
   const [driverInfo, setDriverInfo] = useState();
   const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
   const userId = getCurrentUserId();

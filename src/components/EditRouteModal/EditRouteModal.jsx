@@ -161,7 +161,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   ))}
                 </Select>
               </FormControl>
-              <FormControl display="flex" PaddingRight={5} justify="right">
+              <FormControl display="flex" paddingRight={5} justify="right">
                 <Text fontSize="sm" fontWeight="normal" mb="0" mr={3}>
                   Show confirmed donations only
                 </Text>
