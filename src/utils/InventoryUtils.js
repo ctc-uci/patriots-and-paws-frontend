@@ -45,9 +45,13 @@ const routeFormatDate = dateDB => {
     'November',
     'December',
   ];
-  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const d = new Date(dateDB);
   return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+};
+
+const isSameDay = (date1, date2) => {
+  return new Date(date1).setHours(0, 0, 0, 0) === new Date(date2).setHours(0, 0, 0, 0);
 };
 
 const getDonationsFromDB = async () => {
@@ -144,6 +148,7 @@ export {
   getRoutesFromDB,
   makeDate,
   routeFormatDate,
+  isSameDay,
   formatImageData,
   formatFurnitureData,
   statusColorMap,

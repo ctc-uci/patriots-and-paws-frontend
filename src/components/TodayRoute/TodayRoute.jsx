@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { PDFViewer } from '@react-pdf/renderer';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
-import { routeFormatDate } from '../../utils/InventoryUtils';
+import { routeFormatDate, isSameDay } from '../../utils/InventoryUtils';
 import { routePDFStyles } from '../../utils/RouteUtils';
 import { getCurrentUserId } from '../../utils/AuthUtils';
 import DonationModal from '../InventoryPage/DonationModal';
@@ -41,26 +41,16 @@ const TodayRoute = () => {
     }, 0);
   };
 
-  // useEffect(() => {
-  //   console.log(route);
-  // }, [route]);
-
   const getDonationsForToday = async () => {
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
 
     const today = new Date().toISOString();
-
-    const todayRoute = driverRoutes.find(
-      route3 => routeFormatDate(route3.date) === routeFormatDate(today),
-    );
+    const todayRoute = driverRoutes.find(currRoute => isSameDay(currRoute.date, today));
     if (todayRoute) {
       const { data } = await PNPBackend.get(`/routes/${todayRoute.id}`);
-      const donationInfo = data[0].donations;
+      const donationInfo = data.donations;
       setDonations(donationInfo);
       setRoute({ date: today, name: todayRoute.name, isRoute: true });
-    } else {
-      // setRoute({ date: today, name: 'No Route Today' });
-      setRoute();
     }
   };
 
@@ -92,87 +82,82 @@ const TodayRoute = () => {
     lg: '30%',
     xl: '40%', // 80em+
   };
-  const breakpointsM = {
-    base: 5.5,
-    md: 0,
-    lg: 0,
-    xl: 0,
-  };
 
   return (
     <Box
       bg="#EDF1F8"
       h={breakpointsH}
       w={breakpointsW}
-      borderWidth={1}
-      borderRadius={5}
-      m={breakpointsM}
+      borderRadius={{ base: 5, md: 0 }}
+      m={{
+        base: 5.5,
+        md: 0,
+      }}
     >
       <Flex>
-        {route.isRoute && (
+        {route ? (
           <>
-            <Flex flexDirection="column" gap={5} padding="25px" w="100%">
-              <Flex>
-                <Button
-                  size="sm"
-                  colorScheme="teal"
-                  mr="2%"
-                  onClick={() => handleNavigateToAddress(donations)}
-                >
-                  Navigate to Route
-                </Button>
-                <Button size="sm" colorScheme="blackAlpha" onClick={exportOnOpen}>
-                  Export PDF
-                </Button>
-                <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
-                  <ModalContent>
-                    <ModalCloseButton />
-                    <ModalBody p="5em 5em 0 5em">
-                      <PDFViewer style={routePDFStyles.viewer}>
-                        <RoutePDF
-                          driverData={driverInfo}
-                          donationData={donations}
-                          date={new Date()}
-                        />
-                      </PDFViewer>
-                    </ModalBody>
-                  </ModalContent>
-                </Modal>
-              </Flex>
-
+            <Flex direction="column" gap={5} padding="25px" w="100%">
               <Flex flexDirection="column">
                 <Text fontSize="3xl" as="b">
                   {route.name}
                 </Text>
                 <Text>{routeFormatDate(route.date)}</Text>
               </Flex>
-
-              <Flex flexDirection="column" gap={5} w="100%" height="100%" overflow="scroll">
-                {donations &&
-                  donations.map(d => {
-                    return (
-                      <DonationCard
-                        key={d.id}
-                        itemsCount={getFurnitureCount(d.furniture)}
-                        data={d}
-                        handleRowClick={handleRowClick}
-                        setDonations={setDonations}
-                      />
-                    );
-                  })}
+              <Flex direction={{ base: 'column-reverse', md: 'column' }} gap={5}>
+                <Flex flexDirection="column" gap={5} w="100%" height="100%" overflowY="scroll">
+                  {donations &&
+                    donations.map(d => {
+                      return (
+                        <DonationCard
+                          key={d.id}
+                          itemsCount={getFurnitureCount(d.furniture)}
+                          data={d}
+                          handleRowClick={handleRowClick}
+                          setDonations={setDonations}
+                        />
+                      );
+                    })}
+                </Flex>
+                <Flex justify="flex-end" gap={3}>
+                  <Button
+                    size="sm"
+                    colorScheme="teal"
+                    mr="2%"
+                    onClick={() => handleNavigateToAddress(donations)}
+                  >
+                    Navigate to Route
+                  </Button>
+                  <Button size="sm" colorScheme="blackAlpha" onClick={exportOnOpen}>
+                    Export PDF
+                  </Button>
+                  <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
+                    <ModalContent>
+                      <ModalCloseButton />
+                      <ModalBody p="5em 5em 0 5em">
+                        <PDFViewer style={routePDFStyles.viewer}>
+                          <RoutePDF
+                            driverData={driverInfo}
+                            donationData={donations}
+                            date={new Date()}
+                          />
+                        </PDFViewer>
+                      </ModalBody>
+                    </ModalContent>
+                  </Modal>
+                </Flex>
               </Flex>
-
               <DonationModal
                 data={donationData}
                 onClose={onClose}
                 onOpen={onOpen}
                 isOpen={isOpen}
+                isReadOnly
               />
             </Flex>
           </>
-        )}
-        {!route && (
-          <Center w="100%" h={breakpointsH}>
+        ) : (
+          <Center w="100%" h={breakpointsH} py={{ base: '3em', md: '0' }}>
             <Flex direction="column" alignItems="center">
               <Heading>
                 <Text color="grey">No Route Today</Text>
