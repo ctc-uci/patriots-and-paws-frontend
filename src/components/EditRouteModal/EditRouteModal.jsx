@@ -142,7 +142,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                 {convertDate(routeDate)}
               </Text>
             </Flex>
-            <Flex direction="row" gap={5} paddingTop={2} PaddingRight={5} justify="space-between">
+            <Flex direction="row" gap={5} paddingTop={2} paddingRight={5} justify="space-between">
               <FormControl isRequired>
                 <Select
                   isDisabled={modalState === 'view'}

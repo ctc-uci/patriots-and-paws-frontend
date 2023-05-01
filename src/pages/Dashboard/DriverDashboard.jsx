@@ -9,7 +9,7 @@ const DriverDashboard = () => {
       direction="row-reverse"
       flexWrap="wrap"
       w="100%"
-      alignItems="center"
+      alignItems="flex-start"
       p={{ base: '1em', md: '0' }}
     >
       <RouteCalendar />

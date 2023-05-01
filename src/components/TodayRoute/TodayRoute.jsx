@@ -64,12 +64,6 @@ const TodayRoute = () => {
     getDonationsForToday();
   }, []);
 
-  // const pickupComplete = id => {
-  //   PNPBackend.put(`/donations/${id}`, {
-  //     status: PICKED_UP,
-  //   });
-  // };
-
   const breakpointsH = {
     base: '100%', // 0-48em
     md: '100%', // 48em-80em,
@@ -94,79 +88,77 @@ const TodayRoute = () => {
         md: 0,
       }}
     >
-      <Flex>
-        {route ? (
-          <>
-            <Flex direction="column" gap={5} padding="25px" w="100%">
-              <Flex flexDirection="column">
-                <Text fontSize="3xl" as="b">
-                  {route.name}
-                </Text>
-                <Text>{routeFormatDate(route.date)}</Text>
+      {route ? (
+        <>
+          <Flex direction="column" gap={5} padding="25px" w="100%" h="100%">
+            <Flex flexDirection="column">
+              <Text fontSize="3xl" as="b">
+                {route.name}
+              </Text>
+              <Text>{routeFormatDate(route.date)}</Text>
+            </Flex>
+            <Flex direction={{ base: 'column-reverse', md: 'column' }} gap={5} h="100%">
+              <Flex flexDirection="column" gap={5} w="100%" overflowY="scroll" h="50%">
+                {donations &&
+                  donations.map(d => {
+                    return (
+                      <DonationCard
+                        key={d.id}
+                        itemsCount={getFurnitureCount(d.furniture)}
+                        data={d}
+                        handleRowClick={handleRowClick}
+                        setDonations={setDonations}
+                      />
+                    );
+                  })}
               </Flex>
-              <Flex direction={{ base: 'column-reverse', md: 'column' }} gap={5}>
-                <Flex flexDirection="column" gap={5} w="100%" height="100%" overflowY="scroll">
-                  {donations &&
-                    donations.map(d => {
-                      return (
-                        <DonationCard
-                          key={d.id}
-                          itemsCount={getFurnitureCount(d.furniture)}
-                          data={d}
-                          handleRowClick={handleRowClick}
-                          setDonations={setDonations}
+              <Flex justify="flex-end" gap={3}>
+                <Button
+                  size="sm"
+                  colorScheme="teal"
+                  mr="2%"
+                  onClick={() => handleNavigateToAddress(donations)}
+                >
+                  Navigate to Route
+                </Button>
+                <Button size="sm" colorScheme="blackAlpha" onClick={exportOnOpen}>
+                  Export PDF
+                </Button>
+                <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
+                  <ModalContent>
+                    <ModalCloseButton />
+                    <ModalBody p="5em 5em 0 5em">
+                      <PDFViewer style={routePDFStyles.viewer}>
+                        <RoutePDF
+                          driverData={driverInfo}
+                          donationData={donations}
+                          date={new Date()}
                         />
-                      );
-                    })}
-                </Flex>
-                <Flex justify="flex-end" gap={3}>
-                  <Button
-                    size="sm"
-                    colorScheme="teal"
-                    mr="2%"
-                    onClick={() => handleNavigateToAddress(donations)}
-                  >
-                    Navigate to Route
-                  </Button>
-                  <Button size="sm" colorScheme="blackAlpha" onClick={exportOnOpen}>
-                    Export PDF
-                  </Button>
-                  <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
-                    <ModalContent>
-                      <ModalCloseButton />
-                      <ModalBody p="5em 5em 0 5em">
-                        <PDFViewer style={routePDFStyles.viewer}>
-                          <RoutePDF
-                            driverData={driverInfo}
-                            donationData={donations}
-                            date={new Date()}
-                          />
-                        </PDFViewer>
-                      </ModalBody>
-                    </ModalContent>
-                  </Modal>
-                </Flex>
+                      </PDFViewer>
+                    </ModalBody>
+                  </ModalContent>
+                </Modal>
               </Flex>
-              <DonationModal
-                data={donationData}
-                onClose={onClose}
-                onOpen={onOpen}
-                isOpen={isOpen}
-                isReadOnly
-              />
             </Flex>
-          </>
-        ) : (
-          <Center w="100%" h={breakpointsH} py={{ base: '3em', md: '0' }}>
-            <Flex direction="column" alignItems="center">
-              <Heading>
-                <Text color="grey">No Route Today</Text>
-              </Heading>
-              <Text color="grey">{routeFormatDate(new Date().toISOString())}</Text>
-            </Flex>
-          </Center>
-        )}
-      </Flex>
+            <DonationModal
+              data={donationData}
+              onClose={onClose}
+              onOpen={onOpen}
+              isOpen={isOpen}
+              isReadOnly
+            />
+          </Flex>
+        </>
+      ) : (
+        <Center w="100%" h={breakpointsH} py={{ base: '3em', md: '0' }}>
+          <Flex direction="column" alignItems="center">
+            <Heading>
+              <Text color="grey">No Route Today</Text>
+            </Heading>
+            <Text color="grey">{routeFormatDate(new Date().toISOString())}</Text>
+          </Flex>
+        </Center>
+      )}
     </Box>
   );
 };
