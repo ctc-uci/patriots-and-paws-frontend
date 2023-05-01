@@ -143,28 +143,24 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
               </Text>
             </Flex>
             <Flex direction="row" gap={5} paddingTop={2} PaddingRight={5} justify="space-between">
-              {role === ADMIN_ROLE || role === SUPERADMIN_ROLE ? (
-                <FormControl isRequired>
-                  <Select
-                    isDisabled={modalState === 'view'}
-                    variant="outline"
-                    size="sm"
-                    width="80%"
-                    paddingLeft={5}
-                    value={assignedDriverId}
-                    placeholder="Select Driver"
-                    onChange={handleDriverChange}
-                  >
-                    {drivers.map(driver => (
-                      <option key={driver.id} value={driver.id}>
-                        {driver.firstName} {driver.lastName}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                <FormControl justify="left"> </FormControl>
-              )}
+              <FormControl isRequired>
+                <Select
+                  isDisabled={modalState === 'view'}
+                  variant="outline"
+                  size="sm"
+                  width="80%"
+                  paddingLeft={5}
+                  value={assignedDriverId}
+                  placeholder="Select Driver"
+                  onChange={handleDriverChange}
+                >
+                  {drivers.map(driver => (
+                    <option key={driver.id} value={driver.id}>
+                      {driver.firstName} {driver.lastName}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
               <FormControl display="flex" PaddingRight={5} justify="right">
                 <Text fontSize="sm" fontWeight="normal" mb="0" mr={3}>
                   Show confirmed donations only
