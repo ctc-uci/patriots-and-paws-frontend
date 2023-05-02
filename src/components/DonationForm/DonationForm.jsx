@@ -200,9 +200,9 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   const openImageModal = index => {
     const fileSelected = files[index];
     const image = {
-      imageUrl: fileSelected.file.preview,
+      imageUrl: fileSelected.file?.preview ?? fileSelected.imageUrl,
       notes: fileSelected.notes,
-      fileName: fileSelected.file.path,
+      fileName: fileSelected.file?.name ?? fileSelected.imageUrl.slice(-10),
     };
     setImageSelected(image);
     onOpenImage();
