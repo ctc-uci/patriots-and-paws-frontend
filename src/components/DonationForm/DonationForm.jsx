@@ -79,6 +79,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isOpenImage, onOpen: onOpenImage, onClose: onCloseImage } = useDisclosure();
   const { isOpen: isOpenSubmit, onOpen: onOpenSubmit, onClose: onCloseSubmit } = useDisclosure();
+  const { isOpen: isOpenCancel, onOpen: onOpenCancel, onClose: onCloseCancel } = useDisclosure();
 
   const navigate = useNavigate();
   const [furnitureOptions, setFurnitureOptions] = useState([]);
@@ -526,10 +527,14 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   </AlertDialogHeader>
                   <AlertDialogBody>Are you sure you would like to submit?</AlertDialogBody>
                   <AlertDialogFooter>
-                    <Button colorScheme="red" onClick={onCloseSubmit}>
+                    <Button colorScheme="gray" onClick={onCloseSubmit}>
                       Cancel
                     </Button>
-                    <Button onClick={handleSubmit(data => onSubmit(data))} ml={3}>
+                    <Button
+                      colorScheme="blue"
+                      onClick={handleSubmit(data => onSubmit(data))}
+                      ml={3}
+                    >
                       Submit
                     </Button>
                   </AlertDialogFooter>
@@ -537,7 +542,40 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
               </AlertDialogOverlay>
             </AlertDialog>
 
+            <AlertDialog isOpen={isOpenCancel} onClose={onCloseCancel}>
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                    Cancel
+                  </AlertDialogHeader>
+                  <AlertDialogBody>
+                    Are you sure you would like to exit? Your changes will not be saved.
+                  </AlertDialogBody>
+                  <AlertDialogFooter>
+                    <Button colorScheme="gray" onClick={onCloseCancel}>
+                      Go Back
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      onClick={() => {
+                        closeEditDonationModal();
+                        onCloseCancel();
+                      }}
+                      ml={3}
+                    >
+                      Close
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
+
             <Flex justifyContent={{ md: 'flex-end', base: 'center' }}>
+              {donationData && (
+                <Button mr={5} colorScheme="gray" onClick={onOpenCancel}>
+                  Cancel
+                </Button>
+              )}
               <Button colorScheme="blue" type="submit">
                 {!donationData ? 'Submit' : 'Save'}
               </Button>
