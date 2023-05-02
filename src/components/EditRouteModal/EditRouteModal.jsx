@@ -126,6 +126,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
       isOpen={isOpen}
       onClose={() => {
         setConfirmedState('inactive');
+        setModalState('view');
         onClose();
       }}
       scrollBehavior="outside"
