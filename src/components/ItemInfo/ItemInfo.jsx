@@ -43,7 +43,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
                   {items
                     .filter(({ accepted }) => accepted === isAccepted)
                     .map(({ name }) => (
-                      <ListItem key={name} width="50%">
+                      <ListItem key={name} width="100%">
                         {name}
                       </ListItem>
                     ))}
@@ -68,7 +68,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
                   {items
                     .filter(({ accepted }) => accepted === !isAccepted)
                     .map(({ name }) => (
-                      <ListItem key={name} width="50%">
+                      <ListItem key={name} width="100%">
                         {name}
                       </ListItem>
                     ))}
