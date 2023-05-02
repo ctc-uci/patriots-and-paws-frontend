@@ -86,7 +86,7 @@ const Navbar = ({ cookies }) => {
       >
         <Text
           color={selectedTab ? 'blue.500' : 'gray.500'}
-          fontSize="1.2em"
+          fontSize="16px"
           mx="1em"
           _hover={{ color: 'blue.600' }}
         >
@@ -111,15 +111,15 @@ const Navbar = ({ cookies }) => {
       <ProfileModal data={user} setData={setUser} isOpen={isProfileOpen} onClose={onProfileClose} />
       <LinkBox>
         <LinkOverlay href="https://www.patriotsandpaws.org/" isExternal>
-          <HStack spacing="24px">
+          <HStack spacing="20px">
             <Image
               boxSize="3rem"
               src={pnpLogo}
               alt="Patriots and Paws logo, redirects to main page"
             />
             <Link
-              fontSize="1.2em"
-              fontStyle="bold"
+              fontSize="16px"
+              fontWeight="bold"
               href="https://www.patriotsandpaws.org/"
               isExternal
               _hover={{ textDecoration: 'none' }}
@@ -151,7 +151,7 @@ const Navbar = ({ cookies }) => {
               bgColor={showFullMenu ? 'white' : 'transparent'}
               aria-label="User Dropdown"
               fontWeight="normal"
-              fontSize="1.2em"
+              fontSize="16px"
               shadow={{ md: 'md' }}
               my="1em"
             >
