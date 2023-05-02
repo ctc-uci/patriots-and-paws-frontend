@@ -26,6 +26,7 @@ import {
   PopoverBody,
   PopoverArrow,
   useDisclosure,
+  useBreakpoint,
 } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
 import { PDFViewer } from '@react-pdf/renderer';
@@ -45,6 +46,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   const [modalState, setModalState] = useState('view');
   const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
   const [confirmedState, setConfirmedState] = useState('inactive');
+  const breakpointSize = useBreakpoint();
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
@@ -347,7 +349,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   colorScheme="blackAlpha"
                   type="submit"
                   onClick={exportOnOpen}
-                  isDisabled={donations.length === 0}
+                  isDisabled={breakpointSize === 'base' || donations.length === 0}
                 >
                   Export PDF
                 </Button>
