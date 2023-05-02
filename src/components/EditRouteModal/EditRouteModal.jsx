@@ -26,6 +26,7 @@ import {
   PopoverBody,
   PopoverArrow,
   useDisclosure,
+  useBreakpoint,
 } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
 import { PDFViewer } from '@react-pdf/renderer';
@@ -45,6 +46,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
   const [modalState, setModalState] = useState('view');
   const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
   const [confirmedState, setConfirmedState] = useState('inactive');
+  const breakpointSize = useBreakpoint();
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
@@ -143,7 +145,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                 {convertDate(routeDate)}
               </Text>
             </Flex>
-            <Flex direction="row" gap={5} paddingTop={2} PaddingRight={5} justify="space-between">
+            <Flex direction="row" gap={5} paddingTop={2} paddingRight={5} justify="space-between">
               <FormControl isRequired>
                 <Select
                   isDisabled={modalState === 'view'}
@@ -162,7 +164,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   ))}
                 </Select>
               </FormControl>
-              <FormControl display="flex" PaddingRight={5} justify="right">
+              <FormControl display="flex" paddingRight={5} justify="right">
                 <Text fontSize="sm" fontWeight="normal" mb="0" mr={3}>
                   Show confirmed donations only
                 </Text>
@@ -347,7 +349,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   colorScheme="blackAlpha"
                   type="submit"
                   onClick={exportOnOpen}
-                  isDisabled={donations.length === 0}
+                  isDisabled={breakpointSize === 'base' || donations.length === 0}
                 >
                   Export PDF
                 </Button>
