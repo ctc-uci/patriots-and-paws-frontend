@@ -238,8 +238,8 @@ const confirmVerifyEmail = async code => {
  */
 const logout = async (redirectPath, navigate, cookies) => {
   await signOut(auth);
-  clearCookies(cookies);
   navigate(redirectPath);
+  clearCookies(cookies);
 };
 
 // Checks if user is authenticated

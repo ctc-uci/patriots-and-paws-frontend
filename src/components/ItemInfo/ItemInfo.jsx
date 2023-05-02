@@ -24,7 +24,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
     <>
       <InfoIcon boxSize={5} onClick={onOpen} />
 
-      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'xl' }}>
         <ModalOverlay />
         <ModalContent padding="2em">
           <ModalHeader>
@@ -43,7 +43,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
                   {items
                     .filter(({ accepted }) => accepted === isAccepted)
                     .map(({ name }) => (
-                      <ListItem key={name} width="50%">
+                      <ListItem key={name} width="100%">
                         {name}
                       </ListItem>
                     ))}
@@ -68,7 +68,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
                   {items
                     .filter(({ accepted }) => accepted === !isAccepted)
                     .map(({ name }) => (
-                      <ListItem key={name} width="50%">
+                      <ListItem key={name} width="100%">
                         {name}
                       </ListItem>
                     ))}

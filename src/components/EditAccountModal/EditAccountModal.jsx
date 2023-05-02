@@ -19,7 +19,7 @@ import {
   ModalOverlay,
   ModalFooter,
   ModalCloseButton,
-  InputRightElement,
+  InputLeftElement,
   InputGroup,
   IconButton,
   useToast,
@@ -33,8 +33,7 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import { RiLockFill } from 'react-icons/ri';
-import { MdEmail, MdPhone, MdInfo } from 'react-icons/md';
-import { IoPersonSharp } from 'react-icons/io5';
+import { MdInfo } from 'react-icons/md';
 import { updateUser } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
@@ -153,9 +152,6 @@ const EditAccountModal = ({
                   <Flex direction="column" mr={8}>
                     <FormLabel>First Name</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
-                        <IoPersonSharp color="black.300" />
-                      </InputRightElement>
                       <Input
                         id="first-name"
                         style={{ width: '240px' }}
@@ -169,9 +165,6 @@ const EditAccountModal = ({
                   <Flex direction="column">
                     <FormLabel>Last Name</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
-                        <IoPersonSharp color="black.300" />
-                      </InputRightElement>
                       <Input
                         id="last-name"
                         style={{ width: '240px' }}
@@ -187,9 +180,9 @@ const EditAccountModal = ({
                   <Flex direction="column" mr={8}>
                     <FormLabel>Email</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
-                        <MdEmail color="black.300" />
-                      </InputRightElement>
+                      <InputLeftElement pointerEvents="none">
+                        <RiLockFill color="black.300" />
+                      </InputLeftElement>
                       <Input
                         type="email"
                         id="email"
@@ -204,9 +197,6 @@ const EditAccountModal = ({
                   <Flex direction="column">
                     <FormLabel>Phone Number</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
-                        <MdPhone color="black.300" />
-                      </InputRightElement>
                       <Input
                         type="tel"
                         id="phone-number"
@@ -220,73 +210,72 @@ const EditAccountModal = ({
                   </Flex>
                 </Flex>
                 {isSuperAdmin && (
-                  <Flex mb={5}>
-                    <Flex direction="column" mr={8}>
-                      <Flex>
-                        <FormLabel mt=".4rem">Password</FormLabel>
-                        <Popover>
-                          <PopoverTrigger>
-                            <IconButton variant="invisible" icon={<MdInfo color="black.300" />} />
-                          </PopoverTrigger>
-                          <PopoverContent color="white" bg="black">
-                            <PopoverArrow />
-                            <PopoverCloseButton />
-                            <PopoverBody>
-                              Password must contain:
-                              <UnorderedList>
-                                <ListItem>8 characters</ListItem>
-                                <ListItem>1 lowercase letter</ListItem>
-                                <ListItem>1 uppercase letter</ListItem>
-                                <ListItem>1 symbol</ListItem>
-                              </UnorderedList>
-                            </PopoverBody>
-                          </PopoverContent>
-                        </Popover>
+                  <>
+                    <Flex mb={5}>
+                      <Flex direction="column" mr={8}>
+                        <Flex>
+                          <FormLabel mt=".4rem">Password</FormLabel>
+                          <Popover>
+                            <PopoverTrigger>
+                              <IconButton variant="invisible" icon={<MdInfo color="black.300" />} />
+                            </PopoverTrigger>
+                            <PopoverContent color="white" bg="black">
+                              <PopoverArrow />
+                              <PopoverCloseButton />
+                              <PopoverBody>
+                                Password must contain:
+                                <UnorderedList>
+                                  <ListItem>8 characters</ListItem>
+                                  <ListItem>1 lowercase letter</ListItem>
+                                  <ListItem>1 uppercase letter</ListItem>
+                                  <ListItem>1 symbol</ListItem>
+                                </UnorderedList>
+                              </PopoverBody>
+                            </PopoverContent>
+                          </Popover>
+                        </Flex>
+                        <InputGroup>
+                          <Input
+                            background="white"
+                            type="password"
+                            id="password"
+                            style={{ width: '240px' }}
+                            placeholder="Enter password"
+                            errorBorderColor="red.300"
+                            isInvalid={'newPassword' in errors}
+                            {...register('newPassword')}
+                            isRequired
+                          />
+                        </InputGroup>
                       </Flex>
-                      <InputGroup>
-                        <InputRightElement pointerEvents="none">
-                          <RiLockFill color="black.300" />
-                        </InputRightElement>
+                      <Flex direction="column" mt=".46rem">
+                        <FormLabel>Confirm Password</FormLabel>
                         <Input
-                          background="white"
                           type="password"
-                          id="password"
+                          id="check-password"
                           style={{ width: '240px' }}
-                          placeholder="Enter password"
+                          placeholder="Re-enter password"
                           errorBorderColor="red.300"
-                          isInvalid={'newPassword' in errors}
-                          {...register('newPassword')}
+                          isInvalid={'confirmPassword' in errors}
+                          {...register('confirmPassword')}
                           isRequired
                         />
+                        <Box>
+                          <Text color="red">{errors.confirmPassword?.message}</Text>
+                        </Box>
+                      </Flex>
+                    </Flex>
+                    <Flex direction="column">
+                      <FormLabel>Role</FormLabel>
+                      <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                          <RiLockFill color="black.300" />
+                        </InputLeftElement>
+                        <Input style={{ width: '240px' }} value={data.role} isReadOnly />
                       </InputGroup>
                     </Flex>
-                    <Flex direction="column" mt=".46rem">
-                      <FormLabel>Confirm Password</FormLabel>
-                      <Input
-                        type="password"
-                        id="check-password"
-                        style={{ width: '240px' }}
-                        placeholder="Re-enter password"
-                        errorBorderColor="red.300"
-                        isInvalid={'confirmPassword' in errors}
-                        {...register('confirmPassword')}
-                        isRequired
-                      />
-                      <Box>
-                        <Text color="red">{errors.confirmPassword?.message}</Text>
-                      </Box>
-                    </Flex>
-                  </Flex>
+                  </>
                 )}
-                <Flex direction="column">
-                  <FormLabel>Role</FormLabel>
-                  <InputGroup>
-                    {/* <InputRightElement pointerEvents="none">
-                        <MdPhone color="black.300" />
-                      </InputRightElement> */}
-                    <Input style={{ width: '240px' }} value={data.role} isReadOnly />
-                  </InputGroup>
-                </Flex>
               </FormControl>
             </form>
           </Stack>
