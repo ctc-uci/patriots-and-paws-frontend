@@ -492,16 +492,18 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 </Box>
                 <Box mt={{ base: 5, md: 0 }} w={{ md: '60%' }}>
                   <FormControl isInvalid={errors && errors.termsCond}>
-                    <FormLabel display="flex" mb={{ base: 5, md: 0 }}>
-                      <Checkbox {...register('termsCond')} />
-                      <Text>
-                        &nbsp;&nbsp;I agree to the&nbsp;
+                    <Flex>
+                      <Checkbox {...register('termsCond')} verticalAlign="bottom" />
+                      {/* <FormLabel mb={{ base: 5, md: 0 }}>
+                      </FormLabel> */}
+                      <Flex>
+                        <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
                         <Text cursor="pointer" onClick={onOpen} as="u">
                           terms and conditions.
                         </Text>
-                      </Text>
-                      <Text color="red">&nbsp;*</Text>
-                    </FormLabel>
+                        <Text color="red">&nbsp;*</Text>
+                      </Flex>
+                    </Flex>
                     <FormErrorMessage>
                       {errors.termsCond && errors.termsCond.message}
                     </FormErrorMessage>
