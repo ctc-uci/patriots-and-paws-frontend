@@ -129,6 +129,9 @@ const EditAccountModal = ({
       isClosable: true,
       variant: 'subtle',
       position: 'top',
+      containerStyle: {
+        mt: '6rem',
+      },
       duration: 3000,
     });
 

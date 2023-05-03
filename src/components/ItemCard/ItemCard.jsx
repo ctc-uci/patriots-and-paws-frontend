@@ -13,6 +13,7 @@ const ItemCard = ({ name, items, setItems, setDeletedEntries }) => {
       title: 'Deleted successfully',
       description: `${name} has been deleted`,
       status: 'info',
+      variant: 'subtle',
       duration: 9000,
       isClosable: true,
     });

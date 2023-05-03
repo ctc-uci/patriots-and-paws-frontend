@@ -101,6 +101,10 @@ const DonorDashboard = ({ donationId }) => {
       duration: 4000,
       isClosable: true,
       position: 'top',
+      variant: 'subtle',
+      containerStyle: {
+        mt: '6rem',
+      },
     });
   };
 

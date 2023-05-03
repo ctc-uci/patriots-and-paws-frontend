@@ -390,6 +390,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                             description:
                               'Please select a Date and Route before approving the donation.',
                             status: 'error',
+                            variant: 'subtle',
                             duration: 9000,
                             isClosable: true,
                           });

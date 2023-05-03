@@ -122,6 +122,9 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
       isClosable: true,
       variant: 'subtle',
       position: 'top',
+      containerStyle: {
+        mt: '6rem',
+      },
       duration: 3000,
     });
     setData(prev => ({ ...prev, ...updatedUser }));

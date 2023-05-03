@@ -60,6 +60,11 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
         title: 'Added successfully',
         description: `${furnitureName} has been added`,
         status: 'success',
+        variant: 'subtle',
+        position: 'top',
+        containerStyle: {
+          mt: '6rem',
+        },
         duration: 9000,
         isClosable: true,
       });

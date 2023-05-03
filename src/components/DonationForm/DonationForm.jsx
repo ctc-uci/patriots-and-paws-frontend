@@ -166,6 +166,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
         title: 'Your Donation Has Been Succesfully Submitted!',
         description: 'An email has been sent with your donation ID',
         status: 'success',
+        variant: 'subtle',
         duration: 9000,
         isClosable: true,
       });

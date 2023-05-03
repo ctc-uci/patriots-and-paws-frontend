@@ -39,6 +39,7 @@ const DonorLogin = () => {
         description: 'Donation ID and email do not match',
         status: 'error',
         posiion: 'top',
+        variant: 'subtle',
         duration: 3000,
         isClosable: true,
       });

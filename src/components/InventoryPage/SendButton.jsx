@@ -79,6 +79,9 @@ const SendButton = ({
       isClosable: true,
       position: 'top',
       variant: 'subtle',
+      containerStyle: {
+        mt: '6rem',
+      },
     });
   };
 

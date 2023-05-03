@@ -48,6 +48,11 @@ const ManageDonationForm = () => {
       title: 'Option Saved.',
       description: 'The furniture options has been saved.',
       status: 'success',
+      variant: 'subtle',
+      position: 'top',
+      containerStyle: {
+        mt: '6rem',
+      },
       duration: 9000,
       isClosable: true,
     });
