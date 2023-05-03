@@ -18,6 +18,23 @@ const ManageDonationForm = () => {
     renderCards();
   }, []);
 
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    const handler = e => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    // if the form is NOT unchanged, then set the onbeforeunload
+    if (newEntries.length || deletedEntries.length) {
+      window.addEventListener('beforeunload', handler);
+      // clean it up, if the dirty state changes
+      return () => {
+        window.removeEventListener('beforeunload', handler);
+      };
+    }
+  }, [newEntries, deletedEntries]);
+
   const updateItems = async () => {
     // const res = newEntries.map(async entry => {
     //   await PNPBackend.post('/furnitureOptions/', entry);
