@@ -142,7 +142,7 @@ const Login = ({ cookies }) => {
                     <Input
                       type="password"
                       id="password"
-                      placeholder="##########"
+                      placeholder="***********"
                       {...register('password')}
                       isRequired
                     />
