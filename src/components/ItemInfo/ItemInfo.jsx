@@ -13,8 +13,8 @@ import {
   ListItem,
   Box,
   Flex,
+  Button,
 } from '@chakra-ui/react';
-import { InfoIcon } from '@chakra-ui/icons';
 
 import { PropTypes } from 'prop-types';
 
@@ -22,7 +22,9 @@ const ItemInfo = ({ items, isAccepted = false }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <InfoIcon boxSize={5} onClick={onOpen} />
+      <Button bg="whiteAlpha" borderWidth="1px" borderColor="gray.200" onClick={onOpen}>
+        Preview Item List
+      </Button>
 
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'xl' }}>
         <ModalOverlay />

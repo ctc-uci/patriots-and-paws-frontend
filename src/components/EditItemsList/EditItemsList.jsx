@@ -58,9 +58,9 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
 
   return (
     <>
-      <Box width="40%" height="100%" mx="3vh" overflow="hidden">
+      <Box width="48%" height="100%" overflow="hidden">
         {isAccepted ? (
-          <Text as="b" fontSize="xl">
+          <Text as="b" fontSize="xl" mb="15px">
             Items We Accept
           </Text>
         ) : (
@@ -77,7 +77,7 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
           </Flex>
         )}
 
-        <Box bg="rgba(0, 0, 0, 0.04);" padding="15px">
+        <Box bg="rgba(0, 0, 0, 0.04);" padding="15px" borderRadius="7px" mt="15px">
           <Wrap height="50vh" my="3%">
             {items
               .filter(({ accepted }) => accepted === isAccepted)

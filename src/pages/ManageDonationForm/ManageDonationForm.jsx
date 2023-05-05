@@ -54,11 +54,11 @@ const ManageDonationForm = () => {
 
   return (
     <>
-      <Flex flexDirection="column">
-        <Heading mx="3vh" my="2vh">
+      <Box ml="30px">
+        <Heading ml="3vw" mb="30px" mt="30px">
           Manage Donation Form
         </Heading>
-        <Flex justifyContent="center" minHeight="50%">
+        <Flex justifyContent="space-between" minHeight="50%" ml="3vw" mr="5vw">
           <EditItemsList
             items={items}
             setItems={setItems}
@@ -73,8 +73,8 @@ const ManageDonationForm = () => {
             setDeletedEntries={setDeletedEntries}
           />
         </Flex>
-      </Flex>
-      <Box paddingRight="70px" marginTop="1%" textAlign="right">
+      </Box>
+      <Box mr="5vw" mt="40px" textAlign="right">
         <ItemInfo items={items} isAccepted />
         <Button marginLeft="25px" bg="#3182CE" color="white" onClick={updateItems}>
           Publish
