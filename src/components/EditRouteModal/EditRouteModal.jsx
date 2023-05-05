@@ -39,7 +39,7 @@ import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
 
-const { SCHEDULED } = STATUSES;
+const { SCHEDULING } = STATUSES;
 
 const DonationList = ({
   isAdminView,
@@ -79,7 +79,7 @@ const DonationList = ({
               backgroundColor="white"
               border="solid"
               borderWidth={1}
-              borderColor={donation.status === SCHEDULED || isAdminView ? 'gray.200' : 'blue.500'}
+              borderColor={donation.status === SCHEDULING || isAdminView ? 'gray.200' : 'blue.500'}
               p="0.7em 1.7em"
               fontSize="1em"
               width="100%"
@@ -213,7 +213,7 @@ const EditRouteModal = ({ cookies, routeId, routeDate, drivers, isOpen, onClose,
 
   const getConfirmedDonations = () => {
     if (confirmedState === 'active') {
-      return donations.filter(ele => ele.status === SCHEDULED);
+      return donations.filter(ele => ele.status !== SCHEDULING);
     }
     return donations;
   };

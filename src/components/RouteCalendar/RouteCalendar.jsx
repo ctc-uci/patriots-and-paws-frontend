@@ -9,10 +9,29 @@ import interactionPlugin from '@fullcalendar/interaction';
 import CreateRouteModal from '../CreateRouteModal/CreateRouteModal';
 import { getCurrentUserId, getUserFromDB } from '../../utils/AuthUtils';
 import EditRouteModal from '../EditRouteModal/EditRouteModal';
-import { AUTH_ROLES } from '../../utils/config';
+import { AUTH_ROLES, STATUSES } from '../../utils/config';
 import { getAllRoutes, getDrivers } from '../../utils/RouteUtils';
 
 const { DRIVER_ROLE } = AUTH_ROLES;
+const { SCHEDULING } = STATUSES;
+
+const pastRoutes = {
+  backgroundColor: 'transparent',
+  textColor: '#718096', // gray.500
+  borderColor: '#718096', // gray.500
+};
+
+const blueRoute = {
+  backgroundColor: '#2B6CB0', // blue.600
+  textColor: 'white',
+  borderColor: '#2B6CB0', // blue.600
+};
+
+const grayRoute = {
+  backgroundColor: 'RGBA(0, 0, 0, 0.36)', // blackAlpha.500
+  textColor: 'white',
+  borderColor: 'RGBA(0, 0, 0, 0.36)',
+};
 
 const RouteCalendar = () => {
   const [role, setRole] = useState([]);
@@ -37,31 +56,27 @@ const RouteCalendar = () => {
     onClose: editRouteOnClose,
   } = useDisclosure();
 
-  const getEventDisplayStyle = (userRole, currentUserId, driverId, date) => {
+  const getEventDisplayStyle = (userRole, currentUserId, driverId, date, donations) => {
     const currentDate = new Date();
     const currRouteDate = new Date(date);
-    if (userRole === DRIVER_ROLE) {
-      if (currRouteDate < currentDate) {
-        return {
-          backgroundColor: 'transparent',
-          textColor: '#718096', // gray.500
-          borderColor: '#718096', // gray.500
-        };
-      }
-      if (currentUserId === driverId) {
-        return {
-          backgroundColor: '#2B6CB0', // blue.600
-          textColor: 'white',
-          borderColor: '#2B6CB0', // blue.600
-        };
-      }
-      return {
-        backgroundColor: 'RGBA(0, 0, 0, 0.36)', // blackAlpha.500
-        textColor: 'white',
-        borderColor: 'RGBA(0, 0, 0, 0.36)',
-      };
+
+    if (currRouteDate < currentDate) {
+      return pastRoutes;
     }
-    return {};
+
+    if (userRole === DRIVER_ROLE) {
+      if (currentUserId === driverId) {
+        return blueRoute;
+      }
+      return grayRoute;
+    }
+
+    const isUnconfirmedRoute =
+      donations.length === 0 || donations.some(({ status }) => status === SCHEDULING);
+    if (isUnconfirmedRoute) {
+      return grayRoute;
+    }
+    return blueRoute;
   };
 
   useEffect(() => {
@@ -71,13 +86,12 @@ const RouteCalendar = () => {
       const { role: userRole } = currentUser;
       setRole(userRole);
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-
-      const eventsList = routesFromDB.map(({ id, name, date, driverId }) => ({
+      const eventsList = routesFromDB.map(({ id, name, date, driverId, donations }) => ({
         id,
         title: name,
         start: new Date(date).toISOString().replace(/T.*$/, ''),
         allDay: true,
-        ...getEventDisplayStyle(userRole, currentUserId, driverId, date),
+        ...getEventDisplayStyle(userRole, currentUserId, driverId, date, donations ?? []),
       }));
       setDrivers(driversFromDB);
 
