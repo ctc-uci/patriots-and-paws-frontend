@@ -26,6 +26,7 @@ import {
   PopoverBody,
   PopoverArrow,
   useDisclosure,
+  useBreakpoint,
 } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
 import { PDFViewer } from '@react-pdf/renderer';
@@ -138,6 +139,7 @@ const EditRouteModal = ({
   const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
   const [confirmedState, setConfirmedState] = useState('inactive');
   const [userRole, setUserRole] = useState();
+  const breakpointSize = useBreakpoint();
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
@@ -229,6 +231,7 @@ const EditRouteModal = ({
       isOpen={isOpen}
       onClose={() => {
         setConfirmedState('inactive');
+        setModalState('view');
         onClose();
         setModalState('view');
       }}
@@ -247,30 +250,26 @@ const EditRouteModal = ({
                 {convertDate(routeDate)}
               </Text>
             </Flex>
-            <Flex direction="row" gap={5} paddingTop={2} paddingRight={5} justify="space-between">
-              {role === ADMIN_ROLE || role === SUPERADMIN_ROLE ? (
-                <FormControl isRequired>
-                  <Select
-                    isDisabled={modalState === 'view'}
-                    variant="outline"
-                    size="sm"
-                    width="80%"
-                    value={assignedDriverId}
-                    placeholder="Select Driver"
-                    onChange={handleDriverChange}
-                  >
-                    {drivers.map(driver => (
-                      <option key={driver.id} value={driver.id}>
-                        {driver.firstName} {driver.lastName}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                <FormControl justify="left"> </FormControl>
-              )}
+            <Flex direction="row" gap={5} justify="space-between">
+              <FormControl isRequired>
+                <Select
+                  isDisabled={modalState === 'view'}
+                  variant="outline"
+                  size="sm"
+                  width="80%"
+                  value={assignedDriverId}
+                  placeholder="Select Driver"
+                  onChange={handleDriverChange}
+                >
+                  {drivers.map(driver => (
+                    <option key={driver.id} value={driver.id}>
+                      {driver.firstName} {driver.lastName}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
               <FormControl display="flex" paddingRight={5} justify="right">
-                <Text fontSize="sm" fontWeight="normal" mr={3}>
+                <Text fontSize="sm" fontWeight="normal" mb="0" mr={3}>
                   Show confirmed donations only
                 </Text>
                 <Switch
@@ -341,7 +340,7 @@ const EditRouteModal = ({
                   colorScheme="blackAlpha"
                   type="submit"
                   onClick={exportOnOpen}
-                  isDisabled={donations.length === 0}
+                  isDisabled={breakpointSize === 'base' || donations.length === 0}
                 >
                   Export PDF
                 </Button>

@@ -30,6 +30,30 @@ function makeDate(dateDB) {
   return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
+const routeFormatDate = dateDB => {
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const d = new Date(dateDB);
+  return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+};
+
+const isSameDay = (date1, date2) => {
+  return new Date(date1).setHours(0, 0, 0, 0) === new Date(date2).setHours(0, 0, 0, 0);
+};
+
 const getDonationsFromDB = async () => {
   const res = await PNPBackend.get(`/donations`);
   const donations = res.data;
@@ -123,6 +147,8 @@ export {
   getDonationsFromDB,
   getRoutesFromDB,
   makeDate,
+  routeFormatDate,
+  isSameDay,
   formatImageData,
   formatFurnitureData,
   statusColorMap,
