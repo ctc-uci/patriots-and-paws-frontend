@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Heading, Flex, useToast, Box } from '@chakra-ui/react';
+import { Button, Heading, Flex, useToast } from '@chakra-ui/react';
 import EditItemsList from '../../components/EditItemsList/EditItemsList';
 import ItemInfo from '../../components/ItemInfo/ItemInfo';
 import { PNPBackend } from '../../utils/utils';
@@ -59,12 +59,10 @@ const ManageDonationForm = () => {
   };
 
   return (
-    <>
-      <Flex flexDirection="column">
-        <Heading mx="3vh" my="2vh">
-          Manage Donation Form
-        </Heading>
-        <Flex justifyContent="center" minHeight="50%">
+    <Flex p="2em 3em" direction="column" gap="1em">
+      <Flex gap="1em" direction="column">
+        <Heading as="h4">Manage Donation Form</Heading>
+        <Flex justifyContent="space-between" minHeight="50%">
           <EditItemsList
             items={items}
             setItems={setItems}
@@ -80,13 +78,13 @@ const ManageDonationForm = () => {
           />
         </Flex>
       </Flex>
-      <Box paddingRight="70px" marginTop="1%" textAlign="right">
+      <Flex justify="right" gap="1em">
         <ItemInfo items={items} isAccepted />
-        <Button marginLeft="25px" bg="#3182CE" color="white" onClick={updateItems}>
+        <Button colorScheme="blue" onClick={updateItems}>
           Publish
         </Button>
-      </Box>
-    </>
+      </Flex>
+    </Flex>
   );
 };
 
