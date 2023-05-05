@@ -28,7 +28,7 @@ const DonorFooter = () => {
       <Flex
         justifyContent={{ base: 'center', md: 'space-between' }}
         alignItems={{ base: 'center', md: 'flex-start' }}
-        gap="10px"
+        gap={8}
         direction={{ base: 'column', md: 'row' }}
       >
         <Image boxSize={55} src={PNPlogo} display={{ base: 'block', md: 'none' }} />

@@ -45,7 +45,7 @@ const TrackDonationSection = ({ status }) => {
 
   return (
     <>
-      <Grid templateColumns="repeat(4, 1fr)" gap={0} display={{ md: 'flex' }}>
+      <Grid templateColumns="25% 25% 25% 25%" gap={0}>
         {descriptions.map(e => (
           <GridItem key={e.heading}>
             <TrackDonationCard {...e} />
