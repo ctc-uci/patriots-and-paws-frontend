@@ -268,12 +268,11 @@ const EditRouteModal = ({
                   ))}
                 </Select>
               </FormControl>
-              <FormControl display="flex" paddingRight={5} justify="right">
-                <Text fontSize="sm" fontWeight="normal" mb="0" mr={3}>
+              <FormControl display="flex" whiteSpace="nowrap" alignItems="center">
+                <Text fontSize="sm" fontWeight="normal" mr={3}>
                   Show confirmed donations only
                 </Text>
                 <Switch
-                  paddingRight={7}
                   id="confirmed-donations"
                   onChange={handleConfirmedToggle}
                   isDisabled={modalState === 'edit' || donations.length === 0}
