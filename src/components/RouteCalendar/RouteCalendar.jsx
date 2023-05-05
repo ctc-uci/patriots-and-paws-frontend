@@ -37,27 +37,31 @@ const RouteCalendar = () => {
     onClose: editRouteOnClose,
   } = useDisclosure();
 
-  const getEventDisplayStyle = (currentUserId, driverId, date) => {
-    const currentDate = new Date().setHours(0, 0, 0, 0);
-    if (new Date(date).setHours(0, 0, 0, 0) < currentDate) {
+  const getEventDisplayStyle = (userRole, currentUserId, driverId, date) => {
+    const currentDate = new Date();
+    const currRouteDate = new Date(date);
+    if (userRole === DRIVER_ROLE) {
+      if (currRouteDate < currentDate) {
+        return {
+          backgroundColor: 'transparent',
+          textColor: '#718096', // gray.500
+          borderColor: '#718096', // gray.500
+        };
+      }
+      if (currentUserId === driverId) {
+        return {
+          backgroundColor: '#2B6CB0', // blue.600
+          textColor: 'white',
+          borderColor: '#2B6CB0', // blue.600
+        };
+      }
       return {
-        backgroundColor: 'rgba(0, 0, 0, 0.36)', // blackGray.500
+        backgroundColor: 'RGBA(0, 0, 0, 0.36)', // blackAlpha.500
         textColor: 'white',
-        borderColor: 'rgba(0, 0, 0, 0.36)',
+        borderColor: 'RGBA(0, 0, 0, 0.36)',
       };
     }
-    if (currentUserId === driverId) {
-      return {
-        backgroundColor: '#2B6CB0', // blue.600
-        textColor: 'white',
-        borderColor: '#2B6CB0',
-      };
-    }
-    return {
-      backgroundColor: 'white', // blue.600
-      textColor: '#718096',
-      borderColor: '#718096',
-    };
+    return {};
   };
 
   useEffect(() => {
@@ -66,7 +70,6 @@ const RouteCalendar = () => {
       const currentUser = await getUserFromDB(currentUserId);
       const { role: userRole } = currentUser;
       setRole(userRole);
-      // TODO: add color indication for driver logged in
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
 
       const eventsList = routesFromDB.map(({ id, name, date, driverId }) => ({
@@ -74,7 +77,7 @@ const RouteCalendar = () => {
         title: name,
         start: new Date(date).toISOString().replace(/T.*$/, ''),
         allDay: true,
-        ...getEventDisplayStyle(currentUserId, driverId, date),
+        ...getEventDisplayStyle(userRole, currentUserId, driverId, date),
       }));
       setDrivers(driversFromDB);
 

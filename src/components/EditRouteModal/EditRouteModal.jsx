@@ -164,7 +164,7 @@ const EditRouteModal = ({ cookies, routeId, routeDate, drivers, isOpen, onClose,
   };
 
   const dateHasPassed = date => {
-    const today = new Date('04-30-2023').toISOString().split('T')[0];
+    const today = new Date().toISOString().split('T')[0];
     const selectedRouteDate = new Date(date).toISOString().split('T')[0];
     return selectedRouteDate < today;
   };
