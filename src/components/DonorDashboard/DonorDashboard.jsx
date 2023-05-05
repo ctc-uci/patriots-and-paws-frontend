@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {
   Grid,
   Box,
+  Container,
   Text,
   Button,
   Tag,
@@ -269,9 +270,7 @@ const DonorDashboard = ({ donationId }) => {
             <Flex flexDir="column" alignItems="center">
               {/* if a cancel case is added, use this icon with color set to blue */}
               <Box bg="#C6F6D5" borderRadius="10rem" p="1.5rem" mb=".5rem">
-                <IconContext.Provider
-                  value={{ color: 'green', size: '5.5rem', marginx: '15', marginBottom: '25px' }}
-                >
+                <IconContext.Provider value={{ color: 'green', size: '5.5rem' }}>
                   <FaTruckPickup />
                 </IconContext.Provider>
               </Box>
@@ -327,7 +326,7 @@ const DonorDashboard = ({ donationId }) => {
           </Flex>
           <Flex direction="column" gap={3} display={{ base: 'none', md: 'block' }}>
             <Flex direction="row" gap={3}>
-              <Text fontSize="1.5em" fontWeight="700">
+              <Text fontSize={{ base: '20px', md: '30px' }} fontWeight="700" ml="1rem" mb=".8rem">
                 Pickup
               </Text>
               <Box p={2}>
@@ -338,13 +337,16 @@ const DonorDashboard = ({ donationId }) => {
                 )}
               </Box>
             </Flex>
-            <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
-              {displayPickup()}
-            </Box>
+            <Container h="89%">
+              <Box borderRadius="6px" bg="white" h="100%" px={1}>
+                {displayPickup()}
+              </Box>
+            </Container>
           </Flex>
         </Grid>
+
         <Flex direction="column" gap={3} display={{ base: 'block', md: 'none' }}>
-          <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
+          <Box borderRadius="6px" bg="white" h="100%">
             {displayPickup()}
           </Box>
         </Flex>
