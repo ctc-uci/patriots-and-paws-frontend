@@ -1,5 +1,17 @@
 import React from 'react';
-import { Flex, Box, Text, Button, Checkbox, Card, CardBody, Heading } from '@chakra-ui/react';
+import {
+  Flex,
+  Box,
+  Text,
+  Checkbox,
+  Card,
+  CardBody,
+  Heading,
+  IconButton,
+  Button,
+  useBreakpointValue,
+} from '@chakra-ui/react';
+import { InfoIcon } from '@chakra-ui/icons';
 import { PropTypes } from 'prop-types';
 
 import { PNPBackend } from '../../utils/utils';
@@ -9,6 +21,22 @@ const { PICKED_UP, SCHEDULED } = STATUSES;
 
 const DonationCard = ({ data, itemsCount, handleRowClick, setDonations }) => {
   const { id, status } = data;
+  const detailsButton = useBreakpointValue({
+    base: (
+      <IconButton
+        variant="ghost"
+        icon={<InfoIcon />}
+        aria-label="View Details"
+        onClick={() => handleRowClick(data)}
+      />
+    ),
+    md: (
+      <Button variant="outline" fontSize="sm" onClick={() => handleRowClick(data)}>
+        View Details
+      </Button>
+    ),
+  });
+
   const pickupComplete = async donationId => {
     await PNPBackend.put(`/donations/${donationId}`, {
       status: PICKED_UP,
@@ -47,9 +75,7 @@ const DonationCard = ({ data, itemsCount, handleRowClick, setDonations }) => {
               <Text>{itemsCount} items</Text>
             </Box>
           </Flex>
-          <Button variant="outline" fontSize="sm" onClick={() => handleRowClick(data)}>
-            View Details
-          </Button>
+          {detailsButton}
         </Flex>
       </CardBody>
     </Card>
