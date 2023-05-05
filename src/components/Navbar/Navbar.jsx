@@ -80,7 +80,7 @@ const Navbar = ({ cookies }) => {
         as={NavLink}
         to={path}
         _hover={{ textDecoration: 'none' }}
-        paddingY="1.5em"
+        paddingY="1.4em"
         borderBottom={selectedTab && '2px solid'}
         borderColor={selectedTab && 'blue.500'}
       >
@@ -119,7 +119,7 @@ const Navbar = ({ cookies }) => {
             />
             <Link
               fontSize="16px"
-              fontWeight="bold"
+              fontWeight="medium"
               href="https://www.patriotsandpaws.org/"
               isExternal
               _hover={{ textDecoration: 'none' }}
@@ -129,7 +129,7 @@ const Navbar = ({ cookies }) => {
           </HStack>
         </LinkOverlay>
       </LinkBox>
-      <HStack>
+      <HStack h="100%">
         {role !== DRIVER_ROLE && (
           <Flex align="center">
             {makeNavTabs('Dashboard', '/')}
@@ -145,7 +145,7 @@ const Navbar = ({ cookies }) => {
               isActive={isOpen}
               as={Button}
               mx={1}
-              py={[1, 2, 2]}
+              py={1}
               px={4}
               borderRadius={5}
               bgColor={showFullMenu ? 'white' : 'transparent'}
@@ -153,7 +153,7 @@ const Navbar = ({ cookies }) => {
               fontWeight="normal"
               fontSize="16px"
               shadow={{ md: 'md' }}
-              my="1em"
+              my="0.9em"
             >
               {showFullMenu &&
                 user.lastName &&
