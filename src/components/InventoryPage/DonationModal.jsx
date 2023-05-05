@@ -151,7 +151,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
           {currentStatus && makeStatusTag(currentStatus)}
           <Flex direction={{ base: 'column', md: 'row' }}>
             <Flex direction="column">
-              <Text ml={{ md: '0.5em' }} fontSize="1.5em">
+              <Text ml={{ md: '0.5em' }} fontSize="1.5em" as="b">
                 Donation #{id}
               </Text>
               <Text ml={{ md: '1em' }} fontSize="0.75em">

@@ -113,6 +113,9 @@ const TodayRoute = () => {
                   })}
               </Flex>
               <Flex justify="flex-end" gap={3}>
+                <Button size="sm" colorScheme="blackAlpha" onClick={exportOnOpen}>
+                  Export PDF
+                </Button>
                 <Button
                   size="sm"
                   colorScheme="teal"
@@ -120,9 +123,6 @@ const TodayRoute = () => {
                   onClick={() => handleNavigateToAddress(donations)}
                 >
                   Navigate to Route
-                </Button>
-                <Button size="sm" colorScheme="blackAlpha" onClick={exportOnOpen}>
-                  Export PDF
                 </Button>
                 <Modal isOpen={exportIsOpen} onClose={exportOnClose} size="full">
                   <ModalContent>
