@@ -35,6 +35,7 @@ const grayRoute = {
 
 const RouteCalendar = () => {
   const [role, setRole] = useState([]);
+  const [allDrivers, setAllDrivers] = useState([]);
   const [drivers, setDrivers] = useState([]);
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
   const [selectedEventDate, setSelectedEventDate] = useState();
@@ -86,15 +87,17 @@ const RouteCalendar = () => {
       const { role: userRole } = currentUser;
       setRole(userRole);
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-      console.log(driversFromDB);
       const eventsList = routesFromDB.map(({ id, name, date, driverId, donations }) => ({
         id,
         title: name,
         start: new Date(date).toISOString().replace(/T.*$/, ''),
         allDay: true,
         ...getEventDisplayStyle(userRole, currentUserId, driverId, date, donations ?? []),
+        extendedProps: {
+          driver: driverId,
+        },
       }));
-      setDrivers(driversFromDB);
+      setAllDrivers(driversFromDB);
 
       calendarRef.current.getApi().removeAllEventSources();
       calendarRef.current.getApi().addEventSource(eventsList);
@@ -111,14 +114,15 @@ const RouteCalendar = () => {
 
   /* eslint no-underscore-dangle: 0 */
   const handleEventClick = e => {
-    setSelectedRouteId(e.event._def.publicId);
+    const { publicId, extendedProps } = e.event._def;
+    const routeDriver = extendedProps.driverId ?? null;
+    setSelectedRouteId(publicId);
     const eventDate = new Date(e.event._instance.range.start);
     eventDate.setHours(0, 0, 0, 0);
-    console.log(eventDate);
-    const filteredDrivers = drivers.filter(
-      ({ assignedRoutes }) => !assignedRoutes.includes(eventDate.toISOString().split('T')[0]),
+    const filteredDrivers = allDrivers.filter(
+      ({ id, assignedRoutes }) =>
+        id === routeDriver || !assignedRoutes.includes(eventDate.toISOString().split('T')[0]),
     );
-    console.log(filteredDrivers);
     setDrivers(filteredDrivers);
     setSelectedEventDate(eventDate);
     editRouteOnOpen();
