@@ -86,6 +86,7 @@ const RouteCalendar = () => {
       const { role: userRole } = currentUser;
       setRole(userRole);
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
+      console.log(driversFromDB);
       const eventsList = routesFromDB.map(({ id, name, date, driverId, donations }) => ({
         id,
         title: name,
@@ -111,7 +112,15 @@ const RouteCalendar = () => {
   /* eslint no-underscore-dangle: 0 */
   const handleEventClick = e => {
     setSelectedRouteId(e.event._def.publicId);
-    setSelectedEventDate(e.event._instance.range.start);
+    const eventDate = new Date(e.event._instance.range.start);
+    eventDate.setHours(0, 0, 0, 0);
+    console.log(eventDate);
+    const filteredDrivers = drivers.filter(
+      ({ assignedRoutes }) => !assignedRoutes.includes(eventDate.toISOString().split('T')[0]),
+    );
+    console.log(filteredDrivers);
+    setDrivers(filteredDrivers);
+    setSelectedEventDate(eventDate);
     editRouteOnOpen();
     // setOverflow('hidden');
   };
