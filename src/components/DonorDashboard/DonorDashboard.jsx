@@ -12,10 +12,11 @@ import {
   Checkbox,
   useDisclosure,
   useToast,
-  Image,
   Heading,
 } from '@chakra-ui/react';
 import { CheckCircleIcon, CloseIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons';
+import { FaTruckPickup } from 'react-icons/fa';
+import { IconContext } from 'react-icons';
 import { getDonationData } from '../../utils/DonorUtils';
 import DonorFooter from '../DonorFooter/DonorFooter';
 import TrackDonationSection from '../TrackDonationSection/TrackDonationSection';
@@ -23,7 +24,6 @@ import { DonationDetails, displayStatusTag } from './DonationDetails';
 import { STATUSES } from '../../utils/config';
 import { PNPBackend, formatDate } from '../../utils/utils';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
-import pickedUpImage from '../../assets/pickedUpCarImage.png';
 
 const {
   PENDING,
@@ -267,7 +267,15 @@ const DonorDashboard = ({ donationId }) => {
               Pickup
             </Heading>
             <Flex flexDir="column" alignItems="center">
-              <Image src={pickedUpImage} mx={15} mb="25px" />
+              {/* if a cancel case is added, use this icon with color set to blue */}
+              <Box bg="#C6F6D5" borderRadius="10rem" p="1.5rem" mb=".5rem">
+                <IconContext.Provider
+                  value={{ color: 'green', size: '5.5rem', marginx: '15', marginBottom: '25px' }}
+                >
+                  <FaTruckPickup />
+                </IconContext.Provider>
+              </Box>
+
               <Text textAlign="center" fontSize={{ base: '18px', md: '20px' }}>
                 Your items have been successfully picked up!
               </Text>
