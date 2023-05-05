@@ -11,7 +11,7 @@ const getAllRoutes = async () => {
 
 const getRoute = async routeId => {
   const { data } = await PNPBackend.get(`/routes/${routeId}`);
-  return data[0];
+  return data;
 };
 
 const createRoute = async route => {
