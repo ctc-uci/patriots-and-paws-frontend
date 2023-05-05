@@ -25,8 +25,9 @@ import { SingleDatepicker } from 'chakra-dayzed-datepicker';
 import { calendarConfigs } from '../../utils/utils';
 import { createRoute } from '../../utils/RouteUtils';
 
-const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarAddEvent }) => {
+const CreateRouteModal = ({ routeDate, allDrivers, isOpen, onClose, handleCalendarAddEvent }) => {
   const [date, setDate] = useState(new Date());
+  const [drivers, setDrivers] = useState(allDrivers ?? []);
   const [errorMessage, setErrorMessage] = useState();
 
   const formSchema = yup.object({
@@ -50,6 +51,16 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
     }
   }, [routeDate]);
 
+  useEffect(() => {
+    reset({
+      assignedDriver: null,
+    });
+    const filteredDrivers = allDrivers?.filter(
+      ({ assignedRoutes }) => !assignedRoutes.includes(date.toISOString().split('T')[0]),
+    );
+    setDrivers(filteredDrivers);
+  }, [date]);
+
   const clearState = () => {
     reset({
       assignedDriver: null,
@@ -72,10 +83,13 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
         name: routeName,
         date: dateString,
       };
-
+      if (assignedDriver) {
+        const { assignedRoutes } = allDrivers.find(d => d.id === assignedDriver);
+        assignedRoutes.push(dateString);
+      }
       const res = await createRoute(route);
       const { id, name } = res;
-      handleCalendarAddEvent(id, name, date);
+      handleCalendarAddEvent(id, name, date, assignedDriver);
       clearState();
       onClose();
     } catch (err) {
@@ -110,6 +124,7 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
                 date={date}
                 onDateChange={setDate}
                 configs={calendarConfigs}
+                minDate={new Date().setDate(new Date().getDate() - 1)} // TODO: clean up and look into date formats?
               />
             </FormControl>
             <FormControl my="1em">
@@ -144,7 +159,8 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
 
 CreateRouteModal.propTypes = {
   routeDate: PropTypes.object,
-  drivers: PropTypes.array,
+  allDrivers: PropTypes.array,
+  setAllDrivers: PropTypes.func,
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   handleCalendarAddEvent: PropTypes.func,

@@ -32,7 +32,13 @@ import { DragHandleIcon } from '@chakra-ui/icons';
 import { PDFViewer } from '@react-pdf/renderer';
 import { Reorder } from 'framer-motion';
 import RoutePDF from '../RoutePDF/RoutePDF';
-import { updateDonation, getRoute, updateRoute, routePDFStyles } from '../../utils/RouteUtils';
+import {
+  updateDonation,
+  getRoute,
+  updateRoute,
+  routePDFStyles,
+  dateHasPassed,
+} from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
 import { AUTH_ROLES, STATUSES } from '../../utils/config';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
@@ -121,9 +127,19 @@ const DonationList = ({
   );
 };
 
-const EditRouteModal = ({ cookies, routeId, routeDate, drivers, isOpen, onClose, role }) => {
+const EditRouteModal = ({
+  cookies,
+  routeId,
+  routeDate,
+  allDrivers,
+  setAllDrivers,
+  isOpen,
+  onClose,
+  role,
+}) => {
   const [assignedDriverId, setAssignedDriverId] = useState('');
   const [route, setRoute] = useState({});
+  const [drivers, setDrivers] = useState([]);
   const [assignedRouteName, setAssignedRouteName] = useState('');
   const [donations, setDonations] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
@@ -131,14 +147,22 @@ const EditRouteModal = ({ cookies, routeId, routeDate, drivers, isOpen, onClose,
   const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
   const [confirmedState, setConfirmedState] = useState('inactive');
   const [userRole, setUserRole] = useState();
+  const [originalDriverId, setOriginalDriverId] = useState();
   const breakpointSize = useBreakpoint();
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
     setRoute(routeFromDB);
-    setAssignedDriverId(routeFromDB.driverId);
+    const { driverId } = routeFromDB;
+    setAssignedDriverId(driverId);
+    setOriginalDriverId(driverId);
     setAssignedRouteName(routeFromDB.name);
     setDonations(routeFromDB.donations ?? []);
+    const filteredDrivers = allDrivers.filter(
+      ({ id, assignedRoutes }) =>
+        id === driverId || !assignedRoutes.includes(routeDate.toISOString().split('T')[0]),
+    );
+    setDrivers(filteredDrivers);
   };
 
   useEffect(() => {
@@ -163,14 +187,27 @@ const EditRouteModal = ({ cookies, routeId, routeDate, drivers, isOpen, onClose,
     return formattedDate;
   };
 
-  const dateHasPassed = date => {
-    const today = new Date().toISOString().split('T')[0];
-    const selectedRouteDate = new Date(date).toISOString().split('T')[0];
-    return selectedRouteDate < today;
-  };
-
   const handleDriverChange = e => {
     setAssignedDriverId(e.target.value);
+  };
+
+  const updateDriverRoutes = () => {
+    if (originalDriverId) {
+      const { assignedRoutes } = allDrivers.find(d => d.id === originalDriverId);
+      const updatedDrivers = allDrivers.map(ele =>
+        ele.id === originalDriverId
+          ? {
+              ...ele,
+              assignedRoutes: assignedRoutes.filter(d => d !== routeDate),
+            }
+          : ele,
+      );
+      setAllDrivers(updatedDrivers);
+    }
+    if (assignedDriverId) {
+      const { assignedRoutes } = allDrivers.find(d => d.id === assignedDriverId);
+      assignedRoutes.push(routeDate.toISOString().split('T')[0]);
+    }
   };
 
   const handleSave = async () => {
@@ -186,6 +223,7 @@ const EditRouteModal = ({ cookies, routeId, routeDate, drivers, isOpen, onClose,
       // this updates donations in parallel
       const updateDonationPromises = updatedDonations.map(donation => updateDonation(donation));
       await Promise.all(updateDonationPromises);
+      updateDriverRoutes();
     } catch (err) {
       setErrorMessage(err.message);
     }
@@ -268,7 +306,9 @@ const EditRouteModal = ({ cookies, routeId, routeDate, drivers, isOpen, onClose,
                 <Switch
                   id="confirmed-donations"
                   onChange={handleConfirmedToggle}
-                  isDisabled={modalState === 'edit' || donations.length === 0}
+                  isDisabled={
+                    modalState === 'edit' || donations.length === 0 || dateHasPassed(routeDate)
+                  }
                   isChecked={modalState !== 'edit' && confirmedState === 'active'}
                 />
               </FormControl>
@@ -382,7 +422,8 @@ EditRouteModal.propTypes = {
   routeId: PropTypes.string,
   role: PropTypes.string,
   routeDate: PropTypes.instanceOf(Date),
-  drivers: PropTypes.instanceOf(Array).isRequired,
+  allDrivers: PropTypes.instanceOf(Array).isRequired,
+  setAllDrivers: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   cookies: instanceOf(Cookies).isRequired,

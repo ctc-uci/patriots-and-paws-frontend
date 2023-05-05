@@ -115,6 +115,12 @@ const routePDFStyles = StyleSheet.create({
   },
 });
 
+const dateHasPassed = date => {
+  const today = new Date().toISOString().split('T')[0];
+  const selectedRouteDate = new Date(date).toISOString().split('T')[0];
+  return selectedRouteDate < today;
+};
+
 export {
   getAllRoutes,
   getRoute,
@@ -128,4 +134,5 @@ export {
   formatDate,
   A4_WIDTH,
   routePDFStyles,
+  dateHasPassed,
 };
