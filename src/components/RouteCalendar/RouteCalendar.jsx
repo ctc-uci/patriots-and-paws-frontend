@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useState, useEffect, useRef } from 'react';
 import { AddIcon } from '@chakra-ui/icons';
+// import { Box, Flex, useDisclosure, Button, Heading, useUnmountEffect } from '@chakra-ui/react';
 import { Box, Flex, useDisclosure, Button, Heading } from '@chakra-ui/react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -11,8 +12,19 @@ import { getCurrentUserId, getUserFromDB } from '../../utils/AuthUtils';
 import EditRouteModal from '../EditRouteModal/EditRouteModal';
 import { AUTH_ROLES } from '../../utils/config';
 import { getAllRoutes, getDrivers } from '../../utils/RouteUtils';
+// import { STATUSES } from '../../utils/config';
 
 const { DRIVER_ROLE } = AUTH_ROLES;
+
+// const {
+//   RESCHEDULE,
+//   PENDING,
+//   CHANGES_REQUESTED,
+//   SCHEDULED,
+//   SCHEDULING,
+//   PICKED_UP,
+//   APPROVAL_REQUESTED,
+// } = STATUSES;
 
 const RouteCalendar = () => {
   const [role, setRole] = useState([]);
@@ -22,6 +34,7 @@ const RouteCalendar = () => {
   const [selectedRouteId, setSelectedRouteId] = useState();
   // const [overflow, setOverflow] = useState('visible');
   const calendarRef = useRef(null);
+  // const [currentStatus, setCurrentStatus] = useState(status);
 
   // for CreateRouteModal
   const {
@@ -73,6 +86,40 @@ const RouteCalendar = () => {
       calendarRef.current.getApi().addEventSource(eventsList);
     };
     fetchAllRoutesAndDrivers();
+
+    // const displayIndicators = curStatus => {
+    //   const [routesFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
+    //   const eventsList = routesFromDB.map(({ id, name, date }) =>
+
+    //   // if date is not current or is not after current, display gray background with white text.
+    //   ... () {
+    //     borderColor: 'blackgrey.500',
+    //     textColor: 'white',
+    //     backgroundColor:'blackgrey.500'
+    //   }
+
+    //   // if date is current or is after current, do either of the following:
+    //   ... () {
+    //       ... ( curStatus === SCHEDULING ) {
+    //         // A route with any scheduling donations has a blue background with white text.
+    //         borderColor: 'blue.600',
+    //         textColor: 'white',
+    //         backgroundColor:'blue.600'
+    //       }
+
+    //       ... ( curStatus === SCHEDULED ) {
+    //         // A route with all donations scheduled has a white background and gray text.
+    //         borderColor: '#718096',
+    //         textColor: '#718096',
+    //         backgroundColor:'white'
+    //       }
+    //     }
+    //   );
+
+    //   calendarRef.current.getApi().removeAllEventSources();
+    //   calendarRef.current.getApi().addEventSource(eventsList);
+    // };
+    // displayIndicators();
   }, []);
 
   const handleDateSelect = e => {
