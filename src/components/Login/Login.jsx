@@ -96,12 +96,20 @@ const Login = ({ cookies }) => {
   }
 
   return (
-    <Grid templateColumns="repeat(2, 1fr)" gap={0}>
-      <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
+    <Grid
+      templateColumns={{ md: 'repeat(2, 1fr)' }}
+      templateRows={{ base: 'repeat(2, 1fr)', md: 'none' }}
+      gap={0}
+    >
+      <GridItem
+        w="100%"
+        h={{ base: '50vh', md: '100vh' }}
+        bgGradient="linear(to-br, #F37C7C, #435FC0)"
+      />
       <GridItem>
-        <Flex minH="100vh" align="center" justify="center">
+        <Flex minH={{ md: '100vh' }} align="center" justify="center">
           <Stack align="center" width="100%" margin="auto">
-            <Stack width="70%" padding={9}>
+            <Stack width="70%" padding={{ base: 3, md: 9 }}>
               {signup === 'success' && (
                 <Alert status="success" variant="solid" bgColor="green">
                   <AlertIcon />
@@ -119,7 +127,12 @@ const Login = ({ cookies }) => {
                 </Alert>
               )}
               <Heading fontSize="3rem">Staff Login</Heading>
-              <Link href="/forgot-password" color="#3182ce" fontSize="1rem">
+              <Link
+                href="/forgot-password"
+                color="#3182ce"
+                fontSize="1rem"
+                display={{ base: 'none', md: 'block' }}
+              >
                 Forgot Password?
               </Link>
               <Stack width="100%">
@@ -150,6 +163,16 @@ const Login = ({ cookies }) => {
                     <Button colorScheme="blue" type="submit" width="100%" mt={14}>
                       Login
                     </Button>
+                    <Link
+                      href="/forgot-password"
+                      color="#3182ce"
+                      fontSize="1rem"
+                      mt={4}
+                      display={{ base: 'block', md: 'none' }}
+                      align="center"
+                    >
+                      Forgot Password?
+                    </Link>
                   </FormControl>
                 </form>
               </Stack>
