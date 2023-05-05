@@ -268,7 +268,7 @@ const EditRouteModal = ({
                   ))}
                 </Select>
               </FormControl>
-              <FormControl display="flex">
+              <FormControl display="flex" whiteSpace="nowrap" alignItems="center">
                 <Text fontSize="sm" fontWeight="normal" mr={3}>
                   Show confirmed donations only
                 </Text>
