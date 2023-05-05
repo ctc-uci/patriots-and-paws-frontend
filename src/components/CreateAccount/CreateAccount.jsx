@@ -275,7 +275,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
               <Box className={styles['error-box']}>{errorMessage}</Box>
             </Stack>
           </Flex>
-          <Flex justifyContent={{ base: 'center', md: 'start' }}>
+          <Flex justifyContent={{ base: 'center', md: 'none' }}>
             <Button
               colorScheme="blue"
               className={styles['create-account-button']}
@@ -287,7 +287,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
               Add Staff
             </Button>
           </Flex>
-          <Flex justifyContent={{ base: 'center', md: 'start' }}>
+          <Flex justifyContent={{ base: 'center', md: 'none' }} mb="5">
             <Button
               colorScheme="gray"
               className={styles['create-account-button']}
@@ -300,7 +300,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
             </Button>
           </Flex>
           <ModalFooter display={{ base: 'none', md: 'block' }}>
-            <Flex>
+            <Flex justify="flex-end">
               <Button
                 colorScheme="gray"
                 className={styles['create-account-button']}

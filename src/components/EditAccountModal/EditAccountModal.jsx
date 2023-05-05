@@ -135,20 +135,25 @@ const EditAccountModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={onCancel} size="4xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      onCloseComplete={onCancel}
+      size={{ base: 'md', md: '4xl' }}
+    >
       <ModalOverlay />
       <ModalContent>
         <Flex ml={5} mt={5} justifyContent="space-between">
           <Heading size="lg" mt=".4rem" mb={5}>
             Edit Staff
           </Heading>
-          <ModalCloseButton onClick={onCancel} mt="1rem" mr="1rem" size="lg" />
+          <ModalCloseButton onClick={onCancel} mt="1rem" mr="1rem" />
         </Flex>
         <Flex m={5} justifyContent="center">
           <Stack>
             <form onSubmit={handleSubmit(onSubmit)}>
               <FormControl>
-                <Flex mb={5}>
+                <Flex mb={5} display={{ md: 'flex' }}>
                   <Flex direction="column" mr={8}>
                     <FormLabel>First Name</FormLabel>
                     <InputGroup>
@@ -176,7 +181,7 @@ const EditAccountModal = ({
                     </InputGroup>
                   </Flex>
                 </Flex>
-                <Flex mb={5}>
+                <Flex mb={5} display={{ md: 'flex' }}>
                   <Flex direction="column" mr={8}>
                     <FormLabel>Email</FormLabel>
                     <InputGroup>
@@ -211,7 +216,7 @@ const EditAccountModal = ({
                 </Flex>
                 {isSuperAdmin && (
                   <>
-                    <Flex mb={5}>
+                    <Flex mb={5} display={{ md: 'flex' }}>
                       <Flex direction="column" mr={8}>
                         <Flex>
                           <FormLabel mt=".4rem">Password</FormLabel>
@@ -280,7 +285,21 @@ const EditAccountModal = ({
             </form>
           </Stack>
         </Flex>
-        <ModalFooter>
+        <Flex
+          justifyContent={{ base: 'center', md: 'none' }}
+          display={{ base: 'flex', md: 'none' }}
+        >
+          <Button
+            mb="5"
+            colorScheme="blue"
+            type="submit"
+            onClick={handleSubmit(onSubmit)}
+            width="50%"
+          >
+            Save
+          </Button>
+        </Flex>
+        <ModalFooter display={{ base: 'none', md: 'block' }}>
           <Flex justify="flex-end">
             <Button variant="outline" type="submit" mr={3} onClick={onCancel}>
               Cancel
