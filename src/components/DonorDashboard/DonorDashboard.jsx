@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
   Grid,
@@ -42,8 +41,6 @@ const DonorDashboard = ({ donationId }) => {
 
   const tAndCRef = useRef(0);
   const toast = useToast();
-
-  const navigate = useNavigate();
 
   const displayBanner = () => {
     switch (donation.status) {
@@ -356,18 +353,6 @@ const DonorDashboard = ({ donationId }) => {
           </Text>
           {donation?.status && <TrackDonationSection status={donation.status} />}
         </Flex>
-        <Button
-          bg="red.500"
-          color="white"
-          onClick={() => {
-            navigate('/donate', {
-              state: {},
-            });
-            navigate(0);
-          }}
-        >
-          Logout
-        </Button>
       </Flex>
       <DonorFooter />
     </>

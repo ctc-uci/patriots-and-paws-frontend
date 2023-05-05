@@ -1,8 +1,11 @@
 import React from 'react';
-import { Flex, Link, Text, Image, HStack } from '@chakra-ui/react';
+import { Flex, Link, Text, Image, HStack, Button } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import PNPlogo from '../Navbar/PNPlogo.png';
 
 const DonorFooter = () => {
+  const navigate = useNavigate();
+
   return (
     <Flex
       p="20px 40px 20px 40px"
@@ -52,6 +55,20 @@ const DonorFooter = () => {
             FAQ
           </Text>
         </Link>
+        <Button
+          variant="unstyled"
+          onClick={() => {
+            navigate('/donate', {
+              state: {},
+            });
+            navigate(0);
+          }}
+          size="1rem"
+        >
+          <Text color="#3182CE" fontSize={{ base: '14px', md: '18px' }}>
+            Logout
+          </Text>
+        </Button>
       </Flex>
     </Flex>
   );
