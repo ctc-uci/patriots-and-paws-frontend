@@ -89,7 +89,7 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleCancel} scrollBehavior="outside">
+    <Modal isOpen={isOpen} onClose={handleCancel} scrollBehavior="outside" isCentered>
       <ModalOverlay />
       <ModalContent p={5}>
         <ModalHeader>
@@ -98,20 +98,23 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
         <ModalCloseButton />
         <ModalBody>
           <form>
-            <FormControl isRequired>
-              <FormLabel paddingTop={3}>Route Name</FormLabel>
-              <Input
-                id="route-name"
-                placeholder="Name"
-                marginBottom={3}
-                {...register('routeName')}
-                isRequired
-              />
+            <FormControl isRequired my="1em">
+              <FormLabel>Route Name</FormLabel>
+              <Input id="route-name" placeholder="Name" {...register('routeName')} isRequired />
             </FormControl>
             <Box>{errors.routeName?.message}</Box>
-            <FormControl>
-              <FormLabel paddingTop={3}>Assigned Driver</FormLabel>
-              <Select placeholder="Select Driver" {...register('assignedDriver')} marginBottom={3}>
+            <FormControl isRequired my="1em">
+              <FormLabel>Date</FormLabel>
+              <SingleDatepicker
+                name="date-input"
+                date={date}
+                onDateChange={setDate}
+                configs={calendarConfigs}
+              />
+            </FormControl>
+            <FormControl my="1em">
+              <FormLabel>Assigned Driver</FormLabel>
+              <Select placeholder="Select Driver" {...register('assignedDriver')}>
                 {drivers.map(driver => (
                   <option key={driver.id} value={driver.id}>
                     {driver.firstName} {driver.lastName}
@@ -120,16 +123,6 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
               </Select>
             </FormControl>
             <Box>{errors.assignedDriver?.message}</Box>
-            <FormControl isRequired>
-              <FormLabel paddingTop={3}>Date</FormLabel>
-              <SingleDatepicker
-                name="date-input"
-                date={date}
-                onDateChange={setDate}
-                configs={calendarConfigs}
-                marginBottom={3}
-              />
-            </FormControl>
           </form>
           <Box>{errorMessage}</Box>
         </ModalBody>
