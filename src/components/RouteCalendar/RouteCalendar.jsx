@@ -126,7 +126,7 @@ const RouteCalendar = () => {
       <Box>
         {role !== DRIVER_ROLE && (
           <Flex gap="1em" align="end">
-            <Heading as="h3" size="lg" noOfLines={1}>
+            <Heading as="h3" size="lg" noOfLines={1} ml="1%">
               Routes Calendar
             </Heading>
             <Button
@@ -140,23 +140,29 @@ const RouteCalendar = () => {
             </Button>
           </Flex>
         )}
-        <FullCalendar
-          ref={calendarRef}
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-          headerToolbar={{
-            left: 'prev,next today',
-            center: 'title',
-            right: '',
-          }}
-          initialView="dayGridMonth"
-          fixedWeekCount={false}
-          selectable
-          dayMaxEvents
-          select={handleDateSelect}
-          eventClick={handleEventClick}
-          contentHeight="auto"
-          height="1vh"
-        />
+        <Button mt="15%" colorScheme="white" color="black">
+          <FullCalendar
+            ref={calendarRef}
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: '',
+            }}
+            initialView="dayGridMonth"
+            fixedWeekCount={false}
+            selectable
+            dayMaxEvents
+            select={handleDateSelect}
+            eventClick={handleEventClick}
+            contentHeight="auto"
+            height="1vh"
+            _hover={{
+              cursor: 'pointer',
+            }}
+            as={Button}
+          />
+        </Button>
       </Box>
     </Flex>
   );
