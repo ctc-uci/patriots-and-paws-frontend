@@ -194,11 +194,11 @@ const DonorDashboard = ({ donationId }) => {
             </Flex>
             <TermsConditionModal onClose={onClose} isOpen={isOpen} />
             <Flex columnGap={5} w="100%">
-              <Button bg="red.500" color="white" onClick={handleRejectTime}>
+              <Button colorScheme="red" onClick={handleRejectTime}>
                 Reject Time
                 <CloseIcon ml={3} boxSize={3} />
               </Button>
-              <Button bg="green" color="white" onClick={handleAcceptTime}>
+              <Button colorScheme="green" onClick={handleAcceptTime}>
                 Approve Time
                 <CheckIcon ml={3} boxSize={3} />
               </Button>
@@ -228,11 +228,11 @@ const DonorDashboard = ({ donationId }) => {
               </Text>
             </Text>
             <Flex gap={3} visibility="hidden">
-              <Button bg="red.500" color="white">
+              <Button colorScheme="red">
                 Reject Time
                 <CloseIcon ml={3} />
               </Button>
-              <Button bg="green" color="white">
+              <Button colorScheme="green">
                 Approve Time
                 <CheckIcon ml={3} />
               </Button>
@@ -347,8 +347,7 @@ const DonorDashboard = ({ donationId }) => {
           {donation?.status && <TrackDonationSection status={donation.status} />}
         </Flex>
         <Button
-          bg="red.500"
-          color="white"
+          colorScheme="red"
           onClick={() => {
             navigate('/donate', {
               state: {},

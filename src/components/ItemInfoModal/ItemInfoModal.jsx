@@ -18,10 +18,6 @@ import { PropTypes } from 'prop-types';
 const ItemInfoModal = ({ items, isAccepted, isOpen, onClose }) => {
   return (
     <>
-      {/* <Button bg="whiteAlpha" borderWidth="1px" borderColor="gray.200" onClick={onOpen}>
-        Preview Item List
-      </Button> */}
-
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'xl' }} isCentered>
         <ModalOverlay />
         <ModalContent padding="1.5em 2em" m={0}>
