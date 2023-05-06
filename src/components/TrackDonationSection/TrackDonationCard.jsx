@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Card, CardHeader, CardBody, Heading, Text } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import { BiRadioCircle } from 'react-icons/bi';
-import { IconContext } from 'react-icons';
 
 import styles from './TrackDonationCard.module.css';
 
@@ -15,13 +14,11 @@ const TrackDonationCard = ({ checked, curr, heading, body }) => {
       className={curr || checked ? styles.currStatus : styles.statusBox}
     >
       <CardHeader display="flex" alignItems="center">
-        {checked && <CheckCircleIcon color="#63B3ED" boxSize="2.3rem" mr="1rem" />}
+        {checked && (
+          <CheckCircleIcon color="#63B3ED" boxSize="2rem" mr="1rem" mt=".6rem" mb=".6rem" />
+        )}
         {
-          !checked && (
-            <IconContext.Provider value={{ color: '#63B3ED', size: '4rem' }}>
-              <BiRadioCircle />
-            </IconContext.Provider>
-          ) // display circle
+          !checked && <BiRadioCircle size="3rem" style={{ color: '#63B3ED' }} /> // display circle
         }
         <Heading size="sm">{heading}</Heading>
       </CardHeader>
