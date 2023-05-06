@@ -116,9 +116,13 @@ const routePDFStyles = StyleSheet.create({
 });
 
 const dateHasPassed = date => {
-  const today = new Date().toISOString().split('T')[0];
-  const selectedRouteDate = new Date(date).toISOString().split('T')[0];
-  return selectedRouteDate < today;
+  const today = new Date();
+  const selectedRouteDate = new Date(date);
+  return (
+    selectedRouteDate.getFullYear() < today.getFullYear() ||
+    selectedRouteDate.getMonth() < today.getMonth() ||
+    selectedRouteDate.getDate() < today.getDate()
+  );
 };
 
 export {

@@ -288,7 +288,7 @@ const EditRouteModal = ({
                   variant="outline"
                   size="sm"
                   width="80%"
-                  value={assignedDriverId}
+                  value={assignedDriverId ?? ''}
                   placeholder="Select Driver"
                   onChange={handleDriverChange}
                 >
