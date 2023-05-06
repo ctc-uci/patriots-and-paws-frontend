@@ -6,30 +6,28 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  useDisclosure,
-  // Button,
   Heading,
   UnorderedList,
   ListItem,
   Box,
   Flex,
 } from '@chakra-ui/react';
-import { InfoIcon } from '@chakra-ui/icons';
 
 import { PropTypes } from 'prop-types';
 
-const ItemInfo = ({ items, isAccepted = false }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+const ItemInfoModal = ({ items, isAccepted, isOpen, onClose }) => {
   return (
     <>
-      <InfoIcon boxSize={5} onClick={onOpen} />
+      {/* <Button bg="whiteAlpha" borderWidth="1px" borderColor="gray.200" onClick={onOpen}>
+        Preview Item List
+      </Button> */}
 
-      <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'xl' }}>
+      <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'xl' }} isCentered>
         <ModalOverlay />
-        <ModalContent padding="2em">
+        <ModalContent padding="1.5em 2em" m={0}>
           <ModalHeader>
             <Heading as="h1" size="lg">
-              Furniture Pickup
+              Furniture Donations Guidelines
             </Heading>
           </ModalHeader>
           <ModalCloseButton />
@@ -43,7 +41,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
                   {items
                     .filter(({ accepted }) => accepted === isAccepted)
                     .map(({ name }) => (
-                      <ListItem key={name} width="50%">
+                      <ListItem key={name} width="100%">
                         {name}
                       </ListItem>
                     ))}
@@ -68,7 +66,7 @@ const ItemInfo = ({ items, isAccepted = false }) => {
                   {items
                     .filter(({ accepted }) => accepted === !isAccepted)
                     .map(({ name }) => (
-                      <ListItem key={name} width="50%">
+                      <ListItem key={name} width="100%">
                         {name}
                       </ListItem>
                     ))}
@@ -82,14 +80,21 @@ const ItemInfo = ({ items, isAccepted = false }) => {
   );
 };
 
-ItemInfo.propTypes = {
+ItemInfoModal.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,
       accepted: PropTypes.bool,
     }),
   ).isRequired,
-  isAccepted: PropTypes.bool.isRequired,
+  isAccepted: PropTypes.bool,
+  isOpen: PropTypes.bool.isRequired,
+  // onOpen: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
-export default ItemInfo;
+ItemInfoModal.defaultProps = {
+  isAccepted: false,
+};
+
+export default ItemInfoModal;

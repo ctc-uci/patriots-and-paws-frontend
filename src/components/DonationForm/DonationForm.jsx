@@ -22,11 +22,13 @@ import {
   AlertDialogOverlay,
   Divider,
   Textarea,
+  IconButton,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { InfoIcon } from '@chakra-ui/icons';
 import DropZone from '../DropZone/DropZone';
 import { PNPBackend, sendEmail } from '../../utils/utils';
 import { createNewDonation, updateDonation } from '../../utils/DonorUtils';
@@ -35,9 +37,9 @@ import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
 import DonationCard from '../DonationCard/DonationCard';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
-import ItemInfo from '../ItemInfo/ItemInfo';
 import { STATUSES } from '../../utils/config';
 import DonationImageModal from '../DonationImageModal/DonationImageModal';
+import ItemInfoModal from '../ItemInfoModal/ItemInfoModal';
 
 const { APPROVAL_REQUESTED } = STATUSES;
 
@@ -79,6 +81,8 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isOpenImage, onOpen: onOpenImage, onClose: onCloseImage } = useDisclosure();
   const { isOpen: isOpenSubmit, onOpen: onOpenSubmit, onClose: onCloseSubmit } = useDisclosure();
+  const { isOpen: isOpenCancel, onOpen: onOpenCancel, onClose: onCloseCancel } = useDisclosure();
+  const { isOpen: isOpenInfo, onOpen: onOpenInfo, onClose: onCloseInfo } = useDisclosure();
 
   const navigate = useNavigate();
   const [furnitureOptions, setFurnitureOptions] = useState([]);
@@ -200,9 +204,9 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   const openImageModal = index => {
     const fileSelected = files[index];
     const image = {
-      imageUrl: fileSelected.file.preview,
+      imageUrl: fileSelected.file?.preview ?? fileSelected.imageUrl,
       notes: fileSelected.notes,
-      fileName: fileSelected.file.path,
+      fileName: fileSelected.file?.name ?? fileSelected.imageUrl.slice(-10),
     };
     setImageSelected(image);
     onOpenImage();
@@ -406,7 +410,17 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 <Heading fontSize="20px" mr={3}>
                   Donate Items
                 </Heading>
-                <ItemInfo items={itemsInfoList} isAccepted />
+                <IconButton
+                  colorScheme="transparent"
+                  color="black"
+                  icon={<InfoIcon boxSize={5} onClick={onOpenInfo} />}
+                />
+                <ItemInfoModal
+                  items={itemsInfoList}
+                  isAccepted
+                  isOpen={isOpenInfo}
+                  onClose={onCloseInfo}
+                />
               </Flex>
               <Text>Select which items you would like to donate and how many of each item.</Text>
             </Box>
@@ -492,16 +506,18 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 </Box>
                 <Box mt={{ base: 5, md: 0 }} w={{ md: '60%' }}>
                   <FormControl isInvalid={errors && errors.termsCond}>
-                    <FormLabel display="flex" mb={{ base: 5, md: 0 }}>
-                      <Checkbox {...register('termsCond')} />
-                      <Text>
-                        &nbsp;&nbsp;I agree to the&nbsp;
+                    <Flex>
+                      <Checkbox {...register('termsCond')} verticalAlign="bottom" />
+                      {/* <FormLabel mb={{ base: 5, md: 0 }}>
+                      </FormLabel> */}
+                      <Flex>
+                        <Text>&nbsp;&nbsp;I agree to the&nbsp;</Text>
                         <Text cursor="pointer" onClick={onOpen} as="u">
                           terms and conditions.
                         </Text>
-                      </Text>
-                      <Text color="red">&nbsp;*</Text>
-                    </FormLabel>
+                        <Text color="red">&nbsp;*</Text>
+                      </Flex>
+                    </Flex>
                     <FormErrorMessage>
                       {errors.termsCond && errors.termsCond.message}
                     </FormErrorMessage>
@@ -524,10 +540,14 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                   </AlertDialogHeader>
                   <AlertDialogBody>Are you sure you would like to submit?</AlertDialogBody>
                   <AlertDialogFooter>
-                    <Button colorScheme="red" onClick={onCloseSubmit}>
+                    <Button colorScheme="gray" onClick={onCloseSubmit}>
                       Cancel
                     </Button>
-                    <Button onClick={handleSubmit(data => onSubmit(data))} ml={3}>
+                    <Button
+                      colorScheme="blue"
+                      onClick={handleSubmit(data => onSubmit(data))}
+                      ml={3}
+                    >
                       Submit
                     </Button>
                   </AlertDialogFooter>
@@ -535,7 +555,40 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
               </AlertDialogOverlay>
             </AlertDialog>
 
+            <AlertDialog isOpen={isOpenCancel} onClose={onCloseCancel}>
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                    Cancel
+                  </AlertDialogHeader>
+                  <AlertDialogBody>
+                    Are you sure you would like to exit? Your changes will not be saved.
+                  </AlertDialogBody>
+                  <AlertDialogFooter>
+                    <Button colorScheme="gray" onClick={onCloseCancel}>
+                      Go Back
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      onClick={() => {
+                        closeEditDonationModal();
+                        onCloseCancel();
+                      }}
+                      ml={3}
+                    >
+                      Close
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
+
             <Flex justifyContent={{ md: 'flex-end', base: 'center' }}>
+              {donationData && (
+                <Button mr={5} colorScheme="gray" onClick={onOpenCancel}>
+                  Cancel
+                </Button>
+              )}
               <Button colorScheme="blue" type="submit">
                 {!donationData ? 'Submit' : 'Save'}
               </Button>

@@ -20,6 +20,7 @@ const RouteCalendar = () => {
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
   const [selectedEventDate, setSelectedEventDate] = useState();
   const [selectedRouteId, setSelectedRouteId] = useState();
+  const [selectedRouteName, setSelectedRouteName] = useState();
   // const [overflow, setOverflow] = useState('visible');
   const calendarRef = useRef(null);
 
@@ -37,6 +38,29 @@ const RouteCalendar = () => {
     onClose: editRouteOnClose,
   } = useDisclosure();
 
+  const getEventDisplayStyle = (currentUserId, driverId, date) => {
+    const currentDate = new Date().setHours(0, 0, 0, 0);
+    if (new Date(date).setHours(0, 0, 0, 0) < currentDate) {
+      return {
+        backgroundColor: 'rgba(0, 0, 0, 0.36)', // blackGray.500
+        textColor: 'white',
+        borderColor: 'rgba(0, 0, 0, 0.36)',
+      };
+    }
+    if (currentUserId === driverId) {
+      return {
+        backgroundColor: '#2B6CB0', // blue.600
+        textColor: 'white',
+        borderColor: '#2B6CB0',
+      };
+    }
+    return {
+      backgroundColor: 'white', // blue.600
+      textColor: '#718096',
+      borderColor: '#718096',
+    };
+  };
+
   useEffect(() => {
     const fetchAllRoutesAndDrivers = async () => {
       const currentUserId = getCurrentUserId();
@@ -45,28 +69,14 @@ const RouteCalendar = () => {
       setRole(userRole);
       // TODO: add color indication for driver logged in
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-      const eventsList = routesFromDB.map(({ id, name, date, driverId }) =>
-        driverId !== currentUserId
-          ? {
-              id,
-              title: name,
-              start: new Date(date).toISOString().replace(/T.*$/, ''),
-              allDay: true,
-              borderColor: '#718096',
-              textColor: '#718096',
-              backgroundColor: 'white',
-            }
-          : {
-              id,
-              title: name,
-              start: new Date(date).toISOString().replace(/T.*$/, ''),
-              allDay: true,
-              backgroundColor:
-                new Date(date).setHours(0, 0, 0, 0) >= new Date().setHours(0, 0, 0, 0)
-                  ? '#2B6CB0'
-                  : 'rgba(0, 0, 0, 0.36)',
-            },
-      );
+
+      const eventsList = routesFromDB.map(({ id, name, date, driverId }) => ({
+        id,
+        title: name,
+        start: new Date(date).toISOString().replace(/T.*$/, ''),
+        allDay: true,
+        ...getEventDisplayStyle(currentUserId, driverId, date),
+      }));
       setDrivers(driversFromDB);
 
       calendarRef.current.getApi().removeAllEventSources();
@@ -84,8 +94,10 @@ const RouteCalendar = () => {
 
   /* eslint no-underscore-dangle: 0 */
   const handleEventClick = e => {
-    setSelectedRouteId(e.event._def.publicId);
-    setSelectedEventDate(e.event._instance.range.start);
+    const { title, publicId } = e.event._def;
+    setSelectedRouteId(publicId);
+    setSelectedRouteName(title);
+    setSelectedEventDate(e.event._instance.range.end);
     editRouteOnOpen();
     // setOverflow('hidden');
   };
@@ -106,10 +118,18 @@ const RouteCalendar = () => {
       allDay: true,
     });
   };
+  const breakpointsW = {
+    sm: '100%',
+    md: '100%',
+    lg: '70%',
+    xl: '60%', // 80em+
+  };
+
   return (
-    <Flex p={5} height="90vh">
+    <Flex p={5} w={breakpointsW} h="100%">
       <EditRouteModal
         routeId={selectedRouteId}
+        routeName={selectedRouteName}
         routeDate={selectedEventDate}
         drivers={drivers}
         isOpen={editRouteIsOpen}
@@ -140,25 +160,23 @@ const RouteCalendar = () => {
             </Button>
           </Flex>
         )}
-        <Button mt="18%" colorScheme="white" color="black">
-          <FullCalendar
-            ref={calendarRef}
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            headerToolbar={{
-              left: 'prev,next today',
-              center: 'title',
-              right: '',
-            }}
-            initialView="dayGridMonth"
-            fixedWeekCount={false}
-            selectable
-            dayMaxEvents
-            select={handleDateSelect}
-            eventClick={handleEventClick}
-            contentHeight="auto"
-            height="1vh"
-          />
-        </Button>
+        <FullCalendar
+          ref={calendarRef}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          headerToolbar={{
+            left: 'prev,next today',
+            center: 'title',
+            right: '',
+          }}
+          initialView="dayGridMonth"
+          fixedWeekCount={false}
+          selectable
+          dayMaxEvents
+          select={handleDateSelect}
+          eventClick={handleEventClick}
+          contentHeight="auto"
+          height="100%" // was 1vh
+        />
       </Box>
     </Flex>
   );
