@@ -33,8 +33,8 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import { RiLockFill } from 'react-icons/ri';
-import { MdEmail, MdPhone, MdInfo } from 'react-icons/md';
-import { IoPersonSharp } from 'react-icons/io5';
+import { MdInfo } from 'react-icons/md';
+// import { IoPersonSharp } from 'react-icons/io5';
 import { updateUser, logInCurrentUserWithPassword } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
@@ -140,13 +140,13 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
             </Flex>
             <form onSubmit={handleSubmit(onSubmit)}>
               <FormControl>
-                <Flex mb={5}>
+                <Flex mb={5} display={{ md: 'flex' }}>
                   <Flex direction="column" mr={8}>
                     <FormLabel>First Name</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
+                      {/* <InputRightElement pointerEvents="none">
                         <IoPersonSharp color="black.300" />
-                      </InputRightElement>
+                      </InputRightElement> */}
                       <Input
                         id="first-name"
                         style={{ width: '240px' }}
@@ -162,9 +162,9 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                   <Flex direction="column">
                     <FormLabel>Last Name</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
+                      {/* <InputRightElement pointerEvents="none">
                         <IoPersonSharp color="black.300" />
-                      </InputRightElement>
+                      </InputRightElement> */}
                       <Input
                         id="last-name"
                         style={{ width: '240px' }}
@@ -178,13 +178,13 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                     </InputGroup>
                   </Flex>
                 </Flex>
-                <Flex mb={5}>
+                <Flex mb={5} display={{ md: 'flex' }}>
                   <Flex direction="column" mr={8}>
                     <FormLabel>Email</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
+                      {/* <InputRightElement pointerEvents="none">
                         <MdEmail color="black.300" />
-                      </InputRightElement>
+                      </InputRightElement> */}
                       <Input
                         type="email"
                         id="email"
@@ -201,9 +201,9 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                   <Flex direction="column">
                     <FormLabel>Phone Number</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
+                      {/* <InputRightElement pointerEvents="none">
                         <MdPhone color="black.300" />
-                      </InputRightElement>
+                      </InputRightElement> */}
                       <Input
                         type="tel"
                         id="phone-number"
