@@ -63,7 +63,8 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
       setNewEntries(prev => [
         ...prev,
         { name: toCapitalCase(furnitureName), accepted: isAccepted },
-      ]);      toast.closeAll();
+      ]);
+      toast.closeAll();
       toast({
         title: 'Added successfully',
         description: `${furnitureName} has been added`,
