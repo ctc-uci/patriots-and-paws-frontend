@@ -140,7 +140,7 @@ const RouteCalendar = () => {
             </Button>
           </Flex>
         )}
-        <Button mt="15%" colorScheme="white" color="black">
+        <Button mt="18%" colorScheme="white" color="black">
           <FullCalendar
             ref={calendarRef}
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -157,10 +157,6 @@ const RouteCalendar = () => {
             eventClick={handleEventClick}
             contentHeight="auto"
             height="1vh"
-            _hover={{
-              cursor: 'pointer',
-            }}
-            as={Button}
           />
         </Button>
       </Box>
