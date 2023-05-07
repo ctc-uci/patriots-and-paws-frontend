@@ -94,7 +94,6 @@ const DonorDashboard = ({ donationId }) => {
     await PNPBackend.put(`/donations/${donation.id}`, {
       status: RESCHEDULE,
     });
-
     toast({
       title: 'Pickup Day Rejected',
       status: 'info',
@@ -102,14 +101,12 @@ const DonorDashboard = ({ donationId }) => {
       isClosable: true,
       position: 'top',
       variant: 'subtle',
-      containerStyle: {
-        mt: '6rem',
-      },
     });
   };
 
   const handleAcceptTime = async () => {
     if (!tAndCRef.current.checked) {
+      toast.closeAll();
       toast({
         title: 'Error.',
         description: 'Please agree to the terms and conditions',
@@ -126,7 +123,6 @@ const DonorDashboard = ({ donationId }) => {
     await PNPBackend.put(`/donations/${donation.id}`, {
       status: SCHEDULED,
     });
-
     toast({
       title: 'Scheduled!',
       description: 'Your pickup time has been scheduled.',
