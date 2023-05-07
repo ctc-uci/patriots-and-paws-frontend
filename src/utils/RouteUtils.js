@@ -107,6 +107,16 @@ const formatDate = date =>
     day: 'numeric',
   });
 
+const formatDatePDF = date => {
+  const formattedDate = date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  return formattedDate.replace(',', ':');
+};
+
 const A4_WIDTH = 595.28; // can use instead of "A4" for page size to get one long page
 
 const routePDFStyles = StyleSheet.create({
@@ -127,6 +137,7 @@ export {
   getRouteDonations,
   getDriverName,
   formatDate,
+  formatDatePDF,
   A4_WIDTH,
   routePDFStyles,
 };

@@ -35,6 +35,11 @@ const formatPhone = value => {
   return value.replace(phoneRegex, '$1-$2-$3');
 };
 
+const formatPhonePDF = value => {
+  const phoneRegex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+  return value.replace(phoneRegex, '($1) $2 - $3');
+};
+
 // create address string from address components
 const formatAddress = ({ addressStreet, addressUnit, addressCity, addressZip }) => {
   const addressArray = [addressStreet, addressUnit, addressCity, `CA ${addressZip}`].filter(
@@ -79,6 +84,7 @@ export {
   passwordRequirementsRegex,
   sendEmail,
   formatPhone,
+  formatPhonePDF,
   formatAddress,
   handleNavigateToAddress,
   calendarConfigs,

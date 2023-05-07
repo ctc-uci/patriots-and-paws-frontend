@@ -11,15 +11,13 @@ import {
   Image,
   Font,
 } from '@react-pdf/renderer';
-import { formatDate } from '../../utils/RouteUtils';
-import { formatPhone } from '../../utils/utils';
+import { formatDatePDF } from '../../utils/RouteUtils';
+import { formatPhonePDF } from '../../utils/utils';
 import deliveryIcon from '../../assets/delivery.png';
 import itemIcon from '../../assets/item.png';
 import emailIcon from '../../assets/email.png';
 import phoneIcon from '../../assets/phone.png';
-import driverIcon from '../../assets/driver.png';
 import commentIcon from '../../assets/comment.png';
-// import timeIcon from '../../assets/time.png';
 import InterRegular from '../../assets/Inter/Inter-Regular.ttf';
 import InterBold from '../../assets/Inter/Inter-Bold.ttf';
 
@@ -39,7 +37,7 @@ const RoutePDF = ({ driverData, donationData, date }) => {
   useEffect(() => {
     const helper = async () => {
       setDonations(donationData);
-      setDateStr(formatDate(new Date(date)));
+      setDateStr(formatDatePDF(new Date(date)));
       setDriver(`${driverData.firstName} ${driverData.lastName}`);
     };
     helper();
@@ -59,7 +57,6 @@ const RoutePDF = ({ driverData, donationData, date }) => {
     },
     title: {
       fontWeight: 'bold',
-      fontStyle: 'normal',
       fontSize: 40,
     },
     date: {
@@ -70,7 +67,7 @@ const RoutePDF = ({ driverData, donationData, date }) => {
       fontWeight: 'bold',
       fontSize: 23,
       marginBottom: 10,
-      marginTop: 10,
+      marginTop: 15,
     },
     subTitle: {
       fontWeight: 'bold',
@@ -104,6 +101,12 @@ const RoutePDF = ({ driverData, donationData, date }) => {
     },
     donation: {
       marginBottom: 30,
+    },
+    pageNumbers: {
+      position: 'absolute',
+      top: 0,
+      right: 60,
+      textAlign: 'center',
     },
   });
 
@@ -151,11 +154,7 @@ const RoutePDF = ({ driverData, donationData, date }) => {
             </View>
             <View style={styles.iconTitleContainer}>
               <Image src={phoneIcon} style={styles.icon} />
-              <Text> {formatPhone(phoneNum)} </Text>
-            </View>
-            <View style={styles.iconTitleContainer}>
-              <Image src={driverIcon} style={styles.icon} />
-              <Text> {driver} </Text>
+              <Text> {formatPhonePDF(phoneNum)} </Text>
             </View>
           </View>
         </View>
@@ -167,9 +166,9 @@ const RoutePDF = ({ driverData, donationData, date }) => {
               Number of Items: {furniture.reduce((acc, { count }) => acc + count, 0)}
             </Text>
           </View>
-          {furniture.map(({ id: fid, name, count }, index) => (
+          {furniture.map(({ id: fid, name, count }) => (
             <Text style={styles.indent} key={fid}>
-              {index + 1}. {name} - {count}
+              {'\u2022'} {count}x {name}
             </Text>
           ))}
         </View>
@@ -190,10 +189,23 @@ const RoutePDF = ({ driverData, donationData, date }) => {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View>
-          <Text style={styles.title}>Route Summary</Text>
-          <Text style={styles.date}>{dateStr}</Text>
-        </View>
+        <Text
+          style={styles.pageNumbers}
+          render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
+          fixed
+        />
+        <View
+          render={({ pageNumber }) =>
+            pageNumber === 1 && (
+              <View>
+                <Text style={styles.title}>Route Summary</Text>
+                <Text style={styles.date}>
+                  {dateStr} | {driver}
+                </Text>
+              </View>
+            )
+          }
+        />
         {donationsList}
       </Page>
     </Document>
