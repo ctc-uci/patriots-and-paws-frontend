@@ -293,6 +293,33 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
             </form>
           </Stack>
         </Flex>
+        <Flex
+          justifyContent={{ base: 'center', md: 'none' }}
+          display={{ base: 'flex', md: 'none' }}
+        >
+          {isEditable ? (
+            <>
+              <Button variant="outline" type="submit" mr={3} onClick={cancel}>
+                Cancel
+              </Button>
+              <Button colorScheme="blue" type="submit" onClick={handleSubmit(onSubmit)}>
+                Save Changes
+              </Button>
+            </>
+          ) : (
+            <Button
+              color="white"
+              background="#718096"
+              _hover={{ bg: '#718096' }}
+              _focus={{ bg: '#718096' }}
+              onClick={() => {
+                setIsEditable(true);
+              }}
+            >
+              Edit Profile
+            </Button>
+          )}
+        </Flex>
         <ModalFooter>
           <Flex justify="flex-end">
             {isEditable ? (
@@ -310,6 +337,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                 background="#718096"
                 _hover={{ bg: '#718096' }}
                 _focus={{ bg: '#718096' }}
+                display={{ base: 'none', md: 'flex' }}
                 onClick={() => {
                   setIsEditable(true);
                 }}
