@@ -182,7 +182,7 @@ const EditRouteModal = ({
       month: 'long',
       day: 'numeric',
       year: 'numeric',
-      timeZone: 'UTC',
+      timeZone: 'America/Los_Angeles',
     });
     return formattedDate;
   };
