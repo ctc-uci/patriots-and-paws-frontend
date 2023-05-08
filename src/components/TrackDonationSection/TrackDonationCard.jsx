@@ -20,7 +20,7 @@ const TrackDonationCard = ({ checked, curr, heading, body }) => {
         {
           !checked && <BiRadioCircle size="3rem" style={{ color: '#63B3ED' }} /> // display circle
         }
-        <Heading size="sm">{heading}</Heading>
+        <Heading size="md">{heading}</Heading>
       </CardHeader>
       <CardBody mt="-20px">
         <Text fontSize="1em">{body}</Text>

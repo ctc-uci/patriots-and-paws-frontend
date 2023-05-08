@@ -10,7 +10,7 @@ const DonationFurnitureContainer = ({ data }) => {
   }, [data]);
 
   return (
-    <Flex direction="column" alignItems="start" gap={2.5} mt="1rem" overflowY="scroll">
+    <Flex direction="column" alignItems="start" gap={2.5} mt="1rem" overflowY="scroll" maxH="300px">
       {displayedData?.map(furniture => (
         <InputGroup key={furniture.id} variant="white">
           <Input value={furniture.name} isReadOnly />

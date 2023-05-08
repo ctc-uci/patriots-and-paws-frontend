@@ -176,19 +176,19 @@ const DonorDashboard = ({ donationId }) => {
                 )}
               </Heading>
             </Box>
-            <Text fontWeight="400" fontSize="16px" mb="15px" mt={0}>
+            <Text fontWeight="400" fontSize="lg" mb="15px" mt={0}>
               Proposed Day:
-              <Text fontWeight="600" fontSize="18px">
+              <Text fontWeight="600" fontSize="lg">
                 {formatDate(donation.pickupDate)}
               </Text>
             </Text>
             <Flex mb="15px">
               <Checkbox ref={tAndCRef} mr="13px" />
-              <Text fontSize="14px">I accept the&nbsp;</Text>
-              <Text fontSize="14px" as="b" onClick={onOpen} _hover={{ cursor: 'pointer' }}>
+              <Text fontSize="sm">I accept the&nbsp;</Text>
+              <Text fontSize="sm" as="b" onClick={onOpen} _hover={{ cursor: 'pointer' }}>
                 Terms and Conditions&nbsp;
               </Text>
-              <Text fontSize="14px" color="red">
+              <Text fontSize="sm" color="red">
                 *
               </Text>
             </Flex>
@@ -198,7 +198,7 @@ const DonorDashboard = ({ donationId }) => {
                 Reject Time
                 <CloseIcon ml={3} boxSize={3} />
               </Button>
-              <Button bg="green" color="white" onClick={handleAcceptTime}>
+              <Button bg="#319747" color="white" onClick={handleAcceptTime}>
                 Approve Time
                 <CheckIcon ml={3} boxSize={3} />
               </Button>
@@ -337,7 +337,7 @@ const DonorDashboard = ({ donationId }) => {
               </Box>
             </Flex>
             <Container h="89%">
-              <Box borderRadius="6px" bg="white" h="100%" px={1}>
+              <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
                 {displayPickup()}
               </Box>
             </Container>
