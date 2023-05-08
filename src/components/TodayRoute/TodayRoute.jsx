@@ -46,9 +46,10 @@ const TodayRoute = () => {
 
     const today = new Date().toISOString();
     const todayRoute = driverRoutes.find(currRoute => isSameDay(currRoute.date, today));
+    // console.log(todayRoute);
     if (todayRoute) {
-      const { data } = await PNPBackend.get(`/routes/${todayRoute.id}`);
-      const donationInfo = data.donations;
+      // const { data } = await PNPBackend.get(`/routes/${todayRoute.id}`);
+      const donationInfo = todayRoute.donations; // data.donations;
       setDonations(donationInfo);
       setRoute({ date: today, name: todayRoute.name, isRoute: true });
     }
