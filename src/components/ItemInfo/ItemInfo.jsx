@@ -13,8 +13,8 @@ import {
   ListItem,
   Box,
   Flex,
+  Button,
 } from '@chakra-ui/react';
-import { InfoIcon } from '@chakra-ui/icons';
 
 import { PropTypes } from 'prop-types';
 
@@ -22,14 +22,16 @@ const ItemInfo = ({ items, isAccepted = false }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <>
-      <InfoIcon boxSize={5} onClick={onOpen} />
+      <Button bg="whiteAlpha" borderWidth="1px" borderColor="gray.200" onClick={onOpen}>
+        Preview Item List
+      </Button>
 
-      <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'xl' }}>
+      <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'xl' }} isCentered>
         <ModalOverlay />
-        <ModalContent padding="2em">
+        <ModalContent padding="1.5em 2em" m={0}>
           <ModalHeader>
             <Heading as="h1" size="lg">
-              Furniture Pickup
+              Furniture Donations Guidelines
             </Heading>
           </ModalHeader>
           <ModalCloseButton />

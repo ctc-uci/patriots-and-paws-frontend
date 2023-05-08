@@ -80,13 +80,13 @@ const Navbar = ({ cookies }) => {
         as={NavLink}
         to={path}
         _hover={{ textDecoration: 'none' }}
-        paddingY="1.5em"
+        paddingY="1.4em"
         borderBottom={selectedTab && '2px solid'}
         borderColor={selectedTab && 'blue.500'}
       >
         <Text
           color={selectedTab ? 'blue.500' : 'gray.500'}
-          fontSize="1.2em"
+          fontSize="16px"
           mx="1em"
           _hover={{ color: 'blue.600' }}
         >
@@ -111,15 +111,15 @@ const Navbar = ({ cookies }) => {
       <ProfileModal data={user} setData={setUser} isOpen={isProfileOpen} onClose={onProfileClose} />
       <LinkBox>
         <LinkOverlay href="https://www.patriotsandpaws.org/" isExternal>
-          <HStack spacing="24px">
+          <HStack spacing="20px">
             <Image
               boxSize="3rem"
               src={pnpLogo}
               alt="Patriots and Paws logo, redirects to main page"
             />
             <Link
-              fontSize="1.2em"
-              fontStyle="bold"
+              fontSize="16px"
+              fontWeight="medium"
               href="https://www.patriotsandpaws.org/"
               isExternal
               _hover={{ textDecoration: 'none' }}
@@ -129,7 +129,7 @@ const Navbar = ({ cookies }) => {
           </HStack>
         </LinkOverlay>
       </LinkBox>
-      <HStack>
+      <HStack h="100%">
         {role !== DRIVER_ROLE && (
           <Flex align="center">
             {makeNavTabs('Dashboard', '/')}
@@ -145,15 +145,15 @@ const Navbar = ({ cookies }) => {
               isActive={isOpen}
               as={Button}
               mx={1}
-              py={[1, 2, 2]}
+              py={1}
               px={4}
               borderRadius={5}
               bgColor={showFullMenu ? 'white' : 'transparent'}
               aria-label="User Dropdown"
               fontWeight="normal"
-              fontSize="1.2em"
+              fontSize="16px"
               shadow={{ md: 'md' }}
-              my="1em"
+              my="0.9em"
             >
               {showFullMenu &&
                 user.lastName &&
