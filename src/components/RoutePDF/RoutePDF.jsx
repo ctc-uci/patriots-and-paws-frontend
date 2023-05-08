@@ -36,6 +36,7 @@ const RoutePDF = ({ driverData, donationData, date }) => {
 
   useEffect(() => {
     const helper = async () => {
+      console.log(donationData);
       setDonations(donationData);
       setDateStr(formatDatePDF(new Date(date)));
       setDriver(`${driverData.firstName} ${driverData.lastName}`);
@@ -66,7 +67,7 @@ const RoutePDF = ({ driverData, donationData, date }) => {
     donationTitle: {
       fontWeight: 'bold',
       fontSize: 23,
-      marginBottom: 10,
+      marginBottom: 30,
       marginTop: 15,
     },
     subTitle: {
@@ -200,7 +201,7 @@ const RoutePDF = ({ driverData, donationData, date }) => {
               <View>
                 <Text style={styles.title}>Route Summary</Text>
                 <Text style={styles.date}>
-                  {dateStr} | {driver}
+                  {dateStr} | Driver: {driver}
                 </Text>
               </View>
             )
