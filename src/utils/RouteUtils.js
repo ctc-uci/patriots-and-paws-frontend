@@ -1,8 +1,8 @@
 import { StyleSheet } from '@react-pdf/renderer';
 import { PNPBackend } from './utils';
-import { AUTH_ROLES } from './config';
+// import { AUTH_ROLES } from './config';
 
-const { DRIVER_ROLE } = AUTH_ROLES;
+// const { DRIVER_ROLE } = AUTH_ROLES;
 
 const getAllRoutes = async () => {
   const { data } = await PNPBackend.get(`/routes`);
@@ -42,9 +42,8 @@ const updateRoute = async route => {
 };
 
 const getDrivers = async () => {
-  const users = await PNPBackend.get('/users/');
-  const drivers = users.data.filter(user => user.role === DRIVER_ROLE);
-  return drivers;
+  const { data } = await PNPBackend.get('/users/drivers');
+  return data;
 };
 
 const getDonations = async routeId => {
@@ -116,6 +115,16 @@ const routePDFStyles = StyleSheet.create({
   },
 });
 
+const dateHasPassed = date => {
+  const today = new Date();
+  const selectedRouteDate = new Date(date);
+  return (
+    selectedRouteDate.getFullYear() < today.getFullYear() ||
+    selectedRouteDate.getMonth() < today.getMonth() ||
+    selectedRouteDate.getDate() < today.getDate()
+  );
+};
+
 export {
   getAllRoutes,
   getRoute,
@@ -129,4 +138,5 @@ export {
   formatDate,
   A4_WIDTH,
   routePDFStyles,
+  dateHasPassed,
 };

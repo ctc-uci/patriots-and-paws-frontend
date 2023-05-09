@@ -15,6 +15,12 @@ import {
 import { PropTypes } from 'prop-types';
 import ItemCard from '../ItemCard/ItemCard';
 
+const toCapitalCase = string => {
+  return string.trim().replace(/\w\S*/g, word => {
+    return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase();
+  });
+};
+
 const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAccepted }) => {
   const formSchema = yup.object({
     furnitureName: yup.string(),
@@ -50,17 +56,20 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
         shouldFocus: true,
       });
     } else {
-      setItems(prev => [...prev, { name: furnitureName, accepted: isAccepted }]);
-      setNewEntries(prev => [...prev, { name: furnitureName, accepted: isAccepted }]);
+      setItems(prev => [...prev, { name: toCapitalCase(furnitureName), accepted: isAccepted }]);
+      setNewEntries(prev => [
+        ...prev,
+        { name: toCapitalCase(furnitureName), accepted: isAccepted },
+      ]);
       reset({ furnitureName: '' });
     }
   };
 
   return (
     <>
-      <Box width="40%" height="100%" mx="3vh" overflow="hidden">
+      <Box width="48%" height="100%" overflow="hidden">
         {isAccepted ? (
-          <Text as="b" fontSize="xl">
+          <Text as="b" fontSize="xl" my="15px">
             Items We Accept
           </Text>
         ) : (
@@ -77,8 +86,8 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
           </Flex>
         )}
 
-        <Box bg="rgba(0, 0, 0, 0.04);" padding="15px">
-          <Wrap height="50vh" my="3%">
+        <Box bg="blackAlpha.50" padding="15px" borderRadius="7px" mt="15px">
+          <Wrap height="50vh" overflowY="scroll">
             {items
               .filter(({ accepted }) => accepted === isAccepted)
               .map(({ name }) => (
@@ -93,14 +102,14 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
           </Wrap>
           <form onSubmit={handleSubmit(handleAdd)}>
             <FormControl isInvalid={errors.furnitureName?.message}>
-              <Flex flexDirection="row">
+              <Flex gap="1em">
                 <Input
                   bg="white"
                   id="furnitureName"
                   placeholder="Item"
                   {...register('furnitureName')}
                 />
-                <Button type="submit" bg="#3182CE" color="white" mx="3%">
+                <Button type="submit" colorScheme="blue">
                   Add Item
                 </Button>
               </Flex>

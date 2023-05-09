@@ -110,7 +110,7 @@ const DonationImagesContainer = ({ pictures, itemsPerPage }) => {
                   alt={image.notes}
                   src={image.imageUrl}
                   objectFit="cover"
-                  h="20vh"
+                  h="10rem"
                   align="center"
                   onClick={image.imageUrl ? () => handleImageClick(image) : () => {}}
                   fallback={!image.imageUrl && <Box width="12rem" height="10rem" />}

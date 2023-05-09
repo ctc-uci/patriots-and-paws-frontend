@@ -61,7 +61,7 @@ const handleNavigateToAddress = donations => {
 };
 
 const calendarConfigs = {
-  dateFormat: 'MM-dd-yyyy',
+  dateFormat: 'MMMM d',
 };
 
 const formatDate = date => {

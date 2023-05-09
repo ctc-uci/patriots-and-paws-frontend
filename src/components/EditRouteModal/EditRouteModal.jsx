@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PropTypes } from 'prop-types';
+import { PropTypes, instanceOf } from 'prop-types';
 import {
   Flex,
   List,
@@ -26,32 +26,148 @@ import {
   PopoverBody,
   PopoverArrow,
   useDisclosure,
+  useBreakpoint,
 } from '@chakra-ui/react';
 import { DragHandleIcon } from '@chakra-ui/icons';
 import { PDFViewer } from '@react-pdf/renderer';
 import { Reorder } from 'framer-motion';
 import RoutePDF from '../RoutePDF/RoutePDF';
-import { updateDonation, getRoute, updateRoute, routePDFStyles } from '../../utils/RouteUtils';
+import {
+  updateDonation,
+  getRoute,
+  updateRoute,
+  routePDFStyles,
+  dateHasPassed,
+} from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
-import { AUTH_ROLES } from '../../utils/config';
+import { AUTH_ROLES, STATUSES } from '../../utils/config';
+import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 
-const { SUPERADMIN_ROLE, ADMIN_ROLE } = AUTH_ROLES;
+const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
 
-const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) => {
+const { SCHEDULING } = STATUSES;
+
+const DonationList = ({
+  isAdminView,
+  isEditing,
+  donations,
+  setDonations,
+  getConfirmedDonations,
+}) => {
+  const listComponentProps = {
+    as: Reorder.Group,
+    styleType: 'decimal',
+    onReorder: setDonations,
+    paddingLeft: '1em',
+  };
+
+  const itemComponentProps = {
+    as: Reorder.Item,
+    dragTransition: { bounceStiffness: 600 },
+    initial: 'notDragging',
+    whileDrag: 'dragging',
+    position: 'relative',
+    cursor: 'move',
+    paddingLeft: '1em',
+  };
+
+  return (
+    <List spacing={5} axis="y" values={donations} {...(isEditing && listComponentProps)}>
+      {getConfirmedDonations().map(donation => (
+        <ListItem
+          key={donation.id}
+          value={donation}
+          as={isEditing && Reorder.Item}
+          {...(isEditing && itemComponentProps)}
+        >
+          <Flex alignItems="center" justifyContent="space-between">
+            <Card
+              backgroundColor="white"
+              border="solid"
+              borderWidth={1}
+              borderColor={donation.status === SCHEDULING || isAdminView ? 'gray.200' : 'blue.500'}
+              p="0.7em 1.7em"
+              fontSize="1em"
+              width="100%"
+              borderRadius={10}
+            >
+              <Flex justifyContent="space-between" alignItems="center">
+                <Flex alignItems="center">
+                  {isEditing && <DragHandleIcon mr={5} />}
+                  <Stack spacing={0}>
+                    <Text fontWeight="bold">Donation #{donation.id}</Text>
+                    <Text>
+                      {donation.firstName} {donation.lastName} | Items:&nbsp;
+                      {donation.furniture.length ? donation.furniture.length : 0}
+                    </Text>
+                  </Stack>
+                </Flex>
+                <Popover placement="left">
+                  <PopoverTrigger>
+                    <Button colorScheme="teal" size="sm">
+                      Show Address
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent bg="#171923" color="white">
+                    <PopoverArrow bg="#171923" />
+                    <PopoverBody>
+                      {donation.addressUnit
+                        ? `${donation.addressStreet}, Unit ${donation.addressUnit}`
+                        : donation.addressStreet}
+                      , {donation.addressCity}, CA {donation.addressZip}
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </Flex>
+            </Card>
+          </Flex>
+        </ListItem>
+      ))}
+    </List>
+  );
+};
+
+const EditRouteModal = ({
+  cookies,
+  routeId,
+  routeDate,
+  allDrivers,
+  setAllDrivers,
+  isOpen,
+  onClose,
+  role,
+}) => {
   const [assignedDriverId, setAssignedDriverId] = useState('');
   const [route, setRoute] = useState({});
+  const [drivers, setDrivers] = useState([]);
+  const [assignedRouteName, setAssignedRouteName] = useState('');
   const [donations, setDonations] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
   const [modalState, setModalState] = useState('view');
   const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
   const [confirmedState, setConfirmedState] = useState('inactive');
+  const [userRole, setUserRole] = useState();
+  const [originalDriverId, setOriginalDriverId] = useState();
+  const breakpointSize = useBreakpoint();
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
     setRoute(routeFromDB);
-    setAssignedDriverId(routeFromDB.driverId);
+    const { driverId } = routeFromDB;
+    setAssignedDriverId(driverId);
+    setOriginalDriverId(driverId);
+    setAssignedRouteName(routeFromDB.name);
     setDonations(routeFromDB.donations ?? []);
+    const filteredDrivers = allDrivers.filter(
+      ({ id, assignedRoutes }) =>
+        id === driverId || !assignedRoutes.includes(routeDate.toISOString().split('T')[0]),
+    );
+    setDrivers(filteredDrivers);
   };
+
+  useEffect(() => {
+    setUserRole(cookies.get(cookieKeys.ROLE));
+  }, []);
 
   useEffect(() => {
     if (routeId) {
@@ -66,13 +182,32 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
       month: 'long',
       day: 'numeric',
       year: 'numeric',
-      timeZone: 'UTC',
+      timeZone: 'America/Los_Angeles',
     });
     return formattedDate;
   };
 
   const handleDriverChange = e => {
     setAssignedDriverId(e.target.value);
+  };
+
+  const updateDriverRoutes = () => {
+    if (originalDriverId) {
+      const { assignedRoutes } = allDrivers.find(d => d.id === originalDriverId);
+      const updatedDrivers = allDrivers.map(ele =>
+        ele.id === originalDriverId
+          ? {
+              ...ele,
+              assignedRoutes: assignedRoutes.filter(d => d !== routeDate),
+            }
+          : ele,
+      );
+      setAllDrivers(updatedDrivers);
+    }
+    if (assignedDriverId) {
+      const { assignedRoutes } = allDrivers.find(d => d.id === assignedDriverId);
+      assignedRoutes.push(routeDate.toISOString().split('T')[0]);
+    }
   };
 
   const handleSave = async () => {
@@ -88,6 +223,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
       // this updates donations in parallel
       const updateDonationPromises = updatedDonations.map(donation => updateDonation(donation));
       await Promise.all(updateDonationPromises);
+      updateDriverRoutes();
     } catch (err) {
       setErrorMessage(err.message);
     }
@@ -115,7 +251,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
 
   const getConfirmedDonations = () => {
     if (confirmedState === 'active') {
-      return donations.filter(ele => ele.status === 'scheduling');
+      return donations.filter(ele => ele.status !== SCHEDULING);
     }
     return donations;
   };
@@ -126,54 +262,53 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
       isOpen={isOpen}
       onClose={() => {
         setConfirmedState('inactive');
+        setModalState('view');
         onClose();
+        setModalState('view');
       }}
-      scrollBehavior="outside"
+      scrollBehavior="inside"
+      isCentered
     >
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent p="1em" h="80vh">
         <ModalHeader>
           <Stack>
-            <Heading paddingLeft={5} paddingTop={5}>
-              Route #{routeId}
+            <Heading as="h4" textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+              {assignedRouteName}
             </Heading>
             <Flex justifyContent="space-between">
-              <Text paddingLeft={5} fontSize="md" fontWeight="normal">
+              <Text fontSize="md" fontWeight="normal">
                 {convertDate(routeDate)}
               </Text>
             </Flex>
-            <Flex direction="row" gap={5} paddingTop={2} PaddingRight={5} justify="space-between">
-              {role === ADMIN_ROLE || role === SUPERADMIN_ROLE ? (
-                <FormControl isRequired>
-                  <Select
-                    isDisabled={modalState === 'view'}
-                    variant="outline"
-                    size="sm"
-                    width="80%"
-                    paddingLeft={5}
-                    value={assignedDriverId}
-                    placeholder="Select Driver"
-                    onChange={handleDriverChange}
-                  >
-                    {drivers.map(driver => (
-                      <option key={driver.id} value={driver.id}>
-                        {driver.firstName} {driver.lastName}
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              ) : (
-                <FormControl justify="left"> </FormControl>
-              )}
-              <FormControl display="flex" PaddingRight={5} justify="right">
-                <Text fontSize="sm" fontWeight="normal" mb="0" mr={3}>
+            <Flex direction="row" gap={5} justify="space-between">
+              <FormControl isRequired>
+                <Select
+                  isDisabled={modalState === 'view'}
+                  variant="outline"
+                  size="sm"
+                  width="80%"
+                  value={assignedDriverId ?? ''}
+                  placeholder="Select Driver"
+                  onChange={handleDriverChange}
+                >
+                  {drivers.map(driver => (
+                    <option key={driver.id} value={driver.id}>
+                      {driver.firstName} {driver.lastName}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl display="flex" whiteSpace="nowrap" alignItems="center">
+                <Text fontSize="sm" fontWeight="normal" mr={3}>
                   Show confirmed donations only
                 </Text>
                 <Switch
-                  paddingRight={7}
                   id="confirmed-donations"
                   onChange={handleConfirmedToggle}
-                  isDisabled={modalState === 'edit' || donations.length === 0}
+                  isDisabled={
+                    modalState === 'edit' || donations.length === 0 || dateHasPassed(routeDate)
+                  }
                   isChecked={modalState !== 'edit' && confirmedState === 'active'}
                 />
               </FormControl>
@@ -182,148 +317,38 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Stack pl={5} pr={5} height="39vh" overflow="scroll">
-            {donations.length === 0 && (
-              <Box textAlign="center" mt="auto" mb="auto">
-                <Text fontSize="36px" fontWeight="bold" color="rgba(0, 0, 0, 0.48)">
-                  No Donations Added Yet
-                </Text>
-                <Text fontSize="14px" color="rgba(0, 0, 0, 0.48)">
-                  You can add donations to a route when scheduling
-                </Text>
-              </Box>
-            )}
-            {modalState === 'edit' && (
-              <List
-                as={Reorder.Group}
-                spacing={2}
-                axis="y"
-                values={donations}
-                styleType="decimal"
-                onReorder={setDonations}
-              >
-                {getConfirmedDonations().map(donation => (
-                  <ListItem
-                    margin="0"
-                    padding="0"
-                    as={Reorder.Item}
-                    key={donation.id}
-                    value={donation}
-                    dragTransition={{
-                      bounceStiffness: 600,
-                    }}
-                    initial="notDragging"
-                    whileDrag="dragging"
-                    position="relative"
-                    cursor="move"
-                  >
-                    <Flex alignItems="center" justifyContent="space-between">
-                      <Card
-                        marginLeft={5}
-                        backgroundColor="white"
-                        border="solid"
-                        borderWidth={1}
-                        borderColor="#E2E8F0"
-                        p={5}
-                        fontSize={16}
-                        width="500px"
-                      >
-                        <Flex justifyContent="space-between" alignItems="center">
-                          <Flex alignItems="center">
-                            <DragHandleIcon />
-                            <Stack ml={5} spacing="0.1rem">
-                              <Text fontWeight="bold">Donation #{donation.id}</Text>
-                              <Text>
-                                {donation.firstName} {donation.lastName} | Items:&nbsp;
-                                {donation.furniture.length ? donation.furniture.length : 0}
-                              </Text>
-                            </Stack>
-                          </Flex>
-
-                          <Popover placement="left">
-                            <PopoverTrigger>
-                              <Button colorScheme="teal" size="sm">
-                                Show Address
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent bg="#171923" color="white">
-                              <PopoverArrow bg="#171923" />
-                              <PopoverBody>
-                                {donation.addressUnit
-                                  ? `${donation.addressStreet}, Unit ${donation.addressUnit}`
-                                  : donation.addressStreet}
-                                , {donation.addressCity}, CA {donation.addressZip}
-                              </PopoverBody>
-                            </PopoverContent>
-                          </Popover>
-                        </Flex>
-                      </Card>
-                    </Flex>
-                  </ListItem>
-                ))}
-              </List>
-            )}
-            {modalState === 'view' && (
-              <List spacing={2} axis="y" values={getConfirmedDonations()}>
-                {getConfirmedDonations().map(donation => (
-                  <ListItem margin="0" padding="0" key={donation.orderNum} value={donation.items}>
-                    <Flex alignItems="center" justifyContent="space-between">
-                      <Card
-                        paddingLeft={5}
-                        backgroundColor="white"
-                        border="solid"
-                        borderWidth={1}
-                        borderColor="#E2E8F0"
-                        p={5}
-                        fontSize={16}
-                        width="500px"
-                      >
-                        <Flex justifyContent="space-between" alignItems="center">
-                          <Stack spacing="0.1rem">
-                            <Text fontWeight="bold">Donation #{donation.id}</Text>
-                            <Text>
-                              {donation.firstName} {donation.lastName} | Items:&nbsp;
-                              {donation.furniture.length ? donation.furniture.length : 0}
-                            </Text>
-                          </Stack>
-                          <Popover placement="left">
-                            <PopoverTrigger>
-                              <Button colorScheme="teal" size="sm">
-                                Show Address
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent bg="#171923" color="white">
-                              <PopoverArrow bg="#171923" />
-                              <PopoverBody>
-                                {donation.addressUnit
-                                  ? `${donation.addressStreet}, Unit ${donation.addressUnit}`
-                                  : donation.addressStreet}
-                                , {donation.addressCity}, CA {donation.addressZip}
-                              </PopoverBody>
-                            </PopoverContent>
-                          </Popover>
-                        </Flex>
-                      </Card>
-                    </Flex>
-                  </ListItem>
-                ))}
-              </List>
-            )}
-          </Stack>
+          {donations.length === 0 ? (
+            <Flex
+              textAlign="center"
+              color="blackAlpha.600"
+              m="auto"
+              h="100%"
+              justify="center"
+              direction="column"
+            >
+              <Text fontSize="1.75em" fontWeight="bold">
+                No Donations Added Yet
+              </Text>
+              <Text fontSize="0.8em">
+                {userRole === DRIVER_ROLE
+                  ? 'Contact the Patriots and Paws Admin for more information.'
+                  : 'You can add donations to a route when scheduling'}
+              </Text>
+            </Flex>
+          ) : (
+            <DonationList
+              isAdminView={userRole === ADMIN_ROLE}
+              isEditing={modalState === 'edit'}
+              donations={donations}
+              setDonations={setDonations}
+              getConfirmedDonations={getConfirmedDonations}
+            />
+          )}
           <Box>{errorMessage}</Box>
         </ModalBody>
         <ModalFooter>
           {modalState === 'edit' && (
-            <Flex
-              direction="row"
-              justify="right"
-              alignItems="center"
-              width="100%"
-              spacing={5}
-              paddingBottom={5}
-              paddingLeft={5}
-              paddingRight={5}
-            >
+            <Flex direction="row" justify="right" alignItems="center" width="100%" spacing={5}>
               <Flex justify="left" gap={2}>
                 <Button colorScheme="gray" variant="outline" onClick={handleCancel}>
                   Cancel
@@ -341,16 +366,13 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
               alignItems="center"
               width="100%"
               spacing={5}
-              paddingBottom={5}
-              paddingLeft={5}
-              paddingRight={5}
             >
               <Flex justify="left" gap={2}>
                 <Button
                   colorScheme="blackAlpha"
                   type="submit"
                   onClick={exportOnOpen}
-                  isDisabled={donations.length === 0}
+                  isDisabled={breakpointSize === 'base' || donations.length === 0}
                 >
                   Export PDF
                 </Button>
@@ -383,6 +405,7 @@ const EditRouteModal = ({ routeId, routeDate, drivers, isOpen, onClose, role }) 
                   type="submit"
                   justify="right"
                   onClick={handleChangeToEdit}
+                  isDisabled={dateHasPassed(routeDate)}
                 >
                   Edit Routes
                 </Button>
@@ -399,9 +422,11 @@ EditRouteModal.propTypes = {
   routeId: PropTypes.string,
   role: PropTypes.string,
   routeDate: PropTypes.instanceOf(Date),
-  drivers: PropTypes.instanceOf(Array).isRequired,
+  allDrivers: PropTypes.instanceOf(Array).isRequired,
+  setAllDrivers: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  cookies: instanceOf(Cookies).isRequired,
 };
 
 EditRouteModal.defaultProps = {
@@ -410,4 +435,18 @@ EditRouteModal.defaultProps = {
   routeDate: new Date(),
 };
 
-export default EditRouteModal;
+DonationList.propTypes = {
+  isAdminView: PropTypes.bool,
+  isEditing: PropTypes.bool,
+  donations: PropTypes.instanceOf(Array),
+  setDonations: PropTypes.func.isRequired,
+  getConfirmedDonations: PropTypes.func.isRequired,
+};
+
+DonationList.defaultProps = {
+  isAdminView: false,
+  isEditing: false,
+  donations: [],
+};
+
+export default withCookies(EditRouteModal);
