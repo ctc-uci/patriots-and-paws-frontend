@@ -74,7 +74,7 @@ const ManageDonationForm = () => {
         </Flex>
       </Flex>
       <Flex justify="right" gap="1em">
-        <Button bg="whiteAlpha" borderWidth="1px" borderColor="gray.200" onClick={onOpen}>
+        <Button colorScheme="gray" borderWidth="1px" borderColor="gray.200" onClick={onOpen}>
           Preview Item List
         </Button>
         <ItemInfoModal items={items} isAccepted isOpen={isOpen} onClose={onClose} />
