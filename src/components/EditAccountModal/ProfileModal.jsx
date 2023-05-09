@@ -65,7 +65,9 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
           ),
         confirmPassword: yup
           .string()
-          .oneOf([yup.ref('newPassword'), null, ''], 'Passwords must both match'),
+          .nullable()
+          .transform(value => value || null)
+          .oneOf([yup.ref('newPassword')], 'Passwords must both match'),
       }),
     ),
     delayError: 750,
@@ -127,10 +129,16 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={cancel} size="3xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      onCloseComplete={cancel}
+      scrollBehavior="inside"
+      size="3xl"
+    >
       <ModalOverlay />
       <ModalContent>
-        <Flex m={5} justifyContent="center">
+        <Flex m={5} overflow="scroll" justifyContent="center">
           <Stack>
             <Flex justifyContent="space-between">
               <Heading size="lg" mt=".4rem" mb={5}>
@@ -218,7 +226,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                     </InputGroup>
                   </Flex>
                 </Flex>
-                <Flex mb={5}>
+                <Flex direction={{ base: 'column', md: 'row' }} mb={5}>
                   <Flex direction="column" mr={8}>
                     {isEditable ? (
                       <Flex>
@@ -227,7 +235,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                           <PopoverTrigger>
                             <IconButton variant="invisible" icon={<MdInfo color="black.300" />} />
                           </PopoverTrigger>
-                          <PopoverContent color="white" bg="black">
+                          <PopoverContent color="white" bg="black" w={240}>
                             <PopoverArrow />
                             <PopoverCloseButton />
                             <PopoverBody>
@@ -293,33 +301,6 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
             </form>
           </Stack>
         </Flex>
-        <Flex
-          justifyContent={{ base: 'center', md: 'none' }}
-          display={{ base: 'flex', md: 'none' }}
-        >
-          {isEditable ? (
-            <>
-              <Button variant="outline" type="submit" mr={3} onClick={cancel}>
-                Cancel
-              </Button>
-              <Button colorScheme="blue" type="submit" onClick={handleSubmit(onSubmit)}>
-                Save Changes
-              </Button>
-            </>
-          ) : (
-            <Button
-              color="white"
-              background="#718096"
-              _hover={{ bg: '#718096' }}
-              _focus={{ bg: '#718096' }}
-              onClick={() => {
-                setIsEditable(true);
-              }}
-            >
-              Edit Profile
-            </Button>
-          )}
-        </Flex>
         <ModalFooter>
           <Flex justify="flex-end">
             {isEditable ? (
@@ -337,7 +318,6 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                 background="#718096"
                 _hover={{ bg: '#718096' }}
                 _focus={{ bg: '#718096' }}
-                display={{ base: 'none', md: 'flex' }}
                 onClick={() => {
                   setIsEditable(true);
                 }}
