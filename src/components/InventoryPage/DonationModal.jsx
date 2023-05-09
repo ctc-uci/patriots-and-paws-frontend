@@ -22,13 +22,14 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-import { PropTypes } from 'prop-types';
+import { PropTypes, instanceOf } from 'prop-types';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
 import { makeDate, displayStatuses, statusColorMap, EMAIL_TYPE } from '../../utils/InventoryUtils';
 import DonationImagesContainer from './DonationImagesContainer';
 import DonationFurnitureContainer from './DonationFurnitureContainer';
 import EmailModal from './EmailModal';
-import { STATUSES } from '../../utils/config';
+import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
+import { AUTH_ROLES, STATUSES } from '../../utils/config';
 import AlertBanner from './AlertBanner';
 
 const {
@@ -42,7 +43,9 @@ const {
 } = STATUSES;
 const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, DELETE_DONATION } = EMAIL_TYPE;
 
-const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadOnly }) => {
+const { DRIVER_ROLE } = AUTH_ROLES;
+
+const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadOnly, cookies }) => {
   const {
     id,
     status,
@@ -66,6 +69,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
   const [currentStatus, setCurrentStatus] = useState(status);
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledRouteId, setScheduledRouteId] = useState('');
+  const [role, setRole] = useState('');
 
   const {
     isOpen: emailModalIsOpen,
@@ -126,6 +130,11 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
   useEffect(() => {
     setCurrentStatus(status);
     resetScheduledRoute(status);
+    const checkRole = () => {
+      const currentUserRole = cookies.get(cookieKeys.ROLE);
+      setRole(currentUserRole);
+    };
+    checkRole();
   }, [data]);
 
   const onDeleteDonation = async () => {
@@ -277,7 +286,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                 px={{ base: '6%', md: '3%' }}
                 py={{ base: '3%', md: '1%' }}
               >
-                <Text fontSize="1.25em">Schedule</Text>
+                {/* issue: current role is not associated with any role,
+                "pickup details" is always printed */}
+                {role === DRIVER_ROLE ? (
+                  <Text fontSize="1.25em">Pickup Details</Text>
+                ) : (
+                  <Text fontSize="1.25em">Schedule</Text>
+                )}
                 <Select
                   placeholder={(!pickupDate || currentStatus === RESCHEDULE) && 'Choose a date'}
                   onChange={e => {
@@ -481,6 +496,7 @@ DonationModal.propTypes = {
     ),
   }),
   isReadOnly: PropTypes.bool,
+  cookies: instanceOf(Cookies).isRequired,
 };
 
 DonationModal.defaultProps = {
@@ -492,4 +508,4 @@ DonationModal.defaultProps = {
   isReadOnly: false,
 };
 
-export default DonationModal;
+export default withCookies(DonationModal);
