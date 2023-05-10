@@ -163,6 +163,8 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                         isReadOnly={!isEditable}
                         cursor={!isEditable && 'not-allowed'}
                         {...register('firstName')}
+                        maxLength="256"
+                        textOverflow="ellipsis"
                         isRequired
                       />
                     </InputGroup>
@@ -181,6 +183,8 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                         isReadOnly={!isEditable}
                         cursor={!isEditable && 'not-allowed'}
                         {...register('lastName')}
+                        maxLength="256"
+                        textOverflow="ellipsis"
                         isRequired
                       />
                     </InputGroup>
@@ -200,6 +204,8 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                         placeholder="Enter email"
                         value={data.email}
                         cursor="not-allowed"
+                        maxLength="256"
+                        textOverflow="ellipsis"
                         isRequired
                         isReadOnly
                       />
@@ -221,6 +227,8 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                         isReadOnly={!isEditable}
                         cursor={!isEditable && 'not-allowed'}
                         {...register('phoneNumber')}
+                        maxLength="15"
+                        textOverflow="ellipsis"
                         isRequired
                       />
                     </InputGroup>
@@ -274,6 +282,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                         isInvalid={'newPassword' in errors}
                         isDisabled={!isEditable}
                         {...register('newPassword')}
+                        textOverflow="ellipsis"
                         isRequired
                       />
                     </InputGroup>
@@ -289,6 +298,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                         errorBorderColor="red.300"
                         isInvalid={'confirmPassword' in errors}
                         {...register('confirmPassword')}
+                        textOverflow="ellipsis"
                         isRequired
                       />
                       <Box>
