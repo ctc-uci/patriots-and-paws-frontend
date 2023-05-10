@@ -115,6 +115,8 @@ const EditAccountModal = ({
       confirmPassword: '',
     });
 
+    // user.firstName = toCapitalCase(user.firstName);
+    // user.lastName = toCapitalCase(user.lastName);
     setUsers(prev => prev.map(user => (user.id === data.id ? updatedUser : user)));
     if (data.role === 'admin') {
       setAdminUsers(prev => prev.map(user => (user.id === data.id ? updatedUser : user)));
