@@ -36,7 +36,6 @@ const RoutePDF = ({ driverData, donationData, date }) => {
 
   useEffect(() => {
     const helper = async () => {
-      console.log(donationData);
       setDonations(donationData);
       setDateStr(formatDatePDF(new Date(date)));
       setDriver(`${driverData.firstName} ${driverData.lastName}`);

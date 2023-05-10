@@ -1,7 +1,6 @@
-  :root {
-    --fc-highlight-color: rgba(188, 232, 241, 0.3);
-    --fc-today-bg-color: rgba(68, 74, 75, 0.17);
-    --fc-today-button: rgba(51, 204, 231, 0.17);
-    --fc-button-bg-color: #007284;
-  }
-  
+:root {
+  --fc-highlight-color: rgba(188, 232, 241, 0.3);
+  --fc-today-bg-color: rgba(68, 74, 75, 0.17);
+  --fc-today-button: rgba(51, 204, 231, 0.17);
+  --fc-button-bg-color: #007284;
+}

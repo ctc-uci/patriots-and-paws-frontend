@@ -122,13 +122,11 @@ const RouteCalendar = () => {
     eventDate.setHours(0, 0, 0, 0);
     setSelectedEventDate(eventDate);
     editRouteOnOpen();
-    // setOverflow('hidden');
   };
 
   const handleEditRouteOnClose = () => {
     setSelectedRouteId('');
     editRouteOnClose();
-    // setOverflow('visible');
   };
 
   const handleCalendarAddEvent = (eventId, eventName, startDate, driverId) => {
