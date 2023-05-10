@@ -12,6 +12,9 @@ import EditRouteModal from '../EditRouteModal/EditRouteModal';
 import { AUTH_ROLES, STATUSES } from '../../utils/config';
 import { getAllRoutes, getDrivers, dateHasPassed } from '../../utils/RouteUtils';
 
+// Override the CSS rules for .fc-today
+import './RouteCalendar.css';
+
 const { DRIVER_ROLE } = AUTH_ROLES;
 const { SCHEDULING } = STATUSES;
 
@@ -119,13 +122,11 @@ const RouteCalendar = () => {
     eventDate.setHours(0, 0, 0, 0);
     setSelectedEventDate(eventDate);
     editRouteOnOpen();
-    // setOverflow('hidden');
   };
 
   const handleEditRouteOnClose = () => {
     setSelectedRouteId('');
     editRouteOnClose();
-    // setOverflow('visible');
   };
 
   const handleCalendarAddEvent = (eventId, eventName, startDate, driverId) => {
@@ -176,11 +177,12 @@ const RouteCalendar = () => {
               Routes Calendar
             </Heading>
             <Button
+              display="inline-block"
               leftIcon={<AddIcon boxSize={3} />}
               onClick={createRouteOnOpen}
               colorScheme="blue"
-              marginBottom={1}
-              size="xs"
+              marginBottom={0}
+              size="sm"
             >
               Create Route
             </Button>
@@ -190,7 +192,7 @@ const RouteCalendar = () => {
           ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           headerToolbar={{
-            left: 'prev,next today',
+            left: 'prev next today',
             center: 'title',
             right: '',
           }}
@@ -201,7 +203,10 @@ const RouteCalendar = () => {
           select={handleDateSelect}
           eventClick={handleEventClick}
           contentHeight="auto"
-          height="100%" // was 1vh
+          height="auto" // was 1vh
+          buttonText={{
+            today: 'Today',
+          }}
         />
       </Box>
     </Flex>

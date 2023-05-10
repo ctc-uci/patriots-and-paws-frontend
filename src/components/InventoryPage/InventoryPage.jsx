@@ -25,6 +25,7 @@ import {
   TabIndicator,
   Flex,
   Image,
+  Center,
 } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import peopleIcon from '../../assets/Bold.svg';
@@ -136,7 +137,9 @@ const InventoryPage = () => {
               <DrawerCloseButton />
 
               <DrawerBody p="2em">
-                <RouteCalendar />
+                <Center>
+                  <RouteCalendar />
+                </Center>
               </DrawerBody>
             </DrawerContent>
           </Drawer>
