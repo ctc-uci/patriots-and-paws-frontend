@@ -173,12 +173,7 @@ const DonationDetails = ({ data, setDonationData }) => {
         </Box>
       </Flex>
       <Divider size="md" variant="solid" />
-      <Grid
-        templateColumns={{ base: '1fr', md: '1fr 1fr' }}
-        gap={5}
-        height="100%"
-        alignItems="center"
-      >
+      <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={5} height="100%">
         {pictures && <DonationImagesContainer pictures={pictures} itemsPerPage={1} />}
         {furniture && <DonationFurnitureContainer data={furniture} />}
       </Grid>
