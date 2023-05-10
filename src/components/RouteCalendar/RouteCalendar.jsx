@@ -9,14 +9,37 @@ import interactionPlugin from '@fullcalendar/interaction';
 import CreateRouteModal from '../CreateRouteModal/CreateRouteModal';
 import { getCurrentUserId, getUserFromDB } from '../../utils/AuthUtils';
 import EditRouteModal from '../EditRouteModal/EditRouteModal';
-import { AUTH_ROLES } from '../../utils/config';
-import { getAllRoutes, getDrivers } from '../../utils/RouteUtils';
+import { AUTH_ROLES, STATUSES } from '../../utils/config';
+import { getAllRoutes, getDrivers, dateHasPassed } from '../../utils/RouteUtils';
+
+// Override the CSS rules for .fc-today
+import './RouteCalendar.css';
 
 const { DRIVER_ROLE } = AUTH_ROLES;
+const { SCHEDULING } = STATUSES;
+
+const pastRoutes = {
+  backgroundColor: 'transparent',
+  textColor: '#718096', // gray.500
+  borderColor: '#718096', // gray.500
+};
+
+const blueRoute = {
+  backgroundColor: '#2B6CB0', // blue.600
+  textColor: 'white',
+  borderColor: '#2B6CB0', // blue.600
+};
+
+const grayRoute = {
+  backgroundColor: 'RGBA(0, 0, 0, 0.36)', // blackAlpha.500
+  textColor: 'white',
+  borderColor: 'RGBA(0, 0, 0, 0.36)',
+};
 
 const RouteCalendar = () => {
   const [role, setRole] = useState([]);
-  const [drivers, setDrivers] = useState([]);
+  const [allDrivers, setAllDrivers] = useState([]);
+  // const [drivers, setDrivers] = useState([]);
   const [selectedCalendarDate, setSelectedCalendarDate] = useState(new Date());
   const [selectedEventDate, setSelectedEventDate] = useState();
   const [selectedRouteId, setSelectedRouteId] = useState();
@@ -37,27 +60,24 @@ const RouteCalendar = () => {
     onClose: editRouteOnClose,
   } = useDisclosure();
 
-  const getEventDisplayStyle = (currentUserId, driverId, date) => {
-    const currentDate = new Date().setHours(0, 0, 0, 0);
-    if (new Date(date).setHours(0, 0, 0, 0) < currentDate) {
-      return {
-        backgroundColor: 'rgba(0, 0, 0, 0.36)', // blackGray.500
-        textColor: 'white',
-        borderColor: 'rgba(0, 0, 0, 0.36)',
-      };
+  const getEventDisplayStyle = (userRole, currentUserId, driverId, date, donations) => {
+    if (dateHasPassed(date)) {
+      return pastRoutes;
     }
-    if (currentUserId === driverId) {
-      return {
-        backgroundColor: '#2B6CB0', // blue.600
-        textColor: 'white',
-        borderColor: '#2B6CB0',
-      };
+
+    if (userRole === DRIVER_ROLE) {
+      if (currentUserId === driverId) {
+        return blueRoute;
+      }
+      return grayRoute;
     }
-    return {
-      backgroundColor: 'white', // blue.600
-      textColor: '#718096',
-      borderColor: '#718096',
-    };
+
+    const isUnconfirmedRoute =
+      donations.length === 0 || donations.some(({ status }) => status === SCHEDULING);
+    if (isUnconfirmedRoute) {
+      return grayRoute;
+    }
+    return blueRoute;
   };
 
   useEffect(() => {
@@ -66,17 +86,19 @@ const RouteCalendar = () => {
       const currentUser = await getUserFromDB(currentUserId);
       const { role: userRole } = currentUser;
       setRole(userRole);
-      // TODO: add color indication for driver logged in
       const [routesFromDB, driversFromDB] = await Promise.all([getAllRoutes(), getDrivers()]);
-
-      const eventsList = routesFromDB.map(({ id, name, date, driverId }) => ({
+      const eventsList = routesFromDB.map(({ id, name, date, driverId, donations }) => ({
         id,
         title: name,
         start: new Date(date).toISOString().replace(/T.*$/, ''),
         allDay: true,
-        ...getEventDisplayStyle(currentUserId, driverId, date),
+        ...getEventDisplayStyle(userRole, currentUserId, driverId, date, donations ?? []),
+        extendedProps: {
+          driverId,
+          date,
+        },
       }));
-      setDrivers(driversFromDB);
+      setAllDrivers(driversFromDB);
 
       calendarRef.current.getApi().removeAllEventSources();
       calendarRef.current.getApi().addEventSource(eventsList);
@@ -93,19 +115,21 @@ const RouteCalendar = () => {
 
   /* eslint no-underscore-dangle: 0 */
   const handleEventClick = e => {
-    setSelectedRouteId(e.event._def.publicId);
-    setSelectedEventDate(e.event._instance.range.start);
+    const { publicId, extendedProps } = e.event._def;
+    const { date } = extendedProps;
+    setSelectedRouteId(publicId);
+    const eventDate = new Date(date);
+    eventDate.setHours(0, 0, 0, 0);
+    setSelectedEventDate(eventDate);
     editRouteOnOpen();
-    // setOverflow('hidden');
   };
 
   const handleEditRouteOnClose = () => {
     setSelectedRouteId('');
     editRouteOnClose();
-    // setOverflow('visible');
   };
 
-  const handleCalendarAddEvent = (eventId, eventName, startDate) => {
+  const handleCalendarAddEvent = (eventId, eventName, startDate, driverId) => {
     const calendar = calendarRef.current.getApi();
     calendar.unselect();
     calendar.addEvent({
@@ -113,6 +137,11 @@ const RouteCalendar = () => {
       title: eventName,
       start: startDate, // "2023-02-15"
       allDay: true,
+      ...grayRoute,
+      extendedProps: {
+        driverId,
+        startDate,
+      },
     });
   };
   const breakpointsW = {
@@ -127,14 +156,16 @@ const RouteCalendar = () => {
       <EditRouteModal
         routeId={selectedRouteId}
         routeDate={selectedEventDate}
-        drivers={drivers}
+        allDrivers={allDrivers}
+        setAllDrivers={setAllDrivers}
         isOpen={editRouteIsOpen}
         onClose={handleEditRouteOnClose}
         role={role}
       />
       <CreateRouteModal
-        routeDate={selectedCalendarDate.start}
-        drivers={drivers}
+        routeDate={selectedCalendarDate.start ?? new Date()}
+        allDrivers={allDrivers}
+        setAllDrivers={setAllDrivers}
         isOpen={createRouteIsOpen}
         onClose={createRouteOnClose}
         handleCalendarAddEvent={handleCalendarAddEvent}
@@ -146,11 +177,12 @@ const RouteCalendar = () => {
               Routes Calendar
             </Heading>
             <Button
+              display="inline-block"
               leftIcon={<AddIcon boxSize={3} />}
               onClick={createRouteOnOpen}
               colorScheme="blue"
-              marginBottom={1}
-              size="xs"
+              marginBottom={0}
+              size="sm"
             >
               Create Route
             </Button>
@@ -160,7 +192,7 @@ const RouteCalendar = () => {
           ref={calendarRef}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           headerToolbar={{
-            left: 'prev,next today',
+            left: 'prev next today',
             center: 'title',
             right: '',
           }}
@@ -171,7 +203,10 @@ const RouteCalendar = () => {
           select={handleDateSelect}
           eventClick={handleEventClick}
           contentHeight="auto"
-          height="100%" // was 1vh
+          height="auto" // was 1vh
+          buttonText={{
+            today: 'Today',
+          }}
         />
       </Box>
     </Flex>

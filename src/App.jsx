@@ -24,7 +24,6 @@ import DriverRoutes from './pages/Dashboard/DriverRoutes';
 import ManageStaff from './pages/ManageStaff/ManageStaff';
 
 import ManageDonationForm from './pages/ManageDonationForm/ManageDonationForm';
-import RoutesPage from './pages/RoutesPage/RoutesPage';
 import NotFoundPage from './components/NotFoundPage/NotFoundPage';
 
 import ProtectedRoute from './utils/ProtectedRoute';
@@ -175,16 +174,6 @@ function App() {
                   Component={ManageDonationForm}
                   redirectPath="/login"
                   roles={[SUPERADMIN_ROLE, ADMIN_ROLE]}
-                />
-              }
-            />
-            <Route
-              path="/routes"
-              element={
-                <ProtectedRoute
-                  Component={RoutesPage}
-                  redirectPath="/login"
-                  roles={[SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE]}
                 />
               }
             />
