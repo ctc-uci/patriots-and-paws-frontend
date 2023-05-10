@@ -33,8 +33,8 @@ import {
   UnorderedList,
 } from '@chakra-ui/react';
 import { RiLockFill } from 'react-icons/ri';
-import { MdEmail, MdPhone, MdInfo } from 'react-icons/md';
-import { IoPersonSharp } from 'react-icons/io5';
+import { MdInfo } from 'react-icons/md';
+// import { IoPersonSharp } from 'react-icons/io5';
 import { updateUser, logInCurrentUserWithPassword } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
@@ -65,7 +65,9 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
           ),
         confirmPassword: yup
           .string()
-          .oneOf([yup.ref('newPassword'), null, ''], 'Passwords must both match'),
+          .nullable()
+          .transform(value => value || null)
+          .oneOf([yup.ref('newPassword')], 'Passwords must both match'),
       }),
     ),
     delayError: 750,
@@ -132,10 +134,16 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={cancel} size="3xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      onCloseComplete={cancel}
+      scrollBehavior="inside"
+      size="3xl"
+    >
       <ModalOverlay />
       <ModalContent>
-        <Flex m={5} justifyContent="center">
+        <Flex m={5} overflow="scroll" justifyContent="center">
           <Stack>
             <Flex justifyContent="space-between">
               <Heading size="lg" mt=".4rem" mb={5}>
@@ -145,13 +153,13 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
             </Flex>
             <form onSubmit={handleSubmit(onSubmit)}>
               <FormControl>
-                <Flex mb={5}>
+                <Flex mb={5} display={{ md: 'flex' }}>
                   <Flex direction="column" mr={8}>
                     <FormLabel>First Name</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
+                      {/* <InputRightElement pointerEvents="none">
                         <IoPersonSharp color="black.300" />
-                      </InputRightElement>
+                      </InputRightElement> */}
                       <Input
                         id="first-name"
                         style={{ width: '240px' }}
@@ -167,9 +175,9 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                   <Flex direction="column">
                     <FormLabel>Last Name</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
+                      {/* <InputRightElement pointerEvents="none">
                         <IoPersonSharp color="black.300" />
-                      </InputRightElement>
+                      </InputRightElement> */}
                       <Input
                         id="last-name"
                         style={{ width: '240px' }}
@@ -183,13 +191,13 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                     </InputGroup>
                   </Flex>
                 </Flex>
-                <Flex mb={5}>
+                <Flex mb={5} display={{ md: 'flex' }}>
                   <Flex direction="column" mr={8}>
                     <FormLabel>Email</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
+                      {/* <InputRightElement pointerEvents="none">
                         <MdEmail color="black.300" />
-                      </InputRightElement>
+                      </InputRightElement> */}
                       <Input
                         type="email"
                         id="email"
@@ -206,9 +214,9 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                   <Flex direction="column">
                     <FormLabel>Phone Number</FormLabel>
                     <InputGroup>
-                      <InputRightElement pointerEvents="none">
+                      {/* <InputRightElement pointerEvents="none">
                         <MdPhone color="black.300" />
-                      </InputRightElement>
+                      </InputRightElement> */}
                       <Input
                         type="tel"
                         id="phone-number"
@@ -223,7 +231,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                     </InputGroup>
                   </Flex>
                 </Flex>
-                <Flex mb={5}>
+                <Flex direction={{ base: 'column', md: 'row' }} mb={5}>
                   <Flex direction="column" mr={8}>
                     {isEditable ? (
                       <Flex>
@@ -232,7 +240,7 @@ const ProfileModal = ({ data, setData, isOpen, onClose }) => {
                           <PopoverTrigger>
                             <IconButton variant="invisible" icon={<MdInfo color="black.300" />} />
                           </PopoverTrigger>
-                          <PopoverContent color="white" bg="black">
+                          <PopoverContent color="white" bg="black" w={240}>
                             <PopoverArrow />
                             <PopoverCloseButton />
                             <PopoverBody>

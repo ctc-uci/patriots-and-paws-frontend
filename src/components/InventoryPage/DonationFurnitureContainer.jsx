@@ -10,11 +10,11 @@ const DonationFurnitureContainer = ({ data }) => {
   }, [data]);
 
   return (
-    <Flex direction="column" gap={0} overflowY="scroll" maxH="400px">
+    <Flex direction="column" alignItems="start" gap={2.5} mt="1rem" overflowY="scroll" maxH="300px">
       {displayedData?.map(furniture => (
         <InputGroup key={furniture.id} variant="white">
           <Input value={furniture.name} isReadOnly />
-          <InputRightAddon w="4em" justifyContent="center">
+          <InputRightAddon bg="#EDF2F7" w="4em" justifyContent="center">
             {furniture.count}
           </InputRightAddon>
         </InputGroup>

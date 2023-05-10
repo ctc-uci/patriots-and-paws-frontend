@@ -51,7 +51,13 @@ const routeFormatDate = dateDB => {
 };
 
 const isSameDay = (date1, date2) => {
-  return new Date(date1).setHours(0, 0, 0, 0) === new Date(date2).setHours(0, 0, 0, 0);
+  const d1 = new Date(date1);
+  const d2 = new Date(date2);
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
 };
 
 const getDonationsFromDB = async () => {
