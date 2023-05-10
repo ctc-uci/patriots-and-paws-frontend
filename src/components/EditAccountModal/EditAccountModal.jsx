@@ -163,6 +163,8 @@ const EditAccountModal = ({
                         errorBorderColor="red.300"
                         isInvalid={'firstName' in errors}
                         {...register('firstName')}
+                        maxLength="256"
+                        textOverflow="ellipsis"
                         isRequired
                       />
                     </InputGroup>
@@ -176,6 +178,8 @@ const EditAccountModal = ({
                         errorBorderColor="red.300"
                         isInvalid={'lastName' in errors}
                         {...register('lastName')}
+                        maxLength="256"
+                        textOverflow="ellipsis"
                         isRequired
                       />
                     </InputGroup>
@@ -194,6 +198,8 @@ const EditAccountModal = ({
                         style={{ width: '240px' }}
                         placeholder="Enter email"
                         value={data.email}
+                        maxLength="256"
+                        textOverflow="ellipsis"
                         isReadOnly
                       />
                     </InputGroup>
@@ -209,6 +215,8 @@ const EditAccountModal = ({
                         errorBorderColor="red.300"
                         isInvalid={'phoneNumber' in errors}
                         {...register('phoneNumber')}
+                        maxLength="15"
+                        textOverflow="ellipsis"
                         isRequired
                       />
                     </InputGroup>
@@ -249,6 +257,7 @@ const EditAccountModal = ({
                             errorBorderColor="red.300"
                             isInvalid={'newPassword' in errors}
                             {...register('newPassword')}
+                            textOverflow="ellipsis"
                             isRequired
                           />
                         </InputGroup>
@@ -263,6 +272,7 @@ const EditAccountModal = ({
                           errorBorderColor="red.300"
                           isInvalid={'confirmPassword' in errors}
                           {...register('confirmPassword')}
+                          textOverflow="ellipsis"
                           isRequired
                         />
                         <Box>
@@ -276,7 +286,12 @@ const EditAccountModal = ({
                         <InputLeftElement pointerEvents="none">
                           <RiLockFill color="black.300" />
                         </InputLeftElement>
-                        <Input style={{ width: '240px' }} value={data.role} isReadOnly />
+                        <Input
+                          style={{ width: '240px' }}
+                          value={data.role}
+                          textOverflow="ellipsis"
+                          isReadOnly
+                        />
                       </InputGroup>
                     </Flex>
                   </>
