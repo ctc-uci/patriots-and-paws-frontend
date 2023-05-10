@@ -1,4 +1,4 @@
-import { Tag, TagLabel, TagCloseButton } from '@chakra-ui/react';
+import { Tag, TagLabel, TagCloseButton, Text } from '@chakra-ui/react';
 import React from 'react';
 
 import { PropTypes } from 'prop-types';
@@ -18,7 +18,11 @@ const ItemCard = ({ name, items, setItems, setDeletedEntries }) => {
       color="black"
       border="1px solid #E2E8F0;"
     >
-      <TagLabel>{name}</TagLabel>
+      <TagLabel>
+        <Text maxWidth="25ch" isTruncated>
+          {name}
+        </Text>
+      </TagLabel>
       {/* On click, delete this item */}
       <TagCloseButton onClick={handleDelete} />
     </Tag>

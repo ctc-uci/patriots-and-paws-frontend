@@ -103,6 +103,7 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
                   bg="white"
                   id="furnitureName"
                   placeholder="Item"
+                  maxLength="100"
                   {...register('furnitureName')}
                 />
                 <Button type="submit" colorScheme="blue">
