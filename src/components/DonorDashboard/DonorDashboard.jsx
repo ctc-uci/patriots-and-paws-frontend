@@ -173,14 +173,14 @@ const DonorDashboard = ({ donationId }) => {
               </Text>
             </Flex>
             <TermsConditionModal onClose={onClose} isOpen={isOpen} />
-            <Flex columnGap={5} w="100%">
+            <Flex columnGap={{ base: 4, md: 5 }} w="100%">
               <Button bg="red.500" color="white" onClick={handleRejectTime}>
                 Reject Time
-                <CloseIcon ml={3} boxSize={3} />
+                <CloseIcon ml={{ base: 1, md: 3 }} boxSize={3} />
               </Button>
               <Button bg="#319747" color="white" onClick={handleAcceptTime}>
                 Approve Time
-                <CheckIcon ml={3} boxSize={3} />
+                <CheckIcon ml={{ base: 1, md: 3 }} boxSize={3} />
               </Button>
             </Flex>
           </Flex>
@@ -300,8 +300,8 @@ const DonorDashboard = ({ donationId }) => {
           >
             <DonationDetails data={donation} setDonationData={setDonation} />
           </GridItem>
-          <GridItem direction="column" gap={3} area={{ md: 'pickupHeader' }}>
-            <Flex direction="row" gap={3}>
+          <GridItem gap={3} area={{ md: 'pickupHeader' }}>
+            <Flex direction="row" gap={3} align="center">
               <Text fontSize="1.75em" fontWeight="700">
                 Pickup
               </Text>
