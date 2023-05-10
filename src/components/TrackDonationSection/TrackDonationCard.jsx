@@ -21,7 +21,7 @@ const TrackDonationCard = ({ checked, curr, heading, body }) => {
       ) : (
         <Icon as={BiRadioCircle} color="#63B3ED" boxSize="2rem" />
       )}
-      <Stack gap={1}>
+      <Stack gap={0}>
         <Heading size="md" whiteSpace="nowrap">
           {heading}
         </Heading>

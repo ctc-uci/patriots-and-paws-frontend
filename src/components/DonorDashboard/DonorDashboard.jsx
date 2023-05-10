@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import {
   Grid,
+  GridItem,
   Box,
-  Container,
   Text,
   Button,
   Tag,
@@ -46,7 +46,7 @@ const DonorDashboard = ({ donationId }) => {
       case PENDING:
       case APPROVAL_REQUESTED:
         return (
-          <Flex borderRadius="6px" bg="blue.50" w="100%" p={4} mb={4}>
+          <Flex borderRadius="6px" bg="blue.50" w="100%" p={4}>
             <CheckCircleIcon color="blue.100" mr={2} boxSize={5} />
             <Box>
               Your donation has been successfully submitted and will be reviewed shortly! Be sure to
@@ -60,7 +60,7 @@ const DonorDashboard = ({ donationId }) => {
         );
       case CHANGES_REQUESTED:
         return (
-          <Flex borderRadius="6px" bg="orange.100" w="100%" p={4} mb={4}>
+          <Flex borderRadius="6px" bg="orange.100" w="100%" p={4}>
             <WarningIcon color="orange.500" mr={2} boxSize={5} />
             <Box>
               Your donation requires adjustments. Check your email to see what changes are needed
@@ -70,14 +70,14 @@ const DonorDashboard = ({ donationId }) => {
         );
       case PICKED_UP:
         return (
-          <Flex borderRadius="6px" bg="green.50" w="100%" p={4} mb={4} color="black">
+          <Flex borderRadius="6px" bg="green.50" w="100%" p={4} color="black">
             <CheckCircleIcon color="green.500" mr={2} boxSize={5} />
             <Box>Thank you for donating to Patriots and Paws!</Box>
           </Flex>
         );
       default:
         return (
-          <Flex borderRadius="6px" bg="green.50" w="100%" p={4} mb={4} color="black">
+          <Flex borderRadius="6px" bg="green.50" w="100%" p={4} color="black">
             <CheckCircleIcon color="green.500" mr={2} boxSize={5} />
             <Box>Your donation has been approved! Be sure to schedule your pick up time.</Box>
           </Flex>
@@ -138,19 +138,7 @@ const DonorDashboard = ({ donationId }) => {
         return (
           <Flex flexDir="column">
             <Box>
-              <Box mt="1rem" ml="1rem">
-                <Text>Sit Tight! We&apos;ll be scheduling a pickup date with you soon.</Text>
-              </Box>
-              <Flex gap={3} visibility="hidden">
-                <Button bg="red.500" color="white">
-                  Reject Time
-                  <CloseIcon ml={3} />
-                </Button>
-                <Button bg="green" color="white">
-                  Approve Time
-                  <CheckIcon ml={3} />
-                </Button>
-              </Flex>
+              <Text>Sit Tight! We&apos;ll be scheduling a pickup date with you soon.</Text>
             </Box>
           </Flex>
         );
@@ -252,44 +240,44 @@ const DonorDashboard = ({ donationId }) => {
 
   return (
     <Flex h="100vh" direction="column">
-      <Flex
-        bg="gray.200"
-        p={{ base: 6, md: 14 }}
-        direction="column"
-        gap={7}
-        flexGrow={1}
-        justify="space-between"
-      >
-        <Grid gap={10} templateColumns={{ md: '3fr 1fr' }}>
-          <Flex direction="column" gap={3} justifyContent="center">
-            <Flex alignItems="center">
-              <Text
-                fontSize={{ base: '20px', md: '30px' }}
-                fontWeight="700"
-                mr={{ base: '15px', md: 0 }}
-              >
+      <Flex bg="gray.200" p={7} direction="column" gap={7} flexGrow={1} justify="space-between">
+        <Grid
+          templateAreas={{
+            md: `"donationHeader pickupHeader"
+                  "banner pickup"
+                  "details pickup"`,
+          }}
+          gridTemplateRows="auto auto 1fr"
+          gridTemplateColumns={{ base: 'minmax(0, 1fr)', md: '3fr 1fr' }}
+          align="center"
+          gap={5}
+          h="100%"
+        >
+          <GridItem area={{ md: 'donationHeader' }} align="center">
+            <Flex align="center" gap={2}>
+              <Text fontSize="1.75em" fontWeight="700">
                 My Donation
               </Text>
               <Box display={{ base: 'inline', md: 'none' }}>
                 {displayStatusTag(donation.status)}
               </Box>
             </Flex>
-            {displayBanner()}
-            <Box
-              maxH="600px"
-              borderRadius="6px"
-              bg="white"
-              w="100%"
-              h="100%"
-              overflowY="auto"
-              p={6}
-            >
-              <DonationDetails data={donation} setDonationData={setDonation} />
-            </Box>
-          </Flex>
-          <Flex direction="column" gap={3}>
+          </GridItem>
+          <GridItem area={{ md: 'banner' }}>{displayBanner()}</GridItem>
+          <GridItem
+            area={{ md: 'details' }}
+            borderRadius="6px"
+            bg="white"
+            w="100%"
+            h="100%"
+            overflowY="auto"
+            p={6}
+          >
+            <DonationDetails data={donation} setDonationData={setDonation} />
+          </GridItem>
+          <GridItem direction="column" gap={3} area={{ md: 'pickupHeader' }}>
             <Flex direction="row" gap={3}>
-              <Text fontSize={{ base: '20px', md: '30px' }} fontWeight="700" ml="1rem" mb=".8rem">
+              <Text fontSize="1.75em" fontWeight="700">
                 Pickup
               </Text>
               <Box p={2}>
@@ -300,15 +288,15 @@ const DonorDashboard = ({ donationId }) => {
                 )}
               </Box>
             </Flex>
-            <Container h="89%">
-              <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
-                {displayPickup()}
-              </Box>
-            </Container>
-          </Flex>
+          </GridItem>
+          <GridItem area={{ md: 'pickup' }}>
+            <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
+              {displayPickup()}
+            </Box>
+          </GridItem>
         </Grid>
         <Flex direction="column">
-          <Text fontSize="1.5em" fontWeight="700" mb={{ base: '10px', md: '20px' }}>
+          <Text fontSize="1.75em" fontWeight="700" mb={{ base: '10px', md: '20px' }}>
             Track your donation
           </Text>
           {donation?.status && <TrackDonationSection status={donation.status} />}
