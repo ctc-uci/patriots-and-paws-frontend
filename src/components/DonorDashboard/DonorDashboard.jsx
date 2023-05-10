@@ -12,7 +12,6 @@ import {
   Checkbox,
   useDisclosure,
   useToast,
-  Heading,
 } from '@chakra-ui/react';
 import { CheckCircleIcon, CloseIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons';
 import { FaTruckPickup } from 'react-icons/fa';
@@ -138,14 +137,6 @@ const DonorDashboard = ({ donationId }) => {
       case APPROVAL_REQUESTED:
         return (
           <Flex flexDir="column">
-            <Heading
-              fontWeight="700"
-              fontSize="20px"
-              mb="20px"
-              display={{ base: 'block', md: 'none' }}
-            >
-              Pickup
-            </Heading>
             <Box>
               <Box mt="1rem" ml="1rem">
                 <Text>Sit Tight! We&apos;ll be scheduling a pickup date with you soon.</Text>
@@ -166,16 +157,6 @@ const DonorDashboard = ({ donationId }) => {
       case SCHEDULING:
         return (
           <Flex direction="column" gap={3}>
-            <Box display={{ base: 'block', md: 'none' }} mb="10px">
-              <Heading fontWeight="700" fontSize="20px">
-                Pickup
-                {donation.status === SCHEDULING && (
-                  <Tag bg="blue.300" color="white" ml="20px">
-                    NEW
-                  </Tag>
-                )}
-              </Heading>
-            </Box>
             <Text fontWeight="400" fontSize="lg" mb="15px" mt={0}>
               Proposed Day:
               <Text fontWeight="600" fontSize="lg">
@@ -208,14 +189,6 @@ const DonorDashboard = ({ donationId }) => {
       case SCHEDULED:
         return (
           <Flex direction="column" gap={3}>
-            <Heading
-              fontWeight="700"
-              fontSize="20px"
-              mb="20px"
-              display={{ base: 'block', md: 'none' }}
-            >
-              Pickup
-            </Heading>
             <Flex gap={3} align="center">
               <Text>Pickup Day Confirmed</Text>
               <CheckCircleIcon color="green.200" />
@@ -242,14 +215,6 @@ const DonorDashboard = ({ donationId }) => {
       case CHANGES_REQUESTED:
         return (
           <Flex flexDir="column">
-            <Heading
-              fontWeight="700"
-              fontSize="20px"
-              mb="20px"
-              display={{ base: 'block', md: 'none' }}
-            >
-              Pickup
-            </Heading>
             <Box>
               After submitting your changes, we&apos;ll be scheduling a pickup date with you soon.
             </Box>
@@ -258,14 +223,6 @@ const DonorDashboard = ({ donationId }) => {
       case PICKED_UP:
         return (
           <Flex h="100%" direction="column" justify="center" gap={2}>
-            <Heading
-              fontWeight="700"
-              fontSize="20px"
-              mb="20px"
-              display={{ base: 'block', md: 'none' }}
-            >
-              Pickup
-            </Heading>
             <Flex flexDir="column" alignItems="center">
               {/* if a cancel case is added, use this icon with color set to blue */}
               <Box bg="#C6F6D5" borderRadius="10rem" p="1.5rem" mb=".5rem">
@@ -294,8 +251,15 @@ const DonorDashboard = ({ donationId }) => {
   }, [donationId]);
 
   return (
-    <>
-      <Flex bg="gray.200" p={{ base: 6, md: 14 }} direction="column" gap={7}>
+    <Flex h="100vh" direction="column">
+      <Flex
+        bg="gray.200"
+        p={{ base: 6, md: 14 }}
+        direction="column"
+        gap={7}
+        flexGrow={1}
+        justify="space-between"
+      >
         <Grid gap={10} templateColumns={{ md: '3fr 1fr' }}>
           <Flex direction="column" gap={3} justifyContent="center">
             <Flex alignItems="center">
@@ -323,7 +287,7 @@ const DonorDashboard = ({ donationId }) => {
               <DonationDetails data={donation} setDonationData={setDonation} />
             </Box>
           </Flex>
-          <Flex direction="column" gap={3} display={{ base: 'none', md: 'block' }}>
+          <Flex direction="column" gap={3}>
             <Flex direction="row" gap={3}>
               <Text fontSize={{ base: '20px', md: '30px' }} fontWeight="700" ml="1rem" mb=".8rem">
                 Pickup
@@ -343,12 +307,6 @@ const DonorDashboard = ({ donationId }) => {
             </Container>
           </Flex>
         </Grid>
-
-        <Flex direction="column" gap={3} display={{ base: 'block', md: 'none' }}>
-          <Box borderRadius="6px" bg="white" h="100%">
-            {displayPickup()}
-          </Box>
-        </Flex>
         <Flex direction="column">
           <Text fontSize="1.5em" fontWeight="700" mb={{ base: '10px', md: '20px' }}>
             Track your donation
@@ -357,7 +315,7 @@ const DonorDashboard = ({ donationId }) => {
         </Flex>
       </Flex>
       <DonorFooter />
-    </>
+    </Flex>
   );
 };
 

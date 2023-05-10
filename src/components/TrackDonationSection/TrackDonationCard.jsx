@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Card, CardHeader, CardBody, Heading, Text } from '@chakra-ui/react';
+import { Card, Stack, Heading, Text, Icon } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import { BiRadioCircle } from 'react-icons/bi';
 
@@ -12,19 +12,21 @@ const TrackDonationCard = ({ checked, curr, heading, body }) => {
       h="100%"
       borderRadius={0}
       className={curr || checked ? styles.currStatus : styles.statusBox}
+      direction="row"
+      p="1em"
+      gap="1em"
     >
-      <CardHeader display="flex" alignItems="center">
-        {checked && (
-          <CheckCircleIcon color="#63B3ED" boxSize="2rem" mr="1rem" mt=".6rem" mb=".6rem" />
-        )}
-        {
-          !checked && <BiRadioCircle size="3rem" style={{ color: '#63B3ED' }} /> // display circle
-        }
-        <Heading size="md">{heading}</Heading>
-      </CardHeader>
-      <CardBody mt="-20px">
+      {checked ? (
+        <CheckCircleIcon color="#63B3ED" boxSize="2rem" />
+      ) : (
+        <Icon as={BiRadioCircle} color="#63B3ED" boxSize="2rem" />
+      )}
+      <Stack gap={1}>
+        <Heading size="md" whiteSpace="nowrap">
+          {heading}
+        </Heading>
         <Text fontSize="1em">{body}</Text>
-      </CardBody>
+      </Stack>
     </Card>
   );
 };

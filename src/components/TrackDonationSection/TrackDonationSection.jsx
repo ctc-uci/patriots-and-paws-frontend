@@ -26,7 +26,7 @@ const TrackDonationSection = ({ status }) => {
     {
       checked: stage >= 2,
       curr: stage === 2,
-      heading: 'Submission Approved',
+      heading: 'Pickup Date Requested',
       body: 'Make sure to schedule a time for us to pick up your donation.',
     },
     {
@@ -44,15 +44,13 @@ const TrackDonationSection = ({ status }) => {
   ];
 
   return (
-    <>
-      <Grid templateColumns="25% 25% 25% 25%" gap={0}>
-        {descriptions.map(e => (
-          <GridItem key={e.heading}>
-            <TrackDonationCard {...e} />
-          </GridItem>
-        ))}
-      </Grid>
-    </>
+    <Grid templateColumns="repeat(4, 1fr)" gap={0} display={{ md: 'flex' }}>
+      {descriptions.map(e => (
+        <GridItem key={e.heading} w={{ base: '100%', md: '25%' }} h={{ base: '25%', md: '100%' }}>
+          <TrackDonationCard {...e} />
+        </GridItem>
+      ))}
+    </Grid>
   );
 };
 
