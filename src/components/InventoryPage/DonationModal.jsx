@@ -62,6 +62,21 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
     routeId,
   } = data;
 
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
   const [scheduledDate, setScheduledDate] = useState('');
@@ -132,6 +147,32 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
     await PNPBackend.delete(`/donations/${id}`);
     setAllDonations(prev => prev.filter(donation => donation.id !== id));
     onClose();
+  };
+
+  const convertDayLabel = date => {
+    const d = new Date(date.concat('T00:00'));
+    const month = months[d.getMonth()];
+    const dayOfWeek = daysOfWeek[d.getDay()];
+    const day = +d.getDate();
+    let dayLabel;
+    if (day === 1 || day === 21 || day === 31) {
+      dayLabel = [day, 'st'].join('');
+    } else if (day === 2 || day === 22) {
+      dayLabel = [day, 'nd'].join('');
+    } else if (day === 3 || day === 23) {
+      dayLabel = [day, 'rd'].join('');
+    } else {
+      dayLabel = [day, 'th'].join('');
+    }
+    const rString = dayOfWeek.concat(', ', month, ' ', dayLabel);
+
+    return rString;
+  };
+
+  const filterDate = date => {
+    const currDate = new Date(date.concat('T00:00'));
+    const today = new Date();
+    return currDate >= today;
   };
 
   return (
@@ -245,7 +286,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                   <Stack spacing={{ base: '15px', md: '1%' }} direction="column">
                     <InputGroup>
                       <InputLeftAddon>Unit</InputLeftAddon>
-                      <Input defaultValue={addressUnit} isReadOnly />
+                      <Input defaultValue={addressUnit} isReadOnly placeholder="Housing Unit" />
                     </InputGroup>
                     <InputGroup>
                       <InputLeftAddon>Zip Code</InputLeftAddon>
@@ -292,11 +333,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                     )
                   }
                 >
-                  {Object.keys(displayedRouteOptions).map(day => (
-                    <option key={day} value={day}>
-                      {day}
-                    </option>
-                  ))}
+                  {Object.keys(displayedRouteOptions)
+                    .filter(day => filterDate(day))
+                    .map(day => (
+                      <option key={day} value={day}>
+                        {convertDayLabel(day)}
+                      </option>
+                    ))}
                 </Select>
                 <Select
                   placeholder={(!routeId || currentStatus === RESCHEDULE) && 'Choose a route'}

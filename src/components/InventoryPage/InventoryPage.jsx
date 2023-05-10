@@ -118,8 +118,8 @@ const InventoryPage = () => {
   return (
     <>
       <div className="main-body">
-        <Tabs p="40px" variant="unstyled" onChange={index => setTabIndex(index)}>
-          <TabList justifyContent="space-between">
+        <Tabs p="20px" variant="unstyled" h="75vh" onChange={index => setTabIndex(index)}>
+          <TabList mt="2vh" px="20px" justifyContent="space-between">
             <Flex>
               <Tab _selected={{ color: 'blue.500' }}>Pending Admin Approval</Tab>
               <Tab _selected={{ color: 'blue.500' }}>Pending Donor Approval</Tab>
@@ -143,9 +143,9 @@ const InventoryPage = () => {
               </DrawerBody>
             </DrawerContent>
           </Drawer>
-          <TabPanels>
+          <TabPanels mt="2vh">
             <TabPanel>
-              <TableContainer mx={1} overflowY="scroll" height="70vh">
+              <TableContainer ml={1} overflowY="auto" height="58vh">
                 <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
                   <Thead position="sticky" top={0}>
                     <Tr bg="#F7FAFC" height="40px">
@@ -176,7 +176,7 @@ const InventoryPage = () => {
               </TableContainer>
             </TabPanel>
             <TabPanel>
-              <TableContainer mx={1} overflowY="scroll" height="70vh">
+              <TableContainer ml={1} overflowY="auto" height="58vh">
                 <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
                   <Thead position="sticky" top={0}>
                     <Tr bg="#F7FAFC" height="40px">
@@ -203,7 +203,7 @@ const InventoryPage = () => {
               </TableContainer>
             </TabPanel>
             <TabPanel>
-              <TableContainer mx={1} overflowY="scroll" height="70vh">
+              <TableContainer ml={1} overflowY="auto" height="58vh">
                 <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
                   <Thead position="sticky" top={0}>
                     <Tr bg="#F7FAFC" height="40px">
@@ -230,7 +230,7 @@ const InventoryPage = () => {
               </TableContainer>
             </TabPanel>
             <TabPanel>
-              <TableContainer mx={1} overflowY="scroll" height="70vh">
+              <TableContainer ml={1} overflowY="auto" height="58vh">
                 <Table border="solid" borderWidth="1px" borderColor="#E2E8F0">
                   <Thead position="sticky" top={0}>
                     <Tr bg="#F7FAFC" height="40px">
@@ -259,7 +259,7 @@ const InventoryPage = () => {
           </TabPanels>
         </Tabs>
       </div>
-      <Tabs px="40px" variant="unstyled">
+      <Tabs px="20px" variant="unstyled">
         <PaginationFooter
           setData={setDonations}
           table="donations"
