@@ -75,6 +75,20 @@ const DonorDashboard = ({ donationId }) => {
             <Box>Thank you for donating to Patriots and Paws!</Box>
           </Flex>
         );
+      case RESCHEDULE:
+        return (
+          <Flex borderRadius="6px" bg="blue.50" w="100%" p={4}>
+            <CheckCircleIcon color="blue.100" mr={2} boxSize={5} />
+            <Box>
+              Your pickup is being rescheduled! Be sure to check your inbox for updates and email us
+              at&nbsp;
+              <Link href="mailto:pnp@gmail.com" color="blue.500" textDecoration="underline">
+                pnp@gmail.com
+              </Link>
+              &nbsp;with any changes.
+            </Box>
+          </Flex>
+        );
       default:
         return (
           <Flex borderRadius="6px" bg="green.50" w="100%" p={4} color="black">
@@ -133,18 +147,15 @@ const DonorDashboard = ({ donationId }) => {
   const displayPickup = () => {
     switch (donation.status) {
       case PENDING:
-      case RESCHEDULE:
       case APPROVAL_REQUESTED:
         return (
-          <Flex flexDir="column">
-            <Box>
-              <Text>Sit Tight! We&apos;ll be scheduling a pickup date with you soon.</Text>
-            </Box>
-          </Flex>
+          <Text textAlign="left">
+            Sit Tight! We&apos;ll be scheduling a pickup date with you soon.
+          </Text>
         );
       case SCHEDULING:
         return (
-          <Flex direction="column" gap={3}>
+          <Flex direction="column" gap={3} textAlign="left">
             <Text fontWeight="400" fontSize="lg" mb="15px" mt={0}>
               Proposed Day:
               <Text fontWeight="600" fontSize="lg">
@@ -176,7 +187,7 @@ const DonorDashboard = ({ donationId }) => {
         );
       case SCHEDULED:
         return (
-          <Flex direction="column" gap={3}>
+          <Flex direction="column" gap={3} textAlign="left">
             <Flex gap={3} align="center">
               <Text>Pickup Day Confirmed</Text>
               <CheckCircleIcon color="green.200" />
@@ -202,7 +213,7 @@ const DonorDashboard = ({ donationId }) => {
         );
       case CHANGES_REQUESTED:
         return (
-          <Flex flexDir="column">
+          <Flex flexDir="column" textAlign="left">
             <Box>
               After submitting your changes, we&apos;ll be scheduling a pickup date with you soon.
             </Box>
@@ -210,15 +221,13 @@ const DonorDashboard = ({ donationId }) => {
         );
       case PICKED_UP:
         return (
-          <Flex h="100%" direction="column" justify="center" gap={2}>
+          <Flex h="100%" direction="column" justify="center" gap={2} p="2em">
             <Flex flexDir="column" alignItems="center">
-              {/* if a cancel case is added, use this icon with color set to blue */}
-              <Box bg="#C6F6D5" borderRadius="10rem" p="1.5rem" mb=".5rem">
-                <IconContext.Provider value={{ color: 'green', size: '5.5rem' }}>
+              <Box bg="green.100" borderRadius="10rem" p="1.5rem" mb=".5rem">
+                <IconContext.Provider value={{ color: '#38A169', size: '5.5rem' }}>
                   <FaTruckPickup />
                 </IconContext.Provider>
               </Box>
-
               <Text textAlign="center" fontSize={{ base: '18px', md: '20px' }}>
                 Your items have been successfully picked up!
               </Text>
@@ -226,7 +235,21 @@ const DonorDashboard = ({ donationId }) => {
           </Flex>
         );
       default:
-        return <Box>No pickup</Box>;
+        return (
+          <Flex h="100%" direction="column" justify="center" gap={2} p="2em">
+            <Flex flexDir="column" alignItems="center">
+              <Box bg="blue.100" borderRadius="10rem" p="1.5rem" mb=".5rem">
+                <IconContext.Provider value={{ color: '#3182CE', size: '5.5rem' }}>
+                  <FaTruckPickup />
+                </IconContext.Provider>
+              </Box>
+              <Text textAlign="center" fontSize={{ base: '18px', md: '20px' }}>
+                Your pickup is being rescheduled. Patriots and Paws will scheduling a new pickup
+                date shortly.
+              </Text>
+            </Flex>
+          </Flex>
+        );
     }
   };
 
@@ -263,7 +286,9 @@ const DonorDashboard = ({ donationId }) => {
               </Box>
             </Flex>
           </GridItem>
-          <GridItem area={{ md: 'banner' }}>{displayBanner()}</GridItem>
+          <GridItem area={{ md: 'banner' }} textAlign="left">
+            {displayBanner()}
+          </GridItem>
           <GridItem
             area={{ md: 'details' }}
             borderRadius="6px"
@@ -290,7 +315,15 @@ const DonorDashboard = ({ donationId }) => {
             </Flex>
           </GridItem>
           <GridItem area={{ md: 'pickup' }}>
-            <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
+            <Box
+              borderRadius="6px"
+              bg="white"
+              h="100%"
+              py={4}
+              px={6}
+              minHeight="150px"
+              textAlign="left"
+            >
               {displayPickup()}
             </Box>
           </GridItem>
