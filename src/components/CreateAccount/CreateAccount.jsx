@@ -140,6 +140,8 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                           style={{ width: '240px' }}
                           placeholder="Enter first name"
                           {...register('firstName')}
+                          maxLength="256"
+                          textOverflow="ellipsis"
                         />
                         <FormErrorMessage>
                           {errors.firstName && errors.firstName.message}
@@ -153,6 +155,8 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                           style={{ width: '240px' }}
                           placeholder="Enter email"
                           {...register('email')}
+                          maxLength="256"
+                          textOverflow="ellipsis"
                           isRequired
                         />
                         <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
@@ -194,6 +198,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                           style={{ width: '240px' }}
                           placeholder="Enter password"
                           {...register('password')}
+                          textOverflow="ellipsis"
                           isRequired
                         />
                         <FormErrorMessage>
@@ -211,6 +216,8 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                           style={{ width: '240px' }}
                           placeholder="Enter last name"
                           {...register('lastName')}
+                          maxLength="256"
+                          textOverflow="ellipsis"
                           isRequired
                         />
                         <FormErrorMessage>
@@ -227,6 +234,8 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                           style={{ width: '240px' }}
                           placeholder="Enter phone number"
                           {...register('phoneNumber')}
+                          maxLength="15"
+                          textOverflow="ellipsis"
                           isRequired
                         />
                         <FormErrorMessage>
@@ -242,6 +251,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                           style={{ width: '240px' }}
                           placeholder="Re-enter password"
                           {...register('confirmPassword')}
+                          textOverflow="ellipsis"
                           isRequired
                         />
                         <FormErrorMessage>
