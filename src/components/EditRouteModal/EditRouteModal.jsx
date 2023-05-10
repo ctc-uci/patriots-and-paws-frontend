@@ -96,7 +96,7 @@ const DonationList = ({
                   {isEditing && <DragHandleIcon mr={5} />}
                   <Stack spacing={0}>
                     <Text fontWeight="bold">Donation #{donation.id}</Text>
-                    <Text>
+                    <Text isTruncated>
                       {donation.firstName} {donation.lastName} | Items:&nbsp;
                       {donation.furniture.length ? donation.furniture.length : 0}
                     </Text>
@@ -277,7 +277,7 @@ const EditRouteModal = ({
               {assignedRouteName}
             </Heading>
             <Flex justifyContent="space-between">
-              <Text fontSize="md" fontWeight="normal">
+              <Text fontSize="md" fontWeight="normal" isTruncated>
                 {convertDate(routeDate)}
               </Text>
             </Flex>
@@ -300,7 +300,7 @@ const EditRouteModal = ({
                 </Select>
               </FormControl>
               <FormControl display="flex" whiteSpace="nowrap" alignItems="center">
-                <Text fontSize="sm" fontWeight="normal" mr={3}>
+                <Text fontSize="sm" fontWeight="normal" mr={3} isTruncated>
                   Show confirmed donations only
                 </Text>
                 <Switch
@@ -329,7 +329,7 @@ const EditRouteModal = ({
               <Text fontSize="1.75em" fontWeight="bold">
                 No Donations Added Yet
               </Text>
-              <Text fontSize="0.8em">
+              <Text fontSize="0.8em" isTruncated>
                 {userRole === DRIVER_ROLE
                   ? 'Contact the Patriots and Paws Admin for more information.'
                   : 'You can add donations to a route when scheduling'}
