@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Heading, Flex, useToast } from '@chakra-ui/react';
+import { Button, Heading, Flex, useToast, useDisclosure } from '@chakra-ui/react';
 import EditItemsList from '../../components/EditItemsList/EditItemsList';
-import ItemInfo from '../../components/ItemInfo/ItemInfo';
 import { PNPBackend } from '../../utils/utils';
+import ItemInfoModal from '../../components/ItemInfoModal/ItemInfoModal';
 
 const ManageDonationForm = () => {
   const [items, setItems] = useState([]);
   const [newEntries, setNewEntries] = useState([]);
   const [deletedEntries, setDeletedEntries] = useState([]);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
   useEffect(() => {
@@ -79,7 +80,10 @@ const ManageDonationForm = () => {
         </Flex>
       </Flex>
       <Flex justify="right" gap="1em">
-        <ItemInfo items={items} isAccepted />
+        <Button colorScheme="gray" borderWidth="1px" borderColor="gray.200" onClick={onOpen}>
+          Preview Item List
+        </Button>
+        <ItemInfoModal items={items} isAccepted isOpen={isOpen} onClose={onClose} />
         <Button colorScheme="blue" onClick={updateItems}>
           Publish
         </Button>
