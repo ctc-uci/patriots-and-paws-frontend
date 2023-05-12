@@ -114,7 +114,14 @@ const CreateRouteModal = ({ routeDate, allDrivers, isOpen, onClose, handleCalend
           <form>
             <FormControl isRequired my="1em">
               <FormLabel>Route Name</FormLabel>
-              <Input id="route-name" placeholder="Name" {...register('routeName')} isRequired />
+              <Input
+                id="route-name"
+                placeholder="Name"
+                {...register('routeName')}
+                maxLength="28"
+                textOverflow="ellipsis"
+                isRequired
+              />
             </FormControl>
             <Box>{errors.routeName?.message}</Box>
             <FormControl isRequired my="1em">

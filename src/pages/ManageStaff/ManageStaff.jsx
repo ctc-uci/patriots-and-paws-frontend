@@ -19,10 +19,10 @@ import {
 } from '@chakra-ui/react';
 import { Search2Icon } from '@chakra-ui/icons';
 import Fuse from 'fuse.js';
-import { PNPBackend } from '../../utils/utils';
-import { getCurrentUserId } from '../../utils/AuthUtils';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import menuIcon from '../../assets/Menu.svg';
+import { PNPBackend } from '../../utils/utils';
+import { getCurrentUserId } from '../../utils/AuthUtils';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import { AUTH_ROLES } from '../../utils/config';
 import UserTable from '../../components/UserTable/UserTable';

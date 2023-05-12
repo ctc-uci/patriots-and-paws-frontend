@@ -283,7 +283,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                       First Name&nbsp;<FormLabel color="red">*</FormLabel>
                     </Flex>
                   </FormLabel>
-                  <Input {...register('firstName')} />
+                  <Input {...register('firstName')} maxLength="256" textOverflow="ellipsis" />
                   <FormErrorMessage>
                     {errors.firstName && errors.firstName.message}
                   </FormErrorMessage>
@@ -299,7 +299,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                       Last Name&nbsp;<FormLabel color="red">*</FormLabel>
                     </Flex>
                   </FormLabel>
-                  <Input {...register('lastName')} />
+                  <Input {...register('lastName')} maxLength="256" textOverflow="ellipsis" />
                   <FormErrorMessage>{errors.lastName && errors.lastName.message}</FormErrorMessage>
                 </FormControl>
               </Box>
@@ -311,7 +311,12 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                       Email Address&nbsp;<FormLabel color="red">*</FormLabel>
                     </Flex>
                   </FormLabel>
-                  <Input {...register('email')} disabled={donationData?.email} />
+                  <Input
+                    {...register('email')}
+                    disabled={donationData?.email}
+                    maxLength="256"
+                    textOverflow="ellipsis"
+                  />
                   <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
                 </FormControl>
 
@@ -325,7 +330,12 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                       Phone Number&nbsp;<FormLabel color="red">*</FormLabel>
                     </Flex>
                   </FormLabel>
-                  <Input type="tel" {...register('phoneNum')} />
+                  <Input
+                    type="tel"
+                    {...register('phoneNum')}
+                    maxLength="15"
+                    textOverflow="ellipsis"
+                  />
                   <FormErrorMessage>{errors.phoneNum && errors.phoneNum.message}</FormErrorMessage>
                 </FormControl>
               </Box>
@@ -337,7 +347,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                       Street Address&nbsp;<FormLabel color="red">*</FormLabel>
                     </Flex>
                   </FormLabel>
-                  <Input {...register('addressStreet')} />
+                  <Input {...register('addressStreet')} maxLength="256" textOverflow="ellipsis" />
                   <FormErrorMessage>
                     {errors.addressStreet && errors.addressStreet.message}
                   </FormErrorMessage>
@@ -345,7 +355,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
 
                 <FormControl>
                   <FormLabel>Address Line 2</FormLabel>
-                  <Input {...register('addressUnit')} />
+                  <Input {...register('addressUnit')} maxLength="256" textOverflow="ellipsis" />
                 </FormControl>
               </Flex>
 
@@ -360,7 +370,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                       City&nbsp;<FormLabel color="red">*</FormLabel>
                     </Flex>
                   </FormLabel>
-                  <Input {...register('addressCity')} />
+                  <Input {...register('addressCity')} maxLength="256" textOverflow="ellipsis" />
                   <FormErrorMessage>
                     {errors.addressCity && errors.addressCity.message}
                   </FormErrorMessage>
@@ -385,7 +395,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                       Zip Code&nbsp;<FormLabel color="red">*</FormLabel>
                     </Flex>
                   </FormLabel>
-                  <Input {...register('addressZip')} />
+                  <Input {...register('addressZip')} textOverflow="ellipsis" />
                   <FormErrorMessage>
                     {errors.addressZip && errors.addressZip.message}
                   </FormErrorMessage>

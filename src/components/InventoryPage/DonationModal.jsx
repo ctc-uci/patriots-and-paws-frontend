@@ -177,7 +177,12 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                 <Stack spacing="1%" my={{ base: '15px', md: '0' }}>
                   <InputGroup>
                     <InputLeftAddon>Name</InputLeftAddon>
-                    <Input defaultValue={`${firstName} ${lastName}`} isReadOnly />
+                    <Input
+                      defaultValue={`${firstName} ${lastName}`}
+                      maxLength="513"
+                      textOverflow="ellipsis"
+                      isReadOnly
+                    />
                   </InputGroup>
                 </Stack>
                 <Flex
@@ -187,11 +192,22 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                 >
                   <InputGroup>
                     <InputLeftAddon>Email</InputLeftAddon>
-                    <Input defaultValue={email} isReadOnly />
+                    <Input
+                      defaultValue={email}
+                      maxLength="256"
+                      textOverflow="ellipsis"
+                      isReadOnly
+                    />
                   </InputGroup>
                   <InputGroup>
                     <InputLeftAddon>Phone Number</InputLeftAddon>
-                    <Input type="tel" defaultValue={phoneNum} isReadOnly />
+                    <Input
+                      type="tel"
+                      defaultValue={phoneNum}
+                      maxLength="15"
+                      textOverflow="ellipsis"
+                      isReadOnly
+                    />
                   </InputGroup>
                 </Flex>
               </>
@@ -226,7 +242,12 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                   <Stack spacing={{ base: '15px', md: '1%' }} direction="column">
                     <InputGroup>
                       <InputLeftAddon>Street Address</InputLeftAddon>
-                      <Input defaultValue={addressStreet} isReadOnly />
+                      <Input
+                        defaultValue={addressStreet}
+                        maxLength="256"
+                        textOverflow="ellipsis"
+                        isReadOnly
+                      />
                     </InputGroup>
                     <Stack
                       spacing={{ base: '15px', md: '1%' }}
@@ -234,7 +255,12 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                     >
                       <InputGroup>
                         <InputLeftAddon>City</InputLeftAddon>
-                        <Input defaultValue={addressCity} isReadOnly />
+                        <Input
+                          defaultValue={addressCity}
+                          maxLength="256"
+                          textOverflow="ellipsis"
+                          isReadOnly
+                        />
                       </InputGroup>
                       <InputGroup>
                         <InputLeftAddon>State</InputLeftAddon>
@@ -245,11 +271,16 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                   <Stack spacing={{ base: '15px', md: '1%' }} direction="column">
                     <InputGroup>
                       <InputLeftAddon>Unit</InputLeftAddon>
-                      <Input defaultValue={addressUnit} isReadOnly />
+                      <Input
+                        defaultValue={addressUnit}
+                        maxLength="256"
+                        textOverflow="ellipsis"
+                        isReadOnly
+                      />
                     </InputGroup>
                     <InputGroup>
                       <InputLeftAddon>Zip Code</InputLeftAddon>
-                      <Input defaultValue={addressZip} isReadOnly />
+                      <Input defaultValue={addressZip} textOverflow="ellipsis" isReadOnly />
                     </InputGroup>
                   </Stack>
                 </Stack>
@@ -261,6 +292,8 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                   mb={{ base: '15px', md: '0.75%' }}
                   fontSize="1.25em"
                   fontWeight="medium"
+                  maxLength="256"
+                  isTruncated
                 >
                   Special Instructions
                 </Text>

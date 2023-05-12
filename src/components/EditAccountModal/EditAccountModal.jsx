@@ -116,6 +116,8 @@ const EditAccountModal = ({
       confirmPassword: '',
     });
 
+    // user.firstName = toCapitalCase(user.firstName);
+    // user.lastName = toCapitalCase(user.lastName);
     setUsers(prev => prev.map(user => (user.id === data.id ? updatedUser : user)));
     if (data.role === 'admin') {
       setAdminUsers(prev => prev.map(user => (user.id === data.id ? updatedUser : user)));
@@ -165,6 +167,8 @@ const EditAccountModal = ({
                         errorBorderColor="red.300"
                         isInvalid={'firstName' in errors}
                         {...register('firstName')}
+                        maxLength="256"
+                        textOverflow="ellipsis"
                         isRequired
                       />
                       <FormErrorMessage>
@@ -181,6 +185,8 @@ const EditAccountModal = ({
                         errorBorderColor="red.300"
                         isInvalid={'lastName' in errors}
                         {...register('lastName')}
+                        maxLength="256"
+                        textOverflow="ellipsis"
                         isRequired
                       />
                       <FormErrorMessage>
@@ -202,6 +208,8 @@ const EditAccountModal = ({
                         w="320px"
                         placeholder="Enter email"
                         value={data.email}
+                        maxLength="256"
+                        textOverflow="ellipsis"
                         isReadOnly
                       />
                     </InputGroup>
@@ -217,6 +225,8 @@ const EditAccountModal = ({
                         errorBorderColor="red.300"
                         isInvalid={'phoneNumber' in errors}
                         {...register('phoneNumber')}
+                        maxLength="15"
+                        textOverflow="ellipsis"
                         isRequired
                       />
                       <FormErrorMessage>
@@ -270,6 +280,7 @@ const EditAccountModal = ({
                             errorBorderColor="red.300"
                             isInvalid={'newPassword' in errors}
                             {...register('newPassword')}
+                            textOverflow="ellipsis"
                             isRequired
                           />
                           <FormErrorMessage maxWidth="320px">
@@ -288,6 +299,7 @@ const EditAccountModal = ({
                             errorBorderColor="red.300"
                             isInvalid={'confirmPassword' in errors}
                             {...register('confirmPassword')}
+                            textOverflow="ellipsis"
                             isRequired
                           />
                           <FormErrorMessage>
