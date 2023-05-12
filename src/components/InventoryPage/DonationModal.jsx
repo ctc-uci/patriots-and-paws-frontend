@@ -62,6 +62,21 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
     routeId,
   } = data;
 
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
   const [scheduledDate, setScheduledDate] = useState('');
@@ -132,6 +147,38 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
     await PNPBackend.delete(`/donations/${id}`);
     setAllDonations(prev => prev.filter(donation => donation.id !== id));
     onClose();
+  };
+
+  const convertDayLabel = date => {
+    const d = new Date(date.concat('T00:00'));
+    const month = months[d.getMonth()];
+    const dayOfWeek = daysOfWeek[d.getDay()];
+    const day = +d.getDate();
+    let dayLabel;
+    if (day === 1 || day === 21 || day === 31) {
+      dayLabel = [day, 'st'].join('');
+    } else if (day === 2 || day === 22) {
+      dayLabel = [day, 'nd'].join('');
+    } else if (day === 3 || day === 23) {
+      dayLabel = [day, 'rd'].join('');
+    } else {
+      dayLabel = [day, 'th'].join('');
+    }
+    const rString = dayOfWeek.concat(', ', month, ' ', dayLabel);
+
+    return rString;
+  };
+
+  const filterDate = date => {
+    const currDate = new Date(date.concat('T00:00'));
+    const today = new Date();
+    return currDate >= today;
+  };
+
+  const generateDates = () => {
+    const filteredDates = Object.keys(displayedRouteOptions).filter(day => filterDate(day));
+    filteredDates.sort();
+    return filteredDates;
   };
 
   return (
@@ -273,6 +320,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                       <InputLeftAddon>Unit</InputLeftAddon>
                       <Input
                         defaultValue={addressUnit}
+                        placeholder="Housing Unit"
                         maxLength="256"
                         textOverflow="ellipsis"
                         isReadOnly
@@ -325,9 +373,9 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                     )
                   }
                 >
-                  {Object.keys(displayedRouteOptions).map(day => (
+                  {generateDates().map(day => (
                     <option key={day} value={day}>
-                      {day}
+                      {convertDayLabel(day)}
                     </option>
                   ))}
                 </Select>

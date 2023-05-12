@@ -96,7 +96,7 @@ const DonationImagesContainer = ({ pictures, itemsPerPage }) => {
           justifyContent="center"
           maxH="400px"
         >
-          <PaginationPrevious position="absolute" left={0}>
+          <PaginationPrevious position="absolute" left={0} backgroundColor="transparent">
             &lsaquo;
           </PaginationPrevious>
           <SimpleGrid
@@ -118,7 +118,7 @@ const DonationImagesContainer = ({ pictures, itemsPerPage }) => {
               </GridItem>
             ))}
           </SimpleGrid>
-          <PaginationNext position="absolute" right={0}>
+          <PaginationNext position="absolute" right={0} backgroundColor="transparent">
             &rsaquo;
           </PaginationNext>
         </PaginationContainer>
