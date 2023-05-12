@@ -135,7 +135,12 @@ const EditAccountModal = ({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} onCloseComplete={onCancel} size="4xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      onCloseComplete={onCancel}
+      size={{ base: 'md', md: '4xl' }}
+    >
       <ModalOverlay />
       <ModalContent>
         <Flex p="30px 60px 0px 60px" justifyContent="center">

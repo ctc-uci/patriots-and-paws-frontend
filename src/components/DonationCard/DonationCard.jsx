@@ -32,7 +32,7 @@ function DonationCard({ donatedFurniture, changeDon, removeDon }) {
           {name}
         </Heading>
         <Flex flexDirection="row" alignItems="center" gap="10px">
-          <NumberInput value={value} onChange={handleChange} min={1} max={100} size="sm">
+          <NumberInput value={value} onChange={handleChange} min={1} max={99} size="sm">
             <NumberInputField w="5em" />
             <NumberInputStepper>
               <NumberIncrementStepper />

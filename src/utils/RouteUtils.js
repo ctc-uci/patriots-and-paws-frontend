@@ -1,8 +1,8 @@
 import { StyleSheet } from '@react-pdf/renderer';
 import { PNPBackend } from './utils';
-import { AUTH_ROLES } from './config';
+// import { AUTH_ROLES } from './config';
 
-const { DRIVER_ROLE } = AUTH_ROLES;
+// const { DRIVER_ROLE } = AUTH_ROLES;
 
 const getAllRoutes = async () => {
   const { data } = await PNPBackend.get(`/routes`);
@@ -42,9 +42,8 @@ const updateRoute = async route => {
 };
 
 const getDrivers = async () => {
-  const users = await PNPBackend.get('/users/');
-  const drivers = users.data.filter(user => user.role === DRIVER_ROLE);
-  return drivers;
+  const { data } = await PNPBackend.get('/users/drivers');
+  return data;
 };
 
 const getDonations = async routeId => {
@@ -107,6 +106,16 @@ const formatDate = date =>
     day: 'numeric',
   });
 
+const formatDatePDF = date => {
+  const formattedDate = date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  return formattedDate.replace(',', ':');
+};
+
 const A4_WIDTH = 595.28; // can use instead of "A4" for page size to get one long page
 
 const routePDFStyles = StyleSheet.create({
@@ -115,6 +124,16 @@ const routePDFStyles = StyleSheet.create({
     height: '80vh',
   },
 });
+
+const dateHasPassed = date => {
+  const today = new Date();
+  const selectedRouteDate = new Date(date);
+  return (
+    selectedRouteDate.getFullYear() < today.getFullYear() ||
+    selectedRouteDate.getMonth() < today.getMonth() ||
+    selectedRouteDate.getDate() < today.getDate()
+  );
+};
 
 export {
   getAllRoutes,
@@ -127,6 +146,8 @@ export {
   getRouteDonations,
   getDriverName,
   formatDate,
+  formatDatePDF,
   A4_WIDTH,
   routePDFStyles,
+  dateHasPassed,
 };

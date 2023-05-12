@@ -124,10 +124,10 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
       >
         Add Staff <SmallAddIcon />
       </Button>
-      <Modal isOpen={isOpen} onClose={resetFields} size="4xl">
+      <Modal isOpen={isOpen} onClose={resetFields} size={{ base: 'lg', md: '4xl' }}>
         <ModalOverlay />
         <ModalContent>
-          <Flex p="30px 60px 0px 60px" justifyContent="center">
+          <Flex p="30px 60px 0px 60px" justifyContent={{ base: 'center', md: 'start' }}>
             <Stack>
               <ModalHeader fontSize="36px" fontWeight={700}>
                 Add Staff
@@ -149,25 +149,6 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                           {errors.firstName && errors.firstName.message}
                         </FormErrorMessage>
                       </FormControl>
-                    </Flex>
-                    <Flex flexDir="column">
-                      <FormControl isInvalid={errors && errors.lastName}>
-                        <FormLabel>Last Name</FormLabel>
-                        <Input
-                          id="last-name"
-                          placeholder="Enter last name"
-                          w="320px"
-                          {...register('lastName')}
-                          isRequired
-                        />
-                        <FormErrorMessage>
-                          {errors.lastName && errors.lastName.message}
-                        </FormErrorMessage>
-                      </FormControl>
-                    </Flex>
-                  </Flex>
-                  <Flex mb="40px" gap="60px">
-                    <Flex flexDir="column">
                       <FormControl isInvalid={errors && errors.email}>
                         <FormLabel>Email</FormLabel>
                         <Input
@@ -180,26 +161,6 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                         />
                         <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
                       </FormControl>
-                    </Flex>
-                    <Flex flexDir="column">
-                      <FormControl isInvalid={errors && errors.phoneNumber}>
-                        <FormLabel>Phone Number</FormLabel>
-                        <Input
-                          type="tel"
-                          id="phone-number"
-                          placeholder="Enter phone number"
-                          w="320px"
-                          {...register('phoneNumber')}
-                          isRequired
-                        />
-                        <FormErrorMessage>
-                          {errors.phoneNumber && errors.phoneNumber.message}
-                        </FormErrorMessage>
-                      </FormControl>
-                    </Flex>
-                  </Flex>
-                  <Flex mb="40px" gap="60px">
-                    <Flex direction="column">
                       <FormControl isInvalid={errors && errors.password}>
                         <FormLabel>
                           Password
@@ -245,6 +206,33 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                       </FormControl>
                     </Flex>
                     <Flex direction="column">
+                      <FormControl isInvalid={errors && errors.lastName}>
+                        <FormLabel>Last Name</FormLabel>
+                        <Input
+                          id="last-name"
+                          style={{ width: '240px' }}
+                          placeholder="Enter last name"
+                          {...register('lastName')}
+                          isRequired
+                        />
+                        <FormErrorMessage>
+                          {errors.lastName && errors.lastName.message}
+                        </FormErrorMessage>
+                      </FormControl>
+                      <FormControl isInvalid={errors && errors.phoneNumber}>
+                        <FormLabel>Phone Number</FormLabel>
+                        <Input
+                          type="tel"
+                          id="phone-number"
+                          style={{ width: '240px' }}
+                          placeholder="Enter phone number"
+                          {...register('phoneNumber')}
+                          isRequired
+                        />
+                        <FormErrorMessage>
+                          {errors.phoneNumber && errors.phoneNumber.message}
+                        </FormErrorMessage>
+                      </FormControl>
                       <FormControl isInvalid={errors && errors.confirmPassword}>
                         <FormLabel>Re-enter Password</FormLabel>
                         <Input

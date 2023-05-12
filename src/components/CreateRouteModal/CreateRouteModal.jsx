@@ -25,8 +25,9 @@ import { SingleDatepicker } from 'chakra-dayzed-datepicker';
 import { calendarConfigs } from '../../utils/utils';
 import { createRoute } from '../../utils/RouteUtils';
 
-const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarAddEvent }) => {
+const CreateRouteModal = ({ routeDate, allDrivers, isOpen, onClose, handleCalendarAddEvent }) => {
   const [date, setDate] = useState(new Date());
+  const [drivers, setDrivers] = useState(allDrivers ?? []);
   const [errorMessage, setErrorMessage] = useState();
 
   const formSchema = yup.object({
@@ -50,6 +51,16 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
     }
   }, [routeDate]);
 
+  useEffect(() => {
+    reset({
+      assignedDriver: null,
+    });
+    const filteredDrivers = allDrivers?.filter(
+      ({ assignedRoutes }) => !assignedRoutes.includes(date.toISOString().split('T')[0]),
+    );
+    setDrivers(filteredDrivers);
+  }, [date]);
+
   const clearState = () => {
     reset({
       assignedDriver: null,
@@ -72,10 +83,13 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
         name: routeName,
         date: dateString,
       };
-
+      if (assignedDriver) {
+        const { assignedRoutes } = allDrivers.find(d => d.id === assignedDriver);
+        assignedRoutes.push(dateString);
+      }
       const res = await createRoute(route);
       const { id, name } = res;
-      handleCalendarAddEvent(id, name, date);
+      handleCalendarAddEvent(id, name, date, assignedDriver);
       clearState();
       onClose();
     } catch (err) {
@@ -89,7 +103,7 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleCancel} scrollBehavior="outside">
+    <Modal isOpen={isOpen} onClose={handleCancel} scrollBehavior="outside" isCentered>
       <ModalOverlay />
       <ModalContent p={5}>
         <ModalHeader>
@@ -98,20 +112,24 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
         <ModalCloseButton />
         <ModalBody>
           <form>
-            <FormControl isRequired>
-              <FormLabel paddingTop={3}>Route Name</FormLabel>
-              <Input
-                id="route-name"
-                placeholder="Name"
-                marginBottom={3}
-                {...register('routeName')}
-                isRequired
-              />
+            <FormControl isRequired my="1em">
+              <FormLabel>Route Name</FormLabel>
+              <Input id="route-name" placeholder="Name" {...register('routeName')} isRequired />
             </FormControl>
             <Box>{errors.routeName?.message}</Box>
-            <FormControl>
-              <FormLabel paddingTop={3}>Assigned Driver</FormLabel>
-              <Select placeholder="Select Driver" {...register('assignedDriver')} marginBottom={3}>
+            <FormControl isRequired my="1em">
+              <FormLabel>Date</FormLabel>
+              <SingleDatepicker
+                name="date-input"
+                date={date}
+                onDateChange={setDate}
+                configs={calendarConfigs}
+                minDate={new Date().setDate(new Date().getDate() - 1)} // TODO: clean up and look into date formats?
+              />
+            </FormControl>
+            <FormControl my="1em">
+              <FormLabel>Assigned Driver</FormLabel>
+              <Select placeholder="Select Driver" {...register('assignedDriver')}>
                 {drivers.map(driver => (
                   <option key={driver.id} value={driver.id}>
                     {driver.firstName} {driver.lastName}
@@ -120,16 +138,6 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
               </Select>
             </FormControl>
             <Box>{errors.assignedDriver?.message}</Box>
-            <FormControl isRequired>
-              <FormLabel paddingTop={3}>Date</FormLabel>
-              <SingleDatepicker
-                name="date-input"
-                date={date}
-                onDateChange={setDate}
-                configs={calendarConfigs}
-                marginBottom={3}
-              />
-            </FormControl>
           </form>
           <Box>{errorMessage}</Box>
         </ModalBody>
@@ -151,7 +159,8 @@ const CreateRouteModal = ({ routeDate, drivers, isOpen, onClose, handleCalendarA
 
 CreateRouteModal.propTypes = {
   routeDate: PropTypes.object,
-  drivers: PropTypes.array,
+  allDrivers: PropTypes.array,
+  setAllDrivers: PropTypes.func,
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   handleCalendarAddEvent: PropTypes.func,
