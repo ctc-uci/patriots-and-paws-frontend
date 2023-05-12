@@ -10,11 +10,12 @@ import {
   FormErrorMessage,
   Input,
   Button,
-  Heading,
   Stack,
   Box,
   Modal,
   ModalContent,
+  ModalHeader,
+  ModalBody,
   ModalOverlay,
   ModalFooter,
   ModalCloseButton,
@@ -31,7 +32,6 @@ import {
 } from '@chakra-ui/react';
 import { SmallAddIcon, InfoIcon } from '@chakra-ui/icons';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
-import styles from './CreateAccount.module.css';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
 const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUsers }) => {
@@ -112,33 +112,37 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
   return (
     <>
       <Button
-        ml={5}
-        mt={0}
+        p="10px 24px 10px 24px"
+        gap="8px"
         colorScheme="blue"
-        className={styles['create-account-button']}
+        bg="blue.600"
+        fontSize="16px"
+        fontWeight={600}
+        lineHeight="28px"
+        height="48px"
         onClick={onOpen}
       >
         Add Staff <SmallAddIcon />
       </Button>
-      <Modal isOpen={isOpen} onClose={resetFields} size={{ base: 'lg', md: 'xl' }}>
+      <Modal isOpen={isOpen} onClose={resetFields} size={{ base: 'lg', md: '4xl' }}>
         <ModalOverlay />
         <ModalContent>
-          <ModalCloseButton />
-          <Flex m={5} justifyContent={{ base: 'center', md: 'start' }}>
+          <Flex p="30px 60px 0px 60px" justifyContent={{ base: 'center', md: 'start' }}>
             <Stack>
-              <Heading className={styles['create-account-title']}>Add Staff</Heading>
-              <form>
-                <FormControl className={styles['create-account-form']}>
-                  <Box display={{ md: 'flex' }}>
-                    <Flex direction="column" mr={8}>
+              <ModalHeader fontSize="36px" fontWeight={700}>
+                Add Staff
+              </ModalHeader>
+              <ModalCloseButton size="lg" right="50px" top="30px" />
+              <ModalBody>
+                <form>
+                  <Flex mb="40px" gap="60px">
+                    <Flex flexDir="column">
                       <FormControl isInvalid={errors && errors.firstName}>
-                        <FormLabel className={styles['create-account-form-label']}>
-                          First Name
-                        </FormLabel>
+                        <FormLabel>First Name</FormLabel>
                         <Input
                           id="add-staff"
-                          style={{ width: '240px' }}
                           placeholder="Enter first name"
+                          w="320px"
                           {...register('firstName')}
                         />
                         <FormErrorMessage>
@@ -146,19 +150,19 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                         </FormErrorMessage>
                       </FormControl>
                       <FormControl isInvalid={errors && errors.email}>
-                        <FormLabel className={styles['create-account-form-label']}>Email</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <Input
                           type="email"
                           id="email"
-                          style={{ width: '240px' }}
                           placeholder="Enter email"
+                          w="320px"
                           {...register('email')}
                           isRequired
                         />
                         <FormErrorMessage>{errors.email && errors.email.message}</FormErrorMessage>
                       </FormControl>
                       <FormControl isInvalid={errors && errors.password}>
-                        <FormLabel className={styles['create-account-form-label']}>
+                        <FormLabel>
                           Password
                           <Popover placement="top" arrowPadding={8}>
                             <PopoverTrigger>
@@ -168,11 +172,11 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                               borderColor="black"
                               bgColor="black"
                               color="white"
-                              w={200}
+                              w={206}
                             >
                               <PopoverArrow borderColor="black" bgColor="black" />
-                              <PopoverBody w={200}>
-                                <Text textAlign="center" fontSize={16} fontWeight={400}>
+                              <PopoverBody>
+                                <Text fontSize={16} fontWeight={400}>
                                   Password must contain:
                                 </Text>
                                 <UnorderedList
@@ -191,21 +195,19 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                         </FormLabel>
                         <Input
                           type="password"
-                          style={{ width: '240px' }}
                           placeholder="Enter password"
+                          w="320px"
                           {...register('password')}
                           isRequired
                         />
-                        <FormErrorMessage>
+                        <FormErrorMessage maxWidth="320px">
                           {errors.password && errors.password.message}
                         </FormErrorMessage>
                       </FormControl>
                     </Flex>
                     <Flex direction="column">
                       <FormControl isInvalid={errors && errors.lastName}>
-                        <FormLabel className={styles['create-account-form-label']}>
-                          Last Name
-                        </FormLabel>
+                        <FormLabel>Last Name</FormLabel>
                         <Input
                           id="last-name"
                           style={{ width: '240px' }}
@@ -218,9 +220,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                         </FormErrorMessage>
                       </FormControl>
                       <FormControl isInvalid={errors && errors.phoneNumber}>
-                        <FormLabel className={styles['create-account-form-label']}>
-                          Phone Number
-                        </FormLabel>
+                        <FormLabel>Phone Number</FormLabel>
                         <Input
                           type="tel"
                           id="phone-number"
@@ -234,13 +234,11 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                         </FormErrorMessage>
                       </FormControl>
                       <FormControl isInvalid={errors && errors.confirmPassword}>
-                        <FormLabel className={styles['create-account-form-label']}>
-                          Re-enter Password
-                        </FormLabel>
+                        <FormLabel>Re-enter Password</FormLabel>
                         <Input
                           type="password"
-                          style={{ width: '240px' }}
                           placeholder="Re-enter password"
+                          w="320px"
                           {...register('confirmPassword')}
                           isRequired
                         />
@@ -249,77 +247,86 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
                         </FormErrorMessage>
                       </FormControl>
                     </Flex>
-                  </Box>
-                  {isSuperAdmin && (
-                    <Flex>
+                  </Flex>
+                  {isSuperAdmin ? (
+                    <Flex flexDir="row" pb="60px" justifyContent="space-between">
                       <Flex direction="column">
                         <FormControl isInvalid={errors && errors.role}>
-                          <FormLabel className={styles['create-account-form-label']}>
-                            Role
-                          </FormLabel>
-                          <Select
-                            style={{ width: '240px' }}
-                            {...register('role')}
-                            defaultValue="admin"
-                          >
+                          <FormLabel>Role</FormLabel>
+                          <Select {...register('role')} defaultValue="" w="320px">
+                            <option value="" disabled>
+                              Select Role
+                            </option>
                             <option value="admin">Admin</option>
                             <option value="driver">Driver</option>
                           </Select>
                           <FormErrorMessage>{errors.role && errors.role.message}</FormErrorMessage>
                         </FormControl>
                       </Flex>
+                      <ModalFooter pr={0} pb={0}>
+                        <Flex columnGap="8px" w="100%">
+                          <Button
+                            variant="ghost"
+                            type="submit"
+                            fontSize="18px"
+                            p="10px 24px"
+                            lineHeight="28px"
+                            fontWeight={600}
+                            height="48px"
+                            onClick={resetFields}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            fontSize="18px"
+                            colorScheme="blue"
+                            p="10px 24px"
+                            lineHeight="28px"
+                            fontWeight={600}
+                            height="48px"
+                            type="submit"
+                            onClick={handleSubmit(onSubmit)}
+                          >
+                            Add Staff
+                          </Button>
+                        </Flex>
+                      </ModalFooter>
                     </Flex>
+                  ) : (
+                    <ModalFooter p="0px 0px 60px 60px">
+                      <Flex justify="flex-end" columnGap="8px" w="100%">
+                        <Button
+                          variant="ghost"
+                          type="submit"
+                          fontSize="18px"
+                          p="10px 24px"
+                          lineHeight="28px"
+                          fontWeight={600}
+                          height="48px"
+                          onClick={resetFields}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          fontSize="18px"
+                          colorScheme="blue"
+                          p="10px 24px"
+                          lineHeight="28px"
+                          fontWeight={600}
+                          height="48px"
+                          type="submit"
+                          onClick={handleSubmit(onSubmit)}
+                        >
+                          Add Staff
+                        </Button>
+                      </Flex>
+                    </ModalFooter>
                   )}
-                </FormControl>
-              </form>
-              <Box className={styles['error-box']}>{errorMessage}</Box>
+                </form>
+                <Box>{errorMessage}</Box>
+              </ModalBody>
             </Stack>
           </Flex>
-          <Flex justifyContent={{ base: 'center', md: 'none' }}>
-            <Button
-              colorScheme="blue"
-              className={styles['create-account-button']}
-              type="submit"
-              onClick={handleSubmit(onSubmit)}
-              width="50%"
-              display={{ md: 'none' }}
-            >
-              Add Staff
-            </Button>
-          </Flex>
-          <Flex justifyContent={{ base: 'center', md: 'none' }} mb="5">
-            <Button
-              colorScheme="gray"
-              className={styles['create-account-button']}
-              type="submit"
-              onClick={resetFields}
-              width="50%"
-              display={{ base: 'block', md: 'none' }}
-            >
-              Cancel
-            </Button>
-          </Flex>
-          <ModalFooter display={{ base: 'none', md: 'block' }}>
-            <Flex justify="flex-end">
-              <Button
-                colorScheme="gray"
-                className={styles['create-account-button']}
-                type="submit"
-                mr={3}
-                onClick={resetFields}
-              >
-                Cancel
-              </Button>
-              <Button
-                colorScheme="blue"
-                className={styles['create-account-button']}
-                type="submit"
-                onClick={handleSubmit(onSubmit)}
-              >
-                Add Staff
-              </Button>
-            </Flex>
-          </ModalFooter>
         </ModalContent>
       </Modal>
     </>
