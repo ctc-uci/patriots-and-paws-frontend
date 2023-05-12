@@ -178,7 +178,6 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
   const generateDates = () => {
     const filteredDates = Object.keys(displayedRouteOptions).filter(day => filterDate(day));
     filteredDates.sort();
-    console.log(filteredDates);
     return filteredDates;
   };
 
