@@ -70,10 +70,19 @@ const DonationCard = ({ data, itemsCount, handleRowClick, setDonations }) => {
                 }}
               />
             )}
-            <Box>
-              <Heading size="sm">Donation #{id}</Heading>
-              <Text>{itemsCount} items</Text>
-            </Box>
+            {status === PICKED_UP ? (
+              <Box>
+                <Heading size="sm" color="#858585">
+                  Donation #{id}
+                </Heading>
+                <Text color="#858585">{itemsCount} items</Text>
+              </Box>
+            ) : (
+              <Box>
+                <Heading size="sm">Donation #{id}</Heading>
+                <Text>{itemsCount} items</Text>
+              </Box>
+            )}
           </Flex>
           {detailsButton}
         </Flex>
