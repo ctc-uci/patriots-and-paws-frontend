@@ -106,7 +106,7 @@ const InventoryPage = () => {
             </>
           ) : (
             <>
-              <Td fontSize="18px">{ele.addressCity}</Td>
+              <Td fontSize="18px">{ele.routeName}</Td>
               <Td fontSize="18px">{makeDate(ele.pickupDate)}</Td>
             </>
           )}
@@ -118,7 +118,7 @@ const InventoryPage = () => {
   return (
     <>
       <div className="main-body">
-        <Tabs p="20px" variant="unstyled" h="75vh" onChange={index => setTabIndex(index)}>
+        <Tabs p="20px 20px 0 20px" variant="unstyled" onChange={index => setTabIndex(index)}>
           <TabList mt="2vh" px="20px" justifyContent="space-between">
             <Flex>
               <Tab _selected={{ color: 'blue.500' }}>Pending Admin Approval</Tab>

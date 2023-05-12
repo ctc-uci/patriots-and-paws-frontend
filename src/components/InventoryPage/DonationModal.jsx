@@ -175,6 +175,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
     return currDate >= today;
   };
 
+  const generateDates = () => {
+    const filteredDates = Object.keys(displayedRouteOptions).filter(day => filterDate(day));
+    filteredDates.sort();
+    console.log(filteredDates);
+    return filteredDates;
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -367,13 +374,11 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                     )
                   }
                 >
-                  {Object.keys(displayedRouteOptions)
-                    .filter(day => filterDate(day))
-                    .map(day => (
-                      <option key={day} value={day}>
-                        {convertDayLabel(day)}
-                      </option>
-                    ))}
+                  {generateDates().map(day => (
+                    <option key={day} value={day}>
+                      {convertDayLabel(day)}
+                    </option>
+                  ))}
                 </Select>
                 <Select
                   placeholder={(!routeId || currentStatus === RESCHEDULE) && 'Choose a route'}
