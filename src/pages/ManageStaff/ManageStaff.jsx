@@ -17,9 +17,8 @@ import {
   TagLabel,
   Box,
 } from '@chakra-ui/react';
-import { SearchIcon } from '@chakra-ui/icons';
+import { Search2Icon } from '@chakra-ui/icons';
 import Fuse from 'fuse.js';
-import styles from './ManageStaff.css';
 import CreateAccount from '../../components/CreateAccount/CreateAccount';
 import menuIcon from '../../assets/Menu.svg';
 import { PNPBackend } from '../../utils/utils';
@@ -107,99 +106,114 @@ const ManageStaff = ({ cookies }) => {
 
   return (
     <>
-      <div height="70vh">
-        <Flex direction="column" m={10}>
-          <Flex mb={10} justify="space-between" vertical-align="center">
-            <Flex verticalAlign="bottom">
-              <InputGroup mr={5} width={300}>
-                <InputLeftElement pointerEvents="none">
-                  <SearchIcon color="gray.300" />
-                </InputLeftElement>
-                <Input
-                  placeholder="Search Staff"
-                  className={styles['search-bar']}
-                  onChange={search}
-                />
-              </InputGroup>
-              {isSuperAdmin && currFilter === 'admin' && (
-                <Tag colorScheme="blue">
-                  <TagLabel fontSize={18} fontWeight={600} color="black">
-                    Admin
-                  </TagLabel>
-                  <TagCloseButton onClick={() => setCurrFilter('all')} />
-                </Tag>
-              )}
-              {isSuperAdmin && currFilter === 'driver' && (
-                <Tag colorScheme="blue">
-                  <TagLabel fontSize={18} fontWeight={600} color="black">
-                    Driver
-                  </TagLabel>
-                  <TagCloseButton onClick={() => setCurrFilter('all')} />
-                </Tag>
-              )}
-            </Flex>
-            {isSuperAdmin && (
-              <Flex vertical-align="center">
-                <Menu minW={0} w="20px">
-                  <Flex vertical-align="center" align="center">
-                    <MenuButton
-                      as={IconButton}
-                      aria-label="Options"
-                      variant="ghost"
-                      icon={<Image src={menuIcon} />}
-                    />
-                    <MenuList
-                      align="center"
-                      minW={0}
-                      width="65px"
-                      height="80px"
-                      bgColor="rgb(246, 246, 246)"
-                    >
-                      <MenuItem
-                        onClick={() => setCurrFilter('admin')}
-                        fontSize={15}
-                        minH={0}
-                        height="30px"
-                        mt={0}
-                      >
-                        Admin
-                      </MenuItem>
-                      <MenuDivider borderColor="gray" mb={1} mt={1} />
-                      <MenuItem
-                        onClick={() => setCurrFilter('driver')}
-                        fontSize={15}
-                        minH={0}
-                        height="30px"
-                      >
-                        Driver
-                      </MenuItem>
-                    </MenuList>
-                  </Flex>
-                </Menu>
-                <CreateAccount
-                  isSuperAdmin={isSuperAdmin}
-                  setAllUsers={setAllUsers}
-                  setDriverUsers={setDriverUsers}
-                  setAdminUsers={setAdminUsers}
-                  updateDisplay={updateDisplay}
-                />
-              </Flex>
+      <Flex direction="column" my="30px" mx="34px" overflow="hidden">
+        <Flex mb="20px" justify="space-between" verticalAlign="center">
+          <Flex alignItems="center">
+            {isSuperAdmin && currFilter === 'admin' && (
+              <Tag bgColor="blue.50" p="10px 24px 10px 24px">
+                <TagLabel lineHeight="28px" fontSize="18px" fontWeight={600} color="black">
+                  Admin
+                </TagLabel>
+                <TagCloseButton onClick={() => setCurrFilter('all')} />
+              </Tag>
+            )}
+            {isSuperAdmin && currFilter === 'driver' && (
+              <Tag bgColor="blue.50" p="10px 24px 10px 24px">
+                <TagLabel lineHeight="28px" fontSize="18px" fontWeight={600} color="black">
+                  Driver
+                </TagLabel>
+                <TagCloseButton onClick={() => setCurrFilter('all')} />
+              </Tag>
             )}
           </Flex>
-
-          <UserTable
-            isSuperAdmin={isSuperAdmin}
-            users={displayedUsers}
-            setAllUsers={setAllUsers}
-            setDriverUsers={setDriverUsers}
-            setAdminUsers={setAdminUsers}
-            updateDisplay={updateDisplay}
-          />
+          <Flex alignItems="center" justify="flex-end" width="100%">
+            <InputGroup width={300} alignItems="center">
+              <InputLeftElement pointerEvents="none">
+                <Search2Icon color="blackAlpha.700" mt="10px" />
+              </InputLeftElement>
+              <Input
+                borderWidth={1}
+                borderColor="blackAlpha.700"
+                placeholder={isSuperAdmin ? 'Search Staff' : 'Search Drivers'}
+                _placeholder={{ color: 'blackAlpha.700' }}
+                size="lg"
+                onChange={search}
+              />
+            </InputGroup>
+          </Flex>
+          {isSuperAdmin && (
+            <Flex alignItems="center" ml="20px" gap="20px">
+              <Menu minW={0} w="20px">
+                <Flex verticalAlign="center" align="center">
+                  <MenuButton
+                    as={IconButton}
+                    aria-label="Options"
+                    variant="outline"
+                    p="10px 24px 10px 24px"
+                    borderRadius="6px"
+                    fontSize="18px"
+                    fontWeight={600}
+                    lineHeight="28px"
+                    borderWidth="1px"
+                    borderColor="blackAlpha.700"
+                    color="blackAlpha.700"
+                    height="48px"
+                    leftIcon={<Image src={menuIcon} h="9px" />}
+                  >
+                    Filter
+                  </MenuButton>
+                  <MenuList
+                    align="center"
+                    minW={0}
+                    width="65px"
+                    height="80px"
+                    bgColor="rgb(246, 246, 246)"
+                  >
+                    <MenuItem
+                      onClick={() => setCurrFilter('admin')}
+                      fontSize={15}
+                      minH={0}
+                      height="30px"
+                      mt={0}
+                    >
+                      Admin
+                    </MenuItem>
+                    <MenuDivider borderColor="gray" mb={1} mt={1} />
+                    <MenuItem
+                      onClick={() => setCurrFilter('driver')}
+                      fontSize={15}
+                      minH={0}
+                      height="30px"
+                    >
+                      Driver
+                    </MenuItem>
+                  </MenuList>
+                </Flex>
+              </Menu>
+              <CreateAccount
+                isSuperAdmin={isSuperAdmin}
+                setAllUsers={setAllUsers}
+                setDriverUsers={setDriverUsers}
+                setAdminUsers={setAdminUsers}
+                updateDisplay={updateDisplay}
+              />
+            </Flex>
+          )}
         </Flex>
-      </div>
-      <Box position="sticky">
-        <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
-      </Box>
+
+        <UserTable
+          isSuperAdmin={isSuperAdmin}
+          users={displayedUsers}
+          setAllUsers={setAllUsers}
+          setDriverUsers={setDriverUsers}
+          setAdminUsers={setAdminUsers}
+          updateDisplay={updateDisplay}
+        />
+
+        <Box position="sticky">
+          <ManageStaffPagination data={filteredUsers} setData={setDisplayedUsers} />
+        </Box>
+      </Flex>
     </>
   );
 };

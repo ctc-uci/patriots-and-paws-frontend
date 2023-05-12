@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Flex, Select, Text, HStack, Box } from '@chakra-ui/react';
+import { Flex, Select, Text, Box, Grid } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import {
   Pagination,
@@ -46,12 +46,12 @@ const ManageStaffPagination = ({ data, setData }) => {
       direction="row"
       justify="space-between"
       border="solid"
-      borderWidth="1px"
+      borderWidth="0px 1px 1px 1px"
       borderColor="#E2E8F0"
-      mx="2em"
-      p={3}
+      px="24px"
+      py="10px"
     >
-      <HStack width="17%" spacing={0}>
+      <Grid templateColumns="repeat(2, 1fr)" gap={5} alignItems="center">
         <Box fontSize="14px" width="100%" whitespace="nowrap">
           Show rows per page&nbsp;
         </Box>
@@ -65,16 +65,16 @@ const ManageStaffPagination = ({ data, setData }) => {
           <option value="15">15</option>
           <option value="20">20</option>
         </Select>
-      </HStack>
+      </Grid>
       <Flex align="center" gap={5}>
-        <Text fontSize="14px">
-          <Text as="b" fontSize="14px">
+        <Text fontSize="14px" fontWeight={400} color="gray.500">
+          <Text as="span" fontSize="14px" fontWeight={400} color="gray.700">
             {itemCountString}
           </Text>
           &nbsp;of {data.length}
         </Text>
         <Pagination pagesCount={pagesCount} currentPage={currentPage} onPageChange={setCurrentPage}>
-          <PaginationContainer justify="right">
+          <PaginationContainer justify="right" gap="8px">
             <PaginationPrevious variant="ghost">&lsaquo;</PaginationPrevious>
             <PaginationNext variant="ghost">&rsaquo;</PaginationNext>
           </PaginationContainer>

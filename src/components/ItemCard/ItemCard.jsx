@@ -1,11 +1,22 @@
-import { Tag, TagLabel, TagCloseButton, Text } from '@chakra-ui/react';
+import { Tag, TagLabel, TagCloseButton, Text, useToast } from '@chakra-ui/react';
 import React from 'react';
 
 import { PropTypes } from 'prop-types';
 
 const ItemCard = ({ name, items, setItems, setDeletedEntries }) => {
+  const toast = useToast();
+
   const handleDelete = () => {
     setItems(items.filter(item => item.name !== name));
+    toast.closeAll();
+    toast({
+      title: 'Deleted successfully',
+      description: `${name} has been deleted`,
+      status: 'info',
+      variant: 'subtle',
+      duration: 9000,
+      isClosable: true,
+    });
     setDeletedEntries(prev => [...prev, name]);
   };
 

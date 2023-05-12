@@ -70,6 +70,7 @@ const SendButton = ({
     setCurrentStatus(newStatus);
 
     onCloseEmailModal();
+    toast.closeAll();
     toast({
       title: `${toastTitle} #${donationId}.`,
       description: toastText,
@@ -78,6 +79,9 @@ const SendButton = ({
       isClosable: true,
       position: 'top',
       variant: 'subtle',
+      containerStyle: {
+        mt: '6rem',
+      },
     });
   };
 

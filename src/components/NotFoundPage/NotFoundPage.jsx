@@ -15,7 +15,7 @@ const NotFoundPage = () => {
         </Text>
         <Text fontSize="5xl">Page Not Found</Text>
         <Text fontSize="xl">Oops! Something went wrong</Text>
-        <Button my="5%" bg="#3182CE" color="white" onClick={() => navigate('/')}>
+        <Button my="5%" colorScheme="blue" onClick={() => navigate('/')}>
           Back to Home
         </Button>
       </Box>

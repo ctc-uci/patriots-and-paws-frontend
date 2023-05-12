@@ -417,11 +417,13 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                       // eslint-disable-next-line consistent-return
                       onClick={() => {
                         if (!scheduledRouteId) {
+                          toast.closeAll();
                           return toast({
                             title: 'Could not approve #'.concat(id),
                             description:
                               'Please select a Date and Route before approving the donation.',
                             status: 'error',
+                            variant: 'subtle',
                             duration: 9000,
                             isClosable: true,
                           });

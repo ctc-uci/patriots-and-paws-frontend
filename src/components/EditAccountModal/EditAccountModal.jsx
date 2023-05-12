@@ -11,29 +11,29 @@ import {
   Input,
   Text,
   Button,
-  Heading,
   Stack,
   Box,
   Modal,
   ModalContent,
   ModalOverlay,
+  ModalHeader,
+  ModalBody,
   ModalFooter,
   ModalCloseButton,
   InputLeftElement,
   InputGroup,
-  IconButton,
   useToast,
   Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverBody,
-  PopoverCloseButton,
   PopoverArrow,
   ListItem,
   UnorderedList,
+  FormErrorMessage,
 } from '@chakra-ui/react';
+import { InfoIcon } from '@chakra-ui/icons';
 import { RiLockFill } from 'react-icons/ri';
-import { MdInfo } from 'react-icons/md';
 import { updateUser } from '../../utils/AuthUtils';
 import { passwordRequirementsRegex } from '../../utils/utils';
 
@@ -95,6 +95,7 @@ const EditAccountModal = ({
 
   useEffect(() => {
     if (Object.keys(errors).length) {
+      toast.closeAll();
       toast({
         title: "Your changes couldn't be saved!",
         description: 'Error in one or more field(s) are marked in red.',
@@ -123,13 +124,16 @@ const EditAccountModal = ({
     } else {
       setDriverUsers(prev => prev.map(user => (user.id === data.id ? updatedUser : user)));
     }
-
+    toast.closeAll();
     toast({
       title: 'Your changes have been saved.',
       status: 'success',
       isClosable: true,
       variant: 'subtle',
       position: 'top',
+      containerStyle: {
+        mt: '6rem',
+      },
       duration: 3000,
     });
 
@@ -145,23 +149,21 @@ const EditAccountModal = ({
     >
       <ModalOverlay />
       <ModalContent>
-        <Flex ml={5} mt={5} justifyContent="space-between">
-          <Heading size="lg" mt=".4rem" mb={5}>
-            Edit Staff
-          </Heading>
-          <ModalCloseButton onClick={onCancel} mt="1rem" mr="1rem" />
-        </Flex>
-        <Flex m={5} justifyContent="center">
+        <Flex p="30px 60px 0px 60px" justifyContent="center">
           <Stack>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <FormControl>
-                <Flex mb={5} display={{ md: 'flex' }}>
-                  <Flex direction="column" mr={8}>
-                    <FormLabel>First Name</FormLabel>
-                    <InputGroup>
+            <ModalHeader fontSize="36px" fontWeight={700}>
+              {isSuperAdmin ? 'Edit Staff' : 'Edit Driver'}
+            </ModalHeader>
+            <ModalCloseButton onClick={onCancel} right="50px" top="30px" size="lg" />
+            <ModalBody>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Flex mb="40px" gap="60px">
+                  <Flex direction="column">
+                    <FormControl isInvalid={errors && errors.firstName}>
+                      <FormLabel>First Name</FormLabel>
                       <Input
                         id="first-name"
-                        style={{ width: '240px' }}
+                        w="320px"
                         errorBorderColor="red.300"
                         isInvalid={'firstName' in errors}
                         {...register('firstName')}
@@ -169,14 +171,17 @@ const EditAccountModal = ({
                         textOverflow="ellipsis"
                         isRequired
                       />
-                    </InputGroup>
+                      <FormErrorMessage>
+                        {errors.firstName && errors.firstName.message}
+                      </FormErrorMessage>
+                    </FormControl>
                   </Flex>
                   <Flex direction="column">
-                    <FormLabel>Last Name</FormLabel>
-                    <InputGroup>
+                    <FormControl isInvalid={errors && errors.lastName}>
+                      <FormLabel>Last Name</FormLabel>
                       <Input
                         id="last-name"
-                        style={{ width: '240px' }}
+                        w="320px"
                         errorBorderColor="red.300"
                         isInvalid={'lastName' in errors}
                         {...register('lastName')}
@@ -184,11 +189,14 @@ const EditAccountModal = ({
                         textOverflow="ellipsis"
                         isRequired
                       />
-                    </InputGroup>
+                      <FormErrorMessage>
+                        {errors.lastName && errors.lastName.message}
+                      </FormErrorMessage>
+                    </FormControl>
                   </Flex>
                 </Flex>
-                <Flex mb={5} display={{ md: 'flex' }}>
-                  <Flex direction="column" mr={8}>
+                <Flex mb="40px" gap="60px">
+                  <Flex direction="column">
                     <FormLabel>Email</FormLabel>
                     <InputGroup>
                       <InputLeftElement pointerEvents="none">
@@ -197,7 +205,7 @@ const EditAccountModal = ({
                       <Input
                         type="email"
                         id="email"
-                        style={{ width: '240px' }}
+                        w="320px"
                         placeholder="Enter email"
                         value={data.email}
                         maxLength="256"
@@ -208,12 +216,12 @@ const EditAccountModal = ({
                     <Box>{errors.email?.message}</Box>
                   </Flex>
                   <Flex direction="column">
-                    <FormLabel>Phone Number</FormLabel>
-                    <InputGroup>
+                    <FormControl isInvalid={errors && errors.phoneNumber}>
+                      <FormLabel>Phone Number</FormLabel>
                       <Input
                         type="tel"
                         id="phone-number"
-                        style={{ width: '240px' }}
+                        w="320px"
                         errorBorderColor="red.300"
                         isInvalid={'phoneNumber' in errors}
                         {...register('phoneNumber')}
@@ -221,40 +229,53 @@ const EditAccountModal = ({
                         textOverflow="ellipsis"
                         isRequired
                       />
-                    </InputGroup>
+                      <FormErrorMessage>
+                        {errors.phoneNumber && errors.phoneNumber.message}
+                      </FormErrorMessage>
+                    </FormControl>
                   </Flex>
                 </Flex>
-                {isSuperAdmin && (
+                {isSuperAdmin ? (
                   <>
-                    <Flex mb={5} display={{ md: 'flex' }}>
-                      <Flex direction="column" mr={8}>
-                        <Flex>
-                          <FormLabel mt=".4rem">Password</FormLabel>
-                          <Popover>
-                            <PopoverTrigger>
-                              <IconButton variant="invisible" icon={<MdInfo color="black.300" />} />
-                            </PopoverTrigger>
-                            <PopoverContent color="white" bg="black">
-                              <PopoverArrow />
-                              <PopoverCloseButton />
-                              <PopoverBody>
-                                Password must contain:
-                                <UnorderedList>
-                                  <ListItem>8 characters</ListItem>
-                                  <ListItem>1 lowercase letter</ListItem>
-                                  <ListItem>1 uppercase letter</ListItem>
-                                  <ListItem>1 symbol</ListItem>
-                                </UnorderedList>
-                              </PopoverBody>
-                            </PopoverContent>
-                          </Popover>
-                        </Flex>
-                        <InputGroup>
+                    <Flex mb="40px" gap="60px">
+                      <Flex direction="column">
+                        <FormControl isInvalid={errors && errors.newPassword}>
+                          <FormLabel>
+                            Password
+                            <Popover placement="top" arrowPadding={8}>
+                              <PopoverTrigger>
+                                <InfoIcon mb={0.5} ml={2} />
+                              </PopoverTrigger>
+                              <PopoverContent
+                                borderColor="black"
+                                bgColor="black"
+                                color="white"
+                                w={206}
+                              >
+                                <PopoverArrow borderColor="black" bgColor="black" />
+                                <PopoverBody>
+                                  <Text fontSize={16} fontWeight={400}>
+                                    Password must contain:
+                                  </Text>
+                                  <UnorderedList
+                                    listStylePosition="inside"
+                                    fontSize={16}
+                                    fontWeight={400}
+                                  >
+                                    <ListItem>8 characters</ListItem>
+                                    <ListItem>1 lowercase letter</ListItem>
+                                    <ListItem>1 uppercase letter</ListItem>
+                                    <ListItem>1 symbol</ListItem>
+                                  </UnorderedList>
+                                </PopoverBody>
+                              </PopoverContent>
+                            </Popover>
+                          </FormLabel>
                           <Input
                             background="white"
                             type="password"
                             id="password"
-                            style={{ width: '240px' }}
+                            w="320px"
                             placeholder="Enter password"
                             errorBorderColor="red.300"
                             isInvalid={'newPassword' in errors}
@@ -262,70 +283,105 @@ const EditAccountModal = ({
                             textOverflow="ellipsis"
                             isRequired
                           />
+                          <FormErrorMessage maxWidth="320px">
+                            {errors.newPassword && errors.newPassword.message}
+                          </FormErrorMessage>
+                        </FormControl>
+                      </Flex>
+                      <Flex direction="column">
+                        <FormControl isInvalid={errors && errors.confirmPassword}>
+                          <FormLabel>Confirm Password</FormLabel>
+                          <Input
+                            type="password"
+                            id="check-password"
+                            w="320px"
+                            placeholder="Re-enter password"
+                            errorBorderColor="red.300"
+                            isInvalid={'confirmPassword' in errors}
+                            {...register('confirmPassword')}
+                            textOverflow="ellipsis"
+                            isRequired
+                          />
+                          <FormErrorMessage>
+                            {errors.confirmPassword && errors.confirmPassword.message}
+                          </FormErrorMessage>
+                        </FormControl>
+                      </Flex>
+                    </Flex>
+                    <Flex pb="60px" justifyContent="space-between">
+                      <Flex direction="column">
+                        <FormLabel>Role</FormLabel>
+                        <InputGroup>
+                          <InputLeftElement pointerEvents="none">
+                            <RiLockFill color="black.300" />
+                          </InputLeftElement>
+                          <Input w="320px" value={data.role} isReadOnly />
                         </InputGroup>
                       </Flex>
-                      <Flex direction="column" mt=".46rem">
-                        <FormLabel>Confirm Password</FormLabel>
-                        <Input
-                          type="password"
-                          id="check-password"
-                          style={{ width: '240px' }}
-                          placeholder="Re-enter password"
-                          errorBorderColor="red.300"
-                          isInvalid={'confirmPassword' in errors}
-                          {...register('confirmPassword')}
-                          textOverflow="ellipsis"
-                          isRequired
-                        />
-                        <Box>
-                          <Text color="red">{errors.confirmPassword?.message}</Text>
-                        </Box>
-                      </Flex>
-                    </Flex>
-                    <Flex direction="column">
-                      <FormLabel>Role</FormLabel>
-                      <InputGroup>
-                        <InputLeftElement pointerEvents="none">
-                          <RiLockFill color="black.300" />
-                        </InputLeftElement>
-                        <Input
-                          style={{ width: '240px' }}
-                          value={data.role}
-                          textOverflow="ellipsis"
-                          isReadOnly
-                        />
-                      </InputGroup>
+                      <ModalFooter pr={0} pb={0}>
+                        <Flex justify="flex-end" columnGap="20px">
+                          <Button
+                            variant="ghost"
+                            type="submit"
+                            fontSize="18px"
+                            p="10px 24px"
+                            lineHeight="28px"
+                            fontWeight={600}
+                            height="48px"
+                            onClick={onCancel}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            fontSize="18px"
+                            colorScheme="blue"
+                            p="10px 24px"
+                            lineHeight="28px"
+                            fontWeight={600}
+                            height="48px"
+                            type="submit"
+                            onClick={handleSubmit(onSubmit)}
+                          >
+                            Save
+                          </Button>
+                        </Flex>
+                      </ModalFooter>
                     </Flex>
                   </>
+                ) : (
+                  <ModalFooter p="0px 0px 60px 60px">
+                    <Flex justify="flex-end" columnGap="20px">
+                      <Button
+                        variant="ghost"
+                        type="submit"
+                        fontSize="18px"
+                        p="10px 24px"
+                        lineHeight="28px"
+                        fontWeight={600}
+                        height="48px"
+                        onClick={onCancel}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        fontSize="18px"
+                        colorScheme="blue"
+                        p="10px 24px"
+                        lineHeight="28px"
+                        fontWeight={600}
+                        height="48px"
+                        type="submit"
+                        onClick={handleSubmit(onSubmit)}
+                      >
+                        Save
+                      </Button>
+                    </Flex>
+                  </ModalFooter>
                 )}
-              </FormControl>
-            </form>
+              </form>
+            </ModalBody>
           </Stack>
         </Flex>
-        <Flex
-          justifyContent={{ base: 'center', md: 'none' }}
-          display={{ base: 'flex', md: 'none' }}
-        >
-          <Button
-            mb="5"
-            colorScheme="blue"
-            type="submit"
-            onClick={handleSubmit(onSubmit)}
-            width="50%"
-          >
-            Save
-          </Button>
-        </Flex>
-        <ModalFooter display={{ base: 'none', md: 'block' }}>
-          <Flex justify="flex-end">
-            <Button variant="outline" type="submit" mr={3} onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button colorScheme="blue" type="submit" onClick={handleSubmit(onSubmit)}>
-              Save Changes
-            </Button>
-          </Flex>
-        </ModalFooter>
       </ModalContent>
     </Modal>
   );

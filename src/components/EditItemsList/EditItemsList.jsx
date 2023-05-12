@@ -11,6 +11,7 @@ import {
   FormControl,
   FormErrorMessage,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import ItemCard from '../ItemCard/ItemCard';
@@ -30,6 +31,8 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
     resolver: yupResolver(formSchema),
     delayError: 750,
   });
+
+  const toast = useToast();
 
   const handleAdd = ({ furnitureName }) => {
     // add validation to make sure current value isn't already in items
@@ -52,11 +55,25 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
         shouldFocus: true,
       });
     } else {
-      setItems(prev => [...prev, { name: toCapitalCase(furnitureName), accepted: isAccepted }]);
+      setItems(prev => [...prev, { name: furnitureName, accepted: isAccepted }]);
       setNewEntries(prev => [
         ...prev,
         { name: toCapitalCase(furnitureName), accepted: isAccepted },
       ]);
+      toast.closeAll();
+      toast({
+        title: 'Added successfully',
+        description: `${furnitureName} has been added`,
+        status: 'success',
+        variant: 'subtle',
+        position: 'top',
+        containerStyle: {
+          mt: '6rem',
+        },
+        duration: 9000,
+        isClosable: true,
+      });
+
       reset({ furnitureName: '' });
     }
   };
