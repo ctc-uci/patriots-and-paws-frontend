@@ -106,6 +106,8 @@ const DonorDashboard = ({ donationId }) => {
     await PNPBackend.put(`/donations/${donation.id}`, {
       status: RESCHEDULE,
     });
+
+    toast.closeAll();
     toast({
       title: 'Pickup Day Rejected',
       status: 'info',
@@ -135,6 +137,8 @@ const DonorDashboard = ({ donationId }) => {
     await PNPBackend.put(`/donations/${donation.id}`, {
       status: SCHEDULED,
     });
+
+    toast.closeAll();
     toast({
       title: 'Scheduled!',
       description: 'Your pickup time has been scheduled.',
