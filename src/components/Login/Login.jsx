@@ -20,6 +20,8 @@ import {
   Grid,
   GridItem,
   AlertTitle,
+  InputGroup,
+  InputRightElement,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -30,6 +32,7 @@ import {
   useDisclosure,
   Text,
 } from '@chakra-ui/react';
+import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { Cookies, withCookies } from '../../utils/CookieUtils';
 import {
   logInWithEmailAndPassword,
@@ -44,6 +47,10 @@ const Login = ({ cookies }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
+
+  // toggle password visibility
+  const [passwordVisibility, setPasswordVisibility] = useState(false);
+  const handlePasswordVisibility = () => setPasswordVisibility(!passwordVisibility);
 
   const formSchema = yup.object({
     email: yup.string().email().required('Please enter your email address'),
@@ -148,15 +155,15 @@ const Login = ({ cookies }) => {
       <GridItem>
         <Flex minH={{ md: '100vh' }} align="center" justify="center">
           <Stack align="center" width="100%" margin="auto">
-            <Stack width="70%" padding={{ base: 3, md: 9 }}>
+            <Stack width="70%" padding={9} paddingTop={0}>
               {signup === 'success' && (
                 <Alert status="success" variant="solid" bgColor="green">
                   <AlertIcon />
                   You have successfully logged in.
                 </Alert>
               )}
-              {errorMessage && (
-                <Alert status="error" rounded="md" mb="1em">
+              {errorMessage ? (
+                <Alert status="error" rounded="md" mb="1em" height="10vh">
                   <Flex direction="row" verticalAlign="center" align="center">
                     <AlertIcon ml="0.75%" boxSize="5.5%" />
                     <Flex direction="column" ml="0.75%">
@@ -164,6 +171,8 @@ const Login = ({ cookies }) => {
                     </Flex>
                   </Flex>
                 </Alert>
+              ) : (
+                <Box height="10vh" mb="1em" />
               )}
               <Heading fontSize="3rem">Staff Login</Heading>
               <Link
@@ -191,13 +200,29 @@ const Login = ({ cookies }) => {
                     <FormLabel fontSize="16px" fontWeight="500" mt={10}>
                       Password
                     </FormLabel>
-                    <Input
-                      type="password"
-                      id="password"
-                      placeholder="##########"
-                      {...register('password')}
-                      isRequired
-                    />
+                    <InputGroup>
+                      <Input
+                        type={passwordVisibility ? 'text' : 'password'}
+                        id="password"
+                        placeholder="***********"
+                        {...register('password')}
+                        isRequired
+                      />
+                      <InputRightElement>
+                        <Button
+                          onClick={handlePasswordVisibility}
+                          h="1.75rem"
+                          size="xs"
+                          colorScheme="whiteAlpha"
+                        >
+                          {passwordVisibility ? (
+                            <AiFillEyeInvisible size={22} color="#232323" />
+                          ) : (
+                            <AiFillEye size={22} color="#232323" />
+                          )}
+                        </Button>
+                      </InputRightElement>
+                    </InputGroup>
                     <Box>{errors.password?.message}</Box>
                     <Button colorScheme="blue" type="submit" width="100%" mt={14}>
                       Login

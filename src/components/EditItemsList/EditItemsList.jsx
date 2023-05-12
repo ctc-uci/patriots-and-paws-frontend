@@ -11,15 +11,11 @@ import {
   FormControl,
   FormErrorMessage,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { PropTypes } from 'prop-types';
 import ItemCard from '../ItemCard/ItemCard';
-
-const toCapitalCase = string => {
-  return string.trim().replace(/\w\S*/g, word => {
-    return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase();
-  });
-};
+import { toCapitalCase } from '../../utils/utils';
 
 const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAccepted }) => {
   const formSchema = yup.object({
@@ -36,9 +32,12 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
     delayError: 750,
   });
 
+  const toast = useToast();
+
   const handleAdd = ({ furnitureName }) => {
     // add validation to make sure current value isn't already in items
     // if it is already in items, set an error message (see chakra form control)
+
     if (!furnitureName) {
       setError('furnitureName', {
         type: 'focus',
@@ -56,11 +55,25 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
         shouldFocus: true,
       });
     } else {
-      setItems(prev => [...prev, { name: toCapitalCase(furnitureName), accepted: isAccepted }]);
+      setItems(prev => [...prev, { name: furnitureName, accepted: isAccepted }]);
       setNewEntries(prev => [
         ...prev,
         { name: toCapitalCase(furnitureName), accepted: isAccepted },
       ]);
+      toast.closeAll();
+      toast({
+        title: 'Added successfully',
+        description: `${furnitureName} has been added`,
+        status: 'success',
+        variant: 'subtle',
+        position: 'top',
+        containerStyle: {
+          mt: '6rem',
+        },
+        duration: 9000,
+        isClosable: true,
+      });
+
       reset({ furnitureName: '' });
     }
   };
@@ -107,6 +120,7 @@ const EditItemsList = ({ items, setItems, setNewEntries, setDeletedEntries, isAc
                   bg="white"
                   id="furnitureName"
                   placeholder="Item"
+                  maxLength="100"
                   {...register('furnitureName')}
                 />
                 <Button type="submit" colorScheme="blue">

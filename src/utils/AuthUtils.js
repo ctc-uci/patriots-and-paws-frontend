@@ -11,7 +11,7 @@ import {
 } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { cookieKeys, cookieConfig, clearCookies } from './CookieUtils';
-import { PNPBackend } from './utils';
+import { PNPBackend, toCapitalCase } from './utils';
 
 // Using Firebase Web version 9
 const firebaseConfig = {
@@ -179,7 +179,10 @@ const createUser = async user => {
 
 // Updates user information in PNP DB
 const updateUser = async (user, id) => {
-  const { firstName, lastName, email, phoneNumber, role, newPassword } = user;
+  let { firstName, lastName } = user;
+  const { email, phoneNumber, role, newPassword } = user;
+  firstName = toCapitalCase(firstName);
+  lastName = toCapitalCase(lastName);
   try {
     await PNPBackend.put(`/users/${id}`, {
       firstName,

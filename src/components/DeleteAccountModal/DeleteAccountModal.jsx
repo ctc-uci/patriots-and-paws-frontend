@@ -40,7 +40,7 @@ const DeleteAccountModal = ({
 
   return (
     <>
-      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
+      <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose} isCentered>
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -48,7 +48,7 @@ const DeleteAccountModal = ({
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure you want to delete this staff member? You can not undo this action
+              Are you sure you want to delete this staff member? You can&apos;t undo this action
               afterwards.
             </AlertDialogBody>
 

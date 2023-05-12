@@ -78,6 +78,13 @@ const formatDate = date => {
   });
 };
 
+// trim whitespace and formalize capitalization
+const toCapitalCase = string => {
+  return string.trim().replace(/\w\S*/g, word => {
+    return word.charAt(0).toUpperCase() + word.substr(1).toLowerCase();
+  });
+};
+
 // eslint-disable-next-line import/prefer-default-export
 export {
   PNPBackend,
@@ -89,4 +96,5 @@ export {
   handleNavigateToAddress,
   calendarConfigs,
   formatDate,
+  toCapitalCase,
 };
