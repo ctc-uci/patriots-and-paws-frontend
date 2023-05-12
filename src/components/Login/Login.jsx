@@ -155,15 +155,15 @@ const Login = ({ cookies }) => {
       <GridItem>
         <Flex minH={{ md: '100vh' }} align="center" justify="center">
           <Stack align="center" width="100%" margin="auto">
-            <Stack width="70%" padding={{ base: 3, md: 9 }}>
+            <Stack width="70%" padding={9} paddingTop={0}>
               {signup === 'success' && (
                 <Alert status="success" variant="solid" bgColor="green">
                   <AlertIcon />
                   You have successfully logged in.
                 </Alert>
               )}
-              {errorMessage && (
-                <Alert status="error" rounded="md" mb="1em">
+              {errorMessage ? (
+                <Alert status="error" rounded="md" mb="1em" height="10vh">
                   <Flex direction="row" verticalAlign="center" align="center">
                     <AlertIcon ml="0.75%" boxSize="5.5%" />
                     <Flex direction="column" ml="0.75%">
@@ -171,6 +171,8 @@ const Login = ({ cookies }) => {
                     </Flex>
                   </Flex>
                 </Alert>
+              ) : (
+                <Box height="10vh" mb="1em" />
               )}
               <Heading fontSize="3rem">Staff Login</Heading>
               <Link
