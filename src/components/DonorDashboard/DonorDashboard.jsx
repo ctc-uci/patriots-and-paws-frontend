@@ -151,11 +151,11 @@ const DonorDashboard = ({ donationId }) => {
             <Box>
               Sit Tight! We&apos;ll be scheduling a pickup date with you soon.
               <Flex gap={3} visibility="hidden">
-                <Button bg="red.500" color="white">
+                <Button colorScheme="red">
                   Reject Time
                   <CloseIcon ml={3} />
                 </Button>
-                <Button bg="green" color="white">
+                <Button colorScheme="green">
                   Approve Time
                   <CheckIcon ml={3} />
                 </Button>
