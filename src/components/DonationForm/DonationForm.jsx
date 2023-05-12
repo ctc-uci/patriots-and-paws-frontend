@@ -23,6 +23,10 @@ import {
   Divider,
   Textarea,
   IconButton,
+  Alert,
+  AlertIcon,
+  AlertDescription,
+  Center,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -246,6 +250,25 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
           px={{ base: 10, md: 40 }}
           py={{ base: 5, md: 20 }}
         >
+          {donationData && (
+            <Center>
+              <Alert status="warning" rounded="md" ml={{ md: '10%' }} mb="1%" width={{ md: '75%' }}>
+                <Flex direction="row" verticalAlign="center" align="center">
+                  <AlertIcon ml="0.75%" boxSize="5.5%" />
+                  <Flex direction="column" ml="0.75%">
+                    <AlertDescription
+                      fontSize={{ base: 'sm', md: 'md' }}
+                      fontWeight="normal"
+                      mt="0.25%"
+                    >
+                      Your donation requires adjustments. Check your email to see what changes are
+                      needed and edit your form accordingly.
+                    </AlertDescription>
+                  </Flex>
+                </Flex>
+              </Alert>
+            </Center>
+          )}
           <Box>
             <Heading fontSize="36px" fontWeight="700" color="blue.500" mb={5}>
               Patriots and Paws Donation Form
