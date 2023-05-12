@@ -107,17 +107,20 @@ const DonorDashboard = ({ donationId }) => {
       status: RESCHEDULE,
     });
 
+    toast.closeAll();
     toast({
       title: 'Pickup Day Rejected',
       status: 'info',
       duration: 4000,
       isClosable: true,
       position: 'top',
+      variant: 'subtle',
     });
   };
 
   const handleAcceptTime = async () => {
     if (!tAndCRef.current.checked) {
+      toast.closeAll();
       toast({
         title: 'Error.',
         description: 'Please agree to the terms and conditions',
@@ -135,6 +138,7 @@ const DonorDashboard = ({ donationId }) => {
       status: SCHEDULED,
     });
 
+    toast.closeAll();
     toast({
       title: 'Scheduled!',
       description: 'Your pickup time has been scheduled.',

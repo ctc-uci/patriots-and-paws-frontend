@@ -134,21 +134,6 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
     onClose();
   };
 
-  const approveDonation = () => {
-    if (!scheduledRouteId) {
-      toast({
-        title: 'Could not approve #'.concat(id),
-        description: 'Please select a Date and Route before approving the donation.',
-        status: 'error',
-        duration: 9000,
-        isClosable: true,
-      });
-      return;
-    }
-    setEmailStatus(APPROVE);
-    emailModalOnOpen();
-  };
-
   return (
     <Modal
       isOpen={isOpen}
@@ -396,7 +381,23 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                     <Button
                       ml="2%"
                       colorScheme="green"
-                      onClick={approveDonation}
+                      // eslint-disable-next-line consistent-return
+                      onClick={() => {
+                        if (!scheduledRouteId) {
+                          toast.closeAll();
+                          return toast({
+                            title: 'Could not approve #'.concat(id),
+                            description:
+                              'Please select a Date and Route before approving the donation.',
+                            status: 'error',
+                            variant: 'subtle',
+                            duration: 9000,
+                            isClosable: true,
+                          });
+                        }
+                        setEmailStatus(APPROVE);
+                        emailModalOnOpen();
+                      }}
                       isDisabled={
                         !scheduledRouteId && ![PENDING, CHANGES_REQUESTED].includes(currentStatus)
                       }

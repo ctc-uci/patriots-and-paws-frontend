@@ -95,6 +95,7 @@ const EditAccountModal = ({
 
   useEffect(() => {
     if (Object.keys(errors).length) {
+      toast.closeAll();
       toast({
         title: "Your changes couldn't be saved!",
         description: 'Error in one or more field(s) are marked in red.',
@@ -121,13 +122,16 @@ const EditAccountModal = ({
     } else {
       setDriverUsers(prev => prev.map(user => (user.id === data.id ? updatedUser : user)));
     }
-
+    toast.closeAll();
     toast({
       title: 'Your changes have been saved.',
       status: 'success',
       isClosable: true,
       variant: 'subtle',
       position: 'top',
+      containerStyle: {
+        mt: '6rem',
+      },
       duration: 3000,
     });
 

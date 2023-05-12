@@ -44,10 +44,16 @@ const ManageDonationForm = () => {
     // await PNPBackend.delete('/furnitureOptions', { names: deletedEntries });
     setNewEntries([]);
     setDeletedEntries([]);
+    toast.closeAll();
     toast({
       title: 'Option Saved.',
       description: 'The furniture options has been saved.',
       status: 'success',
+      variant: 'subtle',
+      position: 'top',
+      containerStyle: {
+        mt: '6rem',
+      },
       duration: 9000,
       isClosable: true,
     });
