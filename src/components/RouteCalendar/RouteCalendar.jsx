@@ -172,8 +172,8 @@ const RouteCalendar = () => {
       />
       <Box>
         {role !== DRIVER_ROLE && (
-          <Flex gap="1em" align="center">
-            <Heading as="h3" size="lg" noOfLines={1}>
+          <Flex gap="1em" align="end">
+            <Heading as="h3" size="lg" noOfLines={1} ml="1%">
               Routes Calendar
             </Heading>
             <Button

@@ -12,6 +12,7 @@ import {
   Checkbox,
   useDisclosure,
   useToast,
+  Heading,
 } from '@chakra-ui/react';
 import { CheckCircleIcon, CloseIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons';
 import { FaTruckPickup } from 'react-icons/fa';
@@ -149,9 +150,29 @@ const DonorDashboard = ({ donationId }) => {
       case PENDING:
       case APPROVAL_REQUESTED:
         return (
-          <Text textAlign="left">
-            Sit Tight! We&apos;ll be scheduling a pickup date with you soon.
-          </Text>
+          <Flex flexDir="column">
+            <Heading
+              fontWeight="700"
+              fontSize="20px"
+              mb="20px"
+              display={{ base: 'block', md: 'none' }}
+            >
+              Pickup
+            </Heading>
+            <Box>
+              Sit Tight! We&apos;ll be scheduling a pickup date with you soon.
+              <Flex gap={3} visibility="hidden">
+                <Button colorScheme="red">
+                  Reject Time
+                  <CloseIcon ml={3} />
+                </Button>
+                <Button colorScheme="green">
+                  Approve Time
+                  <CheckIcon ml={3} />
+                </Button>
+              </Flex>
+            </Box>
+          </Flex>
         );
       case SCHEDULING:
         return (
@@ -173,12 +194,12 @@ const DonorDashboard = ({ donationId }) => {
               </Text>
             </Flex>
             <TermsConditionModal onClose={onClose} isOpen={isOpen} />
-            <Flex columnGap={{ base: 4, md: 5 }} w="100%">
-              <Button bg="red.500" color="white" onClick={handleRejectTime}>
+            <Flex columnGap={5} w="100%">
+              <Button colorScheme="red" onClick={handleRejectTime}>
                 Reject Time
                 <CloseIcon ml={{ base: 1, md: 3 }} boxSize={3} />
               </Button>
-              <Button bg="#319747" color="white" onClick={handleAcceptTime}>
+              <Button colorScheme="green" onClick={handleAcceptTime}>
                 Approve Time
                 <CheckIcon ml={{ base: 1, md: 3 }} boxSize={3} />
               </Button>
@@ -200,11 +221,11 @@ const DonorDashboard = ({ donationId }) => {
               </Text>
             </Text>
             <Flex gap={3} visibility="hidden">
-              <Button bg="red.500" color="white">
+              <Button colorScheme="red">
                 Reject Time
                 <CloseIcon ml={3} />
               </Button>
-              <Button bg="green" color="white">
+              <Button colorScheme="green">
                 Approve Time
                 <CheckIcon ml={3} />
               </Button>

@@ -6,26 +6,18 @@ import {
   ModalHeader,
   ModalBody,
   ModalCloseButton,
-  useDisclosure,
-  // Button,
   Heading,
   UnorderedList,
   ListItem,
   Box,
   Flex,
-  Button,
 } from '@chakra-ui/react';
 
 import { PropTypes } from 'prop-types';
 
-const ItemInfo = ({ items, isAccepted = false }) => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+const ItemInfoModal = ({ items, isAccepted, isOpen, onClose }) => {
   return (
     <>
-      <Button bg="whiteAlpha" borderWidth="1px" borderColor="gray.200" onClick={onOpen}>
-        Preview Item List
-      </Button>
-
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: 'sm', md: 'xl' }} isCentered>
         <ModalOverlay />
         <ModalContent padding="1.5em 2em" m={0}>
@@ -84,14 +76,21 @@ const ItemInfo = ({ items, isAccepted = false }) => {
   );
 };
 
-ItemInfo.propTypes = {
+ItemInfoModal.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,
       accepted: PropTypes.bool,
     }),
   ).isRequired,
-  isAccepted: PropTypes.bool.isRequired,
+  isAccepted: PropTypes.bool,
+  isOpen: PropTypes.bool.isRequired,
+  // onOpen: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
-export default ItemInfo;
+ItemInfoModal.defaultProps = {
+  isAccepted: false,
+};
+
+export default ItemInfoModal;

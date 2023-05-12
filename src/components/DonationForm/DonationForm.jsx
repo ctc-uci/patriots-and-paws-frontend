@@ -22,11 +22,13 @@ import {
   AlertDialogOverlay,
   Divider,
   Textarea,
+  IconButton,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import { InfoIcon } from '@chakra-ui/icons';
 import DropZone from '../DropZone/DropZone';
 import { PNPBackend, sendEmail } from '../../utils/utils';
 import { createNewDonation, updateDonation } from '../../utils/DonorUtils';
@@ -35,9 +37,9 @@ import dconfirmemailtemplate from '../EmailTemplates/dconfirmemailtemplate';
 import ImageDetails from '../ImageDetails/ImageDetails';
 import DonationCard from '../DonationCard/DonationCard';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
-import ItemInfo from '../ItemInfo/ItemInfo';
 import { STATUSES } from '../../utils/config';
 import DonationImageModal from '../DonationImageModal/DonationImageModal';
+import ItemInfoModal from '../ItemInfoModal/ItemInfoModal';
 
 const { APPROVAL_REQUESTED } = STATUSES;
 
@@ -80,6 +82,7 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
   const { isOpen: isOpenImage, onOpen: onOpenImage, onClose: onCloseImage } = useDisclosure();
   const { isOpen: isOpenSubmit, onOpen: onOpenSubmit, onClose: onCloseSubmit } = useDisclosure();
   const { isOpen: isOpenCancel, onOpen: onOpenCancel, onClose: onCloseCancel } = useDisclosure();
+  const { isOpen: isOpenInfo, onOpen: onOpenInfo, onClose: onCloseInfo } = useDisclosure();
 
   const navigate = useNavigate();
   const [furnitureOptions, setFurnitureOptions] = useState([]);
@@ -407,7 +410,17 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
                 <Heading fontSize="20px" mr={3}>
                   Donate Items
                 </Heading>
-                <ItemInfo items={itemsInfoList} isAccepted />
+                <IconButton
+                  colorScheme="transparent"
+                  color="black"
+                  icon={<InfoIcon boxSize={5} onClick={onOpenInfo} />}
+                />
+                <ItemInfoModal
+                  items={itemsInfoList}
+                  isAccepted
+                  isOpen={isOpenInfo}
+                  onClose={onCloseInfo}
+                />
               </Flex>
               <Text>Select which items you would like to donate and how many of each item.</Text>
             </Box>
