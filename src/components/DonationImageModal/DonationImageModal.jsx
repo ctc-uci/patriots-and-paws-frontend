@@ -20,6 +20,7 @@ const DonationImageModal = ({ isOpenImageModal, onCloseImageModal, image }) => {
         onClose={onCloseImageModal}
         size={{ base: 'sm', md: 'xl' }}
         isCentered
+        scrollBehavior="inside"
       >
         <ModalOverlay />
         <ModalContent>

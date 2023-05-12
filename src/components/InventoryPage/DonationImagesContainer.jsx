@@ -78,7 +78,7 @@ const DonationImagesContainer = ({ pictures, itemsPerPage }) => {
   };
 
   return numPictures > 0 ? (
-    <>
+    <Flex height="100%" justify="center" direction="column">
       <ImageModal
         isOpenImageModal={isOpenImageModal}
         onOpenImageModal={onOpenImageModal}
@@ -123,7 +123,7 @@ const DonationImagesContainer = ({ pictures, itemsPerPage }) => {
           </PaginationNext>
         </PaginationContainer>
       </Pagination>
-    </>
+    </Flex>
   ) : (
     <Flex p="3em" direction="column" alignItems="center">
       <Image src={imageIcon} h="3em" w="3em" />

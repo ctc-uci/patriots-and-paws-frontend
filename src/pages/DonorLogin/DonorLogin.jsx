@@ -37,7 +37,7 @@ const DonorLogin = () => {
         title: 'Donation ID or Email Address does not match our records!',
         description: 'Donation ID and email do not match',
         status: 'error',
-        posiion: 'top',
+        position: 'top',
         duration: 3000,
         isClosable: true,
       });

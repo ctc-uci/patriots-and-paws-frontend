@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
   Grid,
+  GridItem,
   Box,
   Text,
   Button,
@@ -12,10 +12,11 @@ import {
   Checkbox,
   useDisclosure,
   useToast,
-  Image,
   Heading,
 } from '@chakra-ui/react';
 import { CheckCircleIcon, CloseIcon, CheckIcon, WarningIcon } from '@chakra-ui/icons';
+import { FaTruckPickup } from 'react-icons/fa';
+import { IconContext } from 'react-icons';
 import { getDonationData } from '../../utils/DonorUtils';
 import DonorFooter from '../DonorFooter/DonorFooter';
 import TrackDonationSection from '../TrackDonationSection/TrackDonationSection';
@@ -23,7 +24,6 @@ import { DonationDetails, displayStatusTag } from './DonationDetails';
 import { STATUSES } from '../../utils/config';
 import { PNPBackend, formatDate } from '../../utils/utils';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
-import pickedUpImage from '../../assets/pickedUpCarImage.png';
 
 const {
   PENDING,
@@ -42,14 +42,12 @@ const DonorDashboard = ({ donationId }) => {
   const tAndCRef = useRef(0);
   const toast = useToast();
 
-  const navigate = useNavigate();
-
   const displayBanner = () => {
     switch (donation.status) {
       case PENDING:
       case APPROVAL_REQUESTED:
         return (
-          <Flex borderRadius="6px" bg="blue.50" w="100%" p={4} mb={4}>
+          <Flex borderRadius="6px" bg="blue.50" w="100%" p={4}>
             <CheckCircleIcon color="blue.100" mr={2} boxSize={5} />
             <Box>
               Your donation has been successfully submitted and will be reviewed shortly! Be sure to
@@ -63,7 +61,7 @@ const DonorDashboard = ({ donationId }) => {
         );
       case CHANGES_REQUESTED:
         return (
-          <Flex borderRadius="6px" bg="orange.100" w="100%" p={4} mb={4}>
+          <Flex borderRadius="6px" bg="orange.100" w="100%" p={4}>
             <WarningIcon color="orange.500" mr={2} boxSize={5} />
             <Box>
               Your donation requires adjustments. Check your email to see what changes are needed
@@ -73,14 +71,28 @@ const DonorDashboard = ({ donationId }) => {
         );
       case PICKED_UP:
         return (
-          <Flex borderRadius="6px" bg="green.50" w="100%" p={4} mb={4} color="black">
+          <Flex borderRadius="6px" bg="green.50" w="100%" p={4} color="black">
             <CheckCircleIcon color="green.500" mr={2} boxSize={5} />
             <Box>Thank you for donating to Patriots and Paws!</Box>
           </Flex>
         );
+      case RESCHEDULE:
+        return (
+          <Flex borderRadius="6px" bg="blue.50" w="100%" p={4}>
+            <CheckCircleIcon color="blue.100" mr={2} boxSize={5} />
+            <Box>
+              Your pickup is being rescheduled! Be sure to check your inbox for updates and email us
+              at&nbsp;
+              <Link href="mailto:pnp@gmail.com" color="blue.500" textDecoration="underline">
+                pnp@gmail.com
+              </Link>
+              &nbsp;with any changes.
+            </Box>
+          </Flex>
+        );
       default:
         return (
-          <Flex borderRadius="6px" bg="green.50" w="100%" p={4} mb={4} color="black">
+          <Flex borderRadius="6px" bg="green.50" w="100%" p={4} color="black">
             <CheckCircleIcon color="green.500" mr={2} boxSize={5} />
             <Box>Your donation has been approved! Be sure to schedule your pick up time.</Box>
           </Flex>
@@ -136,7 +148,6 @@ const DonorDashboard = ({ donationId }) => {
   const displayPickup = () => {
     switch (donation.status) {
       case PENDING:
-      case RESCHEDULE:
       case APPROVAL_REQUESTED:
         return (
           <Flex flexDir="column">
@@ -165,30 +176,20 @@ const DonorDashboard = ({ donationId }) => {
         );
       case SCHEDULING:
         return (
-          <Flex direction="column" gap={3}>
-            <Box display={{ base: 'block', md: 'none' }} mb="10px">
-              <Heading fontWeight="700" fontSize="20px">
-                Pickup
-                {donation.status === SCHEDULING && (
-                  <Tag bg="blue.300" color="white" ml="20px">
-                    NEW
-                  </Tag>
-                )}
-              </Heading>
-            </Box>
-            <Text fontWeight="400" fontSize="16px" mb="15px" mt={0}>
+          <Flex direction="column" gap={3} textAlign="left">
+            <Text fontWeight="400" fontSize="lg" mb="15px" mt={0}>
               Proposed Day:
-              <Text fontWeight="600" fontSize="18px">
+              <Text fontWeight="600" fontSize="lg">
                 {formatDate(donation.pickupDate)}
               </Text>
             </Text>
             <Flex mb="15px">
               <Checkbox ref={tAndCRef} mr="13px" />
-              <Text fontSize="14px">I accept the&nbsp;</Text>
-              <Text fontSize="14px" as="b" onClick={onOpen} _hover={{ cursor: 'pointer' }}>
+              <Text fontSize="sm">I accept the&nbsp;</Text>
+              <Text fontSize="sm" as="b" onClick={onOpen} _hover={{ cursor: 'pointer' }}>
                 Terms and Conditions&nbsp;
               </Text>
-              <Text fontSize="14px" color="red">
+              <Text fontSize="sm" color="red">
                 *
               </Text>
             </Flex>
@@ -196,26 +197,18 @@ const DonorDashboard = ({ donationId }) => {
             <Flex columnGap={5} w="100%">
               <Button colorScheme="red" onClick={handleRejectTime}>
                 Reject Time
-                <CloseIcon ml={3} boxSize={3} />
+                <CloseIcon ml={{ base: 1, md: 3 }} boxSize={3} />
               </Button>
               <Button colorScheme="green" onClick={handleAcceptTime}>
                 Approve Time
-                <CheckIcon ml={3} boxSize={3} />
+                <CheckIcon ml={{ base: 1, md: 3 }} boxSize={3} />
               </Button>
             </Flex>
           </Flex>
         );
       case SCHEDULED:
         return (
-          <Flex direction="column" gap={3}>
-            <Heading
-              fontWeight="700"
-              fontSize="20px"
-              mb="20px"
-              display={{ base: 'block', md: 'none' }}
-            >
-              Pickup
-            </Heading>
+          <Flex direction="column" gap={3} textAlign="left">
             <Flex gap={3} align="center">
               <Text>Pickup Day Confirmed</Text>
               <CheckCircleIcon color="green.200" />
@@ -241,15 +234,7 @@ const DonorDashboard = ({ donationId }) => {
         );
       case CHANGES_REQUESTED:
         return (
-          <Flex flexDir="column">
-            <Heading
-              fontWeight="700"
-              fontSize="20px"
-              mb="20px"
-              display={{ base: 'block', md: 'none' }}
-            >
-              Pickup
-            </Heading>
+          <Flex flexDir="column" textAlign="left">
             <Box>
               After submitting your changes, we&apos;ll be scheduling a pickup date with you soon.
             </Box>
@@ -257,17 +242,13 @@ const DonorDashboard = ({ donationId }) => {
         );
       case PICKED_UP:
         return (
-          <Flex h="100%" direction="column" justify="center" gap={2}>
-            <Heading
-              fontWeight="700"
-              fontSize="20px"
-              mb="20px"
-              display={{ base: 'block', md: 'none' }}
-            >
-              Pickup
-            </Heading>
+          <Flex h="100%" direction="column" justify="center" gap={2} p="2em">
             <Flex flexDir="column" alignItems="center">
-              <Image src={pickedUpImage} mx={15} mb="25px" />
+              <Box bg="green.100" borderRadius="10rem" p="1.5rem" mb=".5rem">
+                <IconContext.Provider value={{ color: '#38A169', size: '5.5rem' }}>
+                  <FaTruckPickup />
+                </IconContext.Provider>
+              </Box>
               <Text textAlign="center" fontSize={{ base: '18px', md: '20px' }}>
                 Your items have been successfully picked up!
               </Text>
@@ -275,7 +256,21 @@ const DonorDashboard = ({ donationId }) => {
           </Flex>
         );
       default:
-        return <Box>No pickup</Box>;
+        return (
+          <Flex h="100%" direction="column" justify="center" gap={2} p="2em">
+            <Flex flexDir="column" alignItems="center">
+              <Box bg="blue.100" borderRadius="10rem" p="1.5rem" mb=".5rem">
+                <IconContext.Provider value={{ color: '#3182CE', size: '5.5rem' }}>
+                  <FaTruckPickup />
+                </IconContext.Provider>
+              </Box>
+              <Text textAlign="center" fontSize={{ base: '18px', md: '20px' }}>
+                Your pickup is being rescheduled. Patriots and Paws will scheduling a new pickup
+                date shortly.
+              </Text>
+            </Flex>
+          </Flex>
+        );
     }
   };
 
@@ -288,38 +283,47 @@ const DonorDashboard = ({ donationId }) => {
   }, [donationId]);
 
   return (
-    <>
-      <Flex bg="gray.200" p={{ base: 6, md: 14 }} direction="column" gap={7}>
-        <Grid gap={10} templateColumns={{ md: '3fr 1fr' }}>
-          <Flex direction="column" gap={3} justifyContent="center">
-            <Flex alignItems="center">
-              <Text
-                fontSize={{ base: '20px', md: '30px' }}
-                fontWeight="700"
-                mr={{ base: '15px', md: 0 }}
-              >
+    <Flex h="100vh" direction="column">
+      <Flex bg="gray.200" p={7} direction="column" gap={7} flexGrow={1} justify="space-between">
+        <Grid
+          templateAreas={{
+            md: `"donationHeader pickupHeader"
+                  "banner pickup"
+                  "details pickup"`,
+          }}
+          gridTemplateRows="auto auto 1fr"
+          gridTemplateColumns={{ base: 'minmax(0, 1fr)', md: '3fr 1fr' }}
+          align="center"
+          gap={5}
+          h="100%"
+        >
+          <GridItem area={{ md: 'donationHeader' }} align="center">
+            <Flex align="center" gap={2}>
+              <Text fontSize="1.75em" fontWeight="700">
                 My Donation
               </Text>
               <Box display={{ base: 'inline', md: 'none' }}>
                 {displayStatusTag(donation.status)}
               </Box>
             </Flex>
+          </GridItem>
+          <GridItem area={{ md: 'banner' }} textAlign="left">
             {displayBanner()}
-            <Box
-              maxH="600px"
-              borderRadius="6px"
-              bg="white"
-              w="100%"
-              h="100%"
-              overflowY="auto"
-              p={6}
-            >
-              <DonationDetails data={donation} setDonationData={setDonation} />
-            </Box>
-          </Flex>
-          <Flex direction="column" gap={3} display={{ base: 'none', md: 'block' }}>
-            <Flex direction="row" gap={3}>
-              <Text fontSize="1.5em" fontWeight="700">
+          </GridItem>
+          <GridItem
+            area={{ md: 'details' }}
+            borderRadius="6px"
+            bg="white"
+            w="100%"
+            h="100%"
+            overflowY="auto"
+            p={6}
+          >
+            <DonationDetails data={donation} setDonationData={setDonation} />
+          </GridItem>
+          <GridItem gap={3} area={{ md: 'pickupHeader' }}>
+            <Flex direction="row" gap={3} align="center">
+              <Text fontSize="1.75em" fontWeight="700">
                 Pickup
               </Text>
               <Box p={2}>
@@ -330,36 +334,30 @@ const DonorDashboard = ({ donationId }) => {
                 )}
               </Box>
             </Flex>
-            <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
+          </GridItem>
+          <GridItem area={{ md: 'pickup' }}>
+            <Box
+              borderRadius="6px"
+              bg="white"
+              h="100%"
+              py={4}
+              px={6}
+              minHeight="150px"
+              textAlign="left"
+            >
               {displayPickup()}
             </Box>
-          </Flex>
+          </GridItem>
         </Grid>
-        <Flex direction="column" gap={3} display={{ base: 'block', md: 'none' }}>
-          <Box borderRadius="6px" bg="white" h="100%" py={4} px={6}>
-            {displayPickup()}
-          </Box>
-        </Flex>
         <Flex direction="column">
-          <Text fontSize="1.5em" fontWeight="700" mb={{ base: '10px', md: '20px' }}>
+          <Text fontSize="1.75em" fontWeight="700" mb={{ base: '10px', md: '20px' }}>
             Track your donation
           </Text>
           {donation?.status && <TrackDonationSection status={donation.status} />}
         </Flex>
-        <Button
-          colorScheme="red"
-          onClick={() => {
-            navigate('/donate', {
-              state: {},
-            });
-            navigate(0);
-          }}
-        >
-          Logout
-        </Button>
       </Flex>
       <DonorFooter />
-    </>
+    </Flex>
   );
 };
 

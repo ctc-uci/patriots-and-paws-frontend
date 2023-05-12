@@ -1,9 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import {
   Tag,
-  TagLabel,
   Box,
   Text,
   Flex,
@@ -18,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
+  IconButton,
 } from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { PropTypes } from 'prop-types';
@@ -29,7 +28,7 @@ import { PNPBackend } from '../../utils/utils';
 import pencilIcon from '../../assets/pencil.svg';
 import grayPencilIcon from '../../assets/grayPencil.png';
 
-const { PENDING, CHANGES_REQUESTED, PICKED_UP, APPROVAL_REQUESTED } = STATUSES;
+const { PENDING, CHANGES_REQUESTED, PICKED_UP, APPROVAL_REQUESTED, RESCHEDULE } = STATUSES;
 
 const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
   return (
@@ -58,32 +57,39 @@ const DeleteDonationDialog = ({ isOpen, onClose, onSubmit }) => {
 };
 
 const displayStatusTag = status => {
-  if (status === PENDING || status === APPROVAL_REQUESTED) {
-    return (
-      <Tag variant="solid" colorScheme="blue">
-        Submitted
-      </Tag>
-    );
+  switch (status) {
+    case PENDING:
+    case APPROVAL_REQUESTED:
+      return (
+        <Tag variant="solid" colorScheme="blue">
+          Submitted
+        </Tag>
+      );
+    case CHANGES_REQUESTED:
+      return (
+        <Tag variant="solid" colorScheme="orange">
+          Changes Needed
+        </Tag>
+      );
+    case PICKED_UP:
+      return (
+        <Tag variant="solid" colorScheme="green">
+          Received
+        </Tag>
+      );
+    case RESCHEDULE:
+      return (
+        <Tag variant="solid" colorScheme="blue">
+          Rescheduling
+        </Tag>
+      );
+    default:
+      return (
+        <Tag variant="solid" colorScheme="green">
+          Approved
+        </Tag>
+      );
   }
-  if (status === CHANGES_REQUESTED) {
-    return (
-      <Tag bg="orange.100">
-        <TagLabel color="orange.600"> Changes Needed </TagLabel>
-      </Tag>
-    );
-  }
-  if (status === PICKED_UP) {
-    return (
-      <Tag variant="solid" colorScheme="green">
-        Received
-      </Tag>
-    );
-  }
-  return (
-    <Tag variant="solid" colorScheme="green">
-      Approved
-    </Tag>
-  );
 };
 
 const DonationDetails = ({ data, setDonationData }) => {
@@ -118,18 +124,23 @@ const DonationDetails = ({ data, setDonationData }) => {
   };
 
   return (
-    <Flex direction="column" width="100%">
-      <Flex alignItems="center" justifyContent="space-between" px={3} pb={4}>
+    <Flex direction="column" width="100%" height="100%">
+      <Flex alignItems="center" justifyContent="space-between" pb={4}>
         <Flex display={{ base: 'flex', md: 'none' }} flexDir="column">
-          <Text fontWeight={600} fontSize="16px">
+          <Text fontWeight={600} fontSize="16px" textAlign="left">
             Form #{id}
           </Text>
           <Text fontSize="12px">Submitted on {formatDate(submittedDate)}</Text>
         </Flex>
-        <Box display={{ base: 'inline', md: 'none' }}>
-          <Button variant="ghost" onClick={editModalOnOpen}>
-            <Image src={grayPencilIcon} w="1em" />
-          </Button>
+        <Box display={{ base: 'flex', md: 'none' }} gap={2} align="center">
+          {status === CHANGES_REQUESTED && (
+            <IconButton
+              icon={<Image src={grayPencilIcon} w="100%" h="100%" />}
+              onClick={editModalOnOpen}
+              colorScheme="transparent"
+              size="xs"
+            />
+          )}
           {status !== PICKED_UP && (
             <DeleteIcon
               color="red.500"
@@ -162,9 +173,9 @@ const DonationDetails = ({ data, setDonationData }) => {
         </Box>
       </Flex>
       <Divider size="md" variant="solid" />
-      <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} alignItems="center" gap={5}>
+      <Grid templateColumns={{ base: '1fr', md: '1fr 1fr' }} gap={5} height="100%">
         {pictures && <DonationImagesContainer pictures={pictures} itemsPerPage={1} />}
-        <Box maxH="sm">{furniture && <DonationFurnitureContainer data={furniture} />}</Box>
+        {furniture && <DonationFurnitureContainer data={furniture} />}
       </Grid>
       <EditDonationModal
         donationData={data}
