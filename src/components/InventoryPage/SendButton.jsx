@@ -15,6 +15,7 @@ const ON_SUBMIT_DETAILS = {
     toastText: 'Successfully scheduled donation for pickup.',
     buttonText: 'Send Approval Email',
     colorScheme: 'green',
+    status: 'success',
   },
   [REQUEST_CHANGES]: {
     newStatus: CHANGES_REQUESTED,
@@ -22,6 +23,7 @@ const ON_SUBMIT_DETAILS = {
     toastText: 'Email has been sent for changes to be made by the donor',
     buttonText: 'Send Email',
     colorScheme: 'blue',
+    status: 'info',
   },
   [CANCEL_PICKUP]: {
     newStatus: RESCHEDULE,
@@ -29,12 +31,14 @@ const ON_SUBMIT_DETAILS = {
     toastText: "You've cancelled this pickup",
     buttonText: 'Send Cancellation Email',
     colorScheme: 'red',
+    status: 'info',
   },
   [DELETE_DONATION]: {
     toastTitle: 'Deleted',
     toastText: "You've deleted this donation",
     buttonText: 'Send Deletion Email',
     colorScheme: 'red',
+    status: 'info',
   },
 };
 
@@ -49,7 +53,14 @@ const SendButton = ({
 }) => {
   const toast = useToast();
 
-  const { newStatus, toastTitle, toastText, buttonText, colorScheme } = ON_SUBMIT_DETAILS[status];
+  const {
+    newStatus,
+    toastTitle,
+    toastText,
+    buttonText,
+    colorScheme,
+    status: toastStatus,
+  } = ON_SUBMIT_DETAILS[status];
 
   const handleSendEmail = async e => {
     handleSubmit(e);
@@ -74,7 +85,7 @@ const SendButton = ({
     toast({
       title: `${toastTitle} #${donationId}.`,
       description: toastText,
-      status: 'success',
+      status: toastStatus,
       duration: 2000,
       isClosable: true,
       position: 'top',

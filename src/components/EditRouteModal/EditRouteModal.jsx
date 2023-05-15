@@ -4,7 +4,6 @@ import {
   Flex,
   List,
   ListItem,
-  Box,
   Card,
   Text,
   Button,
@@ -127,31 +126,24 @@ const DonationList = ({
   );
 };
 
-const EditRouteModal = ({
-  cookies,
-  routeId,
-  routeDate,
-  allDrivers,
-  setAllDrivers,
-  isOpen,
-  onClose,
-  role,
-}) => {
+const EditRouteModal = ({ cookies, routeId, allDrivers, setAllDrivers, isOpen, onClose, role }) => {
   const [assignedDriverId, setAssignedDriverId] = useState('');
   const [route, setRoute] = useState({});
   const [drivers, setDrivers] = useState([]);
   const [assignedRouteName, setAssignedRouteName] = useState('');
   const [donations, setDonations] = useState([]);
-  const [errorMessage, setErrorMessage] = useState();
   const [modalState, setModalState] = useState('view');
   const { isOpen: exportIsOpen, onOpen: exportOnOpen, onClose: exportOnClose } = useDisclosure();
   const [confirmedState, setConfirmedState] = useState('inactive');
   const [userRole, setUserRole] = useState();
   const [originalDriverId, setOriginalDriverId] = useState();
+  const [routeDate, setRouteDate] = useState(new Date());
   const breakpointSize = useBreakpoint();
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
+    const routeDateFromDB = new Date(routeFromDB.date);
+    setRouteDate(routeDateFromDB);
     setRoute(routeFromDB);
     const { driverId } = routeFromDB;
     setAssignedDriverId(driverId);
@@ -160,7 +152,7 @@ const EditRouteModal = ({
     setDonations(routeFromDB.donations ?? []);
     const filteredDrivers = allDrivers.filter(
       ({ id, assignedRoutes }) =>
-        id === driverId || !assignedRoutes.includes(routeDate.toISOString().split('T')[0]),
+        id === driverId || !assignedRoutes.includes(routeDateFromDB.toISOString().split('T')[0]),
     );
     setDrivers(filteredDrivers);
   };
@@ -225,7 +217,7 @@ const EditRouteModal = ({
       await Promise.all(updateDonationPromises);
       updateDriverRoutes();
     } catch (err) {
-      setErrorMessage(err.message);
+      // TODO handle error
     }
   };
 
@@ -344,7 +336,6 @@ const EditRouteModal = ({
               getConfirmedDonations={getConfirmedDonations}
             />
           )}
-          <Box>{errorMessage}</Box>
         </ModalBody>
         <ModalFooter>
           {modalState === 'edit' && (
@@ -421,7 +412,6 @@ const EditRouteModal = ({
 EditRouteModal.propTypes = {
   routeId: PropTypes.string,
   role: PropTypes.string,
-  routeDate: PropTypes.instanceOf(Date),
   allDrivers: PropTypes.instanceOf(Array).isRequired,
   setAllDrivers: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
@@ -432,7 +422,6 @@ EditRouteModal.propTypes = {
 EditRouteModal.defaultProps = {
   routeId: '',
   role: '',
-  routeDate: new Date(),
 };
 
 DonationList.propTypes = {

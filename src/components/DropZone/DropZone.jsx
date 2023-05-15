@@ -52,7 +52,7 @@ const DropZone = ({ setFiles, maxFiles }) => {
           </Text>
         </Text>
         <Text fontSize="12px" textAlign="center" mt={2} textColor="gray.700">
-          Accepted file types: JPEG, PNG, GIF
+          Accepted file types: JPEG, JPG, PNG
         </Text>
       </Flex>
     </Box>

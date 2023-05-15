@@ -22,25 +22,10 @@ import {
   AlertTitle,
   InputGroup,
   InputRightElement,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  // ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useDisclosure,
-  Text,
 } from '@chakra-ui/react';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { Cookies, withCookies } from '../../utils/CookieUtils';
-import {
-  logInWithEmailAndPassword,
-  useNavigate,
-  userIsAuthenticated,
-  sendPasswordReset,
-} from '../../utils/AuthUtils';
-import EmailSentModal from '../EmailSentModal/EmailSentModal';
+import { logInWithEmailAndPassword, useNavigate, userIsAuthenticated } from '../../utils/AuthUtils';
 
 const Login = ({ cookies }) => {
   const navigate = useNavigate();
@@ -59,7 +44,6 @@ const Login = ({ cookies }) => {
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(formSchema),
@@ -67,30 +51,7 @@ const Login = ({ cookies }) => {
   });
 
   const { search } = useLocation();
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const {
-    isOpen: isOpenEmailSentModal,
-    onOpen: onOpenEmailSentModal,
-    onClose: onCloseEmailSentModal,
-  } = useDisclosure();
   const signup = new URLSearchParams(search).get('signup');
-
-  const handleResendEmail = async () => {
-    const email = getValues('email');
-    await sendPasswordReset(email);
-    navigate('/login');
-  };
-
-  const handleForgotPassword = async data => {
-    try {
-      const { email } = data;
-      await sendPasswordReset(email);
-      onOpenEmailSentModal();
-      setErrorMessage('');
-    } catch (err) {
-      setErrorMessage(err.message);
-    }
-  };
 
   useEffect(() => {
     const checkUserAuthentication = async () => {
@@ -175,12 +136,7 @@ const Login = ({ cookies }) => {
                 <Box height="10vh" mb="1em" />
               )}
               <Heading fontSize="3rem">Staff Login</Heading>
-              <Link
-                href="/forgot-password"
-                color="#3182ce"
-                fontSize="1rem"
-                display={{ base: 'none', md: 'block' }}
-              >
+              <Link href="/forgot-password" color="#3182ce" fontSize="1rem">
                 Forgot Password?
               </Link>
               <Stack width="100%">
@@ -227,73 +183,6 @@ const Login = ({ cookies }) => {
                     <Button colorScheme="blue" type="submit" width="100%" mt={14}>
                       Login
                     </Button>
-                    <Button
-                      fontSize="1rem"
-                      mt={4}
-                      display={{ base: 'block', md: 'none' }}
-                      justify="center"
-                      onClick={onOpen}
-                    >
-                      Forgot Password?
-                    </Button>
-                    <Modal isOpen={isOpen} onClose={onClose}>
-                      <ModalOverlay />
-                      <ModalContent>
-                        <ModalHeader>Forgot Password</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody>
-                          <Stack
-                            justifyContent="center"
-                            maxW={{ base: '90%', md: '70%', lg: '60%' }}
-                            width="100%"
-                            margin="auto"
-                          >
-                            <Text fontSize="1rem" color="gray.400">
-                              Enter your email address below to receive an email about resetting the
-                              account password.
-                            </Text>
-                            {errorMessage && <Box>{errorMessage}</Box>}
-                            <Stack width="100%">
-                              <form>
-                                <FormControl width="100%">
-                                  <FormLabel
-                                    fontSize="16px"
-                                    fontWeight="normal"
-                                    textAlign="left"
-                                    marginTop={10}
-                                  >
-                                    Email Address
-                                  </FormLabel>
-                                  <Input
-                                    type="text"
-                                    placeholder="name@domain.com"
-                                    {...register('email')}
-                                    isRequired
-                                    width="100%"
-                                  />
-                                  <Box>{errors.email?.message}</Box>
-                                  <Button
-                                    colorScheme="blue"
-                                    marginTop={14}
-                                    padding={6}
-                                    width="100%"
-                                    onClick={handleForgotPassword}
-                                  >
-                                    Send Email
-                                  </Button>
-                                </FormControl>
-                              </form>
-                            </Stack>
-                            <EmailSentModal
-                              isOpen={isOpenEmailSentModal}
-                              onClose={onCloseEmailSentModal}
-                              onSubmit={handleResendEmail}
-                            />
-                            ;
-                          </Stack>
-                        </ModalBody>
-                      </ModalContent>
-                    </Modal>
                   </FormControl>
                 </form>
               </Stack>

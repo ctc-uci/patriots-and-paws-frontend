@@ -175,6 +175,7 @@ const createUser = async user => {
   const firebaseUser = await createUserInFirebase(email, password);
   await createUserInDB(user, firebaseUser.uid);
   await secondaryAuth.signOut();
+  return firebaseUser.uid;
 };
 
 // Updates user information in PNP DB
@@ -205,8 +206,8 @@ const updateUser = async (user, id) => {
  * @param {string} redirectPath path to redirect users once logged in
  */
 const registerWithEmailAndPassword = async user => {
-  await createUser(user);
-  // navigate(redirectPath);
+  const uid = await createUser(user);
+  return uid;
 };
 
 /**

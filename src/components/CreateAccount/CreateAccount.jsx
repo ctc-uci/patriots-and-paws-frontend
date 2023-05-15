@@ -29,6 +29,7 @@ import {
   Text,
   UnorderedList,
   ListItem,
+  useToast,
 } from '@chakra-ui/react';
 import { SmallAddIcon, InfoIcon } from '@chakra-ui/icons';
 import { registerWithEmailAndPassword } from '../../utils/AuthUtils';
@@ -69,6 +70,7 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
 
   const [errorMessage, setErrorMessage] = useState();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   const onSubmit = async e => {
     const { firstName, lastName, email, phoneNumber, password, role } = e;
@@ -82,14 +84,25 @@ const CreateAccount = ({ isSuperAdmin, setAllUsers, setDriverUsers, setAdminUser
       role,
     };
     try {
-      await registerWithEmailAndPassword(user);
-      setErrorMessage('User successfully created');
-      setAllUsers(prev => prev.concat(user));
+      const uid = await registerWithEmailAndPassword(user);
+      const updatedUser = { ...user, id: uid };
+      setAllUsers(prev => prev.concat(updatedUser));
       if (role === 'admin') {
-        setAdminUsers(prev => prev.concat(user));
+        setAdminUsers(prev => prev.concat(updatedUser));
       } else {
-        setDriverUsers(prev => prev.concat(user));
+        setDriverUsers(prev => prev.concat(updatedUser));
       }
+
+      toast.closeAll();
+      toast({
+        title: 'New Staff Member Added',
+        // description: 'An email has been sent with your donation ID',
+        status: 'success',
+        variant: 'subtle',
+        duration: 9000,
+        isClosable: true,
+      });
+
       onClose();
       reset();
     } catch (err) {

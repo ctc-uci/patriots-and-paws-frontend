@@ -64,8 +64,12 @@ const ForgotPassword = () => {
   };
 
   return (
-    <Grid templateColumns="repeat(2, 1fr)" gap={0}>
-      <GridItem w="100%" h="100vh" bgGradient="linear(to-br, #F37C7C, #435FC0)" />
+    <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={0}>
+      <GridItem
+        w="100%"
+        h={{ base: '30vh', md: '100vh' }}
+        bgGradient="linear(to-br, #F37C7C, #435FC0)"
+      />
       <GridItem w="100%" padding={10}>
         <Flex height="100%" position="relative">
           <Stack width="100%" zIndex="1" position="absolute">
@@ -88,7 +92,7 @@ const ForgotPassword = () => {
                 width="100%"
                 margin="auto"
               >
-                <Heading as="h1" fontSize="3rem" mb={1}>
+                <Heading as="h1" fontSize="3rem" mb={1} mt={{ base: '1em', md: 0 }}>
                   Forgot Password
                 </Heading>
                 <Text fontSize="1rem" color="gray.400">

@@ -75,8 +75,9 @@ const CreateRouteModal = ({ routeDate, allDrivers, isOpen, onClose, handleCalend
     try {
       const { assignedDriver, routeName } = e;
       // set time to 12 AM PST to make Create Route button Date consistent with date selection from calendar
-      date.setHours(0, 0, 0, 0);
-      const dateString = date.toISOString().substring(0, 10);
+      const submitDate = new Date(date);
+      submitDate.setHours(0, 0, 0, 0);
+      const dateString = submitDate.toISOString().substring(0, 10);
 
       const route = {
         driverId: assignedDriver,
@@ -89,7 +90,7 @@ const CreateRouteModal = ({ routeDate, allDrivers, isOpen, onClose, handleCalend
       }
       const res = await createRoute(route);
       const { id, name } = res;
-      handleCalendarAddEvent(id, name, date, assignedDriver);
+      handleCalendarAddEvent(id, name, submitDate, assignedDriver);
       clearState();
       onClose();
     } catch (err) {
