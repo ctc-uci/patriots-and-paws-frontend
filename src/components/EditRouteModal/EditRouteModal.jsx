@@ -37,6 +37,7 @@ import {
   updateRoute,
   routePDFStyles,
   dateHasPassed,
+  convertUTCtoLocal,
 } from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
 import { AUTH_ROLES, STATUSES } from '../../utils/config';
@@ -142,7 +143,7 @@ const EditRouteModal = ({ cookies, routeId, allDrivers, setAllDrivers, isOpen, o
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
-    const routeDateFromDB = new Date(routeFromDB.date);
+    const routeDateFromDB = convertUTCtoLocal(routeFromDB.date);
     setRouteDate(routeDateFromDB);
     setRoute(routeFromDB);
     const { driverId } = routeFromDB;
@@ -169,7 +170,7 @@ const EditRouteModal = ({ cookies, routeId, allDrivers, setAllDrivers, isOpen, o
 
   // convert date to 'Weekday, Month Day' format
   const convertDate = date => {
-    const formattedDate = new Date(date).toLocaleDateString('en-US', {
+    const formattedDate = new Date(convertUTCtoLocal(date)).toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
@@ -398,7 +399,7 @@ const EditRouteModal = ({ cookies, routeId, allDrivers, setAllDrivers, isOpen, o
                   onClick={handleChangeToEdit}
                   isDisabled={dateHasPassed(routeDate)}
                 >
-                  Edit Routes
+                  Edit Route
                 </Button>
               )}
             </Flex>
