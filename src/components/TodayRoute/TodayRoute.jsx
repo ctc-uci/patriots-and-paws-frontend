@@ -15,7 +15,7 @@ import {
 import { PDFViewer } from '@react-pdf/renderer';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
 import { routeFormatDate, isSameDay } from '../../utils/InventoryUtils';
-import { routePDFStyles } from '../../utils/RouteUtils';
+import { convertUTCtoLocal, routePDFStyles } from '../../utils/RouteUtils';
 import { getCurrentUserId } from '../../utils/AuthUtils';
 import DonationModal from '../InventoryPage/DonationModal';
 import DonationCard from './DonationCard';
@@ -43,12 +43,9 @@ const TodayRoute = () => {
 
   const getDonationsForToday = async () => {
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
-
-    const today = new Date().toISOString();
+    const today = convertUTCtoLocal(new Date());
     const todayRoute = driverRoutes.find(currRoute => isSameDay(currRoute.date, today));
-    // console.log(todayRoute);
     if (todayRoute) {
-      // const { data } = await PNPBackend.get(`/routes/${todayRoute.id}`);
       const donationInfo = todayRoute.donations; // data.donations;
       setDonations(donationInfo);
       setRoute({ date: today, name: todayRoute.name, isRoute: true });
@@ -100,7 +97,7 @@ const TodayRoute = () => {
             </Flex>
             <Flex direction={{ base: 'column-reverse', md: 'column' }} gap={5} h="100%">
               <Flex flexDirection="column" gap={5} w="100%" overflowY="scroll" h="50%">
-                {donations &&
+                {donations ? (
                   donations.map(d => {
                     return (
                       <DonationCard
@@ -111,10 +108,32 @@ const TodayRoute = () => {
                         setDonations={setDonations}
                       />
                     );
-                  })}
+                  })
+                ) : (
+                  <Flex
+                    textAlign="center"
+                    color="blackAlpha.600"
+                    m="auto"
+                    h="100%"
+                    justify="center"
+                    direction="column"
+                  >
+                    <Text fontSize="1.75em" fontWeight="bold">
+                      No Donations Added Yet
+                    </Text>
+                    <Text fontSize="0.8em" isTruncated>
+                      Contact the Patriots and Paws Admin for more information.
+                    </Text>
+                  </Flex>
+                )}
               </Flex>
               <Flex justify="flex-end" gap={3}>
-                <Button size="sm" colorScheme="blackAlpha" onClick={exportOnOpen}>
+                <Button
+                  size="sm"
+                  colorScheme="blackAlpha"
+                  onClick={exportOnOpen}
+                  isDisabled={donations === null || donations.length === 0}
+                >
                   Export PDF
                 </Button>
                 <Button
@@ -122,6 +141,7 @@ const TodayRoute = () => {
                   colorScheme="teal"
                   mr="2%"
                   onClick={() => handleNavigateToAddress(donations)}
+                  isDisabled={donations === null || donations.length === 0}
                 >
                   Navigate to Route
                 </Button>

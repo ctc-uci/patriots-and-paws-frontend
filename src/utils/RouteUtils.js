@@ -125,14 +125,15 @@ const routePDFStyles = StyleSheet.create({
   },
 });
 
+const convertUTCtoLocal = date => {
+  const now = new Date(date);
+  return now.toISOString().replace(/-/g, '/').replace(/T.+/, '');
+};
+
 const dateHasPassed = date => {
-  const today = new Date();
-  const selectedRouteDate = new Date(date);
-  return (
-    selectedRouteDate.getFullYear() < today.getFullYear() ||
-    selectedRouteDate.getMonth() < today.getMonth() ||
-    selectedRouteDate.getDate() < today.getDate()
-  );
+  const today = convertUTCtoLocal(new Date());
+  const selectedRouteDate = convertUTCtoLocal(date);
+  return selectedRouteDate < today;
 };
 
 export {
@@ -150,4 +151,5 @@ export {
   A4_WIDTH,
   routePDFStyles,
   dateHasPassed,
+  convertUTCtoLocal,
 };

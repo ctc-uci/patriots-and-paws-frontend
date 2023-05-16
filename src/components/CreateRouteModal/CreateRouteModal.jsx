@@ -132,7 +132,7 @@ const CreateRouteModal = ({ routeDate, allDrivers, isOpen, onClose, handleCalend
                 date={date}
                 onDateChange={setDate}
                 configs={calendarConfigs}
-                minDate={new Date().setDate(new Date().getDate() - 1)} // TODO: clean up and look into date formats?
+                minDate={new Date().setDate(new Date().getDate() - 1)}
               />
             </FormControl>
             <FormControl my="1em">
