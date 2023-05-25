@@ -24,7 +24,7 @@ import { DonationDetails, displayStatusTag } from './DonationDetails';
 import { STATUSES } from '../../utils/config';
 import { PNPBackend } from '../../utils/utils';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
-import { formatDate } from '../../utils/RouteUtils';
+import { formatDate, standardizeDate } from '../../utils/RouteUtils';
 
 const {
   PENDING,
@@ -185,7 +185,7 @@ const DonorDashboard = ({ donationId }) => {
             <Text fontWeight="400" fontSize="lg" mb="15px" mt={0}>
               Proposed Day:
               <Text fontWeight="600" fontSize="lg">
-                {formatDate(donation.pickupDate)}
+                {formatDate(new Date(standardizeDate(donation.pickupDate)))}
               </Text>
             </Text>
             <Flex mb="15px">
@@ -218,7 +218,9 @@ const DonorDashboard = ({ donationId }) => {
               <Text>Pickup Day Confirmed</Text>
               <CheckCircleIcon color="green.200" />
             </Flex>
-            <Text fontWeight="700">{formatDate(donation.pickupDate)}</Text>
+            <Text fontWeight="700">
+              {formatDate(new Date(standardizeDate(donation.pickupDate)))}
+            </Text>
             <Text>
               Be sure to leave all items outside your door before&nbsp;
               <Text as="span" fontWeight="700">
