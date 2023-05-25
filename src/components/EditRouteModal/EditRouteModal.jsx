@@ -37,11 +37,12 @@ import {
   updateRoute,
   routePDFStyles,
   dateHasPassed,
-  convertUTCtoLocal,
+  standardizeDate,
 } from '../../utils/RouteUtils';
 import { handleNavigateToAddress } from '../../utils/utils';
 import { AUTH_ROLES, STATUSES } from '../../utils/config';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
+import { routeFormatDate } from '../../utils/InventoryUtils';
 
 const { SUPERADMIN_ROLE, ADMIN_ROLE, DRIVER_ROLE } = AUTH_ROLES;
 
@@ -143,7 +144,7 @@ const EditRouteModal = ({ cookies, routeId, allDrivers, setAllDrivers, isOpen, o
 
   const fetchDonations = async () => {
     const routeFromDB = await getRoute(routeId);
-    const routeDateFromDB = convertUTCtoLocal(routeFromDB.date);
+    const routeDateFromDB = standardizeDate(routeFromDB.date);
     setRouteDate(routeDateFromDB);
     setRoute(routeFromDB);
     const { driverId } = routeFromDB;
@@ -152,8 +153,7 @@ const EditRouteModal = ({ cookies, routeId, allDrivers, setAllDrivers, isOpen, o
     setAssignedRouteName(routeFromDB.name);
     setDonations(routeFromDB.donations ?? []);
     const filteredDrivers = allDrivers.filter(
-      ({ id, assignedRoutes }) =>
-        id === driverId || !assignedRoutes.includes(routeDateFromDB.toISOString().split('T')[0]),
+      ({ id, assignedRoutes }) => id === driverId || !assignedRoutes.includes(routeDateFromDB),
     );
     setDrivers(filteredDrivers);
   };
@@ -167,18 +167,6 @@ const EditRouteModal = ({ cookies, routeId, allDrivers, setAllDrivers, isOpen, o
       fetchDonations();
     }
   }, [routeId]);
-
-  // convert date to 'Weekday, Month Day' format
-  const convertDate = date => {
-    const formattedDate = new Date(convertUTCtoLocal(date)).toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-      timeZone: 'America/Los_Angeles',
-    });
-    return formattedDate;
-  };
 
   const handleDriverChange = e => {
     setAssignedDriverId(e.target.value);
@@ -271,7 +259,7 @@ const EditRouteModal = ({ cookies, routeId, allDrivers, setAllDrivers, isOpen, o
             </Heading>
             <Flex justifyContent="space-between">
               <Text fontSize="md" fontWeight="normal" isTruncated>
-                {convertDate(routeDate)}
+                {routeFormatDate(routeDate)}
               </Text>
             </Flex>
             <Flex direction="row" gap={5} justify="space-between">

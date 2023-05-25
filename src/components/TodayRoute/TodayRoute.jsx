@@ -15,7 +15,7 @@ import {
 import { PDFViewer } from '@react-pdf/renderer';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
 import { routeFormatDate, isSameDay } from '../../utils/InventoryUtils';
-import { convertUTCtoLocal, routePDFStyles } from '../../utils/RouteUtils';
+import { todaysDate, routePDFStyles } from '../../utils/RouteUtils';
 import { getCurrentUserId } from '../../utils/AuthUtils';
 import DonationModal from '../InventoryPage/DonationModal';
 import DonationCard from './DonationCard';
@@ -43,12 +43,11 @@ const TodayRoute = () => {
 
   const getDonationsForToday = async () => {
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
-    const today = convertUTCtoLocal(new Date());
-    const todayRoute = driverRoutes.find(currRoute => isSameDay(currRoute.date, today));
+    const todayRoute = driverRoutes.find(currRoute => isSameDay(currRoute.date, todaysDate));
     if (todayRoute) {
       const donationInfo = todayRoute.donations; // data.donations;
       setDonations(donationInfo);
-      setRoute({ date: today, name: todayRoute.name, isRoute: true });
+      setRoute({ date: todaysDate, name: todayRoute.name, isRoute: true });
     }
   };
 
@@ -86,9 +85,6 @@ const TodayRoute = () => {
         md: 0,
       }}
     >
-      {new Date().toISOString()}&nbsp;
-      {new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })}&nbsp;
-      {convertUTCtoLocal(new Date())}
       {route ? (
         <>
           <Flex direction="column" gap={5} padding="25px" w="100%" h="100%">

@@ -22,8 +22,9 @@ import DonorFooter from '../DonorFooter/DonorFooter';
 import TrackDonationSection from '../TrackDonationSection/TrackDonationSection';
 import { DonationDetails, displayStatusTag } from './DonationDetails';
 import { STATUSES } from '../../utils/config';
-import { PNPBackend, formatDate } from '../../utils/utils';
+import { PNPBackend } from '../../utils/utils';
 import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
+import { formatDate } from '../../utils/RouteUtils';
 
 const {
   PENDING,

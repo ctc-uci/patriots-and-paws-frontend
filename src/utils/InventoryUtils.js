@@ -1,6 +1,6 @@
 import { PNPBackend } from './utils';
 import { STATUSES } from './config';
-import { convertUTCtoLocal } from './RouteUtils';
+import { standardizeDate } from './RouteUtils';
 
 const {
   APPROVAL_REQUESTED,
@@ -12,48 +12,25 @@ const {
   RESCHEDULE,
 } = STATUSES;
 
-function makeDate(dateDB) {
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
+const makeDate = dateDB => {
   const d = new Date(dateDB);
-  return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-}
+  return d.toUTCString();
+};
 
 const routeFormatDate = dateDB => {
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const d = new Date(convertUTCtoLocal(dateDB));
-  return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  const d = new Date(standardizeDate(dateDB)).toLocaleString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+  return d;
 };
 
 const isSameDay = (date1, date2) => {
-  const d1 = convertUTCtoLocal(date1);
-  const d2 = convertUTCtoLocal(date2);
+  const d1 = standardizeDate(date1);
+  const d2 = standardizeDate(date2);
   return d1 === d2;
 };
 

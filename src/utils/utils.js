@@ -69,15 +69,6 @@ const calendarConfigs = {
   dateFormat: 'MMMM d',
 };
 
-const formatDate = date => {
-  const d = new Date(date);
-  return d.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
 // trim whitespace and formalize capitalization
 const toCapitalCase = string => {
   return string.trim().replace(/\w\S*/g, word => {
@@ -95,6 +86,5 @@ export {
   formatAddress,
   handleNavigateToAddress,
   calendarConfigs,
-  formatDate,
   toCapitalCase,
 };

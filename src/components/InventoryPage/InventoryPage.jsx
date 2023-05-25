@@ -36,9 +36,9 @@ import RouteCalendar from '../RouteCalendar/RouteCalendar';
 import PaginationFooter from '../PaginationFooter/PaginationFooter';
 import {
   getRoutesFromDB,
-  makeDate,
   statusColorMap,
   displayStatuses,
+  routeFormatDate,
 } from '../../utils/InventoryUtils';
 
 const InventoryPage = () => {
@@ -102,12 +102,12 @@ const InventoryPage = () => {
           {tabIndex === 0 ? (
             <>
               <Td fontSize="18px">{makeStatus(ele.status)}</Td>
-              <Td fontSize="18px">{makeDate(ele.submittedDate)}</Td>
+              <Td fontSize="18px">{routeFormatDate(ele.submittedDate)}</Td>
             </>
           ) : (
             <>
               <Td fontSize="18px">{ele.routeName}</Td>
-              <Td fontSize="18px">{makeDate(ele.pickupDate)}</Td>
+              <Td fontSize="18px">{routeFormatDate(ele.pickupDate)}</Td>
             </>
           )}
         </Tr>

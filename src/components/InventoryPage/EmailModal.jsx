@@ -18,7 +18,7 @@ import { Email, Item, Span } from 'react-html-email';
 
 import { PropTypes } from 'prop-types';
 import { sendEmail } from '../../utils/utils';
-import { EMAIL_TYPE, makeDate } from '../../utils/InventoryUtils';
+import { EMAIL_TYPE, routeFormatDate } from '../../utils/InventoryUtils';
 import SendButton from './SendButton';
 
 const { CANCEL_PICKUP, APPROVE, REQUEST_CHANGES, DELETE_DONATION } = EMAIL_TYPE;
@@ -66,9 +66,9 @@ const getEmailContent = (status, date, id) => {
           <>
             <Text>
               Thank you for filling out the Donation form! We have approved your donation and have
-              scheduled it for <Text as="b">{makeDate(date.replace('-', '/'))}</Text>. Please follow
-              the link provided below and login with the Donation ID and your email address to
-              approve or reject the scheduled day. Once again, thank you for supporting our
+              scheduled it for <Text as="b">{routeFormatDate(date.replace('-', '/'))}</Text>. Please
+              follow the link provided below and login with the Donation ID and your email address
+              to approve or reject the scheduled day. Once again, thank you for supporting our
               veterans!
             </Text>
             <br />

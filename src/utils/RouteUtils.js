@@ -1,8 +1,5 @@
 import { StyleSheet } from '@react-pdf/renderer';
 import { PNPBackend } from './utils';
-// import { AUTH_ROLES } from './config';
-
-// const { DRIVER_ROLE } = AUTH_ROLES;
 
 const getAllRoutes = async () => {
   const { data } = await PNPBackend.get(`/routes`);
@@ -104,6 +101,7 @@ const formatDate = date =>
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'UTC',
   });
 
 const formatDatePDF = date => {
@@ -112,6 +110,7 @@ const formatDatePDF = date => {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'UTC',
   });
   return formattedDate.replace(',', ':');
 };
@@ -125,14 +124,21 @@ const routePDFStyles = StyleSheet.create({
   },
 });
 
-const convertUTCtoLocal = date => {
+const todaysDate = new Date().toLocaleString('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'America/Los_Angeles',
+});
+
+const standardizeDate = date => {
   const now = new Date(date);
-  return now.toISOString().replace(/-/g, '/').replace(/T.+/, '');
+  return date && now.toISOString().replace(/T.+/, '');
 };
 
 const dateHasPassed = date => {
-  const today = convertUTCtoLocal(new Date());
-  const selectedRouteDate = convertUTCtoLocal(date);
+  const today = standardizeDate(todaysDate);
+  const selectedRouteDate = standardizeDate(date);
   return selectedRouteDate < today;
 };
 
@@ -150,6 +156,7 @@ export {
   formatDatePDF,
   A4_WIDTH,
   routePDFStyles,
+  todaysDate,
   dateHasPassed,
-  convertUTCtoLocal,
+  standardizeDate,
 };

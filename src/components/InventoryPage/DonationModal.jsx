@@ -24,13 +24,19 @@ import {
 
 import { PropTypes, instanceOf } from 'prop-types';
 import { PNPBackend, handleNavigateToAddress } from '../../utils/utils';
-import { makeDate, displayStatuses, statusColorMap, EMAIL_TYPE } from '../../utils/InventoryUtils';
+import {
+  displayStatuses,
+  statusColorMap,
+  EMAIL_TYPE,
+  routeFormatDate,
+} from '../../utils/InventoryUtils';
 import DonationImagesContainer from './DonationImagesContainer';
 import DonationFurnitureContainer from './DonationFurnitureContainer';
 import EmailModal from './EmailModal';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
 import { AUTH_ROLES, STATUSES } from '../../utils/config';
 import AlertBanner from './AlertBanner';
+import { dateHasPassed, standardizeDate } from '../../utils/RouteUtils';
 
 const {
   RESCHEDULE,
@@ -65,21 +71,6 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
     routeId,
   } = data;
 
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const [emailStatus, setEmailStatus] = useState('');
   const [currentStatus, setCurrentStatus] = useState(status);
   const [scheduledDate, setScheduledDate] = useState('');
@@ -159,33 +150,17 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
   };
 
   const convertDayLabel = date => {
-    const d = new Date(date.concat('T00:00'));
-    const month = months[d.getMonth()];
-    const dayOfWeek = daysOfWeek[d.getDay()];
-    const day = +d.getDate();
-    let dayLabel;
-    if (day === 1 || day === 21 || day === 31) {
-      dayLabel = [day, 'st'].join('');
-    } else if (day === 2 || day === 22) {
-      dayLabel = [day, 'nd'].join('');
-    } else if (day === 3 || day === 23) {
-      dayLabel = [day, 'rd'].join('');
-    } else {
-      dayLabel = [day, 'th'].join('');
-    }
-    const rString = dayOfWeek.concat(', ', month, ' ', dayLabel);
-
-    return rString;
-  };
-
-  const filterDate = date => {
-    const currDate = new Date(date.concat('T00:00'));
-    const today = new Date();
-    return currDate >= today;
+    return new Date(standardizeDate(date)).toLocaleString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
   };
 
   const generateDates = () => {
-    const filteredDates = Object.keys(displayedRouteOptions).filter(day => filterDate(day));
+    const filteredDates = Object.keys(displayedRouteOptions).filter(day => !dateHasPassed(day));
     filteredDates.sort();
     return filteredDates;
   };
@@ -211,7 +186,7 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                 Donation #{id}
               </Text>
               <Text ml={{ md: '1em' }} fontSize="0.75em">
-                Submission Date: {makeDate(submittedDate)}
+                Submission Date: {routeFormatDate(submittedDate)}
               </Text>
             </Flex>
             {currentStatus === RESCHEDULE && <AlertBanner />}
@@ -357,61 +332,65 @@ const DonationModal = ({ data, onClose, isOpen, setAllDonations, routes, isReadO
                 <Textarea defaultValue={notes} isReadOnly />
               </Box>
               {/* SCHEDULE SECTION */}
-              <Flex
-                direction={{ base: 'column', md: 'row' }}
-                bg="#E2E8F0"
-                align={{ md: 'center' }}
-                mt={{ base: '2em', md: '1em' }}
-                borderRadius={6}
-                gap={{ base: 3, md: 5 }}
-                px={{ base: '6%', md: '3%' }}
-                py={{ base: '3%', md: '1%' }}
-              >
-                {/* issue: current role is not associated with any role,
+              {role !== DRIVER_ROLE && (
+                <Flex
+                  direction={{ base: 'column', md: 'row' }}
+                  bg="#E2E8F0"
+                  align={{ md: 'center' }}
+                  mt={{ base: '2em', md: '1em' }}
+                  borderRadius={6}
+                  gap={{ base: 3, md: 5 }}
+                  px={{ base: '6%', md: '3%' }}
+                  py={{ base: '3%', md: '1%' }}
+                >
+                  {/* issue: current role is not associated with any role,
                 "pickup details" is always printed */}
-                {role === DRIVER_ROLE ? (
                   <Text fontSize="1.25em">Pickup Details</Text>
-                ) : (
-                  <Text fontSize="1.25em">Schedule</Text>
-                )}
-                <Select
-                  placeholder={(!pickupDate || currentStatus === RESCHEDULE) && 'Choose a date'}
-                  onChange={e => {
-                    setScheduledDate(e.target.value);
-                    setScheduledRouteId('');
-                  }}
-                  defaultValue={scheduledDate}
-                  bg="white"
-                  isDisabled={
-                    ![PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
+                  <Select
+                    placeholder={(!pickupDate || currentStatus === RESCHEDULE) && 'Choose a date'}
+                    onChange={e => {
+                      setScheduledDate(e.target.value);
+                      setScheduledRouteId('');
+                    }}
+                    value={scheduledDate}
+                    bg="white"
+                    isDisabled={
+                      ![PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
+                        currentStatus,
+                      )
+                    }
+                  >
+                    {![PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
                       currentStatus,
-                    )
-                  }
-                >
-                  {generateDates().map(day => (
-                    <option key={day} value={day}>
-                      {convertDayLabel(day)}
-                    </option>
-                  ))}
-                </Select>
-                <Select
-                  placeholder={(!routeId || currentStatus === RESCHEDULE) && 'Choose a route'}
-                  isDisabled={
-                    ![PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
-                      currentStatus,
-                    ) || !scheduledDate
-                  }
-                  onChange={e => setScheduledRouteId(e.target.value)}
-                  bg="white"
-                >
-                  {scheduledDate &&
-                    displayedRouteOptions[scheduledDate]?.map(({ id: optionId, name }) => (
-                      <option key={optionId} value={optionId}>
-                        {name}
-                      </option>
-                    ))}
-                </Select>
-              </Flex>
+                    ) ? (
+                      <option>{convertDayLabel(scheduledDate)}</option>
+                    ) : (
+                      generateDates().map(day => (
+                        <option key={day} value={day}>
+                          {convertDayLabel(day)}
+                        </option>
+                      ))
+                    )}
+                  </Select>
+                  <Select
+                    placeholder={(!routeId || currentStatus === RESCHEDULE) && 'Choose a route'}
+                    isDisabled={
+                      ![PENDING, RESCHEDULE, CHANGES_REQUESTED, APPROVAL_REQUESTED].includes(
+                        currentStatus,
+                      ) || !scheduledDate
+                    }
+                    onChange={e => setScheduledRouteId(e.target.value)}
+                    bg="white"
+                  >
+                    {scheduledDate &&
+                      displayedRouteOptions[scheduledDate]?.map(({ id: optionId, name }) => (
+                        <option key={optionId} value={optionId}>
+                          {name}
+                        </option>
+                      ))}
+                  </Select>
+                </Flex>
+              )}
             </Box>
 
             <Box
