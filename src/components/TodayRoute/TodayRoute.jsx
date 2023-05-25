@@ -43,7 +43,12 @@ const TodayRoute = () => {
 
   const getDonationsForToday = async () => {
     const { data: driverRoutes } = await PNPBackend.get(`/routes/driver/${userId}`);
-    const today = convertUTCtoLocal(new Date());
+    const today = convertUTCtoLocal(
+      new Date()
+        .toLocaleString('en-US', { timeZone: 'America/Los_Angeles' })
+        .replace(/-/g, '/')
+        .replace(/T.+/, ''),
+    );
     const todayRoute = driverRoutes.find(currRoute => isSameDay(currRoute.date, today));
     if (todayRoute) {
       const donationInfo = todayRoute.donations; // data.donations;
