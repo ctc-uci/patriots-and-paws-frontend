@@ -27,7 +27,7 @@ import {
   refreshToken,
 } from '../../utils/AuthUtils';
 import { withCookies, Cookies, cookieKeys } from '../../utils/CookieUtils';
-import pnpLogo from './PNPlogo.png';
+import pnpLogo from '../../assets/PNPlogo.png';
 import ProfileModal from '../EditAccountModal/ProfileModal';
 import { AUTH_ROLES } from '../../utils/config';
 

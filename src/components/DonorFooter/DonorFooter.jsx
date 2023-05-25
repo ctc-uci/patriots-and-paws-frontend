@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flex, Link, Text, Image, HStack, Button } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
-import PNPlogo from '../Navbar/PNPlogo.png';
+import PNPlogo from '../../assets/PNPlogo.png';
 
 const DonorFooter = () => {
   const navigate = useNavigate();
