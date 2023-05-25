@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, { useState, useEffect, useRef } from 'react';
+import { PropTypes } from 'prop-types';
 import { AddIcon } from '@chakra-ui/icons';
 import { Box, Flex, useDisclosure, Button, Heading } from '@chakra-ui/react';
 import FullCalendar from '@fullcalendar/react';
@@ -36,7 +37,7 @@ const grayRoute = {
   borderColor: 'RGBA(0, 0, 0, 0.36)',
 };
 
-const RouteCalendar = () => {
+const RouteCalendar = ({ refreshRoutes }) => {
   const [role, setRole] = useState([]);
   const [allDrivers, setAllDrivers] = useState([]);
   // const [drivers, setDrivers] = useState([]);
@@ -169,6 +170,7 @@ const RouteCalendar = () => {
         isOpen={createRouteIsOpen}
         onClose={createRouteOnClose}
         handleCalendarAddEvent={handleCalendarAddEvent}
+        refreshRoutes={refreshRoutes}
       />
       <Box>
         {role !== DRIVER_ROLE && (
@@ -212,5 +214,9 @@ const RouteCalendar = () => {
     </Flex>
   );
 };
+
+RouteCalendar.propTypes = {
+  refreshRoutes: PropTypes.func,
+}.isRequired;
 
 export default RouteCalendar;

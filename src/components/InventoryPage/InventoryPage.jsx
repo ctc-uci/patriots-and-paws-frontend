@@ -66,21 +66,22 @@ const InventoryPage = () => {
     );
   };
 
+  const fetchRoutesFromDB = async () => {
+    const routesFromDB = await getRoutesFromDB();
+    const formattedRoutes = routesFromDB.map(({ id, name, date: day }) => ({
+      id,
+      name,
+      date: new Date(day).toISOString().replace(/T.*$/, ''),
+    }));
+    const routesList = {};
+    formattedRoutes.forEach(({ date }) => {
+      routesList[date] = [];
+    });
+    formattedRoutes.forEach(({ id, name, date }) => routesList[date].push({ id, name }));
+    setRoutes(routesList);
+  };
+
   useEffect(() => {
-    const fetchRoutesFromDB = async () => {
-      const routesFromDB = await getRoutesFromDB();
-      const formattedRoutes = routesFromDB.map(({ id, name, date: day }) => ({
-        id,
-        name,
-        date: new Date(day).toISOString().replace(/T.*$/, ''),
-      }));
-      const routesList = {};
-      formattedRoutes.forEach(({ date }) => {
-        routesList[date] = [];
-      });
-      formattedRoutes.forEach(({ id, name, date }) => routesList[date].push({ id, name }));
-      setRoutes(routesList);
-    };
     fetchRoutesFromDB();
   }, []);
 
@@ -138,7 +139,7 @@ const InventoryPage = () => {
 
               <DrawerBody p="2em">
                 <Center>
-                  <RouteCalendar />
+                  <RouteCalendar refreshRoutes={fetchRoutesFromDB} />
                 </Center>
               </DrawerBody>
             </DrawerContent>

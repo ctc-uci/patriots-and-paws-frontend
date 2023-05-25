@@ -25,7 +25,14 @@ import { SingleDatepicker } from 'chakra-dayzed-datepicker';
 import { calendarConfigs } from '../../utils/utils';
 import { createRoute } from '../../utils/RouteUtils';
 
-const CreateRouteModal = ({ routeDate, allDrivers, isOpen, onClose, handleCalendarAddEvent }) => {
+const CreateRouteModal = ({
+  routeDate,
+  allDrivers,
+  isOpen,
+  onClose,
+  handleCalendarAddEvent,
+  refreshRoutes,
+}) => {
   const [date, setDate] = useState(new Date());
   const [drivers, setDrivers] = useState(allDrivers ?? []);
   const [errorMessage, setErrorMessage] = useState();
@@ -92,6 +99,7 @@ const CreateRouteModal = ({ routeDate, allDrivers, isOpen, onClose, handleCalend
       const { id, name } = res;
       handleCalendarAddEvent(id, name, submitDate, assignedDriver);
       clearState();
+      refreshRoutes();
       onClose();
     } catch (err) {
       setErrorMessage(err.message);
@@ -172,6 +180,7 @@ CreateRouteModal.propTypes = {
   isOpen: PropTypes.bool,
   onClose: PropTypes.func,
   handleCalendarAddEvent: PropTypes.func,
+  refreshRoutes: PropTypes.func,
 }.isRequired;
 
 export default CreateRouteModal;
