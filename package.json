@@ -93,5 +93,6 @@
   "devDependencies": {
     "husky": "^7.0.0",
     "prettier": "^2.4.1"
-  }
+  },
+  "packageManager": "yarn@3.5.1"
 }
