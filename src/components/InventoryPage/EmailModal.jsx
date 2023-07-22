@@ -14,7 +14,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 
-import { Email, Item, Span } from 'react-html-email';
+import { A, Email, Item, Span } from 'react-html-email';
 
 import { PropTypes } from 'prop-types';
 import { sendEmail } from '../../utils/utils';
@@ -55,7 +55,8 @@ const getEmailContent = (status, date, id) => {
             We have requested changes to your donation form due to reasons listed below. We have
             listed the items that we don’t accept below. Please remove these items from your
             donation form so that we can proceed with the donation pickup. Feel free to email us at
-            patriotsandpaws@gmail.com or call us at [pnp number] for more information or assistance.
+            patriotsandpaws@gmail.com or call us at 714-323-PAAW (7229) for more information or
+            assistance.
           </Text>
         ),
       };
@@ -84,13 +85,20 @@ const getEmailContent = (status, date, id) => {
   }
 };
 
-const emailTemplate = (status, body, additionalText) => (
+const emailTemplate = (status, body, additionalText, id, email) => (
   <Email title={status}>
     <Item>
       <Span fontSize={15}>
         <p>{body}</p>
         <br />
         <p>{additionalText}</p>
+        <br />
+        <p>
+          View your donation <A href="https://furniture.patriotsandpaws.org/donate">here</A> with
+          the following credentials:
+        </p>
+        <p>Email: {email}</p>
+        <p>Donation Id: {id}</p>
       </Span>
     </Item>
   </Email>
@@ -113,7 +121,11 @@ const EmailModal = ({
 
   const handleSubmit = e => {
     e.preventDefault();
-    sendEmail(header, email, emailTemplate(status, body, emailBodyRef.current.value));
+    sendEmail(
+      header,
+      email,
+      emailTemplate(status, body, emailBodyRef.current.value, donationId, email),
+    );
     onCloseDonationModal();
   };
 

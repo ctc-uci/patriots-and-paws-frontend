@@ -44,6 +44,7 @@ import TermsConditionModal from '../TermsConditionModal/TermsConditionModal';
 import { STATUSES } from '../../utils/config';
 import DonationImageModal from '../DonationImageModal/DonationImageModal';
 import ItemInfoModal from '../ItemInfoModal/ItemInfoModal';
+import dnotifemailtemplate from '../EmailTemplates/dnotifemailtemplate';
 
 const { APPROVAL_REQUESTED } = STATUSES;
 
@@ -158,6 +159,11 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
         sendEmail(
           'Thank You For Donating!',
           formData.email,
+          dnotifemailtemplate(donationId, email),
+        );
+        sendEmail(
+          `${email} Has Submitted a Donation Form`,
+          'pickup@patriotsandpaws.org',
           dconfirmemailtemplate(donationId, email),
         );
       } catch (err) {

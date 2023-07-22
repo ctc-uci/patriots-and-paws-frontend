@@ -53,8 +53,12 @@ const DonorDashboard = ({ donationId }) => {
             <Box>
               Your donation has been successfully submitted and will be reviewed shortly! Be sure to
               check your inbox for updates and email us at&nbsp;
-              <Link href="mailto:pnp@gmail.com" color="blue.500" textDecoration="underline">
-                pnp@gmail.com
+              <Link
+                href="mailto:pickup@patriotsandpaws.org"
+                color="blue.500"
+                textDecoration="underline"
+              >
+                pickup@patriotsandpaws.org
               </Link>
               &nbsp;with any changes.
             </Box>
