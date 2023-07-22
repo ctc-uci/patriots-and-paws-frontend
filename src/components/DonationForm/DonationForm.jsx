@@ -156,12 +156,12 @@ function DonationForm({ donationData, setDonationData, closeEditDonationModal })
     if (!donationData) {
       const { id: donationId, email } = await createNewDonation(formData);
       try {
-        sendEmail(
+        await sendEmail(
           'Thank You For Donating!',
           formData.email,
           dnotifemailtemplate(donationId, email),
         );
-        sendEmail(
+        await sendEmail(
           `${email} Has Submitted a Donation Form`,
           'pickup@patriotsandpaws.org',
           dconfirmemailtemplate(donationId, email),
