@@ -119,13 +119,15 @@ const EmailModal = ({
 
   const { header, body } = getEmailContent(status, routeDate, donationId);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e, sendEmailFlag) => {
     e.preventDefault();
-    sendEmail(
-      header,
-      email,
-      emailTemplate(status, body, emailBodyRef.current.value, donationId, email),
-    );
+    if (sendEmailFlag) {
+      sendEmail(
+        header,
+        email,
+        emailTemplate(status, body, emailBodyRef.current.value, donationId, email),
+      );
+    }
     onCloseDonationModal();
   };
 
@@ -158,9 +160,17 @@ const EmailModal = ({
           <Button variant="ghost" onClick={onCloseEmailModal}>
             Cancel
           </Button>
+          <Button
+            bgColor="#B85919"
+            colorScheme="orange"
+            onClick={e => handleSubmit(e, false)}
+            mr={3}
+          >
+            Confirm Without Email
+          </Button>
           <SendButton
             status={status}
-            handleSubmit={handleSubmit}
+            handleSubmit={e => handleSubmit(e, true)}
             updateDonation={updateDonation}
             setCurrentStatus={setCurrentStatus}
             onCloseEmailModal={onCloseEmailModal}
